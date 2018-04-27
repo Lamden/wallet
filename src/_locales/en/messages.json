@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "Clove Sign Plugin",
+    "description": "The name of the extension."
+  },
+  "appDescription": {
+    "message": "Tool for signing raw transaction in bitcoin and ethereum based networks",
+    "description": "The description of the extension."
+  },
+  "btnTooltip": {
+    "message": "Clove Sign Plugin",
+    "description": "Tooltip for the button."
+  }
+}
