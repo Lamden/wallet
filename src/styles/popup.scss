@@ -1,0 +1,59 @@
+@import "modules/reset";
+@import "modules/variables";
+@import "modules/layout";
+
+body, html {
+  padding: 0;
+  margin: 0;
+}
+
+#app {
+  padding: 20px 20px;
+  background: $white;
+}
+
+input {
+    display: block;
+}
+
+footer {
+  color: $text-secondary;
+  text-align: right;
+  font-size: 0.8em;
+  a {
+    outline: none;
+    color: lighten($text-secondary, 10%);
+    &:hover {
+      color: $text-secondary;
+    }
+  }
+}
+
+.popup-content {
+  min-width: 320px;
+  min-height: 100px;
+  max-width: 350px;
+}
+
+.app-name {
+  font-size: 14px;
+  text-transform: uppercase;
+  color: $text-secondary;
+  text-align: center;
+  margin: 0 auto 1em auto;
+  padding: 0;
+}
+
+.btn {
+  background: none;
+  border: none;
+  display: inline-block;
+  cursor: pointer;
+  padding: 0.5em 1.5em;
+  background: $brand-primary;
+  color: $white;
+  font-weight: $headings-font-weight;
+  border-radius: 2px;
+  outline: none;
+  font-size: 1em;
+}
