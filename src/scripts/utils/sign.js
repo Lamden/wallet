@@ -1,13 +1,15 @@
 const bitcoin = require('bitcoinjs-lib');
 const EthereumTx = require('ethereumjs-tx');
+const networks = require('./bitcoin_networks');
 
-export function stripHexPrefix(hexString) {
+// eslint-disable-next-line arrow-body-style
+exports.stripHexPrefix = (hexString) => {
   return hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
-}
+};
 
-export function signEthereumTx(rawTransaction = '', privateKey = '') {
-  const rawTx = Buffer.from(stripHexPrefix(rawTransaction), 'hex');
-  const key = Buffer.from(stripHexPrefix(privateKey), 'hex');
+exports.signEthereumTx = (rawTransaction = '', privateKey = '') => {
+  const rawTx = Buffer.from(exports.stripHexPrefix(rawTransaction), 'hex');
+  const key = Buffer.from(exports.stripHexPrefix(privateKey), 'hex');
 
   if (rawTx.length === 0) {
     throw new Error('Missing or invalid transaction.');
@@ -34,9 +36,9 @@ export function signEthereumTx(rawTransaction = '', privateKey = '') {
     }
   }
   return ethTransaction.serialize().toString('hex');
-}
+};
 
-export function signBitcoinTx(rawTransaction = '', privateKey = '', network) {
+exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
   let tx;
   try {
     tx = bitcoin.Transaction.fromHex(rawTransaction);
@@ -86,4 +88,25 @@ export function signBitcoinTx(rawTransaction = '', privateKey = '', network) {
     }
   });
   return txb.build().toHex();
-}
+};
+
+exports.signTx = (rawTransaction = '', privateKey = '', networkSymbol = '') => {
+  const splittedSymbol = networkSymbol.toLowerCase().split('-');
+
+  let symbol = splittedSymbol[0];
+  const testnetSuffix = splittedSymbol[1];
+
+  if (symbol === 'eth') {
+    return exports.signEthereumTx(rawTransaction, privateKey);
+  }
+
+  const testnet = testnetSuffix === 'testnet';
+  if (testnet) {
+    symbol += 'Test';
+  }
+  if (symbol in networks) {
+    return exports.signBitcoinTx(rawTransaction, privateKey, networks[symbol]);
+  }
+
+  throw new Error(`${networkSymbol} network is not supported`);
+};

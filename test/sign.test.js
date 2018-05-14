@@ -1,12 +1,12 @@
-import { signBitcoinTx, signEthereumTx, stripHexPrefix } from '../src/scripts/utils/sign';
+const sign = require('../src/scripts/utils/sign');
 const networks = require('../src/scripts/utils/bitcoin_networks');
 
 describe('stipHexPrefix', () => {
   test('returns string without 0x prefix', () => {
-    expect(stripHexPrefix('0x12345')).toBe('12345');
+    expect(sign.stripHexPrefix('0x12345')).toBe('12345');
   });
   test('returns the same string if it is not prefixed with 0x', () => {
-    expect(stripHexPrefix('12345')).toBe('12345');
+    expect(sign.stripHexPrefix('12345')).toBe('12345');
   });
 });
 
@@ -17,24 +17,24 @@ describe('signEthereumTx', () => {
   const tx = `f8693e8504a817c80082b2089453e546387a0d054e7ff127923254c0a679da6dbf80b844${txData}808080`;
 
   test('returns signed transaction', () => {
-    const signedTx = signEthereumTx(tx, privateKey);
+    const signedTx = sign.signEthereumTx(tx, privateKey);
     expect(signedTx.length).toBeGreaterThan(tx.length);
     expect(signedTx).toMatch(txData);
   });
   test('throws error on invalid private key with correct length', () => {
-    expect(() => signEthereumTx(tx, ''.padEnd(64, '0'))).toThrow('Signing failed.');
+    expect(() => sign.signEthereumTx(tx, ''.padEnd(64, '0'))).toThrow('Signing failed.');
   });
   test('throws error on invalid private key with incorrect length', () => {
-    expect(() => signEthereumTx(tx, 'non_hex_key')).toThrow('Missing or invalid private key.');
+    expect(() => sign.signEthereumTx(tx, 'non_hex_key')).toThrow('Missing or invalid private key.');
   });
   test('throws error on missing private key', () => {
-    expect(() => signEthereumTx(tx)).toThrow('Missing or invalid private key.');
+    expect(() => sign.signEthereumTx(tx)).toThrow('Missing or invalid private key.');
   });
   test('throws error on invalid transaction', () => {
-    expect(() => signEthereumTx('01234', privateKey)).toThrow('Invalid transaction.');
+    expect(() => sign.signEthereumTx('01234', privateKey)).toThrow('Invalid transaction.');
   });
   test('throws error on missing transaction', () => {
-    expect(() => signEthereumTx('', privateKey)).toThrow('Missing or invalid transaction.');
+    expect(() => sign.signEthereumTx('', privateKey)).toThrow('Missing or invalid transaction.');
   });
 });
 
@@ -53,28 +53,68 @@ describe('signBitcoinTx', () => {
     '0000001976a914812ff3e5afea281eb3dd7fce9b077e4ec6fba08b88ac00000000';
 
   test('returns signed p2pkh transaction', () => {
-    const signedTx = signBitcoinTx(p2pkhTx, privateKey, btc);
+    const signedTx = sign.signBitcoinTx(p2pkhTx, privateKey, btc);
     expect(signedTx.length).toBeGreaterThan(p2pkhTx.length);
   });
   test('returns signed p2sh transaction', () => {
-    const signedTx = signBitcoinTx(p2shTx, privateKey, btc);
+    const signedTx = sign.signBitcoinTx(p2shTx, privateKey, btc);
     expect(signedTx.length).toBeGreaterThan(p2shTx.length);
   });
   test('returns already signed p2pkh transaction without changes', () => {
-    const signedTx = signBitcoinTx(p2pkhTx, privateKey, btc);
-    const signedTwiceTx = signBitcoinTx(signedTx, privateKey, btc);
+    const signedTx = sign.signBitcoinTx(p2pkhTx, privateKey, btc);
+    const signedTwiceTx = sign.signBitcoinTx(signedTx, privateKey, btc);
     expect(signedTx).toBe(signedTwiceTx);
   });
   test('throws error on invalid transaction', () => {
-    expect(() => signBitcoinTx('non_hex_tx', privateKey, btc)).toThrow('Invalid transaction.');
+    expect(() => sign.signBitcoinTx('non_hex_tx', privateKey, btc)).toThrow('Invalid transaction.');
   });
   test('throws error on invalid private key', () => {
-    expect(() => signBitcoinTx(p2pkhTx, 'non_hex_key', btc)).toThrow('Invalid private key.');
+    expect(() => sign.signBitcoinTx(p2pkhTx, 'non_hex_key', btc)).toThrow('Invalid private key.');
   });
   test('throws error on not matching private key and network', () => {
-    expect(() => signBitcoinTx(p2pkhTx, privateKey, networks.ltc)).toThrow('Invalid network version');
+    expect(() => sign.signBitcoinTx(p2pkhTx, privateKey, networks.ltc)).toThrow('Invalid network version');
   });
   test('throws error on invalid network', () => {
-    expect(() => signBitcoinTx(p2pkhTx, privateKey, {})).toThrow('Invalid network version');
+    expect(() => sign.signBitcoinTx(p2pkhTx, privateKey, {})).toThrow('Invalid network version');
+  });
+});
+
+describe('signTx', () => {
+  let mockedSignBitcoin;
+  let mockedSignEthereum;
+
+  afterAll(() => { jest.restoreAllMocks(); });
+
+  afterEach(() => { jest.clearAllMocks(); });
+
+  beforeAll(() => {
+    mockedSignBitcoin = jest.spyOn(sign, 'signBitcoinTx').mockImplementation(() => {});
+    mockedSignEthereum = jest.spyOn(sign, 'signEthereumTx').mockImplementation(() => {});
+  });
+
+  [
+    ['BTC', networks.btc],
+    ['BTC-TESTNET', networks.btcTest],
+    ['LTC', networks.ltc],
+    ['LTC-TESTNET', networks.ltcTest],
+  ].forEach(([symbol, network]) => {
+    test(`calls sign.signBitcoinTx with correct network for ${symbol} network`, () => {
+      sign.signTx('tx', 'private_key', symbol);
+      expect(mockedSignBitcoin).toBeCalledWith('tx', 'private_key', network);
+      expect(mockedSignEthereum).not.toBeCalled();
+    });
+  });
+
+  ['ETH', 'ETH-TESTNET'].forEach((symbol) => {
+    test(`calls sign.signEthereumTx for ${symbol} network`, () => {
+      sign.signTx('tx', 'private_key', symbol);
+      expect(mockedSignEthereum).toBeCalledWith('tx', 'private_key');
+      expect(mockedSignBitcoin).not.toBeCalled();
+    });
+  });
+
+  test('throws an error for unknown network', () => {
+    const symbol = 'UNKNOWN';
+    expect(() => sign.signTx('tx', 'private_key', symbol)).toThrow(`${symbol} network is not supported`);
   });
 });
