@@ -8,6 +8,9 @@
     "128": "icons/icon-clove-128.png"
   },
   "default_locale": "en",
+  "background": {
+    "scripts": ["background.js"]
+  },
   "permissions": [
     "storage"
   ],

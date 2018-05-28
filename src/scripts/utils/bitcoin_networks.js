@@ -1,5 +1,5 @@
 module.exports = {
-  btc: {
+  BTC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -10,7 +10,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x80,
   },
-  btcTest: {
+  'BTC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -21,7 +21,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  arco: {
+  ARCO: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -32,7 +32,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x97,
   },
-  adc: {
+  ADC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -43,7 +43,7 @@ module.exports = {
     scriptHash: 0x7d,
     wif: 0x97,
   },
-  adcTest: {
+  'ADC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -54,7 +54,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  bta: {
+  BTA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -65,7 +65,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xbc,
   },
-  btaTest: {
+  'BTA-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -76,7 +76,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  bch: {
+  BCH: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -87,7 +87,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x80,
   },
-  bchTest: {
+  'BCH-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -98,7 +98,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  btg: {
+  BTG: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -109,7 +109,7 @@ module.exports = {
     scriptHash: 0x17,
     wif: 0x80,
   },
-  btgTest: {
+  'BTG-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -120,7 +120,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  btx: {
+  BTX: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -131,7 +131,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x80,
   },
-  btxTest: {
+  'BTX-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -142,7 +142,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  btm: {
+  BTM: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -153,7 +153,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xd5,
   },
-  bsd: {
+  BSD: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -164,7 +164,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xcc,
   },
-  bsdTest: {
+  'BSD-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -175,7 +175,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  blk: {
+  BLK: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -186,7 +186,7 @@ module.exports = {
     scriptHash: 0x55,
     wif: 0x99,
   },
-  block: {
+  BLOCK: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -197,7 +197,7 @@ module.exports = {
     scriptHash: 0x1c,
     wif: 0x9a,
   },
-  crea: {
+  CREA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -208,7 +208,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb0,
   },
-  creaTest: {
+  'CREA-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -219,7 +219,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  dash: {
+  DASH: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -230,7 +230,7 @@ module.exports = {
     scriptHash: 0x10,
     wif: 0xcc,
   },
-  dashTest: {
+  'DASH-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -241,7 +241,7 @@ module.exports = {
     scriptHash: 0x13,
     wif: 0xef,
   },
-  dgb: {
+  DGB: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -252,7 +252,7 @@ module.exports = {
     scriptHash: 0x3f,
     wif: 0x80,
   },
-  dope: {
+  DOPE: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -263,7 +263,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x9e,
   },
-  efl: {
+  EFL: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -274,7 +274,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb0,
   },
-  eflTest: {
+  'EFL-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -285,7 +285,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  ent: {
+  ENT: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -296,7 +296,7 @@ module.exports = {
     scriptHash: 0x8,
     wif: 0x65,
   },
-  entTest: {
+  'ENT-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -307,7 +307,7 @@ module.exports = {
     scriptHash: 0xa,
     wif: 0xef,
   },
-  erc: {
+  ERC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -318,7 +318,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xa8,
   },
-  gld: {
+  GLD: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -329,7 +329,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xa0,
   },
-  gre: {
+  GRE: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -340,7 +340,7 @@ module.exports = {
     scriptHash: 0x55,
     wif: 0xa6,
   },
-  gun: {
+  GUN: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -351,7 +351,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xa7,
   },
-  i0c: {
+  I0C: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -362,7 +362,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x80,
   },
-  ivc: {
+  IVC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -373,7 +373,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x75,
   },
-  xjo: {
+  XJO: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -384,7 +384,7 @@ module.exports = {
     scriptHash: 0xb,
     wif: 0x8f,
   },
-  kmd: {
+  KMD: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -395,7 +395,7 @@ module.exports = {
     scriptHash: 0x55,
     wif: 0xbc,
   },
-  lana: {
+  LANA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -406,7 +406,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb0,
   },
-  lanaTest: {
+  'LANA-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -417,7 +417,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  ltc: {
+  LTC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -428,7 +428,7 @@ module.exports = {
     scriptHash: 0x32,
     wif: 0xb0,
   },
-  ltcTest: {
+  'LTC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -439,7 +439,7 @@ module.exports = {
     scriptHash: 0x3a,
     wif: 0xef,
   },
-  mac: {
+  MAC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -450,7 +450,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb2,
   },
-  macTest: {
+  'MAC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -461,7 +461,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb2,
   },
-  mona: {
+  MONA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -472,7 +472,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb0,
   },
-  monaTest: {
+  'MONA-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -483,7 +483,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  mue: {
+  MUE: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -494,7 +494,7 @@ module.exports = {
     scriptHash: 0x4c,
     wif: 0x7e,
   },
-  mueTest: {
+  'MUE-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -505,7 +505,7 @@ module.exports = {
     scriptHash: 0x13,
     wif: 0x40,
   },
-  moon: {
+  MOON: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -516,7 +516,7 @@ module.exports = {
     scriptHash: 0x16,
     wif: 0x83,
   },
-  xmy: {
+  XMY: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -527,7 +527,7 @@ module.exports = {
     scriptHash: 0x9,
     wif: 0xb2,
   },
-  xmyTest: {
+  'XMY-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -538,7 +538,7 @@ module.exports = {
     scriptHash: 0xbc,
     wif: 0xef,
   },
-  nav: {
+  NAV: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -549,7 +549,7 @@ module.exports = {
     scriptHash: 0x55,
     wif: 0x96,
   },
-  netko: {
+  NETKO: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -560,7 +560,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb1,
   },
-  neva: {
+  NEVA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -571,7 +571,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xb1,
   },
-  nevaTest: {
+  'NEVA-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -582,7 +582,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  part: {
+  PART: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -593,7 +593,7 @@ module.exports = {
     scriptHash: 0x3c,
     wif: 0x6c,
   },
-  partTest: {
+  'PART-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -604,7 +604,7 @@ module.exports = {
     scriptHash: 0x7a,
     wif: 0x2e,
   },
-  ppc: {
+  PPC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -615,7 +615,7 @@ module.exports = {
     scriptHash: 0x75,
     wif: 0xb7,
   },
-  ppcTest: {
+  'PPC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -626,7 +626,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  pura: {
+  PURA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -637,7 +637,7 @@ module.exports = {
     scriptHash: 0x10,
     wif: 0x96,
   },
-  qrk: {
+  QRK: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -648,7 +648,7 @@ module.exports = {
     scriptHash: 0x9,
     wif: 0xba,
   },
-  qrkTest: {
+  'QRK-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -659,7 +659,7 @@ module.exports = {
     scriptHash: 0xc7,
     wif: 0xf7,
   },
-  rvn: {
+  RVN: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -670,7 +670,7 @@ module.exports = {
     scriptHash: 0x7a,
     wif: 0x80,
   },
-  rvnTest: {
+  'RVN-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -681,7 +681,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  rby: {
+  RBY: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -692,7 +692,7 @@ module.exports = {
     scriptHash: 0x55,
     wif: 0xbc,
   },
-  sxc: {
+  SXC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -703,7 +703,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xbe,
   },
-  sxcTest: {
+  'SXC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -714,7 +714,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  skc: {
+  SKC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -725,7 +725,7 @@ module.exports = {
     scriptHash: 0xc,
     wif: 0xe2,
   },
-  slr: {
+  SLR: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -736,7 +736,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x92,
   },
-  slrTest: {
+  'SLR-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -747,7 +747,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  bucks: {
+  BUCKS: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -758,7 +758,7 @@ module.exports = {
     scriptHash: 0x7d,
     wif: 0x99,
   },
-  sys: {
+  SYS: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -769,7 +769,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0xbf,
   },
-  taj: {
+  TAJ: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -780,7 +780,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x6f,
   },
-  xto: {
+  XTO: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -791,7 +791,7 @@ module.exports = {
     scriptHash: 0x3,
     wif: 0x4c,
   },
-  xtoTest: {
+  'XTO-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -802,7 +802,7 @@ module.exports = {
     scriptHash: 0x82,
     wif: 0x8a,
   },
-  vtc: {
+  VTC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -813,7 +813,7 @@ module.exports = {
     scriptHash: 0x5,
     wif: 0x80,
   },
-  vtcTest: {
+  'VTC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -824,7 +824,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  via: {
+  VIA: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -835,7 +835,7 @@ module.exports = {
     scriptHash: 0x21,
     wif: 0xc7,
   },
-  viaTest: {
+  'VIA-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -846,7 +846,7 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xff,
   },
-  visio: {
+  VISIO: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -857,7 +857,7 @@ module.exports = {
     scriptHash: 0x7d,
     wif: 0xbf,
   },
-  vivo: {
+  VIVO: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -868,7 +868,7 @@ module.exports = {
     scriptHash: 0xa,
     wif: 0xc6,
   },
-  xzc: {
+  XZC: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -879,7 +879,7 @@ module.exports = {
     scriptHash: 0x7,
     wif: 0xd2,
   },
-  xzcTest: {
+  'XZC-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -890,7 +890,7 @@ module.exports = {
     scriptHash: 0xb2,
     wif: 0xb9,
   },
-  zet: {
+  ZET: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -901,7 +901,7 @@ module.exports = {
     scriptHash: 0x9,
     wif: 0xe0,
   },
-  zetTest: {
+  'ZET-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -912,7 +912,7 @@ module.exports = {
     scriptHash: 0xbc,
     wif: 0xef,
   },
-  zoi: {
+  ZOI: {
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -923,7 +923,7 @@ module.exports = {
     scriptHash: 0x7,
     wif: 0xd0,
   },
-  zoiTest: {
+  'ZOI-TESTNET': {
     messagePrefix: '',
     bech32: '',
     bip32: {

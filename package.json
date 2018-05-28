@@ -18,6 +18,9 @@
     "lint": "eslint src",
     "test": "jest"
   },
+  "jest": {
+    "setupFiles": ["jest-localstorage-mock"]
+  },
   "author": "Paweł Ostrowski <pawel.ostrowski@stxnext.pl>",
   "devDependencies": {
     "babel-core": "^6.1.2",
@@ -44,6 +47,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-zip": "^4.1.0",
     "jest": "^22.4.3",
+    "jest-localstorage-mock": "^2.2.0",
     "preprocessify": "^1.0.1",
     "run-sequence": "^2.2.1",
     "vinyl-buffer": "^1.0.0",
@@ -51,6 +55,8 @@
   },
   "dependencies": {
     "bitcoinjs-lib": "^3.3.2",
-    "ethereumjs-tx": "^1.3.4"
+    "ethereumjs-tx": "^1.3.4",
+    "ethereumjs-util": "^5.2.0",
+    "node-cryptojs-aes": "^0.4.0"
   }
 }

@@ -8,9 +8,9 @@ except ImportError:
 
 
 def network_details(network):
-    name = network.symbols[0].lower()
+    name = network.symbols[0].upper()
     if network.testnet:
-        name += 'Test'
+        name = f"'{name}-TESTNET'"
 
     return f'''  {name}: {{
     messagePrefix: \'\',
