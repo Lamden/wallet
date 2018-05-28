@@ -7,9 +7,11 @@ exports.stripHexPrefix = (hexString) => {
   return hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
 };
 
+exports.getHexBuffer = hexstring => Buffer.from(exports.stripHexPrefix(hexstring), 'hex');
+
 exports.signEthereumTx = (rawTransaction = '', privateKey = '') => {
-  const rawTx = Buffer.from(exports.stripHexPrefix(rawTransaction), 'hex');
-  const key = Buffer.from(exports.stripHexPrefix(privateKey), 'hex');
+  const rawTx = exports.getHexBuffer(rawTransaction);
+  const key = exports.getHexBuffer(privateKey);
 
   if (rawTx.length === 0) {
     throw new Error('Missing or invalid transaction.');
@@ -38,26 +40,31 @@ exports.signEthereumTx = (rawTransaction = '', privateKey = '') => {
   return ethTransaction.serialize().toString('hex');
 };
 
-exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
-  let tx;
+exports.getBitcoinTx = (rawTransaction) => {
   try {
-    tx = bitcoin.Transaction.fromHex(rawTransaction);
+    return bitcoin.Transaction.fromHex(rawTransaction);
   } catch (e) {
     throw new Error('Invalid transaction.');
   }
+};
 
-  const txb = bitcoin.TransactionBuilder.fromTransaction(tx, network);
-
-  let key;
+exports.getBitcoinKey = (privateKey, network) => {
   try {
-    key = bitcoin.ECPair.fromWIF(privateKey, network);
+    return bitcoin.ECPair.fromWIF(privateKey, network);
   } catch (e) {
     if (e.message === 'Invalid checksum' || e.message === 'Non-base58 character') {
       throw new Error('Invalid private key.');
     }
     throw e;
   }
+};
 
+exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
+  const tx = exports.getBitcoinTx(rawTransaction);
+
+  const txb = bitcoin.TransactionBuilder.fromTransaction(tx, network);
+
+  const key = exports.getBitcoinKey(privateKey, network);
 
   if (txb.inputs[0].prevOutType === 'nonstandard') {
     const contract = bitcoin.script.decompile(tx.ins[0].script).pop();
@@ -91,21 +98,12 @@ exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
 };
 
 exports.signTx = (rawTransaction = '', privateKey = '', networkSymbol = '') => {
-  const splittedSymbol = networkSymbol.toLowerCase().split('-');
-
-  let symbol = splittedSymbol[0];
-  const testnetSuffix = splittedSymbol[1];
-
-  if (symbol === 'eth') {
+  if (networkSymbol.startsWith('ETH')) {
     return exports.signEthereumTx(rawTransaction, privateKey);
   }
 
-  const testnet = testnetSuffix === 'testnet';
-  if (testnet) {
-    symbol += 'Test';
-  }
-  if (symbol in networks) {
-    return exports.signBitcoinTx(rawTransaction, privateKey, networks[symbol]);
+  if (networkSymbol in networks) {
+    return exports.signBitcoinTx(rawTransaction, privateKey, networks[networkSymbol]);
   }
 
   throw new Error(`${networkSymbol} network is not supported`);

@@ -21,7 +21,7 @@ storage.get('color', (resp) => {
 });
 
 colorSelectors.forEach((el) => {
-  el.addEventListener('click', () => {
+  el.addEventListener('click', function click() {
     const { value } = this;
     storage.set({ color: value }, () => {
       setColor(value);

@@ -10,6 +10,15 @@ describe('stipHexPrefix', () => {
   });
 });
 
+describe('getHexBuffer', () => {
+  test('converts unprefixed hex string to buffer', () => {
+    expect(sign.getHexBuffer('1234ab')).toEqual(Buffer.from('1234ab', 'hex'));
+  });
+  test('removes 0x prefix and converts hex string to buffer', () => {
+    expect(sign.getHexBuffer('0x1234ab')).toEqual(Buffer.from('1234ab', 'hex'));
+  });
+});
+
 
 describe('signEthereumTx', () => {
   const privateKey = '3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266';
@@ -38,8 +47,44 @@ describe('signEthereumTx', () => {
   });
 });
 
+describe('getBitcoinKey', () => {
+  const btc = networks['BTC-TESTNET'];
+  const privateKey = 'cSYq9JswNm79GUdyz6TiNKajRTiJEKgv4RxSWGthP3SmUHiX9WKe';
+  test('returns Bitcoin private key object', () => {
+    let key = sign.getBitcoinKey(privateKey, btc);
+    expect(key.toWIF()).toBe(privateKey);
+    expect(key.getAddress()).toBe('msJ2ucZ2NDhpVzsiNE5mGUFzqFDggjBVTM');
+  });
+  test('throws error on invalid private key', () => {
+    expect(() => sign.getBitcoinKey('non_hex_key', btc)).toThrow('Invalid private key.');
+  });
+});
+
+describe('getBitcoinTx', () => {
+  const tx = '01000000011e2a8e9d3c68d3006abb2680c29dfe97a615838e80cfb9874f89dc125aad4f2d010' +
+    '00000000000000002400d03000000000017a914e1553d90403b584264ea456c68e6ca485e9b6f7f876bcd2e0300' +
+    '0000001976a914812ff3e5afea281eb3dd7fce9b077e4ec6fba08b88ac00000000';
+  test('returns Bitcoin transaction object', () => {
+    let bitcoinTx = sign.getBitcoinTx(tx);
+    expect(bitcoinTx.toHex()).toBe(tx);
+    expect(bitcoinTx.outs[0]).toEqual({
+      script: Buffer.from('a914e1553d90403b584264ea456c68e6ca485e9b6f7f87', 'hex'),
+      value: 200000,
+    });
+    expect(bitcoinTx.outs[1]).toEqual({
+      script: Buffer.from('76a914812ff3e5afea281eb3dd7fce9b077e4ec6fba08b88ac', 'hex'),
+      value: 53398891,
+    });
+    expect(bitcoinTx.ins[0].hash.toString('hex')).toBe('1e2a8e9d3c68d3006abb2680c29dfe97a615838e80cfb9874f89dc125aad4f2d');
+    expect(bitcoinTx.ins[0].index).toBe(1);
+  });
+  test('throws error on invalid transaction', () => {
+    expect(() => sign.getBitcoinTx('non_hex_tx')).toThrow('Invalid transaction.');
+  });
+});
+
 describe('signBitcoinTx', () => {
-  const btc = networks.btcTest;
+  const btc = networks['BTC-TESTNET'];
   const privateKey = 'cSYq9JswNm79GUdyz6TiNKajRTiJEKgv4RxSWGthP3SmUHiX9WKe';
   const p2shTx = '01000000011e2a8e9d3c68d3006abb2680c29dfe97a615838e80cfb9874f89dc125aad4f2d0000' +
     '0000df47304402204612c166014ca7d4fae3e746e16b027ca359dd17aaf0cc6835d28b66c91f368602206d5cf96' +
@@ -72,7 +117,7 @@ describe('signBitcoinTx', () => {
     expect(() => sign.signBitcoinTx(p2pkhTx, 'non_hex_key', btc)).toThrow('Invalid private key.');
   });
   test('throws error on not matching private key and network', () => {
-    expect(() => sign.signBitcoinTx(p2pkhTx, privateKey, networks.ltc)).toThrow('Invalid network version');
+    expect(() => sign.signBitcoinTx(p2pkhTx, privateKey, networks.LTC)).toThrow('Invalid network version');
   });
   test('throws error on invalid network', () => {
     expect(() => sign.signBitcoinTx(p2pkhTx, privateKey, {})).toThrow('Invalid network version');
@@ -93,10 +138,10 @@ describe('signTx', () => {
   });
 
   [
-    ['BTC', networks.btc],
-    ['BTC-TESTNET', networks.btcTest],
-    ['LTC', networks.ltc],
-    ['LTC-TESTNET', networks.ltcTest],
+    ['BTC', networks.BTC],
+    ['BTC-TESTNET', networks['BTC-TESTNET']],
+    ['LTC', networks.LTC],
+    ['LTC-TESTNET', networks['LTC-TESTNET']],
   ].forEach(([symbol, network]) => {
     test(`calls sign.signBitcoinTx with correct network for ${symbol} network`, () => {
       sign.signTx('tx', 'private_key', symbol);
