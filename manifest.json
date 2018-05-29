@@ -9,7 +9,9 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "scripts/background.js"
+    ]
   },
   "permissions": [
     "storage"

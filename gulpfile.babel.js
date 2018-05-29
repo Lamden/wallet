@@ -149,7 +149,7 @@ function buildJS(target) {
     .pipe(buffer())
     .pipe(gulpif(!production, $.sourcemaps.init({ loadMaps: true }) ))
     .pipe(gulpif(!production, $.sourcemaps.write('./') ))
-    .pipe(gulpif(production, $.uglify({
+    .pipe(gulpif(production, $.uglifyes({
       "mangle": false,
       "output": {
         "ascii_only": true
