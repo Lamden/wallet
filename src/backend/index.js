@@ -1,4 +1,4 @@
 /* global window */
-const keyStorage = require('./utils/key_storage');
+import keyStorage from '../utils/key_storage';
 
 window.keyStorage = keyStorage;

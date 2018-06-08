@@ -1,4 +1,4 @@
-const keyStorage = require('../src/scripts/utils/key_storage');
+const keyStorage = require('../src/utils/key_storage');
 
 const ethTestKey = '3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266';
 const ethAddress = 'c2d7cf95645d33006175b78989035c7c9061d3f9';
