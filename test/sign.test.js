@@ -1,5 +1,5 @@
-const sign = require('../src/scripts/utils/sign');
-const networks = require('../src/scripts/utils/bitcoin_networks');
+const sign = require('../src/utils/sign');
+const networks = require('../src/utils/bitcoin_networks');
 
 describe('stipHexPrefix', () => {
   test('returns string without 0x prefix', () => {
