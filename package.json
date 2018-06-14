@@ -13,13 +13,23 @@
   "jest": {
     "setupFiles": [
       "jest-localstorage-mock"
-    ]
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+      ".*\\.(vue)$": "<rootDir>/node_modules/jest-vue-preprocessor"
+    }
   },
   "author": "Paweł Ostrowski <pawel.ostrowski@stxnext.pl>",
   "devDependencies": {
+    "@vue/test-utils": "^1.0.0-beta.18",
     "archiver": "^2.1.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
+    "babel-jest": "^23.0.1",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
@@ -33,6 +43,7 @@
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-friendly-formatter": "^3.0.0",
+    "eslint-import-resolver-webpack": "^0.10.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-html": "^3.2.2",
     "eslint-plugin-import": "^2.8.0",
@@ -45,6 +56,7 @@
     "html-webpack-plugin": "^2.30.1",
     "jest": "^22.4.3",
     "jest-localstorage-mock": "^2.2.0",
+    "jest-vue-preprocessor": "^1.4.0",
     "node-sass": "^4.9.0",
     "nodemon": "^1.12.1",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
