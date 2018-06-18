@@ -17,8 +17,20 @@ module.exports = {
   plugins: [
     'vue'
   ],
+  settings: {
+    'import/resolver': {
+      webpack: {
+        config: 'core/webpack.base.js'
+      }
+    }
+  },
   // add your custom rules here
-  'rules': {
+  rules: {
+    // don't require .vue extension when importing
+    'import/extensions': ['error', 'always', {
+      js: 'never',
+      vue: 'never'
+    }],
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
   }
