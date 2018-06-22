@@ -1,11 +1,21 @@
 <template>
   <el-container class="popup">
-    <div class="header">Clove sign Plugin</div>
+    <div class="header-container">
+      <div class="header">Clove sign Plugin</div>
+      <el-button
+        v-if="currentView === 'manage-keys' || currentView === 'sign-tx'"
+        @click="switchView('select-key')"
+        icon="el-icon-back">
+        Back
+      </el-button>
+    </div>
     <steps :step="step"/>
     <component
       :is="currentView"
       :storage="keyStorage"
-      v-on:unlocked="switchToSelectView"
+      @unlocked="switchView('select-key')"
+      @sign="switchView('sign-tx')"
+      @manage="switchView('manage-keys')"
     />
   </el-container>
 </template>
@@ -13,6 +23,8 @@
 import select from './components/selectKey';
 import steps from './components/steps';
 import unlock from './components/unlock';
+import signTx from './components/signTx';
+import manageKeys from './components/manageKeys';
 
 export default {
   data: () => ({
@@ -23,7 +35,7 @@ export default {
     step: function step() {
       if (this.currentView === 'unlock') {
         return 0;
-      } else if (this.currentView === 'select-key') {
+      } else if (this.currentView === 'select-key' || this.currentView === 'manage-keys') {
         return 1;
       }
       return 2;
@@ -38,14 +50,16 @@ export default {
     }
   },
   methods: {
-    switchToSelectView: function switchToSelectView() {
-      this.currentView = 'select-key';
+    switchView(value) {
+      this.currentView = value;
     },
   },
   components: {
     'select-key': select,
     unlock,
     steps,
+    'manage-keys': manageKeys,
+    'sign-tx': signTx,
   },
 };
 </script>
@@ -75,9 +89,12 @@ export default {
   font-family: 'Avenir';
 }
 
-.el-button--primary{
+.el-button {
   height: 40px;
   width: 120px;
+}
+
+.el-button--primary{
   background-color: #5368E7;
   border-color: #5368E7;
 }
@@ -92,6 +109,14 @@ export default {
    outline: 0;
 }
 
+.el-form-item {
+  margin: 0;
+}
+
+.el-form-item__error {
+  position: relative;
+}
+
 .popup {
   height: 480px;
   background-color: #FFFFFF;
@@ -99,10 +124,31 @@ export default {
   flex-direction: column;
 }
 
+.header-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .header {
   color: #0D8A4C;
   font-size: 20px;
   line-height: 32px;
   padding-bottom: 30px;
+}
+
+.input-description{
+  color: #7D7688;
+  font-size: 14px;
+  line-height: 40px;
+  margin: 0;
+}
+
+.short-input{
+  height: 40px;
+  width: 420px;
+}
+
+.long-input {
+  width: 550px;
 }
 </style>

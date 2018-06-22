@@ -5,11 +5,11 @@
     class="unlock"
     ref="form"
     status-icon>
-    <p class="input-description">Security password</p>
+    <p class="input-description password-description">Security password</p>
     <el-form-item prop="password">
       <el-input
         v-model="unlockForm.password"
-        class="password-input"
+        class="short-input"
         type="password"
         placeholder="Enter your password">
       </el-input>
@@ -77,15 +77,7 @@ export default {
   flex-direction: column;
 }
 
-.input-description{
-  color: #7D7688;
-  font-size: 14px;
-  line-height: 40px;
+.password-description{
   padding-top: 80px;
-}
-
-.password-input{
-  height: 40px;
-  width: 420px;
 }
 </style>

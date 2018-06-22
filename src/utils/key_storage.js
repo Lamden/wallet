@@ -70,6 +70,7 @@ exports.addKey = (networkSymbol, privateKey) => {
     CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
 
   localStorage.setItem('privKeys', encrypted);
+  return address;
 };
 
 exports.getPrivateKey = (networkSymbol, address) => {
@@ -92,4 +93,11 @@ exports.getAvailableKeys = () => {
     obj[key] = Object.keys(keys[key]).sort(); // eslint-disable-line no-param-reassign
     return obj;
   }, {});
+};
+
+exports.getSupportedNetworks = () => {
+  const btcNetworks = Object.keys(networks);
+  const ethNetworks = ['ETH', 'ETH-TESTNET'];
+
+  return btcNetworks.concat(ethNetworks).sort();
 };
