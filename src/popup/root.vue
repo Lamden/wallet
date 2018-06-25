@@ -1,13 +1,15 @@
 <template>
   <el-container class="popup">
-    <div class="header-container">
-      <div class="header">Clove sign Plugin</div>
-      <el-button
-        v-if="currentView === 'manage-keys' || currentView === 'sign-tx'"
-        @click="switchView('select-key')"
-        icon="el-icon-back">
-        Back
-      </el-button>
+    <div>
+      <div class="header-container">
+        <div class="header">Clove sign Plugin</div>
+        <el-button
+          v-if="currentView === 'manage-keys' || currentView === 'sign-tx'"
+          @click="switchView('select-key')"
+          icon="el-icon-back">
+          Back
+        </el-button>
+      </div>
     </div>
     <steps :step="step"/>
     <component

@@ -52,7 +52,7 @@ describe('addKey', () => {
   ['ETH', 'BTC'].forEach((network) => {
     test('throws an error if key is invalid', () => {
       keyStorage.unlockStorage('test_pass');
-      expect(() => keyStorage.addKey(network, 'invalid_key')).toThrow('Invalid private key.');
+      expect(() => keyStorage.addKey(network, 'invalid_key')).toThrow('Invalid private key');
     });
   });
   test('throws an error if network is not supported', () => {
