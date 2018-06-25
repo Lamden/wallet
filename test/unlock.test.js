@@ -28,7 +28,7 @@ describe('unlock.test.js', () => {
   });
 
   test('emits event on successful unlock', () => {
-    const input = wrapper.find('.password-input input');
+    const input = wrapper.find('.short-input input');
     const button = wrapper.find('.unlock button');
     input.setValue('12345');
     button.trigger('click');
@@ -36,7 +36,7 @@ describe('unlock.test.js', () => {
   });
 
   test('displays error on failed unlock', () => {
-    const input = wrapper.find('.password-input input');
+    const input = wrapper.find('.short-input input');
     const button = wrapper.find('.unlock button');
     input.setValue('1234');
     button.trigger('click');

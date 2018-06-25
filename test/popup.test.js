@@ -20,7 +20,12 @@ describe('popup.test.js', () => {
           }),
         },
       };
-      wrapper = mount(root, { localVue });
+      wrapper = mount(root, {
+        localVue,
+        stubs: {
+          'el-select': '<el-input></el-input>',
+        },
+      });
     });
 
     test('view set to unlock when storage is locked', () => {
@@ -28,7 +33,7 @@ describe('popup.test.js', () => {
     });
 
     test('view switch to select-key on successful unlock', () => {
-      const input = wrapper.find('.password-input input');
+      const input = wrapper.find('.short-input input');
       const button = wrapper.find('.unlock button');
       input.setValue('12345');
       button.trigger('click');
@@ -47,7 +52,12 @@ describe('popup.test.js', () => {
           }),
         },
       };
-      wrapper = mount(root, { localVue });
+      wrapper = mount(root, {
+        localVue,
+        stubs: {
+          'el-select': '<input/>',
+        },
+      });
     });
 
     test('view set to select-key when storage is unlocked', () => {
