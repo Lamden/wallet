@@ -14,27 +14,27 @@ exports.signEthereumTx = (rawTransaction = '', privateKey = '') => {
   const key = exports.getHexBuffer(privateKey);
 
   if (rawTx.length === 0) {
-    throw new Error('Missing or invalid transaction.');
+    throw new Error('Invalid transaction');
   }
 
   if (key.length === 0) {
-    throw new Error('Missing or invalid private key.');
+    throw new Error('Missing or invalid private key');
   }
 
   let ethTransaction;
   try {
     ethTransaction = new EthereumTx(rawTx);
   } catch (e) {
-    throw new Error('Invalid transaction.');
+    throw new Error('Invalid transaction');
   }
 
   try {
     ethTransaction.sign(key);
   } catch (e) {
     if (e instanceof RangeError) {
-      throw new Error('Invalid private key length.');
+      throw new Error('Invalid private key length');
     } else {
-      throw new Error('Signing failed.');
+      throw new Error('Signing failed');
     }
   }
   return ethTransaction.serialize().toString('hex');
@@ -44,7 +44,7 @@ exports.getBitcoinTx = (rawTransaction) => {
   try {
     return bitcoin.Transaction.fromHex(rawTransaction);
   } catch (e) {
-    throw new Error('Invalid transaction.');
+    throw new Error('Invalid transaction');
   }
 };
 
@@ -53,7 +53,7 @@ exports.getBitcoinKey = (privateKey, network) => {
     return bitcoin.ECPair.fromWIF(privateKey, network);
   } catch (e) {
     if (e.message === 'Invalid checksum' || e.message === 'Non-base58 character') {
-      throw new Error('Invalid private key.');
+      throw new Error('Invalid private key');
     }
     throw e;
   }

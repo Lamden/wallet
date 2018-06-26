@@ -53,7 +53,7 @@ exports.addKey = (networkSymbol, privateKey) => {
   if (networkSymbol.startsWith('ETH')) {
     key = sign.getHexBuffer(privateKey);
     if (key.length === 0) {
-      throw new Error('Invalid private key.');
+      throw new Error('Invalid private key');
     }
     address = ethUtil.privateToAddress(key).toString('hex');
   } else if (networkSymbol in networks) {

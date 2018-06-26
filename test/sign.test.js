@@ -31,19 +31,19 @@ describe('signEthereumTx', () => {
     expect(signedTx).toMatch(txData);
   });
   test('throws error on invalid private key with correct length', () => {
-    expect(() => sign.signEthereumTx(tx, ''.padEnd(64, '0'))).toThrow('Signing failed.');
+    expect(() => sign.signEthereumTx(tx, ''.padEnd(64, '0'))).toThrow('Signing failed');
   });
   test('throws error on invalid private key with incorrect length', () => {
-    expect(() => sign.signEthereumTx(tx, 'non_hex_key')).toThrow('Missing or invalid private key.');
+    expect(() => sign.signEthereumTx(tx, 'non_hex_key')).toThrow('Missing or invalid private key');
   });
   test('throws error on missing private key', () => {
-    expect(() => sign.signEthereumTx(tx)).toThrow('Missing or invalid private key.');
+    expect(() => sign.signEthereumTx(tx)).toThrow('Missing or invalid private key');
   });
   test('throws error on invalid transaction', () => {
-    expect(() => sign.signEthereumTx('01234', privateKey)).toThrow('Invalid transaction.');
+    expect(() => sign.signEthereumTx('01234', privateKey)).toThrow('Invalid transaction');
   });
   test('throws error on missing transaction', () => {
-    expect(() => sign.signEthereumTx('', privateKey)).toThrow('Missing or invalid transaction.');
+    expect(() => sign.signEthereumTx('', privateKey)).toThrow('Invalid transaction');
   });
 });
 
@@ -56,7 +56,7 @@ describe('getBitcoinKey', () => {
     expect(key.getAddress()).toBe('msJ2ucZ2NDhpVzsiNE5mGUFzqFDggjBVTM');
   });
   test('throws error on invalid private key', () => {
-    expect(() => sign.getBitcoinKey('non_hex_key', btc)).toThrow('Invalid private key.');
+    expect(() => sign.getBitcoinKey('non_hex_key', btc)).toThrow('Invalid private key');
   });
 });
 
@@ -79,7 +79,7 @@ describe('getBitcoinTx', () => {
     expect(bitcoinTx.ins[0].index).toBe(1);
   });
   test('throws error on invalid transaction', () => {
-    expect(() => sign.getBitcoinTx('non_hex_tx')).toThrow('Invalid transaction.');
+    expect(() => sign.getBitcoinTx('non_hex_tx')).toThrow('Invalid transaction');
   });
 });
 
@@ -111,10 +111,10 @@ describe('signBitcoinTx', () => {
     expect(signedTx).toBe(signedTwiceTx);
   });
   test('throws error on invalid transaction', () => {
-    expect(() => sign.signBitcoinTx('non_hex_tx', privateKey, btc)).toThrow('Invalid transaction.');
+    expect(() => sign.signBitcoinTx('non_hex_tx', privateKey, btc)).toThrow('Invalid transaction');
   });
   test('throws error on invalid private key', () => {
-    expect(() => sign.signBitcoinTx(p2pkhTx, 'non_hex_key', btc)).toThrow('Invalid private key.');
+    expect(() => sign.signBitcoinTx(p2pkhTx, 'non_hex_key', btc)).toThrow('Invalid private key');
   });
   test('throws error on not matching private key and network', () => {
     expect(() => sign.signBitcoinTx(p2pkhTx, privateKey, networks.LTC)).toThrow('Invalid network version');
