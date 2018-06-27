@@ -1,16 +1,18 @@
 <template>
   <el-form
     :model="unlockForm"
-    :rules="rules"
     class="unlock"
-    ref="form"
+    @submit.native.prevent
     status-icon>
     <p class="input-description password-description">Security password</p>
-    <el-form-item prop="password">
+    <el-form-item prop="password" :error="error">
       <el-input
         v-model="unlockForm.password"
+        @input="resetError"
         class="short-input"
         type="password"
+        autofocus
+        @keyup.enter.native="submit"
         placeholder="Enter your password">
       </el-input>
       <el-button
@@ -23,26 +25,15 @@
   </el-form>
 </template>
 <script>
+import errorMixin from '../mixins/error';
+
 export default {
   props: ['storage'],
+  mixins: [errorMixin],
   data() {
-    const validatePassword = (rule, value, callback) => {
-      const unlocked = this.unlock();
-      if (unlocked) {
-        callback();
-      } else {
-        callback(new Error('Incorrect password'));
-      }
-    };
-
     return {
       unlockForm: {
         password: '',
-      },
-      rules: {
-        password: [
-          { validator: validatePassword, trigger: 'none' },
-        ],
       },
     };
   },
@@ -52,21 +43,13 @@ export default {
     },
   },
   methods: {
-    unlock: function unlock() {
+    submit: function submit() {
       try {
         this.storage.unlockStorage(this.unlockForm.password);
-        return true;
+        this.$emit('select');
       } catch (e) {
-        return false;
+        this.setError('Incorrect password');
       }
-    },
-    submit: function submit() {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          this.$emit('unlocked');
-        }
-        return false;
-      });
     },
   },
 };

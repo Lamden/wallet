@@ -25,6 +25,13 @@ function getPrivateKeys() {
   }
 }
 
+function savePrivateKeys(keys) {
+  const encrypted =
+    CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
+
+  localStorage.setItem('privKeys', encrypted);
+}
+
 exports.unlockStorage = (pass) => {
   password = pass;
   try {
@@ -66,10 +73,7 @@ exports.addKey = (networkSymbol, privateKey) => {
   keys[networkSymbol] = keys[networkSymbol] || {};
   keys[networkSymbol][address] = privateKey;
 
-  const encrypted =
-    CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
-
-  localStorage.setItem('privKeys', encrypted);
+  savePrivateKeys(keys);
   return address;
 };
 
@@ -82,6 +86,21 @@ exports.getPrivateKey = (networkSymbol, address) => {
     throw new Error('Key not found');
   }
   return keys[networkSymbol][address];
+};
+
+exports.removePrivateKey = (networkSymbol, address) => {
+  if (password === undefined) {
+    throw new Error('Storage is locked');
+  }
+  const keys = getPrivateKeys();
+  if (keys[networkSymbol] === undefined || keys[networkSymbol][address] === undefined) {
+    throw new Error('Key not found');
+  }
+  delete keys[networkSymbol][address];
+  if (Object.keys(keys[networkSymbol]).length === 0) {
+    delete keys[networkSymbol];
+  }
+  savePrivateKeys(keys);
 };
 
 exports.getAvailableKeys = () => {

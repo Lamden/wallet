@@ -32,7 +32,7 @@ describe('unlock.test.js', () => {
     const button = wrapper.find('.unlock button');
     input.setValue('12345');
     button.trigger('click');
-    expect(wrapper.emitted().unlocked).toBeTruthy();
+    expect(wrapper.emitted().select).toBeTruthy();
   });
 
   test('displays error on failed unlock', () => {

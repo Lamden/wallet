@@ -1,55 +1,69 @@
 <template>
   <div>
-    <el-form
-      :model="signForm"
-      :rules="rules"
-      ref="form">
-    <p class="input-description">Unsigned transaction</p>
-    <el-form-item prop="unsignedTransaction">
-      <el-input
-        type="textarea"
-        class="long-input"
-        :autosize="{ minRows: 3 }"
-        :readonly="signForm.signedTransaction.length > 0"
-        placeholder="Paste unsigned transaction"
-        v-model="signForm.unsignedTransaction"
-      />
-    </el-form-item>
-    <p class="input-description">Signed transaction</p>
-    <el-form-item prop="signedTransaction">
-      <el-input
-        type="textarea"
-        class="long-input"
-        :autosize="{ minRows: 3 }"
-        readonly="true"
-        placeholder="Waiting for input"
-        v-model="signForm.signedTransaction"
-      />
-    </el-form-item>
-    <el-button
-      type="primary"
-      class="submit-button"
-      :disabled="isSubmitButtonDisabled"
-      v-if="!signForm.signedTransaction"
-      @click="sign">
-      Sign
-    </el-button>
-    <el-button
-      class="copy-button"
-      v-if="signForm.signedTransaction"
-      v-clipboard:copy="signForm.signedTransaction">
-      Copy to clipboard
-    </el-button>
-  </el-form>
+    <el-form :model="signForm" >
+      <p class="input-description">Unsigned transaction</p>
+      <el-form-item prop="unsignedTransaction" :error="error">
+        <el-input
+          type="textarea"
+          class="long-input"
+          @change="resetError"
+          @input="resetError"
+          :autosize="{ minRows: 3 }"
+          :readonly="signForm.signedTransaction.length > 0"
+          placeholder="Paste unsigned transaction"
+          v-model="signForm.unsignedTransaction"
+        />
+      </el-form-item>
+      <p class="input-description">Signed transaction</p>
+      <el-form-item prop="signedTransaction">
+        <el-input
+          type="textarea"
+          class="long-input"
+          :autosize="{ minRows: 3 }"
+          readonly="true"
+          placeholder="Waiting for input"
+          v-model="signForm.signedTransaction"
+        />
+      </el-form-item>
+      <el-button
+        type="primary"
+        class="submit-button"
+        :disabled="isSubmitButtonDisabled"
+        v-if="!signForm.signedTransaction"
+        @click="sign">
+        Sign
+      </el-button>
+      <el-button
+        class="copy-button auto-width"
+        v-if="signForm.signedTransaction"
+        v-clipboard:copy="signForm.signedTransaction">
+        Copy to clipboard
+      </el-button>
+    </el-form>
   </div>
 </template>
 <script>
 import sign from '../../utils/sign';
+import errorMixin from '../mixins/error';
 
 export default {
   props: ['storage'],
+  mixins: [errorMixin],
   data() {
-    const signTransaction = (rule, value, callback) => {
+    return {
+      signForm: {
+        unsignedTransaction: '',
+        signedTransaction: '',
+      },
+    };
+  },
+  computed: {
+    isSubmitButtonDisabled() {
+      return !this.signForm.unsignedTransaction;
+    },
+  },
+  methods: {
+    sign() {
       const network = localStorage.getItem('lastNetwork');
       const address = localStorage.getItem('lastAddress');
 
@@ -65,39 +79,14 @@ export default {
         if (errorMsg === 'Invalid hex string') {
           errorMsg = 'Invalid transaction';
         }
-        callback(new Error(errorMsg));
+        this.setError(errorMsg);
       }
-
-      callback();
-    };
-
-    return {
-      signForm: {
-        unsignedTransaction: '',
-        signedTransaction: '',
-      },
-      rules: {
-        unsignedTransaction: [
-          { validator: signTransaction, trigger: 'none' },
-        ],
-      },
-    };
-  },
-  computed: {
-    isSubmitButtonDisabled() {
-      return !this.signForm.unsignedTransaction;
-    },
-  },
-  methods: {
-    sign() {
-      this.$refs.form.validate();
     },
   },
 };
 </script>
 <style>
 .copy-button {
-  width: auto;
   display: flex;
   margin: 30px 15px 15px auto;
 }
