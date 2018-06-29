@@ -3,19 +3,13 @@
     <div>
       <div class="header-container">
         <div class="header">Clove sign Plugin</div>
-        <el-button
-          v-if="currentView === 'manage-keys' || currentView === 'sign-tx'"
-          @click="switchView('select-key')"
-          icon="el-icon-back">
-          Back
-        </el-button>
       </div>
     </div>
     <steps :step="step"/>
     <component
       :is="currentView"
       :storage="keyStorage"
-      @unlocked="switchView('select-key')"
+      @select="switchView('select-key')"
       @sign="switchView('sign-tx')"
       @manage="switchView('manage-keys')"
     />
@@ -152,5 +146,9 @@ export default {
 
 .long-input {
   width: 550px;
+}
+
+.auto-width {
+  width: auto;
 }
 </style>
