@@ -12,7 +12,7 @@ module.exports = merge(baseWebpack, {
   },
   devtool: '#cheap-module-eval-source-map',
   plugins: [
-    htmlPage('popup', 'popup', ['popup']),
+    htmlPage('Clove sign Plugin', 'popup', ['popup']),
     htmlPage('background', 'background', ['background']),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({

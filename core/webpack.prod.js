@@ -13,7 +13,7 @@ module.exports = merge(baseWebpack, {
     rules: styleLoaders({ extract: true, sourceMap: true })
   },
   plugins: [
-    htmlPage('popup', 'popup', ['manifest', 'vendor', 'popup']),
+    htmlPage('Clove sign Plugin', 'popup', ['manifest', 'vendor', 'popup']),
     htmlPage('background', 'background', ['manifest', 'vendor', 'background']),
     new CleanWebpackPlugin(['build/*.*']),
     new webpack.NoEmitOnErrorsPlugin(),

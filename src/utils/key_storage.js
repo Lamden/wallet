@@ -1,6 +1,7 @@
 /* global localStorage */
 const ethUtil = require('ethereumjs-util');
-const networks = require('./bitcoin_networks');
+const btcNetworks = require('./bitcoin_networks');
+const ethNetworks = require('./ethereum_networks');
 const nodeCryptoJs = require('node-cryptojs-aes');
 const sign = require('./sign');
 
@@ -57,14 +58,14 @@ exports.addKey = (networkSymbol, privateKey) => {
   let address;
   let key;
 
-  if (networkSymbol.startsWith('ETH')) {
+  if (ethNetworks.includes(networkSymbol)) {
     key = sign.getHexBuffer(privateKey);
     if (key.length === 0) {
       throw new Error('Invalid private key');
     }
     address = ethUtil.privateToAddress(key).toString('hex');
-  } else if (networkSymbol in networks) {
-    key = sign.getBitcoinKey(privateKey, networks[networkSymbol]);
+  } else if (networkSymbol in btcNetworks) {
+    key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
     address = key.getAddress();
   } else {
     throw new Error(`${networkSymbol} network is not supported`);
@@ -114,9 +115,4 @@ exports.getAvailableKeys = () => {
   }, {});
 };
 
-exports.getSupportedNetworks = () => {
-  const btcNetworks = Object.keys(networks);
-  const ethNetworks = ['ETH', 'ETH-TESTNET'];
-
-  return btcNetworks.concat(ethNetworks).sort();
-};
+exports.getSupportedNetworks = () => Object.keys(btcNetworks).concat(ethNetworks).sort();
