@@ -5,7 +5,7 @@
         <div class="header">Clove sign Plugin</div>
       </div>
     </div>
-    <steps :step="step"/>
+    <steps v-if="currentView!=='confirm'" :step="step"/>
     <component
       :is="currentView"
       :storage="keyStorage"
@@ -16,6 +16,7 @@
   </el-container>
 </template>
 <script>
+import confirm from './components/confirm';
 import select from './components/selectKey';
 import steps from './components/steps';
 import unlock from './components/unlock';
@@ -44,6 +45,9 @@ export default {
     } catch (e) {
       this.currentView = 'unlock';
     }
+    if (window.location.hash === '#confirm') {
+      this.currentView = 'confirm';
+    }
   },
   methods: {
     switchView(value) {
@@ -52,6 +56,7 @@ export default {
   },
   components: {
     'select-key': select,
+    confirm,
     unlock,
     steps,
     'manage-keys': manageKeys,

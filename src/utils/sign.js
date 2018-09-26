@@ -1,6 +1,7 @@
 const bitcoin = require('bitcoinjs-lib');
 const EthereumTx = require('ethereumjs-tx');
-const networks = require('./bitcoin_networks');
+const btcNetworks = require('./bitcoin_networks');
+const ethNetworks = require('./ethereum_networks');
 
 // eslint-disable-next-line arrow-body-style
 exports.stripHexPrefix = (hexString) => {
@@ -98,12 +99,12 @@ exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
 };
 
 exports.signTx = (rawTransaction = '', privateKey = '', networkSymbol = '') => {
-  if (networkSymbol.startsWith('ETH')) {
+  if (ethNetworks.includes(networkSymbol)) {
     return exports.signEthereumTx(rawTransaction, privateKey);
   }
 
-  if (networkSymbol in networks) {
-    return exports.signBitcoinTx(rawTransaction, privateKey, networks[networkSymbol]);
+  if (networkSymbol in btcNetworks) {
+    return exports.signBitcoinTx(rawTransaction, privateKey, btcNetworks[networkSymbol]);
   }
 
   throw new Error(`${networkSymbol} network is not supported`);

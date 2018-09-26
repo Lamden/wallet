@@ -9,6 +9,7 @@ module.exports = {
   entry: {
     popup: resolve('./popup'),
     background: resolve('./backend'),
+    content: resolve('./content'),
   },
   output: {
     path: path.join(__dirname, '..', 'build'),
