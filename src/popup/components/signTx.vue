@@ -20,7 +20,7 @@
           type="textarea"
           class="long-input"
           :autosize="{ minRows: 3 }"
-          readonly="true"
+          :readonly="true"
           placeholder="Waiting for input"
           v-model="signForm.signedTransaction"
         />
