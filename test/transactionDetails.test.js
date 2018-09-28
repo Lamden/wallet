@@ -76,7 +76,7 @@ describe('tranasctionDetails.test.js', () => {
         },
         {
           label: wrapper.vm.labels.expirationDate,
-          value: '2018-08-30T08:46:04.000Z',
+          value: '2018-08-30 08:46:04 (UTC)',
         },
       ];
 
@@ -107,7 +107,7 @@ describe('tranasctionDetails.test.js', () => {
         },
         {
           label: wrapper.vm.labels.expirationDate,
-          value: '2018-09-27T15:01:27.000Z',
+          value: '2018-09-27 15:01:27 (UTC)',
         },
       ];
 

@@ -143,7 +143,8 @@ export default {
     },
     getDateFromStringTimestamp(timestamp) {
       const date = new Date(parseInt(timestamp, 10) * 1000);
-      return date.toISOString();
+      const isoString = date.toISOString();
+      return isoString.replace('T', ' ').replace('.000Z', ' (UTC)');
     },
   },
 };
