@@ -1,8 +1,8 @@
 <template>
   <div>
     <h2>Confirm signing transaction</h2>
+    <tx-details class='details-table' :signData="signData" />
     <el-form :model="signData" >
-      <p class="input-description">Unsigned transaction</p>
       <el-form-item prop="rawTx">
         <el-input
           type="textarea"
@@ -23,6 +23,7 @@
   </div>
 </template>
 <script>
+import transactionDetails from './transactionDetails';
 import sign from '../../utils/sign';
 
 export default {
@@ -33,6 +34,9 @@ export default {
         rawTx: '',
       },
     };
+  },
+  components: {
+    'tx-details': transactionDetails,
   },
   created() {
     chrome.runtime.sendMessage({ type: 'popup-ready' }, (response) => {
@@ -81,6 +85,10 @@ export default {
 </script>
 <style>
 .submit-button {
-  margin-top: 30px;
+  margin: 30px 0;
+}
+
+.details-table {
+  margin: 10px 0;
 }
 </style>

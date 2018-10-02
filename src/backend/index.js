@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       tabId: sender.tab.id,
     };
 
-    window.open('popup.html#confirm', 'confirmation_popup', 'width=620,height=500,status=no,scrollbars=yes,resizable=yes');
+    window.open('popup.html#confirm', 'confirmation_popup', 'width=620,height=700,status=no,scrollbars=yes,resizable=yes');
   }
 });
 

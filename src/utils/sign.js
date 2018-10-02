@@ -10,24 +10,28 @@ exports.stripHexPrefix = (hexString) => {
 
 exports.getHexBuffer = hexstring => Buffer.from(exports.stripHexPrefix(hexstring), 'hex');
 
-exports.signEthereumTx = (rawTransaction = '', privateKey = '') => {
+exports.getEthereumTx = (rawTransaction) => {
   const rawTx = exports.getHexBuffer(rawTransaction);
-  const key = exports.getHexBuffer(privateKey);
 
   if (rawTx.length === 0) {
     throw new Error('Invalid transaction');
   }
 
+  try {
+    return new EthereumTx(rawTx);
+  } catch (e) {
+    throw new Error('Invalid transaction');
+  }
+};
+
+exports.signEthereumTx = (rawTransaction = '', privateKey = '') => {
+  const key = exports.getHexBuffer(privateKey);
+
   if (key.length === 0) {
     throw new Error('Missing or invalid private key');
   }
 
-  let ethTransaction;
-  try {
-    ethTransaction = new EthereumTx(rawTx);
-  } catch (e) {
-    throw new Error('Invalid transaction');
-  }
+  const ethTransaction = exports.getEthereumTx(rawTransaction);
 
   try {
     ethTransaction.sign(key);
