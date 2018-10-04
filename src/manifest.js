@@ -23,7 +23,11 @@ module.exports = {
     page: 'pages/background.html',
   },
   content_scripts: [{
-    js: ['js/content.js'],
+    js: [
+      'js/manifest.js',
+      'js/vendor.js',
+      'js/content.js',
+    ],
     run_at: 'document_end',
     matches: ['<all_urls>'],
     all_frames: true,
