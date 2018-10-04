@@ -17,7 +17,7 @@ let signData = {};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'sign') {
-    const { network, rawTx } = message;
+    const { network, rawTx, contract } = message;
     let { address } = message;
 
     if (ethNetworks.includes(network)) {
@@ -33,6 +33,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     signData = {
       address,
+      contract,
       network,
       rawTx,
       tabId: sender.tab.id,
