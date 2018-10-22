@@ -139,8 +139,3 @@ export default {
   },
 };
 </script>
-<style>
-.submit-button {
-  margin-top: 30px;
-}
-</style>

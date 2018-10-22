@@ -84,10 +84,6 @@ export default {
 };
 </script>
 <style>
-.submit-button {
-  margin: 30px 0;
-}
-
 .details-table {
   margin: 10px 0;
 }

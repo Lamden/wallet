@@ -15,3 +15,11 @@ chrome.runtime.onMessage.addListener((message) => {
     document.dispatchEvent(new CustomEvent('signedTx', { detail: message }));
   }
 });
+
+function confirmInstalled() {
+  document.dispatchEvent(new CustomEvent('signPluginInstalled'));
+}
+
+document.addEventListener('signPluginCheck', () => {
+  confirmInstalled();
+});

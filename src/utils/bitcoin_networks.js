@@ -76,28 +76,6 @@ module.exports = {
     scriptHash: 0xc4,
     wif: 0xef,
   },
-  BCH: {
-    messagePrefix: '',
-    bech32: '',
-    bip32: {
-      public: 0x0,
-      private: 0x0,
-    },
-    pubKeyHash: 0x0,
-    scriptHash: 0x5,
-    wif: 0x80,
-  },
-  'BCH-TESTNET': {
-    messagePrefix: '',
-    bech32: '',
-    bip32: {
-      public: 0x0,
-      private: 0x0,
-    },
-    pubKeyHash: 0x6f,
-    scriptHash: 0xc4,
-    wif: 0xef,
-  },
   BTG: {
     messagePrefix: '',
     bech32: '',

@@ -31,46 +31,32 @@ describe('unlock.test.js', () => {
   });
 
   test('signs transaction', () => {
-    const button = wrapper.find('.submit-button');
     const unsignedTxInput = wrapper.find('textarea');
     const signedTxInput = wrapper.findAll('textarea').at(1);
 
     unsignedTxInput.element.value = tx;
     unsignedTxInput.trigger('input');
 
-    button.trigger('click');
-
     expect(signedTxInput.element.value.length).toBeGreaterThan(tx.length);
     expect(signedTxInput.element.value).toMatch(txData);
   });
 
-  test('shows copy to clipboard button instead of sign button after successful signing', () => {
-    const button = wrapper.find('.submit-button');
+  test('shows copy to clipboard and send to web page buttons after successful signing', () => {
     const unsignedTxInput = wrapper.find('textarea');
 
     unsignedTxInput.element.value = tx;
     unsignedTxInput.trigger('input');
 
-    button.trigger('click');
-
-    expect(wrapper.find('.copy-button').exists()).toBe(true);
-    expect(wrapper.find('.submit-button').exists()).toBe(false);
-  });
-
-  test('enables button when unsigned transaction is given', () => {
-    expect(wrapper.find('.submit-button').element.disabled).toBe(true);
-    const input = wrapper.find('textarea');
-    input.element.value = 'invalid_tx';
-    input.trigger('input');
-    expect(wrapper.find('.submit-button').element.disabled).toBe(false);
+    expect(wrapper.findAll('.action-button').wrappers.map(item => item.text())).toEqual([
+      'Send to web page',
+      'Copy to clipboard',
+    ]);
   });
 
   test('displays error on failed signing', () => {
     const input = wrapper.find('textarea');
-    const button = wrapper.find('.submit-button');
     input.element.value = 'invalid_tx';
     input.trigger('input');
-    button.trigger('click');
     expect(wrapper.find('.el-form-item__error').text()).toEqual('Invalid transaction');
   });
 });

@@ -6,10 +6,9 @@
         <el-input
           type="textarea"
           class="long-input"
-          @change="resetError"
-          @input="resetError"
+          @change="sign"
+          @input="sign"
           :autosize="{ minRows: 3 }"
-          :readonly="signForm.signedTransaction.length > 0"
           placeholder="Paste unsigned transaction"
           v-model="signForm.unsignedTransaction"
         />
@@ -25,20 +24,18 @@
           v-model="signForm.signedTransaction"
         />
       </el-form-item>
-      <el-button
-        type="primary"
-        class="submit-button"
-        :disabled="isSubmitButtonDisabled"
-        v-if="!signForm.signedTransaction"
-        @click="sign">
-        Sign
-      </el-button>
-      <el-button
-        class="copy-button auto-width"
-        v-if="signForm.signedTransaction"
-        v-clipboard:copy="signForm.signedTransaction">
-        Copy to clipboard
-      </el-button>
+      <div class="buttons" v-if="signForm.signedTransaction">
+        <el-button
+          class="action-button auto-width"
+          @click="sendToWebPage">
+          Send to web page
+        </el-button>
+        <el-button
+          class="action-button auto-width"
+          v-clipboard:copy="signForm.signedTransaction">
+          Copy to clipboard
+        </el-button>
+      </div>
     </el-form>
   </div>
 </template>
@@ -64,6 +61,11 @@ export default {
   },
   methods: {
     sign() {
+      if (this.signForm.unsignedTransaction.length === 0) {
+        this.resetError();
+        return;
+      }
+
       const network = localStorage.getItem('lastNetwork');
       const address = localStorage.getItem('lastAddress');
 
@@ -74,20 +76,31 @@ export default {
           key,
           network,
         );
+        this.resetError();
       } catch (e) {
         let errorMsg = e.message;
         if (errorMsg === 'Invalid hex string') {
           errorMsg = 'Invalid transaction';
         }
         this.setError(errorMsg);
+        this.signForm.signedTransaction = '';
       }
+    },
+    sendSignedTxMsg(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { type: 'signedTx', signedTx: this.signForm.signedTransaction });
+    },
+    sendToWebPage() {
+      chrome.tabs.query({ active: true, currentWindow: true }, this.sendSignedTxMsg);
     },
   },
 };
 </script>
 <style>
-.copy-button {
+.action-button {
+  margin: 30px 15px 30px auto;
+}
+
+.buttons {
   display: flex;
-  margin: 30px 15px 15px auto;
 }
 </style>

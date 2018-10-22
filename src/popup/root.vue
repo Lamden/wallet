@@ -156,4 +156,8 @@ export default {
 .auto-width {
   width: auto;
 }
+
+.submit-button {
+  margin: 30px 0;
+}
 </style>
