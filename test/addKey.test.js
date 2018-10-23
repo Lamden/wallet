@@ -44,13 +44,14 @@ describe('addKey.test.js', () => {
       addKeyForm: {
         network: 'ETH-TESTNET',
         privateKey: '3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266',
+        label: 'Alice',
       },
     });
     wrapper.vm.$forceUpdate();
     wrapper.find('#add-key-btn').trigger('click');
     expect(storage.getAvailableKeys()).toEqual({
       'ETH-TESTNET': [
-        'c2d7cf95645d33006175b78989035c7c9061d3f9',
+        { address: 'c2d7cf95645d33006175b78989035c7c9061d3f9', label: 'Alice' },
       ],
     });
   });

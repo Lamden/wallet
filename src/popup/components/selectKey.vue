@@ -38,9 +38,9 @@
           placeholder="Select wallet address">
             <el-option
               v-for="item in addresses"
-              :key="item"
-              :label="item"
-              :value="item">
+              :key="item.address"
+              :label="item.label ? `${item.label} (${item.address})` : item.address"
+              :value="item.address">
             </el-option>
         </el-select>
       </el-form-item>
@@ -84,15 +84,14 @@ export default {
     },
     addresses() {
       if (this.selectKeyForm.network in this.availableKeys) {
-        const addressesList = this.availableKeys[this.selectKeyForm.network];
-        return addressesList.sort();
+        return this.availableKeys[this.selectKeyForm.network];
       }
       return [];
     },
   },
   methods: {
     handleNetworkChange() {
-      [this.selectKeyForm.address] = this.addresses;
+      this.selectKeyForm.address = this.addresses[0].address;
       this.setLastUsedValues();
     },
     calculateAvailable() {
@@ -113,11 +112,11 @@ export default {
         if (lastAddress && this.addresses.indexOf(lastAddress) > -1) {
           this.selectKeyForm.address = lastAddress;
         } else {
-          [this.selectKeyForm.address] = this.addresses;
+          this.selectKeyForm.address = this.addresses[0].address;
         }
       } else {
         [this.selectKeyForm.network] = this.networksList;
-        [this.selectKeyForm.address] = this.addresses;
+        this.selectKeyForm.address = this.addresses[0] ? this.addresses[0].address : '';
       }
     },
     submit() {

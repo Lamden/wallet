@@ -31,9 +31,9 @@
             placeholder="Select wallet address">
               <el-option
                 v-for="item in addresses"
-                :key="item"
-                :label="item"
-                :value="item">
+                :key="item.address"
+                :label="item.label ? `${item.label} (${item.address})` : item.address"
+                :value="item.address">
               </el-option>
           </el-select>
         </el-form-item>
@@ -104,7 +104,7 @@ export default {
       if (!(this.removeKeyForm.network in this.availableKeys)) {
         [this.removeKeyForm.network] = this.networksList;
       }
-      [this.removeKeyForm.address] = this.addresses;
+      this.removeKeyForm.address = this.addresses[0] ? this.addresses[0].address : '';
     },
     remove() {
       this.storage.removePrivateKey(this.removeKeyForm.network, this.removeKeyForm.address);
@@ -116,7 +116,7 @@ export default {
       }
     },
     handleNetworkChange() {
-      [this.removeKeyForm.address] = this.addresses;
+      this.removeKeyForm.address = this.addresses[0].address;
     },
     successMessage() {
       this.$message({
@@ -141,7 +141,7 @@ export default {
 }
 
 .row-up {
-  margin-top: -40px;
+  margin-top: -70px;
 }
 
 .centered-message {

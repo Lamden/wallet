@@ -51,7 +51,7 @@ exports.lockStorage = () => {
   password = undefined;
 };
 
-exports.addKey = (networkSymbol, privateKey) => {
+exports.addKey = (networkSymbol, privateKey, label = '') => {
   if (password === undefined) {
     throw new Error('Storage is locked');
   }
@@ -72,7 +72,10 @@ exports.addKey = (networkSymbol, privateKey) => {
   }
   const keys = getPrivateKeys();
   keys[networkSymbol] = keys[networkSymbol] || {};
-  keys[networkSymbol][address] = privateKey;
+  keys[networkSymbol][address] = {
+    privateKey,
+    label,
+  };
 
   savePrivateKeys(keys);
   return address;
@@ -86,7 +89,7 @@ exports.getPrivateKey = (networkSymbol, address) => {
   if (keys[networkSymbol] === undefined || keys[networkSymbol][address] === undefined) {
     throw new Error('Key not found');
   }
-  return keys[networkSymbol][address];
+  return keys[networkSymbol][address].privateKey;
 };
 
 exports.removePrivateKey = (networkSymbol, address) => {
@@ -110,7 +113,22 @@ exports.getAvailableKeys = () => {
   }
   const keys = getPrivateKeys();
   return Object.keys(keys).sort().reduce((obj, key) => {
-    obj[key] = Object.keys(keys[key]).sort(); // eslint-disable-line no-param-reassign
+    // eslint-disable-next-line no-param-reassign
+    obj[key] = Object.keys(keys[key]).map(address => ({
+      address,
+      label: keys[key][address].label || '',
+    })).sort((keyA, keyB) => {
+      const keyDiff = keyA.address.localeCompare(keyB.address);
+      if (keyA.label && keyB.label) {
+        const labelDiff = keyA.label.localeCompare(keyB.label);
+        return labelDiff === 0 ? keyDiff : labelDiff;
+      } else if (keyA.label) {
+        return -1;
+      } else if (keyB.label) {
+        return 1;
+      }
+      return keyDiff;
+    });
     return obj;
   }, {});
 };
