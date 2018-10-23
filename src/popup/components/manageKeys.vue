@@ -123,6 +123,7 @@ export default {
         message: 'Your key was successfully added!',
         type: 'success',
         customClass: 'centered-message',
+        duration: 1000,
       });
     },
   },
