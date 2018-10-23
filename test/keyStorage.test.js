@@ -20,11 +20,11 @@ describe('getAvailableKeys', () => {
   });
   test('returns networks and list of addresses for all added private keys', () => {
     keyStorage.unlockStorage('test_pass');
-    keyStorage.addKey('ETH-TESTNET', ethTestKey);
-    keyStorage.addKey('BTC-TESTNET', btcTestKey);
+    keyStorage.addKey('ETH-TESTNET', ethTestKey, 'Alice');
+    keyStorage.addKey('BTC-TESTNET', btcTestKey, 'Bob');
     expect(keyStorage.getAvailableKeys()).toEqual({
-      'BTC-TESTNET': [btcAddress],
-      'ETH-TESTNET': [ethAddress],
+      'BTC-TESTNET': [{ address: btcAddress, label: 'Bob' }],
+      'ETH-TESTNET': [{ address: ethAddress, label: 'Alice' }],
     });
   });
 });
@@ -43,7 +43,7 @@ describe('addKey', () => {
     keyStorage.unlockStorage('test_pass');
     keyStorage.addKey('ETH-TESTNET', ethTestKey);
     expect(keyStorage.getAvailableKeys()).toEqual({
-      'ETH-TESTNET': [ethAddress],
+      'ETH-TESTNET': [{ address: ethAddress, label: '' }],
     });
   });
   test('throws an error if storage is locked', () => {

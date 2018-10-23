@@ -18,6 +18,14 @@
             </el-option>
         </el-select>
       </el-form-item>
+      <p class="input-description">Label (optional)</p>
+      <el-form-item prop="label">
+        <el-input
+          v-model="addKeyForm.label"
+          class="long-input"
+          maxlength="20"
+          placeholder="Enter label" />
+      </el-form-item>
       <p class="input-description">Private Key</p>
       <el-form-item prop="privateKey" :error="error">
         <el-input
@@ -55,6 +63,7 @@ export default {
       addKeyForm: {
         network: '',
         privateKey: '',
+        label: '',
       },
       networksList: this.storage.getSupportedNetworks(),
     };
@@ -69,6 +78,7 @@ export default {
       const address = this.storage.addKey(
         this.addKeyForm.network,
         this.addKeyForm.privateKey,
+        this.addKeyForm.label,
       );
       this.setLastNetwork(this.addKeyForm.network);
       this.setLastAddress(address);
@@ -77,6 +87,7 @@ export default {
       try {
         this.addKeyToStorage();
         this.addKeyForm.privateKey = '';
+        this.addKeyForm.label = '';
         this.$emit('added');
       } catch (e) {
         this.setError('Invalid private key');
