@@ -39,7 +39,8 @@ export default {
     },
   },
   created() {
-    this.keyStorage = chrome.extension.getBackgroundPage().keyStorage;
+    this.keyStorage = Object.assign({}, chrome.extension.getBackgroundPage().keyStorage);
+
     try {
       this.keyStorage.getAvailableKeys();
     } catch (e) {
@@ -119,7 +120,7 @@ export default {
 }
 
 .popup {
-  height: 480px;
+  height: 515px;
   background-color: #FFFFFF;
   padding: 30px;
   flex-direction: column;
