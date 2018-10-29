@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     try {
       window.keyStorage.getPrivateKey(network, address);
     } catch (e) {
-      sendResponse({ error: e.message });
+      sendResponse({ type: 'signedTx', error: e.message });
       return;
     }
 
@@ -39,7 +39,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       tabId: sender.tab.id,
     };
 
-    window.open('popup.html#confirm', 'confirmation_popup', 'width=620,height=700,status=no,scrollbars=yes,resizable=yes');
+    chrome.windows.create({
+      url: '/pages/popup.html#confirm', width: 620, height: 700, type: 'popup',
+    });
   }
 });
 

@@ -27,14 +27,17 @@ To sign transaction dispatch an `signTx` event with `network`, `address` and `ra
     }));
 
 The plugin will respond with `signedTx` event. If the signing is successful the signed transaction will be returned in
-`event.detail.signedTx`. If it fails there will be an error message in `event.detail.error`.
+`event.data.signedTx`. If it fails there will be an error message in `event.data.error`.
 
-    document.addEventListener('signedTx', (event) => {
-      if (event.detail.signedTx) {
-        // process the signed transaction
-      } else if (event.detail.error) {
-        // process the error
-      });
+    document.addEventListener('message', (event) => {
+      if (event.source === window && event.data && event.data.type === 'signedTx') {
+          if (event.data.signedTx) {
+            // process the signed transaction
+          } else if (event.data.error) {
+            // process the error
+          }
+      }
+    }
 
 ## Development
     git clone https://github.com/Lamden/clove-sign-plugin.git

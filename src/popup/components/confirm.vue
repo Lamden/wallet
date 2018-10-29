@@ -78,7 +78,9 @@ export default {
         response = { type, signedTx };
       }
       chrome.tabs.sendMessage(this.signData.tabId, response);
-      window.close();
+      chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
+        chrome.tabs.remove(tabs[0].id);
+      });
     },
   },
 };

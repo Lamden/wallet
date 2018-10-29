@@ -4,7 +4,7 @@ document.addEventListener('signTx', (event) => {
   chrome.runtime.sendMessage(signData, (response) => {
     if (response) {
       if (response.error) {
-        document.dispatchEvent(new CustomEvent('signedTx', { detail: response }));
+        window.postMessage(response, '*');
       }
     }
   });
@@ -12,7 +12,7 @@ document.addEventListener('signTx', (event) => {
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === 'signedTx') {
-    document.dispatchEvent(new CustomEvent('signedTx', { detail: message }));
+    window.postMessage(message, '*');
   }
 });
 
