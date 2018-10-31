@@ -1,8 +1,7 @@
 const path = require('path')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-exports.htmlPage = (title, filename, chunks, template) => new HtmlWebpackPlugin({
+exports.htmlPage = (title, filename, template) => new HtmlWebpackPlugin({
   title,
   hash: true,
   cache: true,
@@ -10,7 +9,7 @@ exports.htmlPage = (title, filename, chunks, template) => new HtmlWebpackPlugin(
   filename: './pages/' + filename + '.html',
   template: template || path.resolve(__dirname, './page.ejs'),
   appMountId: 'app',
-  chunks
+  chunks: [filename],
 })
 
 
@@ -38,11 +37,7 @@ exports.cssLoaders = (options = {}) => {
         options: Object.assign({}, prePprocessors[key].options, { sourceMap: options.sourceMap })
       })
     }
-    if (options.extract) {
-      loaders[key] = ExtractTextPlugin.extract({ use: loader, fallback: 'vue-style-loader' })
-    } else {
-      loaders[key] = ['vue-style-loader'].concat(loader)
-    }
+    loaders[key] = ['vue-style-loader'].concat(loader)
   }
   return loaders;
 }

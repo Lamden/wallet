@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
-const ChromeReloadPlugin  = require('wcer')
 const {cssLoaders} = require('./tools')
+const { VueLoaderPlugin } = require('vue-loader')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 let resolve = dir => path.join(__dirname, '..', 'src', dir)
@@ -85,11 +85,9 @@ module.exports = {
     ]
   },
   plugins: [
+    new VueLoaderPlugin(),
     new CopyWebpackPlugin([{ from: path.join(__dirname, '..', 'static') }]),
-    new ChromeReloadPlugin({
-      port: 9090,
-      manifest: path.join(__dirname, '..', 'src', 'manifest.js')
-    }),
+    new CopyWebpackPlugin([{ from: path.join(__dirname, '..', 'src', 'manifest.json') }]),
   ],
   performance: { hints: false },
 }
