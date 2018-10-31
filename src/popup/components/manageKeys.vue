@@ -135,13 +135,13 @@ export default {
 <style>
 .back-button {
   display: block;
-  margin-left: auto;
-  margin-right: 15px;
+  margin-left: auto !important;
+  margin-right: 15px !important;
   transition: none;
 }
 
 .row-up {
-  margin-top: -70px;
+  margin-top: -70px !important;
 }
 
 .centered-message {
