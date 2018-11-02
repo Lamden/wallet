@@ -130,6 +130,10 @@ body {
   position: relative;
 }
 
+.el-scrollbar.is-empty {
+  display: none;
+}
+
 .popup {
   min-height: 515px;
   max-height: 550px;
