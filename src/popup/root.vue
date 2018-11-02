@@ -91,6 +91,17 @@ export default {
   font-family: 'Avenir';
 }
 
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+@media (max-width: 590px) {
+  body {
+    overflow-x: auto;
+  }
+}
+
 .el-button {
   height: 40px;
   width: 120px;
@@ -120,7 +131,9 @@ export default {
 }
 
 .popup {
-  height: 515px;
+  min-height: 515px;
+  max-height: 550px;
+  width: 620px;
   background-color: #FFFFFF;
   padding: 30px;
   flex-direction: column;
