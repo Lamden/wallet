@@ -1,5 +1,5 @@
 {
-  "name": "Clove Sign Plugin",
+  "name": "Lamden",
   "version": "0.0.2",
   "description": "Tool for signing raw transaction in bitcoin and ethereum based networks",
   "manifest_version": 2,

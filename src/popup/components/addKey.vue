@@ -90,7 +90,7 @@ export default {
         this.addKeyForm.label = '';
         this.$emit('added');
       } catch (e) {
-        this.setError('Invalid private key');
+        this.setError('Invalid private key ' + e);
       }
     },
     toggleShowKey() {

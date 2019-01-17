@@ -58,7 +58,7 @@ exports.getBitcoinKey = (privateKey, network) => {
     return bitcoin.ECPair.fromWIF(privateKey, network);
   } catch (e) {
     if (e.message === 'Invalid checksum' || e.message === 'Non-base58 character') {
-      throw new Error('Invalid private key');
+      throw new Error('Invalid private key (msg: ' + e.message + ')');
     }
     throw e;
   }

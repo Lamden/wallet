@@ -2,10 +2,12 @@
   <el-container class="popup">
     <div>
       <div class="header-container">
-        <div class="header">Clove sign Plugin</div>
+          <div class="header">
+              <h1>Lamden</h1>
+          </div>
       </div>
     </div>
-    <steps v-if="currentView!=='confirm'" :step="step"/>
+    <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
     <component
       :is="currentView"
       :storage="keyStorage"
@@ -145,11 +147,11 @@ body {
 
 .header-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .header {
-  color: #0D8A4C;
+  color: #E7267E;
   font-size: 20px;
   line-height: 32px;
   padding-bottom: 30px;

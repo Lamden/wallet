@@ -6,6 +6,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 let resolve = dir => path.join(__dirname, '..', 'src', dir)
 module.exports = {
+  node: {
+    fs: "empty"
+  },
   entry: {
     popup: resolve('./popup'),
     background: resolve('./backend'),

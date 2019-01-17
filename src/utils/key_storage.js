@@ -1,5 +1,7 @@
 /* global localStorage */
 const ethUtil = require('ethereumjs-util');
+const keythereum = require('keythereum');
+const bitcoin = require('bitcoinjs-lib')
 const btcNetworks = require('./bitcoin_networks');
 const ethNetworks = require('./ethereum_networks');
 const nodeCryptoJs = require('node-cryptojs-aes');
@@ -24,6 +26,30 @@ function getPrivateKeys() {
   } catch (e) {
     throw new Error('Decryption failed');
   }
+}
+
+function addEthKey(networkSymbol) {
+    /* ethKey = {
+     *   privateKey: <Buffer ...>,
+     *   iv: <Buffer ...>,
+     *   salt: <Buffer ...>
+    }*/
+    const ethKey = keythereum.create({ keyBytes: 32, ivBytes: 16 });
+    const ethPriv = ethKey.privateKey.toString('hex');
+    addKey(networkSymbol, ethPriv);
+}
+
+function addBtcKey(networkSymbol) {
+    var network;
+    if (networkSymbol in btcNetworks) {
+        network = btcNetworks[networkSymbol];
+    } else {
+        throw new Error("Network Symbol provided not supported")
+    }
+    // btcKey = <ECPair ...>
+    const btcKey = bitcoin.ECPair.makeRandom({ network: network });
+    const btcPriv = btcKey.toString('hex');
+    addKey(networkSymbol, btcPriv);
 }
 
 function savePrivateKeys(keys) {
