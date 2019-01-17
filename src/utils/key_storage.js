@@ -28,7 +28,14 @@ function getPrivateKeys() {
   }
 }
 
-function addEthKey(networkSymbol) {
+function savePrivateKeys(keys) {
+  const encrypted =
+    CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
+
+  localStorage.setItem('privKeys', encrypted);
+}
+
+exports.addEthKey = (networkSymbol) => {
     /* ethKey = {
      *   privateKey: <Buffer ...>,
      *   iv: <Buffer ...>,
@@ -36,27 +43,25 @@ function addEthKey(networkSymbol) {
     }*/
     const ethKey = keythereum.create({ keyBytes: 32, ivBytes: 16 });
     const ethPriv = ethKey.privateKey.toString('hex');
-    addKey(networkSymbol, ethPriv);
+    //addKey(networkSymbol, ethPriv);
+    console.log(ethPriv);
 }
 
-function addBtcKey(networkSymbol) {
+exports.addBtcKey = (networkSymbol) => {
     var network;
     if (networkSymbol in btcNetworks) {
         network = btcNetworks[networkSymbol];
     } else {
-        throw new Error("Network Symbol provided not supported")
+        throw new Error("Network Symbol provided not supported");
+    }
+    if (network === undefined) {
+        throw new Error("No network defined for BTC based keygen, cannot continue with keygen");
     }
     // btcKey = <ECPair ...>
     const btcKey = bitcoin.ECPair.makeRandom({ network: network });
-    const btcPriv = btcKey.toString('hex');
-    addKey(networkSymbol, btcPriv);
-}
-
-function savePrivateKeys(keys) {
-  const encrypted =
-    CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
-
-  localStorage.setItem('privKeys', encrypted);
+    const btcPriv = btcKey.toWIF();
+    //addKey(networkSymbol, btcPriv);
+    console.log(btcPriv);
 }
 
 exports.unlockStorage = (pass) => {
