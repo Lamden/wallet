@@ -43,8 +43,7 @@ exports.addEthKey = (networkSymbol) => {
     }*/
     const ethKey = keythereum.create({ keyBytes: 32, ivBytes: 16 });
     const ethPriv = ethKey.privateKey.toString('hex');
-    //addKey(networkSymbol, ethPriv);
-    console.log(ethPriv);
+    addKey(networkSymbol, ethPriv);
 }
 
 exports.addBtcKey = (networkSymbol) => {
@@ -60,8 +59,7 @@ exports.addBtcKey = (networkSymbol) => {
     // btcKey = <ECPair ...>
     const btcKey = bitcoin.ECPair.makeRandom({ network: network });
     const btcPriv = btcKey.toWIF();
-    //addKey(networkSymbol, btcPriv);
-    console.log(btcPriv);
+    addKey(networkSymbol, btcPriv);
 }
 
 exports.unlockStorage = (pass) => {
