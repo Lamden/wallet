@@ -4,6 +4,8 @@ const keythereum = require('keythereum');
 const bitcoin = require('bitcoinjs-lib')
 const btcNetworks = require('./bitcoin_networks');
 const ethNetworks = require('./ethereum_networks');
+const tauNetworks = require('./cilantro_networks');
+const tauWallet = require('./wallet');
 const nodeCryptoJs = require('node-cryptojs-aes');
 const sign = require('./sign');
 
@@ -35,7 +37,7 @@ function savePrivateKeys(keys) {
   localStorage.setItem('privKeys', encrypted);
 }
 
-exports.addEthKey = (networkSymbol) => {
+exports.genEthKey = () => {
     /* ethKey = {
      *   privateKey: <Buffer ...>,
      *   iv: <Buffer ...>,
@@ -43,23 +45,36 @@ exports.addEthKey = (networkSymbol) => {
     }*/
     const ethKey = keythereum.create({ keyBytes: 32, ivBytes: 16 });
     const ethPriv = ethKey.privateKey.toString('hex');
-    addKey(networkSymbol, ethPriv);
+    return ethPriv;
 }
 
-exports.addBtcKey = (networkSymbol) => {
+exports.genBtcKey = (network) => {
     var network;
-    if (networkSymbol in btcNetworks) {
-        network = btcNetworks[networkSymbol];
-    } else {
-        throw new Error("Network Symbol provided not supported");
-    }
     if (network === undefined) {
         throw new Error("No network defined for BTC based keygen, cannot continue with keygen");
     }
     // btcKey = <ECPair ...>
     const btcKey = bitcoin.ECPair.makeRandom({ network: network });
     const btcPriv = btcKey.toWIF();
-    addKey(networkSymbol, btcPriv);
+    return btcPriv;
+}
+
+exports.generateKey = (networkSymbol) => {
+    var privKey = null;
+    if (networkSymbol in btcNetworks) {
+        privKey = genBtcKey(btcNetworks[networkSymbol]);
+    } else if (networkSymbol in ethNetworks) {
+        privKey = genEthKey();
+    } else if (networkSymbol in tauNetworks) {
+        privKey = genTauKey();
+    }
+    } else {
+        throw new Error("Network Symbol provided (" + networkSymbol + ") not supported");
+    }
+
+}
+
+exports.addTauKey = (networkSymbol) => {
 }
 
 exports.unlockStorage = (pass) => {
