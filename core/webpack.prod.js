@@ -19,7 +19,7 @@ module.exports = merge(baseWebpack, {
     },
   },
   plugins: [
-    htmlPage('Clove sign Plugin', 'popup'),
+    htmlPage('Lamden', 'popup'),
     htmlPage('background', 'background'),
     new CleanWebpackPlugin(['build/*.*']),
     new OptimizeCSSPlugin({

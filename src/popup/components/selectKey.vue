@@ -58,6 +58,12 @@
       @click="manageKeys">
       Manage private keys
     </el-button>
+    <el-button
+      v-if="Object.keys(availableKeys).length > 0"
+      class="auto-width"
+      @click="$emit('wallet')">
+      Main Wallet
+    </el-button>
   </div>
 </template>
 <script>

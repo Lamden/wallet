@@ -2,16 +2,22 @@
   <el-container class="popup">
     <div>
       <div class="header-container">
-        <div class="header">Clove sign Plugin</div>
+          <div class="header">
+              <h1>Lamden Wallet</h1>
+              <div class='nav__hamburger'>
+                  <div></div>
+              </div>
+          </div>
       </div>
     </div>
-    <steps v-if="currentView!=='confirm'" :step="step"/>
+    <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
     <component
       :is="currentView"
       :storage="keyStorage"
       @select="switchView('select-key')"
       @sign="switchView('sign-tx')"
       @manage="switchView('manage-keys')"
+      @wallet="switchView('main-wallet')"
     />
   </el-container>
 </template>
@@ -22,6 +28,7 @@ import steps from './components/steps';
 import unlock from './components/unlock';
 import signTx from './components/signTx';
 import manageKeys from './components/manageKeys';
+import mainWallet from './components/mainWallet';
 
 export default {
   data: () => ({
@@ -62,6 +69,7 @@ export default {
     steps,
     'manage-keys': manageKeys,
     'sign-tx': signTx,
+    'main-wallet': mainWallet,
   },
 };
 </script>
@@ -145,11 +153,11 @@ body {
 
 .header-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .header {
-  color: #0D8A4C;
+  color: #E7267E;
   font-size: 20px;
   line-height: 32px;
   padding-bottom: 30px;
@@ -177,5 +185,51 @@ body {
 
 .submit-button {
   margin: 30px 0;
+}
+
+.nav__hamburger {
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 25px;
+    height: 25px;
+    padding: 17px;
+    cursor: pointer;
+    backface-visibility: hidden;
+}
+
+.nav__hamburger div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: none;
+    width: 100%;
+    height: 2px;
+    background: #E7267E;
+    transition: all $fast ease;
+    border-radius: 1px;
+}
+
+.nav__hamburger div::before, .nav__hamburger div::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: 7px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #E7267E;
+    transition: all $fast ease;
+    border-radius: 1px;
+}
+
+.nav__hamburger div::after {
+    top: auto;
+    bottom: 7px;
 }
 </style>
