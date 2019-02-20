@@ -67,7 +67,6 @@ exports.generateKey = (networkSymbol) => {
         privKey = genEthKey();
     } else if (networkSymbol in tauNetworks) {
         privKey = genTauKey();
-    }
     } else {
         throw new Error("Network Symbol provided (" + networkSymbol + ") not supported");
     }

@@ -123,7 +123,7 @@ exports.verify = (vk, msg, sig) => {
     var sigb = helpers.hex2buf(sig);
     try {
         return nacl.sign.detached.verify(msg, sigb, vkb);
-    } catch {
+    } catch(e) {
         return false
     }
 }

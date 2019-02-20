@@ -42,6 +42,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.windows.create({
       url: '/pages/popup.html#confirm', width: 620, height: 700, type: 'popup',
     });
+  } else if (message.type === "swap") {
   }
 });
 

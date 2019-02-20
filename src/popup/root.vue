@@ -4,8 +4,14 @@
       <div class="header-container">
           <div class="header">
               <h1>Lamden Wallet</h1>
-              <div class='nav__hamburger'>
+              <input class='nav__toggler' type='checkbox' />
+              <div class='nav__hamburger' v-on:click='showMenu'>
                   <div></div>
+              </div>
+              <div class='nav__menu' v-if="menu">
+                <h2 v-for="page in pages">
+                  {{ page }}
+                </h2>
               </div>
           </div>
       </div>
@@ -34,6 +40,13 @@ export default {
   data: () => ({
     currentView: 'select-key',
     keyStorage: null,
+    menu: false,
+    pages: [
+      'Home',
+      'Wallets',
+      'Key Manager',
+      'Log Out',
+    ]
   }),
   computed: {
     step: function step() {
@@ -60,6 +73,9 @@ export default {
   methods: {
     switchView(value) {
       this.currentView = value;
+    },
+    showMenu() {
+      this.menu = true;
     },
   },
   components: {
@@ -188,48 +204,126 @@ body {
 }
 
 .nav__hamburger {
-    display: flex;
-    position: absolute;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    width: 25px;
-    height: 25px;
-    padding: 17px;
-    cursor: pointer;
-    backface-visibility: hidden;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 25px;
+  height: 25px;
+  padding: 17px;
+  cursor: pointer;
+  backface-visibility: hidden;
 }
 
 .nav__hamburger div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    flex: none;
-    width: 100%;
-    height: 2px;
-    background: #E7267E;
-    transition: all $fast ease;
-    border-radius: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 2px;
+  background: #E7267E;
+  transition: all $fast ease;
+  border-radius: 1px;
 }
 
 .nav__hamburger div::before, .nav__hamburger div::after {
-    content: '';
-    position: absolute;
-    z-index: 1;
-    top: 7px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #E7267E;
-    transition: all $fast ease;
-    border-radius: 1px;
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #E7267E;
+  transition: all $fast ease;
+  border-radius: 1px;
 }
 
 .nav__hamburger div::after {
-    top: auto;
-    bottom: 7px;
+  top: auto;
+  bottom: 7px;
 }
+
+.nav__menu {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  background-color: #FFFFFF;
+  height: 100%;
+  width: 50%;
+  z-index: 100;
+  border-right: 1px solid #c0c4cc;
+}
+
+.nav__toggler {
+  display: block;
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.nav__toggler:checked {
+  position: fixed;
+  top: 0;
+  right: 20px;
+  z-index: 5;
+}
+
+.nav__toggler:checked + .nav__hamburger {
+  position: fixed;
+  top: 0;
+  right: 20px;
+  left: auto;
+  font-size: 0;
+  z-index: 4;
+  transform: scale(.85);
+}
+
+.nav__toggler:checked + .nav__hamburger > div {
+  position: relative;
+  transform: rotate(135deg);
+  background: #E7267E;
+}
+
+.nav__toggler:checked + .nav__hamburger > div:before, .nav__toggler:checked + .nav__hamburger > div:after {
+  top: 0;
+  transform: rotate(90deg);
+  background: #E7267E;
+}
+
+.nav__toggler:checked + .nav__hamburger > div:after {
+  opacity: 0;
+}
+
+.nav__toggler:checked + ~ .nav__container  {
+  pointer-events: auto;
+  visibility: visible;
+  z-index: 3;
+}
+
+.nav__toggler:checked + ~ .nav__container > div {
+  transform: scale(1);
+  transition-duration: .75s;
+  opacity: 1;
+}
+
+.nav__toggler:checked + ~ .nav__container > div > div {
+  opacity: 1;
+  transition: opacity $fast ease $fast;
+}
+
+.nav__toggler:checked:hover .nav__hamburger > div {
+  transform: rotate(225deg);
+}
+
 </style>
