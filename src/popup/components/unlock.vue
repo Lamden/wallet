@@ -4,12 +4,12 @@
     class="unlock"
     @submit.native.prevent
     status-icon>
-    <p class="input-description password-description">Security password</p>
     <el-form-item prop="password" :error="error">
+      <p class="input-description password-description">Password</p>
       <el-input
         v-model="unlockForm.password"
         @input="resetError"
-        class="short-input"
+        class="password-input"
         type="password"
         autofocus
         @keyup.enter.native="submit"
@@ -19,7 +19,7 @@
         type="primary"
         :disabled="isButtonDisabled"
         @click="submit">
-        Unlock
+        Login
       </el-button>
     </el-form-item>
   </el-form>
@@ -46,7 +46,7 @@ export default {
     submit: function submit() {
       try {
         this.storage.unlockStorage(this.unlockForm.password);
-        this.$emit('select');
+        this.$emit('wallet');
       } catch (e) {
         this.setError('Incorrect password');
       }
@@ -58,6 +58,11 @@ export default {
 .unlock {
   display: flex;
   flex-direction: column;
+}
+
+.password-input {
+  width: 100%;
+  height: 40px;
 }
 
 .password-description{

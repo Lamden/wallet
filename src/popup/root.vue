@@ -1,21 +1,18 @@
 <template>
   <el-container class="popup">
     <div>
-      <div class="header-container">
-          <div class="header">
-              <h1>Lamden Wallet</h1>
-              <input class='nav__toggler' type='checkbox' />
-              <div class='nav__hamburger' v-on:click='showMenu'>
-                  <div></div>
-              </div>
-              <div class='nav__menu' v-if="menu">
-                <h2 v-for="page in pages">
-                  {{ page }}
-                </h2>
-              </div>
-          </div>
+      <input class='nav__toggler' type='checkbox' v-on:click='hideMenu' v-if="menu" />
+      <div class='nav__hamburger' v-on:click='showMenu' v-if="currentView != 'unlock'">
+          <div></div>
       </div>
-    </div>
+      <div class='nav__menu' v-if="menu">
+        <div class="nav__internal">
+          <h2 v-for="page in pages" v-on:click="navController(page)" class="menuitem">
+            {{ page }}
+          </h2>
+        </div>
+      </div>
+      <h3>TESTING123</h3>
     <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
     <component
       :is="currentView"
@@ -23,8 +20,9 @@
       @select="switchView('select-key')"
       @sign="switchView('sign-tx')"
       @manage="switchView('manage-keys')"
-      @wallet="switchView('main-wallet')"
-    />
+      @wallet="switchView('wallet')"
+      />
+    </div>
   </el-container>
 </template>
 <script>
@@ -34,17 +32,16 @@ import steps from './components/steps';
 import unlock from './components/unlock';
 import signTx from './components/signTx';
 import manageKeys from './components/manageKeys';
-import mainWallet from './components/mainWallet';
+import wallet from './components/wallet';
 
 export default {
   data: () => ({
-    currentView: 'select-key',
+    currentView: 'wallet',
     keyStorage: null,
     menu: false,
     pages: [
       'Home',
-      'Wallets',
-      'Key Manager',
+      'Clove',
       'Log Out',
     ]
   }),
@@ -75,8 +72,26 @@ export default {
       this.currentView = value;
     },
     showMenu() {
-      this.menu = true;
+      if (this.menu) {
+        this.menu = false;
+      } else {
+        this.menu = true;
+      }
     },
+    hideMenu() {
+      if (this.menu) {
+        this.menu = false;
+      }
+    },
+    navController(page) {
+      if (page == "Log Out") {
+        this.keyStorage.lockStorage();
+        this.currentView = "unlock";
+      } else if (page == "Home") {
+        this.currentView = "wallet";
+      }
+      this.menu = false
+    }
   },
   components: {
     'select-key': select,
@@ -85,7 +100,7 @@ export default {
     steps,
     'manage-keys': manageKeys,
     'sign-tx': signTx,
-    'main-wallet': mainWallet,
+    wallet,
   },
 };
 </script>
@@ -161,22 +176,10 @@ body {
 .popup {
   min-height: 515px;
   max-height: 550px;
-  width: 620px;
+  width: 375px;
   background-color: #FFFFFF;
   padding: 30px;
   flex-direction: column;
-}
-
-.header-container {
-  display: flex;
-  justify-content: center;
-}
-
-.header {
-  color: #E7267E;
-  font-size: 20px;
-  line-height: 32px;
-  padding-bottom: 30px;
 }
 
 .input-description{
@@ -226,7 +229,7 @@ body {
   flex: none;
   width: 100%;
   height: 2px;
-  background: #E7267E;
+  background: #000000;
   transition: all $fast ease;
   border-radius: 1px;
 }
@@ -239,7 +242,7 @@ body {
   left: 0;
   width: 100%;
   height: 2px;
-  background: #E7267E;
+  background: #000000;
   transition: all $fast ease;
   border-radius: 1px;
 }
@@ -258,6 +261,11 @@ body {
   width: 50%;
   z-index: 100;
   border-right: 1px solid #c0c4cc;
+  padding: 0px 10px 0px;
+}
+
+.nav__internal {
+  margin: 56px auto 0px;
 }
 
 .nav__toggler {
@@ -272,58 +280,19 @@ body {
   opacity: 0;
 }
 
-.nav__toggler:checked {
-  position: fixed;
-  top: 0;
-  right: 20px;
-  z-index: 5;
+.logo__img {
+  margin: 0 auto;
 }
 
-.nav__toggler:checked + .nav__hamburger {
-  position: fixed;
-  top: 0;
-  right: 20px;
-  left: auto;
-  font-size: 0;
-  z-index: 4;
-  transform: scale(.85);
+.nav__internal h2 {
+  font-family: Avenir-Light;
+  font-weight: 400;
+  font-size: 24px;
+  margin: 8px auto;
+  text-align: center;
 }
 
-.nav__toggler:checked + .nav__hamburger > div {
-  position: relative;
-  transform: rotate(135deg);
-  background: #E7267E;
+.menuitem {
+  cursor: pointer;
 }
-
-.nav__toggler:checked + .nav__hamburger > div:before, .nav__toggler:checked + .nav__hamburger > div:after {
-  top: 0;
-  transform: rotate(90deg);
-  background: #E7267E;
-}
-
-.nav__toggler:checked + .nav__hamburger > div:after {
-  opacity: 0;
-}
-
-.nav__toggler:checked + ~ .nav__container  {
-  pointer-events: auto;
-  visibility: visible;
-  z-index: 3;
-}
-
-.nav__toggler:checked + ~ .nav__container > div {
-  transform: scale(1);
-  transition-duration: .75s;
-  opacity: 1;
-}
-
-.nav__toggler:checked + ~ .nav__container > div > div {
-  opacity: 1;
-  transition: opacity $fast ease $fast;
-}
-
-.nav__toggler:checked:hover .nav__hamburger > div {
-  transform: rotate(225deg);
-}
-
 </style>
