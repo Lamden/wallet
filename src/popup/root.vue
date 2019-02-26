@@ -12,7 +12,6 @@
           </h2>
         </div>
       </div>
-      <h3>TESTING123</h3>
     <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
     <component
       :is="currentView"
