@@ -15,11 +15,13 @@
     <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
     <component
       :is="currentView"
-      :storage="keyStorage"
-      @select="switchView('select-key')"
+      :storage=keyStorage
+      :lastView=lastView
+      @unlock="unlockView"
       @sign="switchView('sign-tx')"
       @manage="switchView('manage-keys')"
       @wallet="switchView('wallet')"
+      @clove="switchView('clove')"
       />
     </div>
   </el-container>
@@ -32,16 +34,18 @@ import unlock from './components/unlock';
 import signTx from './components/signTx';
 import manageKeys from './components/manageKeys';
 import wallet from './components/wallet';
+import clove from './components/clove';
 
 export default {
   data: () => ({
-    currentView: 'wallet',
+    currentView: 'clove',
+    lastView: 'wallet',
     keyStorage: null,
     menu: false,
     pages: [
       'Home',
       'Clove',
-      'Log Out',
+      'Lock Wallet'
     ]
   }),
   computed: {
@@ -68,7 +72,10 @@ export default {
   },
   methods: {
     switchView(value) {
-      this.currentView = value;
+      this.currentView = value
+    },
+    unlockView(e) {
+      this.currentView = e
     },
     showMenu() {
       if (this.menu) {
@@ -83,11 +90,14 @@ export default {
       }
     },
     navController(page) {
-      if (page == "Log Out") {
+      this.lastView = this.currentView
+      if (page == "Lock Wallet") {
         this.keyStorage.lockStorage();
         this.currentView = "unlock";
       } else if (page == "Home") {
         this.currentView = "wallet";
+      } else if (page == "Clove") {
+        this.currentView = "clove";
       }
       this.menu = false
     }
@@ -100,6 +110,7 @@ export default {
     'manage-keys': manageKeys,
     'sign-tx': signTx,
     wallet,
+    clove
   },
 };
 </script>
@@ -175,9 +186,8 @@ body {
 .popup {
   min-height: 515px;
   max-height: 550px;
-  width: 375px;
+  width: 380px;
   background-color: #FFFFFF;
-  padding: 30px;
   flex-direction: column;
 }
 
