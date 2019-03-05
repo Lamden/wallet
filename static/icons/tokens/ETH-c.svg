@@ -11,22 +11,23 @@
    height="226.777"
    viewBox="0 0 226.777 226.777"
    version="1.1"
-   id="svg4691"
-   sodipodi:docname="DASH.svg"
+   id="svg4859"
+   sodipodi:docname="ETH-c.svg"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
   <metadata
-     id="metadata4697">
+     id="metadata4865">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs4695" />
+     id="defs4863" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -38,17 +39,17 @@
      inkscape:pageshadow="2"
      inkscape:window-width="716"
      inkscape:window-height="480"
-     id="namedview4693"
+     id="namedview4861"
      showgrid="false"
-     inkscape:zoom="1.0406699"
+     inkscape:zoom="1.1156335"
      inkscape:cx="113.3885"
      inkscape:cy="113.3885"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg4691" />
+     inkscape:current-layer="svg4859" />
   <path
-     d="M113.388 0C50.766 0 0 50.766 0 113.388c0 62.623 50.766 113.389 113.389 113.389s113.389-50.766 113.389-113.389C226.777 50.766 176.011 0 113.388 0zM56.562 104.802h45.266l-5.238 17.024H51.326l5.236-17.024zm117.268-8.029c-1.801 6.506-7.656 26.023-10.059 32.945-2.4 6.922-6.829 12.734-12.506 16.057-5.676 3.323-7.797 4.712-15.731 4.712H54.303l5.721-18.542h76.395l11.414-37.109h-75.79l5.722-18.541h84.577c3.875 0 8.996 1.792 11.488 6.639 2.491 4.841 1.799 7.333 0 13.839z"
-     id="path4689"
-     style="fill:#000000;fill-opacity:1" />
+     d="M113.313 0C50.732 0 0 50.732 0 113.313s50.732 113.313 113.313 113.313 113.313-50.732 113.313-113.313S175.894 0 113.313 0zm-1.469 188.386l-44.78-63.344 44.78 26.218v37.126zm0-46.41l-45.083-26.408 45.083-19.748v46.156zm0-49.329l-43.631 19.11 43.631-73.306v54.196zm2.906-54.218l44.244 73.6-44.244-19.382V38.429zm0 149.957V151.26l44.78-26.218-44.78 63.344zm0-46.409V95.821l45.116 19.762-45.116 26.394z"
+     id="path4857"
+     style="fill:#3c3c3d;fill-opacity:1" />
 </svg>

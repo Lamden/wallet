@@ -1,43 +1,37 @@
 <template>
   <el-container>
-    <el-header>
+    <el-header class="walletHeader">
       <span></span>
     </el-header>
-    <el-main>        
-      <img :src=logo alt="lamden" height="128" width="128" class="logo__img" id="logo__img">
+    <el-main class="walletMain">
+      <div class="lamden-logo-box">
+        <lamdenLogo></lamdenLogo>   
+      </div>     
     </el-main>
-    <el-footer height="290px">
-      <el-form
-        :model="unlockForm"
-        class="unlock"
-        @submit.native.prevent
-        status-icon>
-        <el-form-item prop="password" :error="error">
-            <h1 v-if="!isKeyStoreEmpty">Welcome to Lamden Wallet!</h1>
-            <p v-if="!isKeyStoreEmpty" class="small">
-              To begin please create a password that will allow you to access your Lamden Wallet but
-              also allow us to encrypt the private keys you store here.
-            </p>
-            <h1 v-if="isKeyStoreEmpty">Unlock Wallet</h1>
-          <el-row>
-              <el-input
-                v-model="unlockForm.password"
-                @input="resetError"
-                class="password-input"
-                type="password"
-                autofocus
-                @keyup.enter.native="submit"
-                placeholder="Enter your password">
-              </el-input>
-          </el-row>
-        </el-form-item>
-      </el-form>
+    <el-footer class="unlock-footer">
+      <el-row>
+        <h1 class="unlock-waler-h1">Unlock Wallet</h1>
+      </el-row>
+      <el-row>
+        <el-input
+          v-model="unlockForm.password"
+          @input="resetError"
+          class="password-input"
+          type="password"
+          autofocus
+          @keyup.enter.native="unlock"
+          placeholder="Enter your password">
+        </el-input>
+        <p class="unlock-error-h1">{{error}}</p>
+
+      </el-row>
     </el-footer>
   </el-container>
 </template>
 
 <script>
 import errorMixin from '../mixins/error';
+import lamdenLogo from './lamdenLogo';
 
 export default {
   props: ['storage','lastView'],
@@ -47,7 +41,8 @@ export default {
       logo: "/images/logo_lamden_color.svg",
       unlockForm: {
         password: '',
-      },
+        error: ''
+      }
     };
   },
   computed: {
@@ -55,39 +50,78 @@ export default {
       return this.unlockForm.password.length === 0;
     },
     isKeyStoreEmpty: function isKeyStoreEmpty() {
-      return this.storage ? false : true
+      return Object.keys(this.storage).length ? true : false
     }
   },
   methods: {
     submit: function submit() {
-      try {
-        this.storage.unlockStorage(this.unlockForm.password);
-        this.$emit('unlock', this.lastView);
-      } catch (e) {
-        this.setError('Incorrect password');
+      if (this.isKeyStoreEmpty) {
+        console.log(this.storage.initiateKeyStore(this.unlockForm.password));
+        console.log(this.storage.getActiveTokens());
+        this.$emit('unlock', 'wallet');  
+      }else {
+        console.log("KeyStore is not empty, unlocking");
+        try {
+          this.storage.unlockStorage(this.unlockForm.password);
+          console.log("unlocked");
+          this.$emit('unlock', this.lastView);
+        } catch (e) {
+          console.log("errored");
+          this.setError('Incorrect password');
+        }
       }
     },
+    unlock: function unlock(){
+      try{
+        this.storage.unlock(this.unlockForm.password);
+        this.$emit('unlock', 'wallet');  
+      }catch (e){
+         console.log('Could not unlock storage:' + e.message);
+         this.setError('Could not unlock storage: ' + e.message); 
+      }
+    }
+  },
+  components: {
+    lamdenLogo
   }
 };
 </script>
+
 <style>
 .unlock {
   display: flex;
   flex-direction: column;
 }
 
+.unlock-error-h1 {
+  color: rgb(89,45,101)!important;
+}
+
+.unlock-footer {
+  padding: 0 20px 0 20px;
+  width: 100%;
+  height: 100%!important;
+  text-align: center;
+}
+
+.lamden-logo-box {
+  width: 150px;
+  height: 150px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 30%;
+}
+
+.unlock-waler-h1 {
+  color: gray;
+}
+
 .password-input {
   width: 100%;
   height: 40px;
-  padding: 10px;
 }
 
 .password-description{
   padding-top: 80px;
-}
-
-.el-col {
-  border-radius: 4px;
 }
 
 p.small {

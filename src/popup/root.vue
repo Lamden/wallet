@@ -7,12 +7,30 @@
       </div>
       <div class='nav__menu' v-if="menu">
         <div class="nav__internal">
-          <h2 v-for="page in pages" v-on:click="navController(page)" class="menuitem">
-            {{ page }}
-          </h2>
+          <el-menu default-active="1">
+            <el-menu-item index="1" @click="navController('Lamden Wallet')">
+              <i class="el-icon-menu"></i>
+              <span>Lamden Wallet</span>
+            </el-menu-item>
+            <el-menu-item index="1" @click="navController('Clove Wallet')">
+              <i class="el-icon-menu"></i>
+              <span>Clove Wallet</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="navController('Lock Wallet')">
+              <i class="el-icon-setting"></i>
+              <span>Lock Wallet</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="navController('dev')">
+              <i class="el-icon-setting"></i>
+              <span>Dev</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="navController('firstRun')">
+              <i class="el-icon-setting"></i>
+              <span>First Run</span>
+            </el-menu-item>
+          </el-menu>
         </div>
       </div>
-    <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
     <component
       :is="currentView"
       :storage=keyStorage
@@ -22,6 +40,8 @@
       @manage="switchView('manage-keys')"
       @wallet="switchView('wallet')"
       @clove="switchView('clove')"
+      @dev="switchView('clove')"
+      @firstRun="switchView('firstRun')"
       />
     </div>
   </el-container>
@@ -35,18 +55,15 @@ import signTx from './components/signTx';
 import manageKeys from './components/manageKeys';
 import wallet from './components/wallet';
 import clove from './components/clove';
+import dev from './components/dev';
+import firstRun from './components/firstRun';
 
 export default {
   data: () => ({
-    currentView: 'clove',
+    currentView: 'wallet',
     lastView: 'wallet',
     keyStorage: null,
-    menu: false,
-    pages: [
-      'Home',
-      'Clove',
-      'Lock Wallet'
-    ]
+    menu: false
   }),
   computed: {
     step: function step() {
@@ -61,14 +78,16 @@ export default {
   created() {
     this.keyStorage = Object.assign({}, chrome.extension.getBackgroundPage().keyStorage);
 
-    try {
-      this.keyStorage.getAvailableKeys();
-    } catch (e) {
-      this.currentView = 'unlock';
-    }
-    if (window.location.hash === '#confirm') {
-      this.currentView = 'confirm';
-    }
+    this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
+
+  //  try {
+ //     this.keyStorage.getAvailableKeys();
+ //   } catch (e) {
+  //    this.currentView = 'wallet';
+  //  }
+  //  if (window.location.hash === '#confirm') {
+  //    this.currentView = 'confirm';
+  //  }
   },
   methods: {
     switchView(value) {
@@ -94,10 +113,14 @@ export default {
       if (page == "Lock Wallet") {
         this.keyStorage.lockStorage();
         this.currentView = "unlock";
-      } else if (page == "Home") {
+      } else if (page == "Lamden Wallet") {
         this.currentView = "wallet";
-      } else if (page == "Clove") {
+      } else if (page == "Clove Wallet") {
         this.currentView = "clove";
+      } else if (page == "dev") {
+        this.currentView = "dev";
+      } else if (page == "firstRun") {
+        this.currentView = "firstRun";
       }
       this.menu = false
     }
@@ -110,7 +133,9 @@ export default {
     'manage-keys': manageKeys,
     'sign-tx': signTx,
     wallet,
-    clove
+    clove,
+    dev,
+    firstRun
   },
 };
 </script>
@@ -151,10 +176,6 @@ body {
   }
 }
 
-.el-button {
-  height: 40px;
-  width: 120px;
-}
 
 .el-button--primary{
   background-color: #5368E7;
@@ -270,11 +291,12 @@ body {
   width: 50%;
   z-index: 100;
   border-right: 1px solid #c0c4cc;
-  padding: 0px 10px 0px;
+  padding: 0;
 }
 
 .nav__internal {
   margin: 56px auto 0px;
+  height: 100%;
 }
 
 .nav__toggler {
@@ -298,7 +320,7 @@ body {
   font-weight: 400;
   font-size: 24px;
   margin: 8px auto;
-  text-align: center;
+  text-align: left;
 }
 
 .menuitem {

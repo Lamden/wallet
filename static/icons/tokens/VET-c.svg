@@ -7,26 +7,25 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="226.777"
-   height="226.777"
-   viewBox="0 0 226.777 226.777"
+   viewBox="0 0 226.8 226.8"
    version="1.1"
-   id="svg4691"
-   sodipodi:docname="DASH.svg"
+   id="svg5063"
+   sodipodi:docname="VET-c.svg"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
   <metadata
-     id="metadata4697">
+     id="metadata5069">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs4695" />
+     id="defs5067" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -38,17 +37,17 @@
      inkscape:pageshadow="2"
      inkscape:window-width="716"
      inkscape:window-height="480"
-     id="namedview4693"
+     id="namedview5065"
      showgrid="false"
-     inkscape:zoom="1.0406699"
-     inkscape:cx="113.3885"
-     inkscape:cy="113.3885"
+     inkscape:zoom="1.1155203"
+     inkscape:cx="113.4"
+     inkscape:cy="113.4"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg4691" />
+     inkscape:current-layer="svg5063" />
   <path
-     d="M113.388 0C50.766 0 0 50.766 0 113.388c0 62.623 50.766 113.389 113.389 113.389s113.389-50.766 113.389-113.389C226.777 50.766 176.011 0 113.388 0zM56.562 104.802h45.266l-5.238 17.024H51.326l5.236-17.024zm117.268-8.029c-1.801 6.506-7.656 26.023-10.059 32.945-2.4 6.922-6.829 12.734-12.506 16.057-5.676 3.323-7.797 4.712-15.731 4.712H54.303l5.721-18.542h76.395l11.414-37.109h-75.79l5.722-18.541h84.577c3.875 0 8.996 1.792 11.488 6.639 2.491 4.841 1.799 7.333 0 13.839z"
-     id="path4689"
-     style="fill:#000000;fill-opacity:1" />
+     d="M41.2 12.2h-30s-8.2.5-4.5 8 88.8 180.2 88.8 180.2 6.8 14.2 17.5 14.2 20.9-21.9 20.9-21.9l85.6-174.4s1.8-5-2-6.8-6.6 0-7.5 1.8c-17.3 32.8-50.2 99.8-66 133.5-2.1 4.4-5.5 12.5-15.2 12.2s-13.3-4.9-15.5-8.8c-18.4-31.8-48.2-99-64.8-131.8-1.1-1.8-3.3-5.9-7.3-6.2z"
+     id="path5061"
+     style="fill:#23b3fa;fill-opacity:1" />
 </svg>

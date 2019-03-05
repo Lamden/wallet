@@ -1,88 +1,123 @@
 <template>
     <el-container>
-      <el-main>           
-        <img :src=img alt="clove" height="100" width="100" >
-        <h2> Clove </h2>
+      <!-- hidden select tokens dialog box -->
+      <el-dialog
+        title="Select Tokens"
+        :visible.sync="dialogVisible"
+        width="30%">
+          <selectToken 
+            v-for="(value, key) in tokens"
+            :key="tokens[key].symbol" 
+            :storage.sync="storage"
+            :tokenActive.sync="tokens[key].active"
+            :token="tokens[key]">
+          </selectToken>
+      </el-dialog>
+
+      <!-- Clove Logo and Title -->
+      <el-main class="cloveMain">     
+        <img :src=img alt="clove" height="100" width="100%">
+        <p class="cloveTitle"> Clove </p>
       </el-main>
-      <el-footer>
-        <div v-for="token in tokens" class="tokenBox">
-          <cloveToken :token=token></cloveToken>
+
+      <!-- Token list, each on is a "CloveToken" component -->
+      <el-footer class="cloveFooter">
+        <div>
+          <cloveToken
+            v-for="(value, key) in tokens" 
+            :key="tokens[key].name + tokens[key].symbol" 
+            v-show="tokens[key].active"
+            :storage.sync="storage"
+            :unlockedTokens="unlockedTokens"
+            :token=tokens[key]
+            @unlockPrivate="unlockPrivate"
+            @removeToken="removeToken">
+          </cloveToken>  
+
+        <!-- Button to make the Select Token Dialoge viable so the token list can be edited -->
+          <div class="box-add-button">
+            <h3 v-if="tokens.length == 0"> Add tokens to your Clove Wallet </h3>
+            <el-button 
+              class="button-add-token" 
+              icon="el-icon-plus" 
+              circle @click="dialogVisible = true">
+            </el-button>
+           <!-- <el-button  @click="removeToken('BTC')">delete </el-button> -->
+          </div>
         </div>
       </el-footer>
   </el-container>
 </template>
 
-
 <script>
 import cloveToken from './cloveToken';
+import selectToken from './selectToken';
+import errorMixin from '../mixins/error';
 
   export default {
     props: ['storage'],
+    mixins: [errorMixin],
     data: () => ({
           img: "/images/clove-logo.svg",
-          BTCicon: "/icons/tokens/BTC.svg",
-          tokens: [
-            {name: "Bitcoin", symbol: "BTC", balance: 5.12345678, icon: "/icons/tokens/BTC.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Ethereum", symbol: "ETH", balance: 12.12345678, icon: "/icons/tokens/ETH.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Litecoin", symbol: "LTC", balance: 130.12345678, icon: "/icons/tokens/LTC.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Bitcoin Cash", symbol: "BCH", balance: 40.12345678, icon: "/icons/tokens/BCH-alt.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Bitcoin SV", symbol: "BSV", balance: 86.12345678, icon: "/icons/tokens/BTA.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Dash", symbol: "DASH", balance: 349.12345678, icon: "/icons/tokens/DASH.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Ethereum Classic", symbol: "ETC", balance: 892.12345678, icon: "/icons/tokens/ETC.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "VeChain", symbol: "VET", balance: 10789.12345678, icon: "/icons/tokens/VET.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"},
-            {name: "Augur", symbol: "REP", balance: 19287321.12345678, icon: "/icons/tokens/REP.svg", address:"89au21n219898h198hd98sdf98df98sadf98dfa98hf98ha9fah"}
-          ]
+          dialogVisible: false,
+          unlockedTokens: [],
+          activeTokens: [],
+          tokens: []
     }),
     computed: {
     },
     created() {
+      this.tokens = this.storage.getAllTokens();
     },
     methods: {
-    },
+      unlockPrivate: function unlockPrivate(passInfo) {
+        try {
+          this.storage.unlockStorage(passInfo.password);
+          console.log("unlocked for sure");
+        } catch (e) {
+          console.log('Unlocking Priv Key for: ' + passInfo.token);
+          !this.unlockedTokens.includes(passInfo.token) ? this.unlockedTokens.push(passInfo.token): null;
+          this.setError('Incorrect password');
+        }
+      },
+      removeToken: function removeToken(tokenToDelete) {
+        console.log("hello " + tokenToDelete)
+        this.tokens.forEach (function (token) {
+          if (token.symbol === tokenToDelete) {
+            token.active = false;
+            token.keys = null;
+            token.balance = 0;
+          } 
+        })
+        
+      } 
+    },  
     components: {
-      cloveToken
+      cloveToken,
+      selectToken
     },
   };
 </script>
 
 <style>
-  @font-face {
-    font-family: 'Avenir';
-    src: url('/fonts/Avenir-Light.woff') format('woff'),
-        url('/fonts/Avenir-Light.ttf') format('truetype');
-    font-weight: 200;
+  .cloveFooter {
+    overflow: scroll;
+    height: 338px!important;
+    padding:0px;
+    overflow-x: hidden;
   }
 
-  @font-face {
-    font-family: 'Avenir';
-    src: url('/fonts/Avenir-Medium.woff') format('woff'),
-        url('/fonts/Avenir-Medium.ttf') format('truetype');
-    font-weight: 400;
-  }
-
-  @font-face {
-    font-family: 'Avenir';
-    src: url('/fonts/Avenir-Heavy.woff') format('woff'),
-        url('/fonts/Avenir-Heavy.ttf') format('truetype');
-    font-weight: bold;
-  }
-  .el-header {
-    color: #333;
-    text-align: center;
-    background-color: #fafaff;
+  .button-add-token:hover {
+    background-color: rgb(253, 218, 235)!important;
     
   }
-
-  .el-footer {
-    text-align: center;
-  }
   
-  .el-main {
+  .cloveMain {
     color: #333;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
-    padding-top: 30px;
+    padding: 30px 0 0 0;
   }
 
   .expand {
@@ -91,8 +126,52 @@ import cloveToken from './cloveToken';
     padding-right: 10px;
   }
   
-  body > .el-container {
-    margin-bottom: 0px;
+  .button-add-token {
+    width: 40px!important;
+    height: 40px!important;
+    color: #C22C78!important;
+    border-color: #C22C78!important;
+    background-color: rgb(255, 236, 246)!important;
+    margin: 0 0 0 18px;
+  }
+
+  .box-add-button {
+    padding: 15px 0 0 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .box-add-button h3 {
+    color: gray;
+    margin: 0 0 0 18px;
+    padding: 15px 0 20px 0;
+  }
+
+  .cloveTitle{
+    font-size: 3.5em;
+    padding: 0;
+    margin-top: -20px;
+    margin-bottom: 0;
+
+  }
+
+ .el-dialog {
+    margin: 5% 5% 5% 5%!important;
+    width:90%!important;
+    height: 92%!important;
+  }
+
+  .el-dialog__body {
+    padding: 5px 5px 5px 10px!important;
+    flex-wrap: wrap;
+    height: 410px;
+    overflow: scroll;
+    overflow-x: hidden;
+    display: flex!important;
+  }
+
+  .el-dialog__header {
+    text-align: center!important;
   }
 
   [debug], [debug] *:not(g):not(path) {

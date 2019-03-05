@@ -1,4 +1,10 @@
-/* global localStorage */
+/* global localStorage
+
+Token Storage Notes:
+ -  Tokens are now stored with a "name + symbol" key. 
+    This is to allow for the possibilty of two different project with the same symbol
+*/
+const tokenInfo = require('./token_info');
 const ethUtil = require('ethereumjs-util');
 const keythereum = require('keythereum');
 const bitcoin = require('bitcoinjs-lib')
@@ -30,11 +36,144 @@ function getPrivateKeys() {
   }
 }
 
+function authenticate(){
+  if (password === undefined) {
+    throw new Error('Storage is locked');
+  }
+  const init = localStorage.init;
+  if (init === undefined) {
+    return {};
+  }
+
+  try {
+    const decrypted = CryptoJS.AES.decrypt(init, password, { format: JsonFormatter });
+    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+  } catch (e) {
+    password = undefined;
+    throw new Error('Decryption failed');
+  }
+}
+
+function storageUnlocked(){
+  return password === undefined ? false : true;
+}
+
 function savePrivateKeys(keys) {
   const encrypted =
     CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
 
   localStorage.setItem('privKeys', encrypted);
+}
+
+function saveActiveToken(tokenKey) {
+  let activeTokens = getActiveTokens();
+  activeTokens.push(tokenKey);
+  const encrypted =
+    CryptoJS.AES.encrypt(JSON.stringify(activeTokens), password, { format: JsonFormatter }).toString();
+
+  localStorage.setItem('activeTokens', encrypted);
+}
+
+function getSuppotedTokens () {
+  return tokenInfo;
+}
+
+function getActiveTokens() {
+  if (storageUnlocked()){
+    let activeTokens = localStorage.activeTokens;
+    if (activeTokens === undefined) {
+      return [];
+    }
+    const decrypted = CryptoJS.AES.decrypt(activeTokens, password, { format: JsonFormatter });
+    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted))
+  } else {
+    throw new Error('Storage is locked');
+  }
+};
+
+exports.firstRun = () => {
+  return localStorage.init ? true : false;
+}
+
+exports.initiateKeyStore = (pass) => {
+  password = pass;
+
+  if (!localStorage.init){
+    let init = true;
+    const encrypted1 = CryptoJS.AES.encrypt(JSON.stringify(init), password, { format: JsonFormatter }).toString();
+    localStorage.setItem('init', encrypted1);
+
+    let privKeys = {};
+    const encrypted2 = CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
+    localStorage.setItem('privKeys', encrypted2);
+  }
+}
+
+exports.unlock = (pass) => {
+  password = pass;
+  try {
+    authenticate();
+  } catch (e) {
+    password = undefined;
+    if (e.message === 'Decryption failed') {
+      throw new Error('Incorrect password');
+    } else {
+      throw e;
+    }
+  }
+}
+
+exports.getInitStorage = () => {
+  const decrypted = CryptoJS.AES.decrypt(localStorage.init, password, { format: JsonFormatter });
+  return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted))
+}
+
+exports.getPrivateKeysStorage = () => {
+  if (storageUnlocked()){
+    let storedTokens = localStorage.privKeys;
+    const decrypted = CryptoJS.AES.decrypt(storedTokens, password, { format: JsonFormatter });
+    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted))
+  } else {
+    throw new Error('Storage is locked');
+  }
+}
+
+exports.getAllTokens = () => {
+  if (storageUnlocked()){
+    let allTokens = getSuppotedTokens();
+    const privKeys = getPrivateKeys();
+    const activeTokens = getActiveTokens()
+
+    for(var key in allTokens) {
+      activeTokens.includes(key) ? allTokens[key].active = true : null;
+      if (privKeys[key]) {
+          for (var address in privKeys[key]) {
+              allTokens[key].keys = [];
+              allTokens[key].keys.push({public: address, label: privKeys[key][address].label});
+          }
+      }
+    }
+    return allTokens;
+  }else{
+    throw new Error('Storage is locked');
+  }  
+}
+
+exports.setTokenActive = (tokenKey) => {
+  if (storageUnlocked()){
+    saveActiveToken(tokenKey);
+    return getActiveTokens();
+  }else{
+    throw new Error('Storage is locked');
+  }
+}
+
+exports.getTokens = (TokenKey) => {
+  if (password === undefined) {
+    throw new Error('Storage is locked');
+  }
+  const tokens = getPrivateKeys();
+  return tokens[tokenKey];
 }
 
 exports.genEthKey = () => {
@@ -81,6 +220,7 @@ exports.unlockStorage = (pass) => {
   try {
     getPrivateKeys();
   } catch (e) {
+    console.log(e.message);
     password = undefined;
     if (e.message === 'Decryption failed') {
       throw new Error('Incorrect password');
@@ -174,6 +314,6 @@ exports.getAvailableKeys = () => {
     });
     return obj;
   }, {});
-};
+};  
 
 exports.getSupportedNetworks = () => Object.keys(btcNetworks).concat(ethNetworks).sort();
