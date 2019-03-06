@@ -12,6 +12,10 @@
           <h1>PrivKey Storage</h1>
           <p class="display-content">{{getPrivateKeys()}}</p>
         </div>
+        <div class="display-storage">
+          <h1>Active Tokens</h1>
+          <p class="display-content">{{getActiveTokens()}}</p>
+        </div>
     </el-main>
     <el-footer class="unlock-footer">
 
@@ -34,6 +38,15 @@ export default {
     },
     getPrivateKeys() {
       return this.storage.getPrivateKeysStorage();
+    },
+    getActiveTokens (){
+      let activeTokens =  this.storage.getActiveTokens();
+      console.log(typeof(activeTokens))
+      for (let tokenKey in activeTokens){
+        console.log(activeTokens[tokenKey]);
+      }
+      return activeTokens;
+      
     }
   },
   components: {}

@@ -1,111 +1,65 @@
 <template>
   <el-collapse >
-
   <!-- TOKEN BANNER (logo, name, balance) -->
     <el-collapse-item name="1">
       <template slot="title"  >
         <div class="tokenBox" >
           <div class="bg" :style="{ backgroundImage: 'url(' + token.icon + ')' }"></div>
             <h1 class="tokenName" :style="token.color"> {{ token.name }}  </h1>
-            <p class="balances"> {{ token.balance + " " + token.symbol }}</p>
+        <!--    <p class="balances"> {{ token.balance + " " + token.symbol }}</p> -->
         </div>
       </template>
       
       <!-- ADD Private Key if none exist -->
       <div class="box-token-keys" v-if="!token.keys">
-        <h1 v-if="!token.keys"> Enter your {{token.name}} private key to activate this wallet</h1>
-        <el-input v-if="!token.keys"></el-input>
-        <el-button type="primary" plain v-if="!token.keys">Submit</el-button>
-      </div>
-
-      <!-- DISPLAY Public and Private Keys in they exist  -->
-      <div class="box-token-keys" v-if="token.keys">
-        <h1 class="pubkey-title"> public key </h1>
-        <el-input  :value="token.keys.pk" id="showPublic"></el-input>
-
-        <!-- only show this private key if the password has been verified -->
-        <div v-if="unlockedTokens.includes(token.symbol)">
-          <h1 class="key-title"> private key </h1>
-          <el-input
-            :value="token.keys.sk"
-            class="privkey-display">
-          </el-input>
-
-          <!-- Confirm deletion of the key pair from KeyStorage -->
-          <div class="delete-wallet-box">
-            <el-popover
-              placement="top"
-              width="90%"
-              v-model="deletePopup">
-              <h1> Delete {{token.name}} Wallet? </h1>
-              <p>Your public and private keys will be erased from the wallet. If you have not backed up your private key you will lose all funds assocated with this wallet.</p>
-              <p> ARE YOU SURE YOU WANT TO DELETE? </p>
-              <div style="text-align: center; margin: 0">
-                <el-button size="mini" type="text" @click="deletePopup = false">cancel</el-button>
-                <el-button type="danger" size="mini" @click="$emit('removeToken', token.symbol)">confirm</el-button>
-              </div>
-              <el-button class="delete-wallet" slot="reference">Delete {{token.name}} Wallet?</el-button>
-            </el-popover>
-          </div>
-        </div>
-
-        <!-- Password entry to unlock displaying of private key -->
-        <el-collapse v-if="!unlockedTokens.includes(token.symbol)">
-          <el-collapse-item  title="show private key..." name="2">
-              <div>
-                <el-input 
-                  placeholder="Please input password"
-                  type="password"
-                  v-model="password" 
-                  show-password
-                  @keyup.enter.native="$emit('unlockPrivate', passInfo)"></el-input>
-              </div>
-          </el-collapse-item>
-        </el-collapse >
+        <el-input 
+          size="small" 
+          placeholder="Enter a name for this wallet" 
+          v-model="privKeyLabel">
+      </el-input>
+        <el-input 
+        size="small" 
+        type="textarea" 
+        placeholder="Please input private key" 
+        v-model="privKeyInput"
+        @keyup.enter.native="addKey">
+      </el-input>
+        
+        {{"public key: " + token.keys}}
       </div>
     </el-collapse-item>
   </el-collapse>
 </template>
 
-
-<script> 
-  export default {
-      props: {
-        token: {
-          type: Object,
-            required: true
-      },
-      unlockedTokens: {
-                type: Array,
-            required: true
-      }
-    },
-    data: function () {
-      return{
-        placeholdertext: "Input Your " + this.token.name + " Private Key",
-        showPrivate: false,
-        deletePopup: false,
-        password: "",
-        passInfo: {password: this.password,
-                   token: this.token.symbol},
-        privateKey: "Hello Data",
-        computed: {
-      },
-      created() {
-        vm.$on('remove', function (tokenSymbol) {
-          this.$emit('removeToken', tokenSymbol);
-        });
-      },
-      methods: {
-      },
-      computed: {
-
-      },
-      components: {
-      }
+<script>
+export default {
+  props:{token: {type: Object}, 
+         storage: {type: Object}
+        },
+  data () {
+    return { 
+      privKeyInput: "",
+      privKeyLabel: "",
+  }},
+  computed: {
+  },
+  created() {
+  },
+  methods: {
+    addKey(){
+      let tokenKey = this.token.name + this.token.symbol
+      console.log(tokenKey)
+      console.log(this.token.symbol)
+      console.log(this.privKeyInput)
+      console.log(this.privKeyLabel)
+      console.log(this.storage.addKey(tokenKey, this.token.symbol, this.privKeyInput, this.privKeyLabel));
     }
+  },
+  computed: {
+  },
+  components: {
   }
-};            
+};        
 </script>
 
 <style>

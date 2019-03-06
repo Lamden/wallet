@@ -58,20 +58,11 @@ function storageUnlocked(){
   return password === undefined ? false : true;
 }
 
-function savePrivateKeys(keys) {
+function savePrivateKeys(privKeys) {
   const encrypted =
-    CryptoJS.AES.encrypt(JSON.stringify(keys), password, { format: JsonFormatter }).toString();
+    CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
 
   localStorage.setItem('privKeys', encrypted);
-}
-
-function saveActiveToken(tokenKey) {
-  let activeTokens = getActiveTokens();
-  activeTokens.push(tokenKey);
-  const encrypted =
-    CryptoJS.AES.encrypt(JSON.stringify(activeTokens), password, { format: JsonFormatter }).toString();
-
-  localStorage.setItem('activeTokens', encrypted);
 }
 
 function getSuppotedTokens () {
@@ -79,17 +70,13 @@ function getSuppotedTokens () {
 }
 
 function getActiveTokens() {
-  if (storageUnlocked()){
-    let activeTokens = localStorage.activeTokens;
-    if (activeTokens === undefined) {
-      return [];
-    }
-    const decrypted = CryptoJS.AES.decrypt(activeTokens, password, { format: JsonFormatter });
-    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted))
-  } else {
-    throw new Error('Storage is locked');
-  }
+  let activeTokens = JSON.parse(localStorage.activeTokens);
+  return activeTokens;
 };
+
+function saveActiveTokens(activeTokens){
+  localStorage.setItem('activeTokens', JSON.stringify(activeTokens));
+}
 
 exports.firstRun = () => {
   return localStorage.init ? true : false;
@@ -106,6 +93,10 @@ exports.initiateKeyStore = (pass) => {
     let privKeys = {};
     const encrypted2 = CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
     localStorage.setItem('privKeys', encrypted2);
+
+    let activeTokens = ['BitcoinBTC', 'EthereumETH'];
+    const JSONactiveTokens = JSON.stringify(activeTokens);
+    localStorage.setItem('activeTokens', JSONactiveTokens);
   }
 }
 
@@ -139,18 +130,30 @@ exports.getPrivateKeysStorage = () => {
 }
 
 exports.getAllTokens = () => {
+// Returns an object that combines:
+//   - The metadata about all tokens (for displaying UI) "token_info.js"
+//   - Which tokens the user has added to the Clove wallet "localstorage.activeTokens"
+//   - The public key and key info for each token if it exists "localstorage.privKeys"
+   
   if (storageUnlocked()){
     let allTokens = getSuppotedTokens();
     const privKeys = getPrivateKeys();
-    const activeTokens = getActiveTokens()
+    const activeTokens = getActiveTokens();
 
-    for(var key in allTokens) {
-      activeTokens.includes(key) ? allTokens[key].active = true : null;
+    for(let key in allTokens) {
+      //Add active status of token (these will be shown in the user's main Clove screen)
+      activeTokens.includes(key) ? allTokens[key].active = true : allTokens[key].active = false;
+
+      //Add the key info to each token
       if (privKeys[key]) {
-          for (var address in privKeys[key]) {
-              allTokens[key].keys = [];
-              allTokens[key].keys.push({public: address, label: privKeys[key][address].label});
-          }
+        allTokens[key]['keys'] = {}
+        for (let publicKey in privKeys[key]) {
+            allTokens[key]['keys'][publicKey] = privKeys[key][publicKey];
+
+            //don't send private key to UI. We will send the private key to the UI from a different
+            //method only after the user re-enters their password.
+            allTokens[key]['keys'][publicKey].privatekey = null;
+        }
       }
     }
     return allTokens;
@@ -159,14 +162,71 @@ exports.getAllTokens = () => {
   }  
 }
 
-exports.setTokenActive = (tokenKey) => {
-  if (storageUnlocked()){
-    saveActiveToken(tokenKey);
-    return getActiveTokens();
+exports.setActiveToken = (tokenKey) => {
+// Added the tokenKey to the list of tokens that will exists on the user's Clove page
+  let activeTokens = getActiveTokens();
+  activeTokens.push(tokenKey);
+  saveActiveTokens(activeTokens);
+}
+
+exports.getActiveTokens = () => {
+  // Added the tokenKey to the list of tokens that will exists on the user's Clove page
+    return getActiveTokens()
+  }
+
+exports.removeActiveToken = (tokenKey) => {
+// Removes the tokenKey from the list of tokens that will exists on the user's Clove page
+  let activeTokens = getActiveTokens();
+  let filtered = activeTokens.filter(function(value, index, arr){
+    return !(value === tokenKey);
+  });
+  saveActiveTokens(filtered);
+}
+
+exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
+  // Accepts a private key entered by the user and attempts to match it to the proper network
+  // to get the public key.  If it's able to it will store the keypair in localStorage.privKeys
+  // and return the public key back to the UI.
+  // We are also storing balance and price to localStorage, to be populated by future updates.
+  
+  if (storageUnlocked()) {
+    let publicKey;
+    let key;
+  
+    //Match tokenKey to the network
+    if (tokenInfo[tokenKey].network === 'Ethereum') {
+      key = sign.getHexBuffer(privateKey);
+      if (key.length === 0) {
+        throw new Error('Invalid private key');
+      }
+      publicKey = ethUtil.privateToAddress(key).toString('hex');
+       } else if (tokenInfo[tokenKey].network === 'Bitcoin') {
+        key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
+        publicKey = key.getAddress();
+    } else if (tokenInfo[tokenKey].network === 'Cilantro') {
+        throw new Error(`Cilantro networks are not supported yet`);
+    } else {
+        throw new Error(`${networkSymbol} network is not supported`);
+       }
+
+    //Get privateKeys object from localStorage
+    const privKeys = getPrivateKeys();
+    //Initialize object if it does not exist
+    privKeys[tokenKey] = privKeys[tokenKey] || {};
+
+    if (privKeys[tokenKey][publicKey]) {
+      throw new Error(`This address already exists in your ${networkSymbol} wallet`);
+    } else {
+      //Save keypait to localStorage and return public key to UI
+      privKeys[tokenKey][publicKey] = {privatekey, label, balance: 0, price: 0};
+      savePrivateKeys(privKeys);
+
+      return publicKey;
+    }
   }else{
     throw new Error('Storage is locked');
   }
-}
+};
 
 exports.getTokens = (TokenKey) => {
   if (password === undefined) {
@@ -234,35 +294,7 @@ exports.lockStorage = () => {
   password = undefined;
 };
 
-exports.addKey = (networkSymbol, privateKey, label = '') => {
-  if (password === undefined) {
-    throw new Error('Storage is locked');
-  }
-  let address;
-  let key;
 
-  if (ethNetworks.includes(networkSymbol)) {
-    key = sign.getHexBuffer(privateKey);
-    if (key.length === 0) {
-      throw new Error('Invalid private key');
-    }
-    address = ethUtil.privateToAddress(key).toString('hex');
-  } else if (networkSymbol in btcNetworks) {
-    key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
-    address = key.getAddress();
-  } else {
-    throw new Error(`${networkSymbol} network is not supported`);
-  }
-  const keys = getPrivateKeys();
-  keys[networkSymbol] = keys[networkSymbol] || {};
-  keys[networkSymbol][address] = {
-    privateKey,
-    label,
-  };
-
-  savePrivateKeys(keys);
-  return address;
-};
 
 exports.getPrivateKey = (networkSymbol, address) => {
   if (password === undefined) {

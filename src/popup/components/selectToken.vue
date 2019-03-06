@@ -13,7 +13,6 @@
     </el-card>
 </template>
 
-
 <script> 
 export default {
     props:['tokenActive', 'token', 'storage'],
@@ -23,7 +22,11 @@ export default {
         let tokenKey = this.token.name + this.token.symbol;
         try{
           this.$emit('update:tokenActive', !this.tokenActive);
-          this.storage.setTokenActive(tokenKey);
+          if (this.tokenActive){
+            this.storage.removeActiveToken(tokenKey);
+          }else{
+            this.storage.setActiveToken(tokenKey);
+          }
         } catch (e) {
           console.log(e.message);
         }

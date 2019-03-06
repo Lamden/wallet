@@ -27,9 +27,9 @@
             v-for="(value, key) in tokens" 
             :key="tokens[key].name + tokens[key].symbol" 
             v-show="tokens[key].active"
-            :storage.sync="storage"
+            :storage="storage"
             :unlockedTokens="unlockedTokens"
-            :token=tokens[key]
+            :token="tokens[key]"
             @unlockPrivate="unlockPrivate"
             @removeToken="removeToken">
           </cloveToken>  
