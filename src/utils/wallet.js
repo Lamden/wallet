@@ -9,8 +9,32 @@ var helpers = require('./helpers');
  * @return {Uint8Array(length: 32), Uint8Array(length: 32)} { vk, sk }
  *      sk:     Signing Key (SK) represents 32 byte signing key
  *      vk:     Verify Key (VK) represents a 32 byte verify key
+ * 
  */
+
+ /*
 exports.generate_keys = (seed) => {
+    console.log('generating keys')
+    var kp = null;
+    if (seed === undefined) {
+        kp = nacl.sign.keyPair();
+    } else {
+        kp = nacl.sign.keyPair.fromSeed(seed);
+    }
+    // In the JS implementation of the NaCL library the sk is the first 32 bytes of the secretKey
+    // and the vk is the last 32 bytes of the secretKey as well as the publicKey
+    // {
+    //   'publicKey': <vk>,
+    //   'secretKey': <sk><vk>
+    // }
+    return {
+        sk: new Uint8Array(kp['secretKey'].slice(0,32)),
+        vk: new Uint8Array(kp['secretKey'].slice(32,64))
+    }
+}
+*/
+
+function generate_keys(seed){
     var kp = null;
     if (seed === undefined) {
         kp = nacl.sign.keyPair();
@@ -66,7 +90,7 @@ exports.format_to_keys = (sk) => {
  *      sk:     Signing Key (SK) represented as a 64 character hex string
  *      vk:     Verify Key (VK) represented as a 64 character hex string
  */
-exports.keys_to_format = (kp) => {
+function keys_to_format(kp){
     return {
         vk: helpers.buf2hex(kp.vk),
         sk: helpers.buf2hex(kp.sk)

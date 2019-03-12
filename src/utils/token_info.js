@@ -1,4 +1,10 @@
 module.exports = {
+       LamdenTAU:
+              {name: "Lamden",
+              network: "Ethereum",
+              symbol: "TAU", 
+              icon: "/icons/tokens/TAU.svg", 
+              color: {color:"rgb(179,59,117)"}},
        BitcoinBTC: 
               {name: "Bitcoin",
               network: "Bitcoin",
@@ -53,4 +59,5 @@ module.exports = {
               symbol: "REP", 
               icon: "/icons/tokens/REP-c.svg", 
               color: {color:"#553580"}},
+
 };

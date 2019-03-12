@@ -23,42 +23,20 @@ function getPrivateKeys() {
   if (password === undefined) {
     throw new Error('Storage is locked');
   }
-  const keys = localStorage.privKeys;
-  if (keys === undefined) {
+  const privKeys = localStorage.privKeys;
+  if (privKeys === undefined) {
     return {};
   }
 
   try {
-    const decrypted = CryptoJS.AES.decrypt(keys, password, { format: JsonFormatter });
+    const decrypted = CryptoJS.AES.decrypt(privKeys, password, { format: JsonFormatter });
     return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
   } catch (e) {
     throw new Error('Decryption failed');
   }
 }
 
-function authenticate(){
-  if (password === undefined) {
-    throw new Error('Storage is locked');
-  }
-  const init = localStorage.init;
-  if (init === undefined) {
-    return {};
-  }
-
-  try {
-    const decrypted = CryptoJS.AES.decrypt(init, password, { format: JsonFormatter });
-    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-  } catch (e) {
-    password = undefined;
-    throw new Error('Decryption failed');
-  }
-}
-
-function storageUnlocked(){
-  return password === undefined ? false : true;
-}
-
-function savePrivateKeys(privKeys) {
+function setPrivateKeys(privKeys) {
   const encrypted =
     CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
 
@@ -69,92 +47,242 @@ function getSuppotedTokens () {
   return tokenInfo;
 }
 
+function getUnencrypted(storeName){
+  let storageObj = JSON.parse(localStorage[storeName]);
+  return storageObj;
+}
+
+function setUnencrypted(storageObj, storeName) {
+  const jsonObj = JSON.stringify(storageObj);
+  localStorage.setItem(storeName, jsonObj);
+}
+
+function storageUnlocked(){
+  return password === undefined ? false : true;
+}
+
+/*
 function getActiveTokens() {
-  let activeTokens = JSON.parse(localStorage.activeTokens);
+  let activeTokens = getUnencrypted('activeTokens');
   return activeTokens;
 };
 
+
 function saveActiveTokens(activeTokens){
   localStorage.setItem('activeTokens', JSON.stringify(activeTokens));
+}*/
+
+function generateDTAUWallet(pass){
+  var kp = tauWallet.new_wallet()
+  var enckp = CryptoJS.AES.encrypt(kp.sk, pass);
+  return {
+      wallet: kp,
+      encsk: enckp
+  }
+}
+
+function authenticate(pass){
+  const auth = localStorage.authenticate;
+  try {
+    const decrypted = CryptoJS.AES.decrypt(auth, pass, { format: JsonFormatter });
+    JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+    return true;
+  } catch (e) {
+    throw new Error('Incorrect Password');
+  }
+}
+
+exports.authenticate = (pass) => {
+  const auth = localStorage.authenticate;
+  try {
+    const decrypted = CryptoJS.AES.decrypt(auth, pass, { format: JsonFormatter });
+    JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+    password = pass;
+    return true;
+  } catch (e) {
+    password = undefined;
+    throw new Error('Incorrect Password');
+  }
 }
 
 exports.firstRun = () => {
-  return localStorage.init ? true : false;
+  return localStorage.privKeys ? true : false;
 }
 
 exports.initiateKeyStore = (pass) => {
   password = pass;
 
-  if (!localStorage.init){
-    let init = true;
-    const encrypted1 = CryptoJS.AES.encrypt(JSON.stringify(init), password, { format: JsonFormatter }).toString();
-    localStorage.setItem('init', encrypted1);
+  if (!localStorage.privKeys){
+    let darkTAUWallet = generateDTAUWallet(password);
+    //use this storage object to authenticate the user's password withough having to decrypt the private key store
+    const authenticate = CryptoJS.AES.encrypt(JSON.stringify('authenticate'), password, { format: JsonFormatter }).toString();
+    localStorage.setItem('authenticate', authenticate);
 
+    //Encrypted storage for private keys.  
+    //This only unencrypted when something needs to be signed, exported or the user wants to view it
+    let tokenKey = ['DarkTauDTAU']; 
     let privKeys = {};
-    const encrypted2 = CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
-    localStorage.setItem('privKeys', encrypted2);
+    privKeys[tokenKey] = {};
+    privKeys[tokenKey][darkTAUWallet.wallet.vk] = darkTAUWallet.wallet.sk;
 
-    let activeTokens = ['BitcoinBTC', 'EthereumETH'];
-    const JSONactiveTokens = JSON.stringify(activeTokens);
-    localStorage.setItem('activeTokens', JSONactiveTokens);
+    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
+    localStorage.setItem('privKeys', encrypted);
+
+    //unencrypted storage for the public key information as well as UI info for each key
+    let pubKeys = {};
+    pubKeys[tokenKey] = {};
+    pubKeys[tokenKey][darkTAUWallet.wallet.vk] = {label: "Lamden Wallet Dark TAU Address", balance: 0, stamps: 0, uiDefault: true};
+    pubKeys['LamdenMainNet'] = {};
+    pubKeys['LamdenMainNet']['unavailable'] = {label:'Comming Soon', balance: 0, stamps: 0, uiDefault: true, };
+    setUnencrypted(pubKeys, 'pubKeys')
+
+    //unencrypted storage of the user's active token list. 
+    //These are tokens the user added to their clove wallet view
+    let activeTokens = ['LamdenTAU','BitcoinBTC', 'EthereumETH'];
+    setUnencrypted(activeTokens, 'activeTokens')
   }
 }
 
-exports.unlock = (pass) => {
-  password = pass;
-  try {
-    authenticate();
-  } catch (e) {
-    password = undefined;
-    if (e.message === 'Decryption failed') {
-      throw new Error('Incorrect password');
-    } else {
-      throw e;
+exports.newCilantroWallet = (tokenKey, labelText) => {
+  if (tokenKey === 'DarkTauDTAU'){
+    try{
+      let privKeys = getPrivateKeys();
+      let pubKeys = getUnencrypted('pubKeys');
+      let darkTAUWallet = generateDTAUWallet(password);
+      let rollbackPrivate = getPrivateKeys();
+      let rollbackPublic = getUnencrypted('pubKeys');
+
+      //Store PRIVATE key of new Dark TAU Wallet
+      privKeys[tokenKey][darkTAUWallet.wallet.vk] = darkTAUWallet.wallet.sk;
+      //Store PUBLIC key info of new Dark TAU Wallet
+      pubKeys[tokenKey][darkTAUWallet.wallet.vk] = {label: labelText, balance: 0, stamps: 0, uiDefault: false};
+      setPrivateKeys(privKeys);
+      setUnencrypted(pubKeys, 'pubKeys')
+      return darkTAUWallet.wallet.vk;
+    } catch (e) {
+      setPrivateKeys(rollbackPrivate);
+      setUnencrypted(rollbackPublic, 'pubKeys');
+      throw new Error('New Wallet Failed: ' + e.message);
     }
   }
 }
 
-exports.getInitStorage = () => {
-  const decrypted = CryptoJS.AES.decrypt(localStorage.init, password, { format: JsonFormatter });
-  return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted))
+exports.newCilantroWallet_FromPrivateKey = (tokenKey, privKey, labelText) => {
+  let pubKey = tauWallet.get_vk(privKey);
+  let privKeys = getPrivateKeys();
+  let pubKeys = getUnencrypted('pubKeys');
+  try{
+    //Store PRIVATE key of new Dark TAU Wallet
+    privKeys[tokenKey][pubKey] = privKey;
+    //Store PUBLIC key info of new Dark TAU Wallet
+    pubKeys[tokenKey][pubKey] = {label: labelText, balance: 0, stamps: 0, uiDefault: false};
+    setPrivateKeys(privKeys);
+    setUnencrypted(pubKeys, 'pubKeys')
+    return pubKey;
+  }catch (e){
+    throw new Error('Key Import Failed: ' + e.message);
+  }
+  
+}
+
+exports.backupPrivateKeys = () => {
+  let href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(localStorage.privKeys);
+  return href;
 }
 
 exports.getPrivateKeysStorage = () => {
   if (storageUnlocked()){
     let storedTokens = localStorage.privKeys;
     const decrypted = CryptoJS.AES.decrypt(storedTokens, password, { format: JsonFormatter });
-    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted))
+    storedTokens = JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+    return storedTokens;
   } else {
     throw new Error('Storage is locked');
   }
 }
 
+exports.getPrivateKey = (pass, tokenKey, pubKey) => {
+  try {
+    authenticate(pass);
+    let privKeys = getPrivateKeys();
+    return privKeys[tokenKey][pubKey];
+
+  } catch (e) {
+    return e.message;
+  }
+}
+
+exports.deletePrivateKey = (tokenKey, pubKey) => {
+  let privKeys = getPrivateKeys();
+  let rollbackPrivate = getPrivateKeys();
+  let pubKeys = getUnencrypted('pubKeys');
+  let rollbackPublic = getUnencrypted('pubKeys');
+  try{
+    delete pubKeys[tokenKey][pubKey];
+    delete privKeys[tokenKey][pubKey];
+    setPrivateKeys(privKeys);
+    setUnencrypted(pubKeys, 'pubKeys')
+  } catch (e) {
+    setPrivateKeys(rollbackPrivate);
+    setUnencrypted(rollbackPublic, 'pubKeys');
+    throw new Error('Delete failed: ' + e.message);
+  }
+}
+
+exports.getPubKeyInfo = (tokenKey) => {
+  let pubKeyInfo = {};
+  if (storageUnlocked()){
+    pubKeyInfo  = getUnencrypted('pubKeys');
+    if (pubKeyInfo[tokenKey]) {
+      return pubKeyInfo[tokenKey]
+    }
+    return {};
+  }else{
+    throw new Error('Storage is locked');
+  }
+}
+
+exports.setPubKeyLabel = (tokenKey, pubKey, newLabel) => {
+  let pubKeys = getUnencrypted('pubKeys');
+  try {
+    pubKeys[tokenKey][pubKey].label = newLabel;
+    setUnencrypted(pubKeys, 'pubKeys');
+  } catch (e){
+    throw new Error('Label save failed: ' + e.message);
+  }
+}
+
+exports.setWalletUIDefault = (tokenKey, newUIDefault) => {
+  let pubKeys = getUnencrypted('pubKeys');
+  for (let p in pubKeys[tokenKey]){
+    if (newUIDefault === p){
+      pubKeys[tokenKey][p].uiDefault = true;
+    }else{
+      pubKeys[tokenKey][p].uiDefault = false;
+    }
+  }
+  try {
+    setUnencrypted(pubKeys, 'pubKeys');
+  } catch (e){
+    throw new Error('Set Default Failed: ' + e.message);
+  }
+}
+
+exports.addCilantroPrivateKey = (tokenKey, privKey) => {
+ null;
+
+}
+
 exports.getAllTokens = () => {
-// Returns an object that combines:
-//   - The metadata about all tokens (for displaying UI) "token_info.js"
-//   - Which tokens the user has added to the Clove wallet "localstorage.activeTokens"
-//   - The public key and key info for each token if it exists "localstorage.privKeys"
-   
+// Returns an object with all supported Clove tokens.
+// Adds a "visible" property so the UI knows which ones to show in the wallet
   if (storageUnlocked()){
     let allTokens = getSuppotedTokens();
-    const privKeys = getPrivateKeys();
-    const activeTokens = getActiveTokens();
+    const activeTokens = getUnencrypted('activeTokens');
 
     for(let key in allTokens) {
       //Add active status of token (these will be shown in the user's main Clove screen)
       activeTokens.includes(key) ? allTokens[key].active = true : allTokens[key].active = false;
-
-      //Add the key info to each token
-      if (privKeys[key]) {
-        allTokens[key]['keys'] = {}
-        for (let publicKey in privKeys[key]) {
-            allTokens[key]['keys'][publicKey] = privKeys[key][publicKey];
-
-            //don't send private key to UI. We will send the private key to the UI from a different
-            //method only after the user re-enters their password.
-            allTokens[key]['keys'][publicKey].privatekey = null;
-        }
-      }
     }
     return allTokens;
   }else{
@@ -162,32 +290,34 @@ exports.getAllTokens = () => {
   }  
 }
 
-exports.setActiveToken = (tokenKey) => {
-// Added the tokenKey to the list of tokens that will exists on the user's Clove page
-  let activeTokens = getActiveTokens();
-  activeTokens.push(tokenKey);
-  saveActiveTokens(activeTokens);
-}
-
-exports.getActiveTokens = () => {
+  
+exports.getActiveTokens = () => {  
   // Added the tokenKey to the list of tokens that will exists on the user's Clove page
-    return getActiveTokens()
+  let activeTokens = getUnencrypted('activeTokens');
+    return  activeTokens;
+  }
+
+exports.setActiveToken = (tokenKey) => {
+  // Added the tokenKey to the list of tokens that will exists on the user's Clove page
+    let activeTokens = getUnencrypted('activeTokens');
+    activeTokens.push(tokenKey);
+    setUnencrypted(activeTokens);
   }
 
 exports.removeActiveToken = (tokenKey) => {
 // Removes the tokenKey from the list of tokens that will exists on the user's Clove page
-  let activeTokens = getActiveTokens();
+  let activeTokens = getUnencrypted('activeTokens');
   let filtered = activeTokens.filter(function(value, index, arr){
     return !(value === tokenKey);
   });
-  saveActiveTokens(filtered);
+  setUnencrypted(filtered);
 }
 
 exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
   // Accepts a private key entered by the user and attempts to match it to the proper network
   // to get the public key.  If it's able to it will store the keypair in localStorage.privKeys
   // and return the public key back to the UI.
-  // We are also storing balance and price to localStorage, to be populated by future updates.
+  // We are also storing balance but it will only be populated by future updates.
   
   if (storageUnlocked()) {
     let publicKey;
@@ -200,9 +330,11 @@ exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
         throw new Error('Invalid private key');
       }
       publicKey = ethUtil.privateToAddress(key).toString('hex');
-       } else if (tokenInfo[tokenKey].network === 'Bitcoin') {
+
+    } else if (tokenInfo[tokenKey].network === 'Bitcoin') {
         key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
         publicKey = key.getAddress();
+
     } else if (tokenInfo[tokenKey].network === 'Cilantro') {
         throw new Error(`Cilantro networks are not supported yet`);
     } else {
@@ -210,16 +342,16 @@ exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
        }
 
     //Get privateKeys object from localStorage
-    const privKeys = getPrivateKeys();
+    let privKeys = getPrivateKeys();
     //Initialize object if it does not exist
     privKeys[tokenKey] = privKeys[tokenKey] || {};
 
     if (privKeys[tokenKey][publicKey]) {
       throw new Error(`This address already exists in your ${networkSymbol} wallet`);
     } else {
-      //Save keypait to localStorage and return public key to UI
-      privKeys[tokenKey][publicKey] = {privatekey, label, balance: 0, price: 0};
-      savePrivateKeys(privKeys);
+      //Save keypair to localStorage and return public key to UI
+      privKeys[tokenKey][publicKey] = {privatekey, label, balance: 0, uiDefault:false};
+      setPrivateKeys(privKeys);
 
       return publicKey;
     }
@@ -228,11 +360,11 @@ exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
   }
 };
 
-exports.getTokens = (TokenKey) => {
+exports.getToken = (TokenKey) => {
   if (password === undefined) {
     throw new Error('Storage is locked');
   }
-  const tokens = getPrivateKeys();
+  let tokens = getPrivateKeys();
   return tokens[tokenKey];
 }
 
@@ -294,19 +426,6 @@ exports.lockStorage = () => {
   password = undefined;
 };
 
-
-
-exports.getPrivateKey = (networkSymbol, address) => {
-  if (password === undefined) {
-    throw new Error('Storage is locked');
-  }
-  const keys = getPrivateKeys();
-  if (keys[networkSymbol] === undefined || keys[networkSymbol][address] === undefined) {
-    throw new Error('Key not found');
-  }
-  return keys[networkSymbol][address].privateKey;
-};
-
 exports.removePrivateKey = (networkSymbol, address) => {
   if (password === undefined) {
     throw new Error('Storage is locked');
@@ -319,7 +438,7 @@ exports.removePrivateKey = (networkSymbol, address) => {
   if (Object.keys(keys[networkSymbol]).length === 0) {
     delete keys[networkSymbol];
   }
-  savePrivateKeys(keys);
+  setPrivateKeys(keys);
 };
 
 exports.getAvailableKeys = () => {
@@ -347,5 +466,7 @@ exports.getAvailableKeys = () => {
     return obj;
   }, {});
 };  
+
+
 
 exports.getSupportedNetworks = () => Object.keys(btcNetworks).concat(ethNetworks).sort();

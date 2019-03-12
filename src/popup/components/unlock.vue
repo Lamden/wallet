@@ -73,10 +73,9 @@ export default {
     },
     unlock: function unlock(){
       try{
-        this.storage.unlock(this.unlockForm.password);
+        this.storage.authenticate(this.unlockForm.password);
         this.$emit('unlock', 'wallet');  
       }catch (e){
-         console.log('Could not unlock storage:' + e.message);
          this.setError('Could not unlock storage: ' + e.message); 
       }
     }
@@ -94,7 +93,7 @@ export default {
 }
 
 .unlock-error-h1 {
-  color: rgb(89,45,101)!important;
+  color: rgb(255, 102, 0)!important;
 }
 
 .unlock-footer {

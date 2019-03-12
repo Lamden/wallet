@@ -25,7 +25,7 @@
         <div>
           <cloveToken
             v-for="(value, key) in tokens" 
-            :key="tokens[key].name + tokens[key].symbol" 
+            :key="key" 
             v-show="tokens[key].active"
             :storage="storage"
             :unlockedTokens="unlockedTokens"
@@ -54,49 +54,50 @@ import cloveToken from './cloveToken';
 import selectToken from './selectToken';
 import errorMixin from '../mixins/error';
 
-  export default {
-    props: ['storage'],
-    mixins: [errorMixin],
-    data: () => ({
-          img: "/images/clove-logo.svg",
-          dialogVisible: false,
-          unlockedTokens: [],
-          activeTokens: [],
-          tokens: []
-    }),
-    computed: {
+export default {
+  props: ['storage'],
+  mixins: [errorMixin],
+  data: () => ({
+        img: "/images/clove-logo.svg",
+        dialogVisible: false,
+        unlockedTokens: [],
+        activeTokens: [],
+        tokens: []
+  }),
+  computed: {
+  },
+  created() {
+    this.tokens = this.storage.getAllTokens();
+    console.log(this.storage.getAllTokens());
+  },
+  methods: {
+    unlockPrivate: function unlockPrivate(passInfo) {
+      try {
+        this.storage.unlockStorage(passInfo.password);
+        console.log("unlocked for sure");
+      } catch (e) {
+        console.log('Unlocking Priv Key for: ' + passInfo.token);
+        !this.unlockedTokens.includes(passInfo.token) ? this.unlockedTokens.push(passInfo.token): null;
+        this.setError('Incorrect password');
+      }
     },
-    created() {
-      this.tokens = this.storage.getAllTokens();
-    },
-    methods: {
-      unlockPrivate: function unlockPrivate(passInfo) {
-        try {
-          this.storage.unlockStorage(passInfo.password);
-          console.log("unlocked for sure");
-        } catch (e) {
-          console.log('Unlocking Priv Key for: ' + passInfo.token);
-          !this.unlockedTokens.includes(passInfo.token) ? this.unlockedTokens.push(passInfo.token): null;
-          this.setError('Incorrect password');
-        }
-      },
-      removeToken: function removeToken(tokenToDelete) {
-        console.log("hello " + tokenToDelete)
-        this.tokens.forEach (function (token) {
-          if (token.symbol === tokenToDelete) {
-            token.active = false;
-            token.keys = null;
-            token.balance = 0;
-          } 
-        })
-        
-      } 
-    },  
-    components: {
-      cloveToken,
-      selectToken
-    },
-  };
+    removeToken: function removeToken(tokenToDelete) {
+      console.log("hello " + tokenToDelete)
+      this.tokens.forEach (function (token) {
+        if (token.symbol === tokenToDelete) {
+          token.active = false;
+          token.keys = null;
+          token.balance = 0;
+        } 
+      })
+      
+    } 
+  },  
+  components: {
+    cloveToken,
+    selectToken
+  },
+};
 </script>
 
 <style>

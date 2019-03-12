@@ -28,6 +28,10 @@
               <i class="el-icon-setting"></i>
               <span>First Run</span>
             </el-menu-item>
+            <el-menu-item index="2" @click="navController('backup')">
+              <i class="el-icon-setting"></i>
+              <span>Backup and Restore</span>
+            </el-menu-item>
           </el-menu>
         </div>
       </div>
@@ -42,6 +46,7 @@
       @clove="switchView('clove')"
       @dev="switchView('clove')"
       @firstRun="switchView('firstRun')"
+      @backup="switchView('backup')"
       />
     </div>
   </el-container>
@@ -57,6 +62,7 @@ import wallet from './components/wallet';
 import clove from './components/clove';
 import dev from './components/dev';
 import firstRun from './components/firstRun';
+import backup from './components/backup';
 
 export default {
   data: () => ({
@@ -121,6 +127,8 @@ export default {
         this.currentView = "dev";
       } else if (page == "firstRun") {
         this.currentView = "firstRun";
+      }else if (page == "backup") {
+        this.currentView = "backup";
       }
       this.menu = false
     }
@@ -135,7 +143,8 @@ export default {
     wallet,
     clove,
     dev,
-    firstRun
+    firstRun,
+    backup
   },
 };
 </script>

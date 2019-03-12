@@ -1,62 +1,28 @@
-const ks = require('./key_storage');
-
-console.log(
-
-    ks.addKey('BitcoinBTC', 'BTC', 'L55r8d3apuqyZ3Ly47BEFA4hiC6w5b8F7v3LufXgv67QLD2Gf2gs', 'testingBTC')
-)
-
 /*
-let allTokens = {
-    BitcoinBTC: 
-           {name: "Bitcoin",
-           symbol: "BTC",
-           balance: 5.12345678,
-           icon: "/icons/tokens/BTC-c.svg",
-           color: {color:"#f2a900"}},
-    EthereumETH: 
-           {name: "Ethereum",
-           symbol: "ETH",
-           balance: 12.12345678,
-           icon: "/icons/tokens/ETH-c.svg",
-           color: {color:"#3c3c3d"}},
-    LitecoinLTC: 
-           {name: "Litecoin",
-           symbol: "LTC", 
-           balance: 130.12345678, 
-           icon: "/icons/tokens/LTC-c.svg", 
-           color: {color:"#8d8d8d"}}
-}
+const ks = require('./key_storage');
+const nodeCryptoJs = require('node-cryptojs-aes');
 
-let activeTokens = ['BitcoinBTC', 'EthereumETH','LiteCoinLTC']
-let privKeys = {}
+
+const { CryptoJS, JsonFormatter } = nodeCryptoJs;
+
+let password = 'JeffPass'
+
 let tokenKey = 'BitcoinBTC';
+let pubKey = "8d88s7s7a6d6f78h5a3a2s5d7f8fd9d0d9s8s6s5s";
+let pubKey2 = "d88s7s7a6d6f78h5a38d8aslkjdsfljasdpjfiss";
+let privateKey = "d88s7s7a6d6f78h5a3a2s5d7f8fd9d0d9s8sa286s5s";
+let label = "JEFF BTC";
+let label2 = "JEFF BTC22222";
 
-let privatekey1 = "thisisatestprivatekeyaddress";
-let label1 = "Jeff's BTC address1";
-let publicKey1 = "0923u09234203q9u0wq9uf4g45eyrtyh";
+let privKeys = {};
+privKeys[tokenKey] = {};
+privKeys[tokenKey]['8d88s7s7a6d6f78h5a3a2s5d7f8fd9d0d9s8s6s5s'] = {privateKey, label, balance: 0, uiDefault:false};
+privKeys[tokenKey]['d88s7s7a6d6f78h5a38d8aslkjdsfljasdpjfiss'] = {privateKey, label: label2, balance: 0, uiDefault:false};
 
-
-let privatekey2 = "anotherPrivateAddressthatwehave";
-let label2 = "Jeff's second BTC address";
-let publicKey2 = "0a22jja8fghalkasdf8233sd9d9ss0s9sjs9";
-
-
-!privKeys[tokenKey] ? privKeys[tokenKey] || {};
-
-privKeys[tokenKey][publicKey1] = {privatekey: privatekey1, label: label1, balance: 0, price: 0};
-privKeys[tokenKey][publicKey2] = {privatekey: privatekey2, label: label2, balance: 0, price: 0};
-
-
-for(var key in allTokens) {
-    activeTokens.includes(key) ? allTokens[key].active = true : allTokens[key].active = false;
-    if (privKeys[key]) {
-        allTokens[key]['keys'] = {}
-        for (var address in privKeys[key]) {
-            allTokens[key]['keys'][address] = privKeys[key][address];
-            allTokens[key]['keys'][address].privatekey = null;
-        }
-    }
-}
-console.log (allTokens);
-
+console.log(privKeys);
+delete privKeys[tokenKey][pubKey2];
+console.log(privKeys);
 */
+
+const tauWallet = require('./wallet');
+console.log(tauWallet.get_vk('9decc7f7f0b5a4fc87ab5ce700e2d6c5d51b7565923d50ea13cbf78031bb3acf'));

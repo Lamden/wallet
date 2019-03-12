@@ -14,41 +14,172 @@
         <div class="lamden-logo-box">
           <lamdenLogo v-if="!togTestNet"></lamdenLogo>
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
-        </div>              
-        <h1  class="walletBalance"> {{ "Balance: " + networks[network].balance + " " + networks[network].title}} </h1>
-        <el-row class="walletTauAddress">
-          <el-col :span="23" show-overflow-tooltip="showOverflowTooltip" class="cutoff-wallet-address">
-            <span > {{"Address: " + networks[network].address }}</span>
-          </el-col>
-          <el-col :span="1">
-            <i class="el-icon-document"
-              v-clipboard:copy=networks[network].address>
-            </i>
-          </el-col>
-        </el-row>
+        </div>
+        {{"Balance: " + networkKeys[network][currentKey].balance}}
+         <el-button size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
+        <br>
+        <el-dropdown @command="handleCommand">
+          <span class="el-dropdown-link">
+            {{networkKeys[network][currentKey].label}}<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item 
+              v-for="(value, key, index) in networkKeys[network]" 
+              :key="index" 
+              :command="key"
+              trigger="click">
+              {{networkKeys[network][key].label}}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <br>
+        <el-button @click="showSection('send')" v-if="togTestNet" size="mini" icon="el-icon-d-arrow-right" circle title="send transaction"></el-button>
+        <el-button @click="showMessage('Copied!')" v-if="togTestNet" v-clipboard:copy="currentKey" size="mini" icon="el-icon-document" circle title="copy address"></el-button>
+        <el-button @click="showSection('edit')" v-if="togTestNet" size="mini" icon="el-icon-edit" circle title="edit address"></el-button>
+        <el-button @click="showSection('add')" v-if="togTestNet" size="mini" icon="el-icon-plus" circle title="add new address"></el-button>
       </el-main>
       <el-footer class="walletFooter">
-          <el-table
-            :data=networks[network].transactions 
-            style="width: 100%"
-            class="walletTransactions"
-            stripe>
-            <el-table-column
-              prop="hash"
-              label="Transaction Hash"
-              :show-overflow-tooltip=true>
-            </el-table-column>
-            <el-table-column
-              prop="time"
-              label="Time"
-              width="60px">
-            </el-table-column>
-            <el-table-column
-              prop="status"
-              label="Status"
-              width="80px">
-            </el-table-column>
-          </el-table>
+
+<!--  SEND TRANSACTION PANE                         -->
+      <div v-if="sections['send'].visible" class="send-box">
+        <h1 class="send-title">Send Dark TAU</h1>
+        <el-input
+          type="textarea"
+          :rows="2"
+          placeholder="Enter recipient's wallet address"
+          size="mini"
+          resize="none"
+          v-model="sections['send'].destination">
+        </el-input>
+        <el-row>
+          <el-col :span=12>
+            <h3>Amount</h3>
+          </el-col>
+          <el-col :span=12>
+            <h3>Stamps</h3>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span=12>
+            <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"></el-input-number>
+          </el-col>
+          <el-col :span=12>
+            <el-input-number label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini"></el-input-number>
+          </el-col>
+        </el-row>
+        <el-row :gutter=10>
+          <el-button class="send-button-padding" type="success" plain size="mini">Send Transaction</el-button>
+          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+        </el-row>
+      </div>
+
+<!--  EDIT ADDRESS PANE                         -->
+      <div v-if="sections['edit'].visible" class="send-box">
+        <el-row :gutter=6>
+          <el-col :span=4>
+            <h3 class="label-beside-input">Label</h3>
+          </el-col>
+          <el-col :span=16>
+            <el-input
+              size="mini"
+              resize="none"
+              v-model="sections['edit'].labelText">
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row :style="{'text-align': 'right'}">
+          <el-checkbox 
+            v-if="!networkKeys[network][currentKey].uiDefault" 
+            v-model="sections['edit'].defaultChecked">Default Address</el-checkbox>
+        </el-row>
+        <el-input
+          type="textarea"
+          :rows="3"
+          size="mini"
+          resize="none"
+          :readonly="true"
+          v-model="displayPublicKey">
+        </el-input>
+        <el-input
+          v-if="this.sections['edit'].showPrivKey"
+          type="textarea"
+          :rows="3"
+          size="mini"
+          resize="none"
+          :readonly="true"
+          v-model="networkKeys[network][currentKey].privateKey">
+        </el-input>
+        <div v-if="this.sections['edit'].showPrivKey === false">
+            <el-input
+              size="mini"
+              v-model="sections['edit'].password"
+              type="password"
+              autofocus
+              @keyup.enter.native="showPrivateKey"
+              placeholder="Enter your password to show private key">
+            </el-input>
+            <p v-if="this.sections['edit'].showPrivKey === false" class="error-text">{{sections['edit'].error}}</p>
+          </div>
+          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+          <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">Save Info</el-button>
+          <el-button @click="confirmDeleteAddress" :disabled="deleteButtonDisabled" class="send-button-padding" type="danger" plain size="mini">Delete Wallet</el-button>
+      </div>
+
+<!--  ADD ADDRESS PANE                         -->
+      <div v-if="sections['add'].visible" class="send-box">
+        <div v-if="displayAddMainSection">
+          <el-button class="add-button-padding" @click="sections['add'].newWallet = true" type="success" plain size="mini">Generate New Wallet</el-button>
+          <br>
+          <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">Add from Private Key</el-button>
+        </div>
+        
+        <div v-if="sections['add'].newWallet">
+           <el-row :gutter=6>
+            <el-col :span=6>
+              <h3 class="label-beside-input">Create Wallet Label</h3>
+            </el-col>
+            <el-col :span=16>
+              <el-input
+                size="mini"
+                resize="none"
+                v-model="sections['add'].newlabel">
+              </el-input>
+            </el-col>
+          </el-row>
+          <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">Generate New Wallet</el-button>
+          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+        </div>
+
+        <div v-if="sections['add'].fromPrivate">
+           <el-row :gutter=6>
+            <el-col :span=6>
+              <h3 class="label-beside-input">Wallet Label</h3>
+            </el-col>
+            <el-col :span=16>
+              <el-input
+                size="mini"
+                resize="none"
+                v-model="sections['add'].newlabel">
+              </el-input>
+            </el-col>
+          </el-row>
+          <h3 class="section-text">Enter PRIVATE Key</h3>
+          <el-input
+            type="textarea"
+            :rows="2"
+            size="mini"
+            resize="none"
+            v-model="sections['add'].privateKey">
+          </el-input>
+          <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">Add Address</el-button>
+          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+        </div>
+      </div>
+
+<!--  TRANSACTIONS PANE                         -->
+      <div v-if="sections['transactions'].visible">
+        <p>Transactions</p>
+        </div>
       </el-footer>
   </el-container>
 </template>
@@ -60,47 +191,190 @@ import lamdenLogoDark from './lamdenLogoDark';
 export default {
   props: ['storage'],
   data: () => ({
-    network: "TAU",
-    togTestNet: false,
+    network: "DarkTauDTAU",
+    currentKey: "",
+    togTestNet: true,
     showOverflowTooltip: true,
-    networks: {
-      "TAU": {
-        title: "TAU",
-        balance: 30000,
-        address: "92449732b3871c30915446fedb41420da05fdba9cc4d0ee882e9c542a05807f9",
-        transactions: [
-          {hash:"21oij10j1091120u203913j019j", time:"30", status: "pending"},
-          {hash:"3913j20u10912019j21oij10j10", time:"25", status: "complete"},
-          {hash:"219j21oij10j03913j0120u1091", time:"25", status: "complete"},
-          {hash:"o39ij10j120u102013j019j2191", time:"25", status: "failed"},
-          {hash:"9j21oij1203913j010j120u1091", time:"25", status: "complete"},
-          {hash:"9j21oij1203913j010j120u1091", time:"25", status: "complete"}
-        ],
-        img: "/images/logo_lamden_color.svg",
-      },
-      "DarkTAU": {
-        title: "DarkTAU",
-        balance: 1000000,
-        address: "20da05fdba92449732b3871cc542a058075446fedb41430ee882e99f9091cc4d",
-        transactions: [
-          {hash:"j1091j019j120u20391321oij10", time:"30", status: "complete"},
-          {hash:"1091203913j019j21oij10j120u", time:"25", status: "complete"},
-          {hash:"j21oij10j120203913j019u1091", time:"25", status: "failed"},
-          {hash:"2031oij10j120u10913j019j291", time:"25", status: "complete"},
-          {hash:"29j2103913j01oij10j120u1091", time:"25", status: "complete"},
-          {hash:"9j21oij1203913j010j120u1091", time:"25", status: "complete"}
-        ],
-        img: "/images/darktau.svg",
-      }
-    },
+    keysDropdown: {},
+    networkKeys: {},
+    sections: {'transactions': {visible: true},
+              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 0},
+              'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
+              'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
   }),
   computed: {
+    displayPublicKey: function displayPublicKey(){
+      return 'Public Wallet Address: ' + this.currentKey;
+    },
+    deleteButtonDisabled: function deleteButtonDisabled(){
+      if (this.sections['edit'].showPrivKey) {return false}
+      return true;
+    },
+    displayAddMainSection: function displayAddMainSection(){
+      if (this.sections['add'].newWallet || this.sections['add'].fromPrivate) {return false}
+      return true;
+    },
+    addWalletLabelEmpty: function labelNotEmpty(){
+      if (this.sections['add'].newlabel.length === 0) {return true}
+      return false;
+    }
   },
   created() {
+    this.networkKeys['DarkTauDTAU'] = this.storage.getPubKeyInfo('DarkTauDTAU');
+
+    for (let key in this.networkKeys[this.network]){
+      this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
+    }
   },
   methods: {
     swapNet() {
-      this.togTestNet ? this.network = "DarkTAU" : this.network = "TAU"
+      let newNetwork = "";
+      this.network === 'LamdenMainNet' ? newNetwork = 'DarkTauDTAU' :  newNetwork = 'LamdenMainNet';
+      let pubInfo = this.storage.getPubKeyInfo(newNetwork);
+         
+      for (let key in pubInfo){
+        pubInfo[key].uiDefault ? this.currentKey = key : null;
+      }
+
+      this.showTransactions();
+      this.$set(this.networkKeys, newNetwork, pubInfo);
+      this.network = newNetwork;
+
+      if (newNetwork === 'LamdenMainNet'){
+        this.$notify({
+          title: 'Network Unavailable',
+          message: 'Main net comming SOON!'})
+      }
+    },
+    refreshNetworkKeys(){
+        //Get lastest Public Key Info from localStorage
+        let pubInfo = this.storage.getPubKeyInfo(this.network);
+        //Set the new storage object into reactivity layer
+        this.$set(this.networkKeys, this.network, pubInfo);
+        console.log(this.networkKeys[this.network]);
+    },
+    handleCommand(choice) {
+        this.currentKey = choice;
+    },
+    showSection(swapTo){
+      for (let section in this.sections){
+        section === swapTo ? this.sections[section].visible = true : this.sections[section].visible = false;
+      }
+
+      if (swapTo === 'edit'){
+        this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
+      }
+    },
+    showTransactions(){
+      for (let section in this.sections){
+        section === 'transactions' ? this.sections[section].visible = true : this.sections[section].visible = false;
+      }
+    },
+    showMessage(message){
+      this.$message(message);
+    },
+    saveEdit(){
+      try {
+        this.storage.setPubKeyLabel(this.network, this.currentKey, this.sections['edit'].labelText);
+        if (this.sections['edit'].defaultChecked){
+          //Get new localStorage pubKeys object
+          this.storage.setWalletUIDefault(this.network, this.currentKey);
+        }
+        //Set the new storage object into reactivity layer
+        this.refreshNetworkKeys();
+        console.log('done');
+      }catch (e){
+        this.showMessage(e.message);
+      }
+      
+      this.showTransactions();
+      this.resetEdit();
+    },
+    showPrivateKey(){
+      this.sections['edit'].error = "";
+      try {
+        let pubInfo = this.networkKeys[this.network][this.currentKey];
+        pubInfo.privateKey = "Private (Secret) Key: " + this.storage.getPrivateKey(this.sections['edit'].password, this.network, this.currentKey);
+        this.$set(this.networkKeys[this.network], [this.currentKey], pubInfo);
+        this.sections['edit'].showPrivKey = true;
+        this.sections['edit'].password = "";
+      }catch (e){
+        this.sections['edit'].error = e.message;
+      }
+    },
+    confirmDeleteAddress() {
+      if (this.networkKeys[this.network][this.currentKey].uiDefault){
+        this.$message({
+            type: 'info',
+            message: 'Cannot delete default address'
+          });   
+      }else{
+        this.$confirm('If you do not have a backup funds could be lost.  ARE YOU SURE?', 'Deleting ' + this.networkKeys[this.network][this.currentKey].label, {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          try{
+            this.storage.deletePrivateKey(this.network, this.currentKey);
+            this.refreshNetworkKeys();
+            this.revertToDefaultAddress();
+            this.resetEdit();
+            this.showTransactions();
+            this.$message({
+              type: 'success',
+              message: 'Delete completed'
+            });
+          }catch (e){
+            this.showMessage(e.message);
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Delete canceled'
+          });          
+        });
+      }
+    },
+    generateNewWallet(){
+      try {
+        //Create new Wallet in the localStorage and return the wallet's public key
+        let newPubKey = this.storage.newCilantroWallet(this.network, this.sections['add'].newlabel);
+        //Get new localStorage pubKeys object, which now includes our new wallet
+        this.refreshNetworkKeys();
+        //switch to the new wallet that was just created
+        this.currentKey = newPubKey;
+        this.cancelAddSection();
+      }catch (e){
+        this.showMessage(e.message);
+      }
+    },
+    newWalletFromPrivateKey(){
+      let addInfo = this.sections['add'];
+       try {
+        //Create new Wallet in the localStorage and return the wallet's public key
+        let newPubKey = this.storage.newCilantroWallet_FromPrivateKey(this.network, addInfo.privateKey, addInfo.newlabel);
+        //Get new localStorage pubKeys object, which now includes our new wallet
+        this.refreshNetworkKeys();
+        //switch to the new wallet that was just created
+        this.currentKey = newPubKey;
+        this.cancelAddSection();
+      }catch (e){
+        this.showMessage(e.message);
+      }
+    },
+    cancelAddSection(){
+      let addDefault = {privateKey: "", newlabel: "", fromPrivate: false , newWallet: false}
+      this.$set(this.sections, 'add', addDefault);
+      this.showTransactions();
+    },
+    resetEdit(){
+      let editDefault = {password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false}
+      this.$set(this.sections, 'edit', editDefault);
+    },
+    revertToDefaultAddress(){
+      for (let key in this.networkKeys[this.network]){
+        this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
+      }
     }
   },
   components: {
@@ -129,10 +403,6 @@ export default {
     height: 100%!important;
     overflow: auto!important;
   }
-
-  .walletBalance {
-    padding-bottom: 0;
-  }
   
   .walletMain {
     color: #333;
@@ -142,16 +412,60 @@ export default {
     padding: 0px 0 15px 0!important;
   }
 
-  .walletTauAddress {
-    padding: 0 5% 0 5%;
+  .el-dropdown-menu__item {
+        font-size: 14px;
+  }
+    
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
   }
 
-  .cutoff-wallet-address {
-    overflow: hidden;
+  .el-message-box {
+    margin: 0 10px 0 10px;
+    width: unset!important;
   }
-  
-  body > .el-container {
-    margin-bottom: 0px;
+
+  .el-icon-loading {
+    font-family: element-icons!important;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: baseline;
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .send-box {
+    padding: 0 15px 0 15px; 
+  }
+
+  .send-button-padding {
+    margin: 20px 0 0 0;
+  }
+
+  .add-button-padding {
+    margin: 5px 0 0 0;
+  }
+
+  .send-title {
+    margin: 5px;
+    color: rgb(117,46,104);
+  }
+
+  .label-beside-input{
+    margin: 7px 0 0 0;
+    color: rgb(117,46,104);
+  }
+
+  .section-text {
+    margin: 5px 0 0 0;
+    color: rgb(117,46,104);
   }
 
   [debug], [debug] *:not(g):not(path) {
