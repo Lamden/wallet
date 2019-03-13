@@ -68,9 +68,11 @@
           </el-col>
         </el-row>
         <el-row :gutter=10>
-          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
+          <el-button :disabled="sections['send'].disableSendButton" @click="resetSend" class="send-button-padding" 
+                     type="info" plain size="mini">
             Cancel</el-button>
-          <el-button :disable="sections['send'].disableSendButton" @click="sendTransaction" class="send-button-padding" type="success" plain size="mini">
+          <el-button :disabled="sections['send'].disableSendButton" @click="sendTransaction" class="send-button-padding" 
+                     type="success" plain size="mini">
             Send Transaction</el-button>
         </el-row>
       </div>
@@ -134,7 +136,7 @@
           </el-row>
           <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">
             Generate New Wallet</el-button>
-          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+          <el-button @click="resetSend" class="send-button-padding" type="info" plain size="mini">
             Cancel</el-button>
         </div>
 
@@ -237,11 +239,12 @@ export default {
       }
     },
     refreshNetworkKeys(){
-        //Get lastest Public Key Info from localStorage
-        let pubInfo = this.storage.getPubKeyInfo(this.network);
-        //Set the new storage object into reactivity layer
-        this.$set(this.networkKeys, this.network, pubInfo);
-        console.log(this.networkKeys[this.network]);
+      //Get lastest Public Key Info from localStorage
+      let pubInfo = this.storage.getPubKeyInfo(this.network);
+      //Set the new storage object into reactivity layer
+      this.$set(this.networkKeys, this.network, pubInfo);
+      console.log(this.networkKeys[this.network]);
+      this.refreshBalance();
     },
     refreshBalance(){
       this.disableRefreshBalance = true;
@@ -294,7 +297,6 @@ export default {
         }
         //Set the new storage object into reactivity layer
         this.refreshNetworkKeys();
-        console.log('done');
       }catch (e){
         this.showMessage(e.message);
       }
@@ -305,13 +307,14 @@ export default {
     showPrivateKey(){
       this.sections['edit'].error = "";
       try {
-        let pubInfo = this.networkKeys[this.network][this.currentKey];
-        pubInfo.privateKey = "Private (Secret) Key: " + this.storage.getPrivateKey(this.network, this.currentKey);
-        this.$set(this.networkKeys[this.network], [this.currentKey], pubInfo);
-        this.sections['edit'].showPrivKey = true;
-        this.sections['edit'].password = "";
+          this.storage.authenticate(this.sections['edit'].password);
+          let pubInfo = this.networkKeys[this.network][this.currentKey];
+          pubInfo.privateKey = "Private (Secret) Key: " + this.storage.getPrivateKey(this.network, this.currentKey);
+          this.$set(this.networkKeys[this.network], [this.currentKey], pubInfo);
+          this.sections['edit'].showPrivKey = true;
+          this.sections['edit'].password = "";
       }catch (e){
-        this.sections['edit'].error = e.message;
+        this.showMessage(e.message)
       }
     },
     confirmDeleteAddress() {
@@ -383,6 +386,11 @@ export default {
       let editDefault = {password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false}
       this.$set(this.sections, 'edit', editDefault);
     },
+    resetSend(){
+      this.showTransactions();
+      let sendDefault = {disableSendButton: false, txDestination: "", txAmount: 0};
+      this.$set(this.sections, 'send', sendDefault);
+    },
     revertToDefaultAddress(){
       for (let key in this.networkKeys[this.network]){
         this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
@@ -400,15 +408,10 @@ export default {
         .then((result) => {
           this.showMessage(result.success);
           console.log(result);
-        })
-        .catch((e) => {
-          this.showMessage(e);
-        })
-        .then((result) => {
-          this.showTransactions();
-          this.sections['send'].disableSendButton =  false;
-          this.sections['send'].txAmount =  0;
-          this.sections['send'].txDestination =  "";
+          if (result.success.includes("successfully")){
+
+            this.resetSend();
+          }
         });
       }
     },
