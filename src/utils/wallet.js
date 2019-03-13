@@ -201,3 +201,38 @@ exports.verify = (vk, msg, sig) => {
 function get_mn_url() {
     return mnUrls[Math.floor(Math.random()*mnUrls.length)];
 }
+
+exports.submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_sk) => {
+
+    var nonce = "";
+    if (nonceDisabled) {
+        nonce = localWallet.vk + 'B'.repeat(64); 
+    } else {
+        // TODO: request nonce from network
+    }
+
+    var cct = new contract.CurrencyContractTransaction();
+    var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
+    var tc = new contract.CurrencyTransactionContainer();
+    tc.create(tx);
+
+    var tcbytes = tc.toBytesPacked();
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function() {
+        if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                resolve(data);
+            }
+        }
+    }
+
+    xhr.ontimeout = function() {
+        console.error("The request timed out");
+    }
+
+    xhr.timeout = 60000;
+    xhr.open('POST', get_mn_url() + '/', true); 
+    xhr.send(tcbytes);
+}

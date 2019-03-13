@@ -57,17 +57,20 @@
         </el-row>
         <el-row>
           <el-col :span=12>
-            <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"></el-input-number>
+            <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"
+            precision="precision" :controls="false"></el-input-number>
           </el-col>
           <el-col :span=12>
-            <el-input-number label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini"></el-input-number>
+            <el-input-number disabled label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini" :controls="false"
+              title="Stamps are locked at 3000 in Test Net">
+            </el-input-number>
           </el-col>
         </el-row>
         <el-row :gutter=10>
-          <el-button class="send-button-padding" type="success" plain size="mini">
-            Send Transaction</el-button>
           <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
             Cancel</el-button>
+          <el-button class="send-button-padding" type="success" plain size="mini">
+            Send Transaction</el-button>
         </el-row>
       </div>
 
@@ -171,6 +174,7 @@ export default {
   props: ['storage'],
   data: () => ({
     network: "DarkTauDTAU",
+    precision: 0,
     currentKey: "",
     togTestNet: true,
     showOverflowTooltip: true,
@@ -179,7 +183,7 @@ export default {
     disableRefreshBalance: false,
     forceRefreshKeys: {balance: 0},
     sections: {'transactions': {visible: true},
-              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 0},
+              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 3000},
               'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
               'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
   }),
@@ -222,8 +226,10 @@ export default {
       this.$set(this.networkKeys, newNetwork, pubInfo);
       this.network = newNetwork;
       this.refreshBalance()
+      this.precision = 0;
 
       if (newNetwork === 'LamdenMainNet'){
+        this.precision = 8;
         this.$notify({
           title: 'Main Net Unavailable',
           message: 'Comming Soon!'})
@@ -382,6 +388,27 @@ export default {
       }
     }
   },
+  sendTransaction(){
+    if (this.validateTransaction()){
+      
+    }
+  },
+  validateTransaction(){
+    let s = this.sections['send'];
+    if (s.txAmount === null || s.txAmount === "" || parseFloat(s.txAmount) === 0) {
+        this.showmessage("You must input an amount");
+        return false;
+    } else if (parseFloat(amountDiv.value) < 0) {
+        this.showmessage("Amount must be a positive number");
+        return false;
+    } 
+    //else if (!assert_valid_vk(destDiv.value)) {
+    //    this.showmessage("Invalid destination, ensure it is a 64 character hexidecimal string");
+     //   return false;
+  //  }
+    return true;
+
+  },
   components: {
     lamdenLogo,
     lamdenLogoDark
@@ -451,6 +478,12 @@ export default {
     vertical-align: baseline;
     display: inline-block;
     -webkit-font-smoothing: antialiased;
+  }
+
+  .el-input-number {
+    padding-left: 0px;
+    padding-right: 0px;
+    width: 95%;
   }
 
   .send-box {
