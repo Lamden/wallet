@@ -46,7 +46,8 @@
 <!--  SEND TRANSACTION PANE                         -->
       <div v-if="sections['send'].visible" class="send-box">
         <h1 class="send-title">Send Dark TAU</h1>
-        <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" v-model="sections['send'].destination"></el-input>
+        <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" 
+                  v-model="sections['send'].txDestination"></el-input>
         <el-row>
           <el-col :span=12>
             <h3>Amount</h3>
@@ -58,7 +59,7 @@
         <el-row>
           <el-col :span=12>
             <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"
-            precision="precision" :controls="false"></el-input-number>
+            :controls="false"></el-input-number>
           </el-col>
           <el-col :span=12>
             <el-input-number disabled label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini" :controls="false"
@@ -69,7 +70,7 @@
         <el-row :gutter=10>
           <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
             Cancel</el-button>
-          <el-button class="send-button-padding" type="success" plain size="mini">
+          <el-button :disable="sections['send'].disableSendButton" @click="sendTransaction" class="send-button-padding" type="success" plain size="mini">
             Send Transaction</el-button>
         </el-row>
       </div>
@@ -183,7 +184,7 @@ export default {
     disableRefreshBalance: false,
     forceRefreshKeys: {balance: 0},
     sections: {'transactions': {visible: true},
-              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 3000},
+              'send': {visible: false, disableSendButton: false, txDestination: "", txAmount: 0, txStamps: 3000},
               'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
               'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
   }),
@@ -305,7 +306,7 @@ export default {
       this.sections['edit'].error = "";
       try {
         let pubInfo = this.networkKeys[this.network][this.currentKey];
-        pubInfo.privateKey = "Private (Secret) Key: " + this.storage.getPrivateKey(this.sections['edit'].password, this.network, this.currentKey);
+        pubInfo.privateKey = "Private (Secret) Key: " + this.storage.getPrivateKey(this.network, this.currentKey);
         this.$set(this.networkKeys[this.network], [this.currentKey], pubInfo);
         this.sections['edit'].showPrivKey = true;
         this.sections['edit'].password = "";
@@ -386,28 +387,46 @@ export default {
       for (let key in this.networkKeys[this.network]){
         this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
       }
-    }
-  },
-  sendTransaction(){
-    if (this.validateTransaction()){
-      
-    }
-  },
-  validateTransaction(){
-    let s = this.sections['send'];
-    if (s.txAmount === null || s.txAmount === "" || parseFloat(s.txAmount) === 0) {
-        this.showmessage("You must input an amount");
-        return false;
-    } else if (parseFloat(amountDiv.value) < 0) {
-        this.showmessage("Amount must be a positive number");
-        return false;
-    } 
-    //else if (!assert_valid_vk(destDiv.value)) {
-    //    this.showmessage("Invalid destination, ensure it is a 64 character hexidecimal string");
-     //   return false;
-  //  }
-    return true;
+    },
+    sendTransaction(){
+      let s = this.sections['send'];
+      if (this.validateTransaction(s)){
+        this.sections['send'].disableSendButton = true;
+        const tauWallet = this.storage.getTauWallet();
 
+        tauWallet.submit_tx_to_network(s.txAmount, s.txStamps, s.txDestination,
+                                      this.currentKey,
+                                      this.storage.getPrivateKey(this.network, this.currentKey))
+        .then((result) => {
+          this.showMessage(result.success);
+          console.log(result);
+        })
+        .catch((e) => {
+          this.showMessage(e);
+        })
+        .then((result) => {
+          this.showTransactions();
+          this.sections['send'].disableSendButton =  false;
+          this.sections['send'].txAmount =  0;
+          this.sections['send'].txDestination =  "";
+        });
+      }
+    },
+    validateTransaction(s){
+      if (s.txAmount === null || s.txAmount === "" || parseFloat(s.txAmount) === 0) {
+          this.showmessage("You must input an amount");
+          return false;
+      } else if (parseFloat(s.txAmount) < 0) {
+          this.showmessage("Amount must be a positive number");
+          return false;
+      } 
+      //else if (!assert_valid_vk(destDiv.value)) {
+      //    this.showmessage("Invalid destination, ensure it is a 64 character hexidecimal string");
+      //   return false;
+    //  }
+      return true;
+
+    }
   },
   components: {
     lamdenLogo,

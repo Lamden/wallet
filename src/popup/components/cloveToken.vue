@@ -63,7 +63,7 @@
  
       <div>
         <el-row :gutter="0" class="key-buttons">
-          <el-button type="text" size="small" @click="showPassBox = !showPassBox" v-if="!showPrivKey && keysEmpty">Show Private Keys</el-button>
+          <el-button type="text" size="small" @click="showPassBox = !showPassBox" v-if="!keysEmpty">Show Private Keys</el-button>
           <div v-if="showPassBox">
             <el-input
               size="mini"
@@ -103,6 +103,9 @@ export default {
       showPopovers: {}
   }},
   computed: {
+    showAddKeys: function showAddKeys() {
+      if (!hasKeys){return true}
+    }
   },
   created() {
    this.tokenKey = this.token.name+this.token.symbol;
@@ -114,11 +117,15 @@ export default {
 
   },
   methods: {
+    showMessage(message){
+      this.$message(message);
+    },
     addKey(){
-      this.error = "";
-      if (this.privKeyLabel === "") {
-        this.error = "error: label name cannot be empty";
-      }else{
+      if (this.privKeyLabel === "" || this.privKeyLabel === null) {
+        this.$message("Label cannot be empty");
+      } else if (this.privKeyInput === "" || this.privKeyInput === null){
+        this.$message("Private Key cannot be empty");
+      } else {
         /*
         let tokenKey = this.token.name + this.token.symbol
         console.log(tokenKey)
@@ -127,8 +134,9 @@ export default {
         console.log(this.privKeyLabel)
         this.error = this.storage.addKey(tokenKey, this.token.symbol, this.privKeyInput, this.privKeyLabel);
         */
+       
        !this.hasKeys ? this.keys = {} : null; 
-       let pubKey = this.storage.addKeyTest();
+       let pubKey = this.storage.addKey();
        this.$set(this.keys, pubKey+this.privKeyLabel, {privateKey:null, label:this.privKeyLabel, balance:0});
        this.$set(this.showPopovers, pubKey, false);
 
@@ -188,8 +196,6 @@ export default {
     togglePopover(pubKey){
       this.$set(this.showPopovers, pubKey, !this.showPopovers[pubKey]); 
     }    
-  },
-  computed: {
   },
   components: {
   }

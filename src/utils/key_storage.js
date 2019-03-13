@@ -190,9 +190,8 @@ exports.getPrivateKeysStorage = () => {
   }
 }
 
-exports.getPrivateKey = (pass, tokenKey, pubKey) => {
+exports.getPrivateKey = (tokenKey, pubKey) => {
   try {
-    authenticate(pass);
     let privKeys = getPrivateKeys();
     return privKeys[tokenKey][pubKey];
 

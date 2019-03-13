@@ -2,6 +2,17 @@
 exports.__esModule = true;
 var nacl = require("tweetnacl");
 var helpers = require("./helpers");
+var contract = require("./contract");
+
+var mnUrls = [
+    'https://masternode0.anarchynet.io',
+    'https://masternode1.anarchynet.io',
+    'https://masternode2.anarchynet.io',
+    'https://masternode3.anarchynet.io'
+]
+
+var nonceDisabled = true;
+
 /**
  * @param Uint8Array(length: 32) seed
  *      seed:   A Uint8Array with a length of 32 to seed the keyPair with. This is advanced behavior and should be
@@ -133,9 +144,7 @@ function verify(vk, msg, sig) {
 }
 exports.verify = verify;
 
-            
-
-  exports.get_balance = (pubKey) => {
+exports.get_balance = (pubKey) => {
     return new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
 
@@ -167,31 +176,38 @@ function get_mn_url() {
     return mnUrls[Math.floor(Math.random()*mnUrls.length)];
 }
 
-exports.submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_sk) => {
+exports.submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_vk, wallet_sk) => {
+    return new Promise(function(resolve, reject) {
+        var nonce = "";
 
-    var nonce = "";
-    if (nonceDisabled) {
-        nonce = localWallet.vk + 'B'.repeat(64); 
-    } else {
-        // TODO: request nonce from network
-    }
+        if (nonceDisabled) {
+            nonce = wallet_vk + 'B'.repeat(64); 
+        } else {
+            // TODO: request nonce from network
+        }
 
-    var cct = new contract.CurrencyContractTransaction();
-    var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
-    var tc = new contract.CurrencyTransactionContainer();
-    tc.create(tx);
+        var cct = new contract.CurrencyContractTransaction();
+        var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
+        var tc = new contract.CurrencyTransactionContainer();
+        tc.create(tx);
 
-    var tcbytes = tc.toBytesPacked();
-    var xhr = new XMLHttpRequest();
+        var tcbytes = tc.toBytesPacked();
+        var xhr = new XMLHttpRequest();
 
-    xhr.onload = function() {
-        if (xhr.readyState == xhr.DONE) {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                resolve(data);
+        xhr.onload = function() {
+            if (xhr.readyState == xhr.DONE) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    resolve(data);
+                }
             }
         }
-    xhr.timeout = 60000;
-    xhr.open('POST', get_mn_url() + '/', true); 
-    xhr.send(tcbytes);
+        
+        xhr.onerror = reject;
+        xhr.timeout = 60000;
+        xhr.open('POST', get_mn_url() + '/', true); 
+        xhr.send(tcbytes);
+    });
 }
+
+
