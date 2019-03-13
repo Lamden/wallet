@@ -313,16 +313,15 @@ exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
         throw new Error('Invalid private key');
       }
       publicKey = ethUtil.privateToAddress(key).toString('hex');
-
     } else if (tokenInfo[tokenKey].network === 'Bitcoin') {
         key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
         publicKey = key.getAddress();
 
     } else if (tokenInfo[tokenKey].network === 'Cilantro') {
-        throw new Error(`Cilantro networks are not supported yet`);
+      throw new Error(`Cilantro networks are not supported yet`);
     } else {
-        throw new Error(`${networkSymbol} network is not supported`);
-       }
+      throw new Error(`${networkSymbol} network is not supported`);
+    }
 
     //Get privateKeys object from localStorage
     let privKeys = getPrivateKeys();

@@ -10,7 +10,9 @@
     "128": "icons/lamden-128.png"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "*://*.anarchynet.io/*",
+    "*://*.theanarchy.net/*"
   ],
   "browser_action": {
     "default_title": "Lamden",
