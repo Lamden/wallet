@@ -15,9 +15,11 @@
           <lamdenLogo v-if="!togTestNet"></lamdenLogo>
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
         </div>
-        {{"Balance: " + networkKeys[network][currentKey].balance}}
-         <el-button @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
-        <br>
+        <div class="balance-box">
+          <span :key="forceRefreshKeys.balance">{{networkKeys[network][currentKey].balance}}</span>
+          <el-button class="balance-button" :disabled="disableRefreshBalance" @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
+        </div>
+        <br class="newline">
         <el-dropdown @command="handleCommand" trigger="click">
           <span class="el-dropdown-link">
             {{networkKeys[network][currentKey].label}}<i class="el-icon-arrow-down el-icon--right"></i>
@@ -163,6 +165,7 @@
 <script>
 import lamdenLogo from './lamdenLogo';
 import lamdenLogoDark from './lamdenLogoDark';
+const tauWallet = require('./wallet');
 
 export default {
   props: ['storage'],
@@ -173,6 +176,8 @@ export default {
     showOverflowTooltip: true,
     keysDropdown: {},
     networkKeys: {},
+    disableRefreshBalance: false,
+    forceRefreshKeys: {balance: 0},
     sections: {'transactions': {visible: true},
               'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 0},
               'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
@@ -201,6 +206,7 @@ export default {
     for (let key in this.networkKeys[this.network]){
       this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
     }
+    this.refreshBalance();
   },
   methods: {
     swapNet() {
@@ -215,6 +221,7 @@ export default {
       this.showTransactions();
       this.$set(this.networkKeys, newNetwork, pubInfo);
       this.network = newNetwork;
+      this.refreshBalance()
 
       if (newNetwork === 'LamdenMainNet'){
         this.$notify({
@@ -230,17 +237,25 @@ export default {
         console.log(this.networkKeys[this.network]);
     },
     refreshBalance(){
-      try {
-        let balance = this.storage.getBalance_Cilantro(this.currentKey);
-        console.log(balance);
-      } catch (e) {
-        this.showMessage(e.message);
-      }
+      this.disableRefreshBalance = true;
+      const tauWallet = this.storage.getTauWallet();
 
-      
+      tauWallet.get_balance(this.currentKey)
+        .then((result) => {
+          let walletBalance = result.value !== 'null' ? parseFloat(result.value) : 0;
+          this.$set(this.networkKeys[this.network][this.currentKey], 'balance', walletBalance);
+          this.forceRefreshKeys.balance += 1;
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .then((result) => {
+          this.disableRefreshBalance = false;
+        });
     },
     handleCommand(choice) {
         this.currentKey = choice;
+        this.refreshBalance()
         this.showTransactions();
         this.resetEdit();
         this.cancelAddSection();
@@ -402,14 +417,21 @@ export default {
     padding: 0px 0 15px 0!important;
   }
 
+  .el-dropdown {
+    top: -10px;
+    color: rgb(156, 60, 139);
+  }
+
   .el-dropdown-menu__item {
-        font-size: 14px;
+    font-size: 1em;
+    color: rgb(156, 60, 139); 
   }
     
   .el-dropdown-link {
     cursor: pointer;
-    color: #409EFF;
+    color: rgb(156, 60, 139);
   }
+
   .el-icon-arrow-down {
     font-size: 12px;
   }
@@ -450,12 +472,28 @@ export default {
 
   .label-beside-input{
     margin: 7px 0 0 0;
-    color: rgb(117,46,104);
+    color: rgb(156, 60, 139);
   }
 
   .section-text {
     margin: 5px 0 0 0;
-    color: rgb(117,46,104);
+    color: rgb(156, 60, 139);
+  }
+
+  .balance-box {
+    color: rgb(156, 60, 139);
+    font-size: 1.5em;
+    margin: 10px 0 0 0;
+  }
+
+  .balance-button {
+    transform: translate(0%, -7%);
+    text-align: left;
+  }
+
+  .newline {
+    margin: 0px;
+    padding: 0px;
   }
 
   [debug], [debug] *:not(g):not(path) {

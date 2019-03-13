@@ -458,6 +458,8 @@ exports.getAvailableKeys = () => {
   }, {});
 };  
 
-
+exports.getTauWallet = () => {
+  return tauWallet;
+}
 
 exports.getSupportedNetworks = () => Object.keys(btcNetworks).concat(ethNetworks).sort();

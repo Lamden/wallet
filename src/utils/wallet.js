@@ -168,30 +168,34 @@ exports.verify = (vk, msg, sig) => {
     }
 }
 
-exports.get_balance = (pubKey) => {
-    var xhr = new XMLHttpRequest();
+            
 
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === xhr.DONE) {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                if (data['value'] != "null") {
-                    return data['value'];
+  exports.get_balance = (pubKey) => {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onload = function(){
+            if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    resolve(data);
                 }
-            }
+            }            
         }
-    }
 
-    xhr.ontimeout = function() {
-        console.error("The request timed out");
-    }
+        xhr.ontimeout = function() {
+            console.error("The request timed out");
+        }
 
-    console.log('starting xhr section');
-    xhr.timeout = 60000;
-    var dest = get_mn_url() + '/contracts/currency/balances/' + pubKey;
-    console.log(dest);
-    xhr.open('GET', dest, true);
-    xhr.send();
+        console.log('starting xhr section');
+        xhr.timeout = 60000;
+        xhr.onerror = reject;
+        
+        var dest = get_mn_url() + '/contracts/currency/balances/' + pubKey;        
+        xhr.open('GET', dest, true);
+        xhr.send();
+
+    });
 }
 
 function get_mn_url() {
