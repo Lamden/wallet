@@ -264,18 +264,27 @@ export default {
         });
     },
     handleCommand(choice) {
-        this.currentKey = choice;
-        this.refreshBalance()
         this.showTransactions();
-        this.resetEdit();
-        this.cancelAddSection();
+        this.currentKey = choice;
+        this.resetSections();
+        this.refreshBalance();
+    },
+    resetSections(){
+      let reset = {'transactions': {visible: true},
+                   'send': {visible: false, disableSendButton: false, txDestination: "", txAmount: 0, txStamps: 3000},
+                   'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
+                   'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
+
+      this.$set(this, sections, refreshSections);
     },
     showSection(swapTo){
       for (let section in this.sections){
         section === swapTo ? this.sections[section].visible = true : this.sections[section].visible = false;
       }
-
       if (swapTo === 'edit'){
+
+    //    this.$set(this.sections['edit'], defaultChecked, this.networkKeys[this.network][this.currentKey].uiDefault);
+     //   this.$set(this.sections['edit'], labelText, this.networkKeys[this.network][this.currentKey].label);
         this.sections['edit'].defaultChecked = this.networkKeys[this.network][this.currentKey].uiDefault;
         this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
       }
