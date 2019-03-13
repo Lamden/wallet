@@ -127,9 +127,71 @@ function verify(vk, msg, sig) {
     var sigb = helpers.hex2buf(sig);
     try {
         return nacl.sign.detached.verify(msg, sigb, vkb);
-    }
-    catch (_a) {
-        return false;
+    } catch(e) {
+        return false
     }
 }
 exports.verify = verify;
+
+            
+
+  exports.get_balance = (pubKey) => {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onload = function(){
+            if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    resolve(data);
+                }
+            }            
+        }
+
+        xhr.ontimeout = function() {
+            console.error("The request timed out");
+        }
+
+        console.log('starting xhr section');
+        xhr.timeout = 60000;
+        xhr.onerror = reject;
+        
+        var dest = get_mn_url() + '/contracts/currency/balances/' + pubKey;        
+        xhr.open('GET', dest, true);
+        xhr.send();
+
+    });
+}
+
+function get_mn_url() {
+    return mnUrls[Math.floor(Math.random()*mnUrls.length)];
+}
+
+exports.submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_sk) => {
+
+    var nonce = "";
+    if (nonceDisabled) {
+        nonce = localWallet.vk + 'B'.repeat(64); 
+    } else {
+        // TODO: request nonce from network
+    }
+
+    var cct = new contract.CurrencyContractTransaction();
+    var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
+    var tc = new contract.CurrencyTransactionContainer();
+    tc.create(tx);
+
+    var tcbytes = tc.toBytesPacked();
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function() {
+        if (xhr.readyState == xhr.DONE) {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                resolve(data);
+            }
+        }
+    xhr.timeout = 60000;
+    xhr.open('POST', get_mn_url() + '/', true); 
+    xhr.send(tcbytes);
+}

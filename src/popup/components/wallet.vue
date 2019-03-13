@@ -15,9 +15,11 @@
           <lamdenLogo v-if="!togTestNet"></lamdenLogo>
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
         </div>
-        {{"Balance: " + networkKeys[network][currentKey].balance}}
-         <el-button @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
-        <br>
+        <div class="balance-box">
+          <span :key="forceRefreshKeys.balance">{{networkKeys[network][currentKey].balance}}</span>
+          <el-button class="balance-button" :disabled="disableRefreshBalance" @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
+        </div>
+        <br class="newline">
         <el-dropdown @command="handleCommand" trigger="click">
           <span class="el-dropdown-link">
             {{networkKeys[network][currentKey].label}}<i class="el-icon-arrow-down el-icon--right"></i>
@@ -55,17 +57,20 @@
         </el-row>
         <el-row>
           <el-col :span=12>
-            <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"></el-input-number>
+            <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"
+            precision="precision" :controls="false"></el-input-number>
           </el-col>
           <el-col :span=12>
-            <el-input-number label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini"></el-input-number>
+            <el-input-number disabled label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini" :controls="false"
+              title="Stamps are locked at 3000 in Test Net">
+            </el-input-number>
           </el-col>
         </el-row>
         <el-row :gutter=10>
-          <el-button class="send-button-padding" type="success" plain size="mini">
-            Send Transaction</el-button>
           <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
             Cancel</el-button>
+          <el-button class="send-button-padding" type="success" plain size="mini">
+            Send Transaction</el-button>
         </el-row>
       </div>
 
@@ -163,18 +168,22 @@
 <script>
 import lamdenLogo from './lamdenLogo';
 import lamdenLogoDark from './lamdenLogoDark';
+const tauWallet = require('./wallet');
 
 export default {
   props: ['storage'],
   data: () => ({
     network: "DarkTauDTAU",
+    precision: 0,
     currentKey: "",
     togTestNet: true,
     showOverflowTooltip: true,
     keysDropdown: {},
     networkKeys: {},
+    disableRefreshBalance: false,
+    forceRefreshKeys: {balance: 0},
     sections: {'transactions': {visible: true},
-              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 0},
+              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 3000},
               'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
               'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
   }),
@@ -201,6 +210,7 @@ export default {
     for (let key in this.networkKeys[this.network]){
       this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
     }
+    this.refreshBalance();
   },
   methods: {
     swapNet() {
@@ -215,8 +225,11 @@ export default {
       this.showTransactions();
       this.$set(this.networkKeys, newNetwork, pubInfo);
       this.network = newNetwork;
+      this.refreshBalance()
+      this.precision = 0;
 
       if (newNetwork === 'LamdenMainNet'){
+        this.precision = 8;
         this.$notify({
           title: 'Main Net Unavailable',
           message: 'Comming Soon!'})
@@ -230,17 +243,25 @@ export default {
         console.log(this.networkKeys[this.network]);
     },
     refreshBalance(){
-      try {
-        let balance = this.storage.getBalance_Cilantro(this.currentKey);
-        console.log(balance);
-      } catch (e) {
-        this.showMessage(e.message);
-      }
+      this.disableRefreshBalance = true;
+      const tauWallet = this.storage.getTauWallet();
 
-      
+      tauWallet.get_balance(this.currentKey)
+        .then((result) => {
+          let walletBalance = result.value !== 'null' ? parseFloat(result.value) : 0;
+          this.$set(this.networkKeys[this.network][this.currentKey], 'balance', walletBalance);
+          this.forceRefreshKeys.balance += 1;
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .then((result) => {
+          this.disableRefreshBalance = false;
+        });
     },
     handleCommand(choice) {
         this.currentKey = choice;
+        this.refreshBalance()
         this.showTransactions();
         this.resetEdit();
         this.cancelAddSection();
@@ -367,6 +388,27 @@ export default {
       }
     }
   },
+  sendTransaction(){
+    if (this.validateTransaction()){
+      
+    }
+  },
+  validateTransaction(){
+    let s = this.sections['send'];
+    if (s.txAmount === null || s.txAmount === "" || parseFloat(s.txAmount) === 0) {
+        this.showmessage("You must input an amount");
+        return false;
+    } else if (parseFloat(amountDiv.value) < 0) {
+        this.showmessage("Amount must be a positive number");
+        return false;
+    } 
+    //else if (!assert_valid_vk(destDiv.value)) {
+    //    this.showmessage("Invalid destination, ensure it is a 64 character hexidecimal string");
+     //   return false;
+  //  }
+    return true;
+
+  },
   components: {
     lamdenLogo,
     lamdenLogoDark
@@ -402,14 +444,21 @@ export default {
     padding: 0px 0 15px 0!important;
   }
 
+  .el-dropdown {
+    top: -10px;
+    color: rgb(156, 60, 139);
+  }
+
   .el-dropdown-menu__item {
-        font-size: 14px;
+    font-size: 1em;
+    color: rgb(156, 60, 139); 
   }
     
   .el-dropdown-link {
     cursor: pointer;
-    color: #409EFF;
+    color: rgb(156, 60, 139);
   }
+
   .el-icon-arrow-down {
     font-size: 12px;
   }
@@ -431,6 +480,12 @@ export default {
     -webkit-font-smoothing: antialiased;
   }
 
+  .el-input-number {
+    padding-left: 0px;
+    padding-right: 0px;
+    width: 95%;
+  }
+
   .send-box {
     padding: 0 15px 0 15px; 
   }
@@ -450,12 +505,28 @@ export default {
 
   .label-beside-input{
     margin: 7px 0 0 0;
-    color: rgb(117,46,104);
+    color: rgb(156, 60, 139);
   }
 
   .section-text {
     margin: 5px 0 0 0;
-    color: rgb(117,46,104);
+    color: rgb(156, 60, 139);
+  }
+
+  .balance-box {
+    color: rgb(156, 60, 139);
+    font-size: 1.5em;
+    margin: 10px 0 0 0;
+  }
+
+  .balance-button {
+    transform: translate(0%, -7%);
+    text-align: left;
+  }
+
+  .newline {
+    margin: 0px;
+    padding: 0px;
   }
 
   [debug], [debug] *:not(g):not(path) {

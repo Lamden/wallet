@@ -27,9 +27,14 @@ console.log(privKeys);
 const tauWallet = require('./wallet');
 //console.log(tauWallet.get_vk('9decc7f7f0b5a4fc87ab5ce700e2d6c5d51b7565923d50ea13cbf78031bb3acf'));
 
-  try {
-    let balance = tauWallet.get_balance('20da05fdba92449732b3871cc542a058075446fedb41430ee882e99f9091cc4d');
-    console.log(balance);
-  } catch (e) {
-    console.log(e.message);
-  }
+  let balance = tauWallet.get_balance('20da05fdba92449732b3871cc542a058075446fedb41430ee882e99f9091cc4d');
+  console.log(balance);
+
+
+  tauWallet.get_balance(this.currentKey)
+  .then(function(result) {
+    console.log(result);
+  })
+  .catch(function() {
+    this.showMessage('error');
+  });
