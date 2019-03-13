@@ -61,17 +61,6 @@ function storageUnlocked(){
   return password === undefined ? false : true;
 }
 
-/*
-function getActiveTokens() {
-  let activeTokens = getUnencrypted('activeTokens');
-  return activeTokens;
-};
-
-
-function saveActiveTokens(activeTokens){
-  localStorage.setItem('activeTokens', JSON.stringify(activeTokens));
-}*/
-
 function generateDTAUWallet(pass){
   var kp = tauWallet.new_wallet()
   var enckp = CryptoJS.AES.encrypt(kp.sk, pass);
@@ -268,11 +257,6 @@ exports.setWalletUIDefault = (tokenKey, newUIDefault) => {
   }
 }
 
-exports.addCilantroPrivateKey = (tokenKey, privKey) => {
- null;
-
-}
-
 exports.getAllTokens = () => {
 // Returns an object with all supported Clove tokens.
 // Adds a "visible" property so the UI knows which ones to show in the wallet
@@ -289,7 +273,6 @@ exports.getAllTokens = () => {
     throw new Error('Storage is locked');
   }  
 }
-
   
 exports.getActiveTokens = () => {  
   // Added the tokenKey to the list of tokens that will exists on the user's Clove page
@@ -359,6 +342,15 @@ exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
     throw new Error('Storage is locked');
   }
 };
+
+exports.getBalance_Cilantro = (pubKey) => {
+  try {
+    let balance = tauWallet.get_balance(pubKey);
+    return balance;
+  } catch (e){
+    throw new Error("Balance Failed: " + e.message);
+  }
+}
 
 exports.getToken = (TokenKey) => {
   if (password === undefined) {

@@ -1,5 +1,13 @@
 var nacl = require('tweetnacl');
 var helpers = require('./helpers');
+var XMLHttpRequest = require('xhr2');
+
+var mnUrls = [
+    'https://masternode0.anarchynet.io',
+    'https://masternode1.anarchynet.io',
+    'https://masternode2.anarchynet.io',
+    'https://masternode3.anarchynet.io'
+]
 
 /**
  * @param Uint8Array(length: 32) seed
@@ -74,12 +82,20 @@ exports.get_vk = (sk) => {
  *      sk:     Signing Key (SK) represents 32 byte signing key
  *      vk:     Verify Key (VK) represents a 32 byte verify key
  */
+
+ /*
 exports.format_to_keys = (sk) => {
     var skf = helpers.hex2buf(sk);
     var kp = generate_keys(skf);
     return kp;
 }
+*/
 
+function format_to_keys(sk){
+    var skf = helpers.hex2buf(sk);
+    var kp = generate_keys(skf);
+    return kp;
+}
 /**
  * @param Object kp
  *      kp:     Object containing the properties sk and vk
@@ -150,4 +166,34 @@ exports.verify = (vk, msg, sig) => {
     } catch(e) {
         return false
     }
+}
+
+exports.get_balance = (pubKey) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                if (data['value'] != "null") {
+                    return data['value'];
+                }
+            }
+        }
+    }
+
+    xhr.ontimeout = function() {
+        console.error("The request timed out");
+    }
+
+    console.log('starting xhr section');
+    xhr.timeout = 60000;
+    var dest = get_mn_url() + '/contracts/currency/balances/' + pubKey;
+    console.log(dest);
+    xhr.open('GET', dest, true);
+    xhr.send();
+}
+
+function get_mn_url() {
+    return mnUrls[Math.floor(Math.random()*mnUrls.length)];
 }

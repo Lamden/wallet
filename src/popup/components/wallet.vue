@@ -16,9 +16,9 @@
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
         </div>
         {{"Balance: " + networkKeys[network][currentKey].balance}}
-         <el-button size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
+         <el-button @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
         <br>
-        <el-dropdown @command="handleCommand">
+        <el-dropdown @command="handleCommand" trigger="click">
           <span class="el-dropdown-link">
             {{networkKeys[network][currentKey].label}}<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
@@ -26,31 +26,25 @@
             <el-dropdown-item 
               v-for="(value, key, index) in networkKeys[network]" 
               :key="index" 
-              :command="key"
-              trigger="click">
+              :command="key">
               {{networkKeys[network][key].label}}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <br>
         <el-button @click="showSection('send')" v-if="togTestNet" size="mini" icon="el-icon-d-arrow-right" circle title="send transaction"></el-button>
-        <el-button @click="showMessage('Copied!')" v-if="togTestNet" v-clipboard:copy="currentKey" size="mini" icon="el-icon-document" circle title="copy address"></el-button>
+        <el-button @click="showMessage('Copied!')" v-if="togTestNet" v-clipboard:copy="currentKey" size="mini" icon="el-icon-document" circle title="copy wallet address"></el-button>
         <el-button @click="showSection('edit')" v-if="togTestNet" size="mini" icon="el-icon-edit" circle title="edit address"></el-button>
         <el-button @click="showSection('add')" v-if="togTestNet" size="mini" icon="el-icon-plus" circle title="add new address"></el-button>
       </el-main>
+
+      
       <el-footer class="walletFooter">
 
 <!--  SEND TRANSACTION PANE                         -->
       <div v-if="sections['send'].visible" class="send-box">
         <h1 class="send-title">Send Dark TAU</h1>
-        <el-input
-          type="textarea"
-          :rows="2"
-          placeholder="Enter recipient's wallet address"
-          size="mini"
-          resize="none"
-          v-model="sections['send'].destination">
-        </el-input>
+        <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" v-model="sections['send'].destination"></el-input>
         <el-row>
           <el-col :span=12>
             <h3>Amount</h3>
@@ -68,8 +62,10 @@
           </el-col>
         </el-row>
         <el-row :gutter=10>
-          <el-button class="send-button-padding" type="success" plain size="mini">Send Transaction</el-button>
-          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+          <el-button class="send-button-padding" type="success" plain size="mini">
+            Send Transaction</el-button>
+          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
+            Cancel</el-button>
         </el-row>
       </div>
 
@@ -80,57 +76,44 @@
             <h3 class="label-beside-input">Label</h3>
           </el-col>
           <el-col :span=16>
-            <el-input
-              size="mini"
-              resize="none"
-              v-model="sections['edit'].labelText">
+            <el-input size="mini" resize="none" v-model="sections['edit'].labelText">
             </el-input>
           </el-col>
         </el-row>
         <el-row :style="{'text-align': 'right'}">
-          <el-checkbox 
-            v-if="!networkKeys[network][currentKey].uiDefault" 
-            v-model="sections['edit'].defaultChecked">Default Address</el-checkbox>
+          <el-checkbox :disabled="networkKeys[network][currentKey].uiDefault" v-model="sections['edit'].defaultChecked">
+            Default Address</el-checkbox>
         </el-row>
-        <el-input
-          type="textarea"
-          :rows="3"
-          size="mini"
-          resize="none"
-          :readonly="true"
-          v-model="displayPublicKey">
+        <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey">
         </el-input>
-        <el-input
-          v-if="this.sections['edit'].showPrivKey"
-          type="textarea"
-          :rows="3"
-          size="mini"
-          resize="none"
-          :readonly="true"
+        <el-input v-if="this.sections['edit'].showPrivKey" type="textarea" :rows="3" size="mini" resize="none" :readonly="true"
           v-model="networkKeys[network][currentKey].privateKey">
         </el-input>
         <div v-if="this.sections['edit'].showPrivKey === false">
-            <el-input
-              size="mini"
-              v-model="sections['edit'].password"
-              type="password"
-              autofocus
-              @keyup.enter.native="showPrivateKey"
+            <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
               placeholder="Enter your password to show private key">
             </el-input>
             <p v-if="this.sections['edit'].showPrivKey === false" class="error-text">{{sections['edit'].error}}</p>
           </div>
-          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
-          <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">Save Info</el-button>
-          <el-button @click="confirmDeleteAddress" :disabled="deleteButtonDisabled" class="send-button-padding" type="danger" plain size="mini">Delete Wallet</el-button>
+          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
+            Cancel</el-button>
+          <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">
+            Save Info</el-button>
+          <el-button @click="confirmDeleteAddress" :disabled="deleteButtonDisabled" class="send-button-padding" type="danger" plain size="mini">
+            Delete Wallet</el-button>
       </div>
 
 <!--  ADD ADDRESS PANE                         -->
       <div v-if="sections['add'].visible" class="send-box">
         <div v-if="displayAddMainSection">
-          <el-button class="add-button-padding" @click="sections['add'].newWallet = true" type="success" plain size="mini">Generate New Wallet</el-button>
+          <el-button class="add-button-padding" @click="sections['add'].newWallet = true" type="success" plain size="mini">
+            Generate New Wallet</el-button>
           <br>
-          <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">Add from Private Key</el-button>
+          <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">
+            Add from Private Key</el-button>
+          <br>
+          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+            Cancel</el-button>
         </div>
         
         <div v-if="sections['add'].newWallet">
@@ -139,15 +122,14 @@
               <h3 class="label-beside-input">Create Wallet Label</h3>
             </el-col>
             <el-col :span=16>
-              <el-input
-                size="mini"
-                resize="none"
-                v-model="sections['add'].newlabel">
+              <el-input size="mini" resize="none" v-model="sections['add'].newlabel">
               </el-input>
             </el-col>
           </el-row>
-          <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">Generate New Wallet</el-button>
-          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+          <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">
+            Generate New Wallet</el-button>
+          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+            Cancel</el-button>
         </div>
 
         <div v-if="sections['add'].fromPrivate">
@@ -156,23 +138,17 @@
               <h3 class="label-beside-input">Wallet Label</h3>
             </el-col>
             <el-col :span=16>
-              <el-input
-                size="mini"
-                resize="none"
-                v-model="sections['add'].newlabel">
+              <el-input  size="mini" resize="none" v-model="sections['add'].newlabel">
               </el-input>
             </el-col>
           </el-row>
           <h3 class="section-text">Enter PRIVATE Key</h3>
-          <el-input
-            type="textarea"
-            :rows="2"
-            size="mini"
-            resize="none"
-            v-model="sections['add'].privateKey">
+          <el-input type="textarea" :rows="2" size="mini" resize="none" v-model="sections['add'].privateKey">
           </el-input>
-          <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">Add Address</el-button>
-          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">Cancel</el-button>
+          <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">
+            Add Address</el-button>
+          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+            Cancel</el-button>
         </div>
       </div>
 
@@ -242,8 +218,8 @@ export default {
 
       if (newNetwork === 'LamdenMainNet'){
         this.$notify({
-          title: 'Network Unavailable',
-          message: 'Main net comming SOON!'})
+          title: 'Main Net Unavailable',
+          message: 'Comming Soon!'})
       }
     },
     refreshNetworkKeys(){
@@ -253,8 +229,21 @@ export default {
         this.$set(this.networkKeys, this.network, pubInfo);
         console.log(this.networkKeys[this.network]);
     },
+    refreshBalance(){
+      try {
+        let balance = this.storage.getBalance_Cilantro(this.currentKey);
+        console.log(balance);
+      } catch (e) {
+        this.showMessage(e.message);
+      }
+
+      
+    },
     handleCommand(choice) {
         this.currentKey = choice;
+        this.showTransactions();
+        this.resetEdit();
+        this.cancelAddSection();
     },
     showSection(swapTo){
       for (let section in this.sections){
@@ -262,6 +251,7 @@ export default {
       }
 
       if (swapTo === 'edit'){
+        this.sections['edit'].defaultChecked = this.networkKeys[this.network][this.currentKey].uiDefault;
         this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
       }
     },
