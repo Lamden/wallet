@@ -163,6 +163,8 @@
 <!--  TRANSACTIONS PANE                         -->
       <div v-if="sections['transactions'].visible">
         <p>Transactions</p>
+        <el-button :disabled="this.transactions.lenght === 0" @click="deleteTransactions" type="text"  size="mini">
+        delete history </el-button>
         <span v-for="(transaction, index) in transactions" :key="index">
         {{transaction.txHash}}<br> 
         {{transaction.amount + "   " + transaction.date + " " + transaction.time}}<br>
@@ -189,6 +191,7 @@ export default {
     keysDropdown: {},
     networkKeys: {},
     transactions: [],
+    pendingTransactions: [],
     disableRefreshBalance: false,
     forceRefreshKeys: {balance: 0},
     sections: {'transactions': {visible: true},
@@ -230,8 +233,8 @@ export default {
     } catch (e){
       console.log(e.message);
     }
-    
-    console.log(this.transactions)
+
+    this.determinePendingTransactions(this.currentKey);
   },
   methods: {
     swapNet() {
@@ -310,8 +313,10 @@ export default {
         this.showMessage(e.message);
       }
       
+      this.refreshBalance();
       this.showTransactions();
       this.resetEdit();
+
     },
     showPrivateKey(){
       this.sections['edit'].error = "";
@@ -417,13 +422,11 @@ export default {
                                       this.currentKey,
                                       this.storage.getPrivateKey(this.network, this.currentKey))
         .then((result) => {
-          console.log(result);
           this.showMessage(result.success);
           if (result.success.includes("successfully")){
             try{
               let transactionList = this.storage.addTransaction(this.network, this.currentKey, result.hash, 
                                                               s.txDestination, s.txAmount, s.txStamps);
-              console.log("Returned from Storage" + transactionList);
               this.transactions = transactionList;
               this.resetSend();
             }catch (e){
@@ -439,6 +442,7 @@ export default {
     },
     showTransactions(){
       this.transactions = this.storage.getTransactions(this.network, this.currentKey);
+      this.determinePendingTransactions(this.currentKey);
       for (let section in this.sections){
         section === 'transactions' ? this.sections[section].visible = true : this.sections[section].visible = false;
       }
@@ -454,9 +458,56 @@ export default {
       //else if (!assert_valid_vk(destDiv.value)) {
       //    this.showmessage("Invalid destination, ensure it is a 64 character hexidecimal string");
       //   return false;
-    //  }
+      //}
       return true;
 
+    },
+    determinePendingTransactions(initiatingKey){
+      let pendingTransactions = [];
+      for (let index in this.transactions){
+        let t = this.transactions[index];
+        if(t.status === "pending"){
+          pendingTransactions.push(t);
+        }
+      }
+      if (pendingTransactions.length > 0){
+        this.updateTransactions(initiatingKey, pendingTransactions);
+      }
+    },
+    removeFromPending(txHash){
+      if (txHash.pubKey = this.currentKey){
+        for (let index in this.pendingTransactions){
+          let t = this.pendingTransactions[index];
+          if(t.txHash === txHash){
+            this.pendingTransactions.pop(index);
+          }
+        }
+      }
+    },
+    updateTransactions(initiatingKey, pendingTransactions){
+      if (initiatingKey === this.currentKey){
+        const tauWallet = this.storage.getTauWallet();
+        for (let index in pendingTransactions){
+          tauWallet.check_tx(pendingTransactions[index].txHash, this.network, initiatingKey)
+            .then((result) => {
+              if (result.status === 'SUCC' || result.status === 'FAIL'){
+                try{
+                  this.transactions = this.storage.setTransactionStatus(result.tokenKey, result.pubKey, result);
+                } catch (e){
+                  console.log(e.message);
+                }
+              } else if (result.status === 'pending'){
+                this.determinePendingTransactions(initiatingKey);
+              }
+            })
+            .catch((reject) => {
+              console.log(reject);
+            });
+        } 
+      }
+    },
+    deleteTransactions(){
+      this.transactions = this.storage.deleteTransactions(this.network, this.currentKey);
     }
   },
   components: {

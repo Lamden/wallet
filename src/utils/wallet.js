@@ -210,4 +210,35 @@ exports.submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_vk, wa
     });
 }
 
+exports.check_tx = (txHash, tokenKey, pubKey) => {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onload = function() {
+            if (xhr.readyState === xhr.DONE) {
+                var data = {};
+                if (xhr.status === 200) {
+                    data = JSON.parse(xhr.responseText);
+                    data.txHash = txHash;
+                    data.pubKey = pubKey;
+                    data.tokenKey = tokenKey;
+                    resolve(data);
+                }else{
+                    data.status = 'pending';
+                    resolve(data);
+                }
+            }
+        }
+
+        xhr.ontimeout = function() {
+            console.error("The request timed out");
+        }
+
+        xhr.timeout = 60000;
+        xhr.open('POST', get_mn_url() + '/transaction', true);
+        xhr.setRequestHeader("content-type", "application/json");
+        xhr.send(JSON.stringify({ "hash": txHash }));
+    });
+}
+
 

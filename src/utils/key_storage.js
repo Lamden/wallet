@@ -324,16 +324,24 @@ exports.getTransactions = (tokenKey, pubKey) =>  {
   }
 }
 
-exports.setTransactionStatus = (tokenKey, pubKey, txHash, status) => {
+exports.setTransactionStatus = (tokenKey, pubKey, result) => {
   let transactions = getUnencrypted('transactions');
   let transactionList = transactions[tokenKey][pubKey];
-  for (let transaction in transactionList){
-    if (transaction.txHash === txHash){
-      transaction.status = status;
+  for (let index in transactionList){
+    if (transactionList[index].txHash === result.txHash){
+      transactionList[index].status = result.status;
+      transactionList[index].result = result.state;
     }
   }
   transactions[tokenKey][pubKey] = transactionList;
-  setUnencrypted(transactions);
+  setUnencrypted(transactions, 'transactions');
+  return transactions[tokenKey][pubKey];
+}
+
+exports.deleteTransactions = (tokenKey, pubKey) => {
+  let transactions = getUnencrypted('transactions');
+  transactions[tokenKey][pubKey] = [];
+  setUnencrypted(transactions, 'transactions');
   return transactions[tokenKey][pubKey];
 }
 
