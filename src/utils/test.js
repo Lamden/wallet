@@ -1,2 +1,8 @@
-let txHash = "b08e4a886dcdb6b70093d44f2a5f57e86644a68d6cef6df2537ff5fe65b28f1c"
+const ks = require('./key_storage');
+
+let ETHpubkey = ks.addKeyTest('LamdenTAU', '49f876a17dc1c3ffe94e688db8513c817208789fb8b811042c8189283195bc1f');
+console.log(ETHpubkey);
+
+let BTCpubKey = ks.addKeyTest('BitcoinBTC', 'L55r8d3apuqyZ3Ly47BEFA4hiC6w5b8F7v3LufXgv67QLD2Gf2gs');
+console.log(BTCpubKey);
 

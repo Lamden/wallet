@@ -25,7 +25,8 @@
         <div>
           <cloveToken
             v-for="(value, key) in tokens" 
-            :key="key" 
+            :key="key"
+            :showAddButton.sync="showAddButton"
             v-show="tokens[key].active"
             :storage="storage"
             :unlockedTokens="unlockedTokens"
@@ -40,7 +41,8 @@
             <el-button 
               class="button-add-token" 
               icon="el-icon-plus" 
-              circle @click="dialogVisible = true">
+              circle @click="dialogVisible = true"
+              v-if="showAddButton">
             </el-button>
            <!-- <el-button  @click="removeToken('BTC')">delete </el-button> -->
           </div>
@@ -62,7 +64,8 @@ export default {
         dialogVisible: false,
         unlockedTokens: [],
         activeTokens: [],
-        tokens: []
+        tokens: [],
+        showAddButton: true
   }),
   computed: {
   },
@@ -131,10 +134,16 @@ export default {
     width: 40px!important;
     height: 40px!important;
     color: #C22C78!important;
-    border-color: #C22C78!important;
+    border-color: rgb(194, 44, 120)!important;
     background-color: rgb(255, 236, 246)!important;
     margin: 0 0 0 18px;
+    box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.5);
+    position: absolute;
+    top: 440px;
+    right: 163px;
+    z-index: 10;
   }
+
 
   .box-add-button {
     padding: 15px 0 0 0;

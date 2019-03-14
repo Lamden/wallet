@@ -1,11 +1,13 @@
 <template>
-  <el-collapse >
+  <el-collapse  @change="handleChange">
   <!-- TOKEN BANNER (logo, name, balance) -->
     <el-collapse-item name="1">
       <template slot="title"  >
         <div class="tokenBox" >
           <div class="bg" :style="{ backgroundImage: 'url(' + token.icon + ')' }"></div>
             <h1 class="tokenName" :style="token.color"> {{ token.name }}  </h1>
+            <span class="background-symbol" :style="token.color">{{token.symbol}}</span>
+            <span class="background-keys">{{'keys ' + countKeys}}</span>
         <!--    <p class="balances"> {{ token.balance + " " + token.symbol }}</p> -->
         </div>
       </template>
@@ -15,26 +17,11 @@
             <el-row :gutter="0" >
               <h3 class="lamden-text key-label" >{{keys[key].label}}</h3>
             </el-row>
-              <el-input
-                size="mini"
-                v-model="key">
-              </el-input>
-              <el-input
-                v-if="showPrivKey"
-                size="mini"
-                v-model="keys[key].privateKey">
-              </el-input>
-              <el-popover
-                placement="top"
-                width="100%"
-                v-model="showPopovers[key]">
-                <p>If this private key isn't backed up you could lose all funds assicated with it! Are you sure to delete this key?</p>
-                <div style="text-align: right; margin: 0">
-                  <el-button size="mini" type="text" @click="togglePopover(key)">cancel</el-button>
-                  <el-button type="primary" size="mini" @click="handelConfirmDelete(key)">confirm</el-button>
-                </div>
-                <el-button slot="reference" type="text" size="small" @click="togglePopover(key)" v-if="showPrivKey">Delete Key</el-button>
-            </el-popover>
+            <el-input type="textarea" :rows="2" size="mini" resize="none" :readonly="true" v-model="key"></el-input>
+            <el-input type="textarea" :rows="2" size="mini" resize="none" :readonly="true" v-model="keys[key].privateKey"
+              v-if="showPrivKey"></el-input>
+            <el-button @click="confirmDeleteAddress(key, keys[key])" v-if="showPrivKey" class="send-button-padding" type="text" size="mini">
+              Delete Wallet</el-button>
           </div>
         </div>
       <!-- ADD Private Key if none exist -->
@@ -55,25 +42,24 @@
           @keydown.enter.native.prevent
           @keyup.enter.native.prevent="addKey">
         </el-input>
-        <p class="error-text">{{error}}</p>
+        <el-button  @click="resetAddKeys" type="text" v-if="showCancel">Cancel</el-button>
+        <el-button @click="handleAddKeys" type="text" >Add Key</el-button>
 
-        <el-button @click="handelAddKeys" type="info" size="mini" plain>Add Key</el-button>
-        <el-button  @click="resetAddKeys" type="info" size="mini" plain v-if="showCancel">Cancel</el-button>
       </div>
  
       <div>
-        <el-row :gutter="0" class="key-buttons">
-          <el-button type="text" size="small" @click="showPassBox = !showPassBox" v-if="!keysEmpty">Show Private Keys</el-button>
+        <el-row :gutter="0" class="show-privatekeys">
+          <el-button type="text" size="small" @click="showPassBox = !showPassBox" v-if="showManagePrivateKeys">
+            Show Private Keys</el-button>
           <div v-if="showPassBox">
             <el-input
               size="mini"
               v-model="password"
               type="password"
               autofocus
-              @keyup.enter.native="handlePassword(key)"
-              placeholder="Enter your password to show private keys">
+              @keyup.enter.native="handlePassword"
+              placeholder="Enter your password to show  private keys">
             </el-input>
-            <p v-if="showPassBox" class="error-text">{{error}}</p>
           </div>
         </el-row>
       </div>
@@ -84,10 +70,12 @@
 <script>
 export default {  
   props:{token: {type: Object}, 
-         storage: {type: Object}
+         storage: {type: Object},
+         showAddButton: {type: Boolean}
         },
   data () {
     return {
+      tokenKey: "",
       privKeyInput: "",
       privKeyLabel: "",
       error: "",
@@ -96,22 +84,24 @@ export default {
       showPrivKey: false,
       showPassBox: false,
       password:"",
-      confirmPopover: true,
-      popovers: [],
       showAddKeys: false,
       showCancel: false,
-      showPopovers: {}
+      activeNames: ""
   }},
   computed: {
-    showAddKeys: function showAddKeys() {
-      if (!hasKeys){return true}
+    showManagePrivateKeys: function showAddKeysButton() {
+      for (let key in this.keys){return true}
+      return false;
+    },
+    countKeys: function countKeys(){
+      let numOfKeys = Object.keys(this.keys).length;
+      if (!numOfKeys) {return 0}
+      return numOfKeys;
     }
   },
   created() {
    this.tokenKey = this.token.name+this.token.symbol;
-   console.log(this.tokenKey);
    this.keys = this.storage.getPubKeyInfo(this.tokenKey);
-   console.log(this.keys)
    this.keys ? this.hasKeys = true : false;
    this.hasKeys ? this.showAddKeys = false : this.showAddKeys = true;
 
@@ -126,20 +116,12 @@ export default {
       } else if (this.privKeyInput === "" || this.privKeyInput === null){
         this.$message("Private Key cannot be empty");
       } else {
-        /*
-        let tokenKey = this.token.name + this.token.symbol
-        console.log(tokenKey)
-        console.log(this.token.symbol)
-        console.log(this.privKeyInput)
-        console.log(this.privKeyLabel)
-        this.error = this.storage.addKey(tokenKey, this.token.symbol, this.privKeyInput, this.privKeyLabel);
-        */
-       
-       !this.hasKeys ? this.keys = {} : null; 
-       let pubKey = this.storage.addKey();
-       this.$set(this.keys, pubKey+this.privKeyLabel, {privateKey:null, label:this.privKeyLabel, balance:0});
-       this.$set(this.showPopovers, pubKey, false);
 
+       !this.hasKeys ? this.keys = {} : null; 
+       let pubKeys = this.storage.addKey(this.tokenKey, this.privKeyInput, this.privKeyLabel);
+
+       this.keys = pubKeys;
+      
        this.hasKeys = true;
        this.resetAddKeys()
 
@@ -147,31 +129,61 @@ export default {
       }
     },
     handlePassword(pubKey){
-      this.error = "";
-      try {
-        for (let key in this.keys){
-          this.keys[key].privateKey = this.storage.getTokenPrivKeyTest(this.password, null);
-        }
-        this.showPrivKey = true;
-        this.resetPasswordBox();
-      }catch (e){
-        this.error = e.message;
+      if (this.password.length === 0 || !this.password){
+        this.showMessage('Enter a password then hit Enter');
+      }else if (!this.storage.authenticate(this.password)){
+        this.showMessage('Incorrect Password');
+      }else{
+        try {
+          for (let key in this.keys){
+            this.$set(this.keys[key], 'privateKey', this.storage.getPrivateKey(this.tokenKey, key))
+          }
+          console.log(this.keys);
+          this.showPrivKey = true;
+          this.resetPasswordBox();
+        }catch (e){
+          this.showMessage(e.message);
+        } 
       }
     },
-    handelConfirmDelete(pubKey) {
+    handleChange(val){
+      console.log(val);
+      console.log(this.showAddButton);
+      this.$emit('update:showAddButton', !this.showAddButton);
+    },
+    confirmDeleteAddress(key, keyInfo) {
+        this.$confirm('If you do not have a backup of these keys then funds could be lost. ARE YOU SURE?', 
+                      'Delete ' + keyInfo.label + ' wallet?', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          try{
+            this.storage.deletePrivateKey(this.tokenKey, key);
+            this.keys = this.storage.getPubKeyInfo(this.tokenKey);
+            this.showPrivKey = false;
+            this.resetAddKeys();
+            this.$message({
+              type: 'success',
+              message: 'Deleted ' + this.token.name + ' \'' + keyInfo.label + '\' wallet'
+            });
+          }catch (e){
+            this.showMessage(e.message);
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Delete canceled'
+          });          
+        });
+    },
+    handleConfirmDelete(pubKey) {
       try {
-        this.storage.deletePrivateKey(this.tokenKey, pubKey);
-        this.confirmPopover = false;
-        this.showPrivKey = false;
-        this.resetAddKeys();
-        this.$delete(this.keys, pubKey);
-        this.$delete(this.showPopovers, pubKey);
-        this.hasKeys = !this.keysEmpty();
       }catch (e) {
         console.log(e.message);
       }
     },
-    handelAddKeys(){
+    handleAddKeys(){
       if (this.showAddKeys) {
         this.addKey();
       } else {
@@ -252,8 +264,17 @@ export default {
     text-align: right;
   }
 
+  .box-token-keys{
+    text-align: center;
+  }
   .key-label {
     text-align: center;
+  }
+
+  .show-privatekeys{
+    text-align: right;
+    font-size: 1em;
+    color: rgb(194, 44, 120)
   }
 
   .keys-box {
@@ -272,10 +293,32 @@ export default {
     padding: 0;
     margin: 0;
   }
+
+  .background-symbol{
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    right: 43px;
+    font-size: 3em;
+    font-weight: bold;
+    opacity: 0.1;
+    transform: rotate(-45deg);
+  }
+
+  .background-keys{
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: -0.5px;
+    right: 23px;
+    font-size: 1.1em;
+    color: rgb(158, 158, 158);
+  }
   
 
   .lamden-text{
-    color:rgb(89,45,101);
+    color:rgb(118, 58, 134);
     margin:0!important;
   }
 

@@ -79,7 +79,7 @@ exports.authenticate = (pass) => {
     return true;
   } catch (e) {
     password = undefined;
-    throw new Error('Incorrect Password');
+    return false;
   }
 }
 
@@ -345,7 +345,7 @@ exports.deleteTransactions = (tokenKey, pubKey) => {
   return transactions[tokenKey][pubKey];
 }
 
-exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
+exports.addKey = (tokenKey, privateKey, label) => {
   // Accepts a private key entered by the user and attempts to match it to the proper network
   // to get the public key.  If it's able to it will store the keypair in localStorage.privKeys
   // and return the public key back to the UI.
@@ -354,37 +354,58 @@ exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
   if (storageUnlocked()) {
     let publicKey;
     let key;
+    let tokenNetwork = tokenInfo[tokenKey].network;
+    let networkSymbol = tokenInfo[tokenKey].symbol;
   
-    //Match tokenKey to the network
-    if (tokenInfo[tokenKey].network === 'Ethereum') {
-      key = sign.getHexBuffer(privateKey);
-      if (key.length === 0) {
-        throw new Error('Invalid private key');
+    //Match tokenKey to the ETHEREUM network
+    if (tokenNetwork === 'Ethereum') {
+      try{
+        key = sign.getHexBuffer(privateKey);
+        if (key.length === 0) {
+          throw new Error('Invalid private key:' + privateKey);
+        }
+        publicKey = '0x'+ ethUtil.privateToAddress(key).toString('hex');
+      }catch (e){
+        throw new Error('Ethereum error: ' + e.message + " - " + privateKey);
       }
-      publicKey = ethUtil.privateToAddress(key).toString('hex');
-    } else if (tokenInfo[tokenKey].network === 'Bitcoin') {
-        key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
-        publicKey = key.getAddress();
 
-    } else if (tokenInfo[tokenKey].network === 'Cilantro') {
+    //Match tokenKey to the BITCOIN network
+  } else if (tokenNetwork === 'Bitcoin') {
+    try{
+      key = sign.getBitcoinKey(privateKey, btcNetworks[networkSymbol]);
+      const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey });
+      publicKey = address;
+    } catch (e) {
+      throw new Error('Bitcoin error: ' + e.message);
+    }
+        
+    //Match tokenKey to the CILANTRO network
+    } else if (tokenNetwork === 'Cilantro') {
       throw new Error(`Cilantro networks are not supported yet`);
+
     } else {
-      throw new Error(`${networkSymbol} network is not supported`);
+      throw new Error(networkSymbol + " - network is not supported");
     }
 
-    //Get privateKeys object from localStorage
+    //Get privateKeys and public keys objects from localStorage
     let privKeys = getPrivateKeys();
+    let pubKeys = getUnencrypted('pubKeys');
+
     //Initialize object if it does not exist
     privKeys[tokenKey] = privKeys[tokenKey] || {};
+    pubKeys[tokenKey]  = pubKeys[tokenKey] || {};
 
+    //Set the private key and public key info in localStorage
     if (privKeys[tokenKey][publicKey]) {
-      throw new Error(`This address already exists in your ${networkSymbol} wallet`);
+      throw new Error('This address already exists in your ' + tokenInfo[tokenKey].name + ' ' + networkSymbol + ' wallet');
     } else {
       //Save keypair to localStorage and return public key to UI
-      privKeys[tokenKey][publicKey] = {privatekey, label, balance: 0, uiDefault:false};
+      privKeys[tokenKey][publicKey] = privateKey;
       setPrivateKeys(privKeys);
-
-      return publicKey;
+      pubKeys[tokenKey][publicKey] = {label, balance: 0, stamps: 0, uiDefault: false};
+      setUnencrypted(pubKeys, 'pubKeys')
+      //return all tokens for tokenKey to reset UI with all keys
+      return pubKeys[tokenKey];
     }
   }else{
     throw new Error('Storage is locked');
@@ -407,8 +428,6 @@ exports.getToken = (TokenKey) => {
   let tokens = getPrivateKeys();
   return tokens[tokenKey];
 }
-
-
 
 exports.genEthKey = () => {
     /* ethKey = {

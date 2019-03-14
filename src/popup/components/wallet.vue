@@ -163,10 +163,10 @@
 <!--  TRANSACTIONS PANE                         -->
       <div v-if="sections['transactions'].visible">
         <p>Transactions</p>
-        <el-button :disabled="this.transactions.lenght === 0" @click="deleteTransactions" type="text"  size="mini">
-        delete history </el-button>
+        <el-button v-if="showDeleteTransactionsButton"  @click="deleteTransactions" type="text"  size="mini">
+        delete history </el-button><br>
         <span v-for="(transaction, index) in transactions" :key="index">
-        {{transaction.txHash}}<br> 
+        {{transaction.txHash.substr(0,20)+"..."}}<br> 
         {{transaction.amount + "   " + transaction.date + " " + transaction.time}}<br>
         {{transaction.status}}<br>
         </span>
@@ -215,9 +215,10 @@ export default {
       if (this.sections['add'].newlabel.length === 0) {return true}
       return false;
     },
-    formatAddress: function formatAddress(address, length){
-      let newAddress = address.substr(0, length); 
-      return  newAddress;
+    showDeleteTransactionsButton: function showDeleteTransactionsButton(){
+      if (!this.transactions) {return false}
+      if (this.transactions.length === 0) {return false}
+      return true;
     }
   },
   created() {
