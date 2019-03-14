@@ -122,8 +122,8 @@ exports.initiateKeyStore = (pass) => {
 
     //Instantiate the transactions storage
     let transactions = {};
-    transactions[testnetKey] = [];
-    transactions[mainnetKey] = [];
+    transactions[testnetKey] = {};
+    transactions[mainnetKey] = {};
     setUnencrypted(transactions, 'transactions')
   }
 }
@@ -288,7 +288,53 @@ exports.removeActiveToken = (tokenKey) => {
   let filtered = activeTokens.filter(function(value, index, arr){
     return !(value === tokenKey);
   });
-  setUnencrypted(filtered);
+  setUnencrypted(filtered, 'activeTokens');
+}
+
+exports.addTransaction = (tokenKey, pubKey, txHash, txDestination, amount, stamps) =>  {
+  let transactions = getUnencrypted('transactions');
+  try {
+    if (!transactions[tokenKey][pubKey]) {
+      transactions[tokenKey][pubKey] = [];
+    }
+  
+    let newDate = new Date();
+    transactions[tokenKey][pubKey].unshift({txHash, 
+                                            txDestination,
+                                            amount,
+                                            stamps,
+                                            date: newDate.toLocaleDateString(), 
+                                            time: newDate.toLocaleTimeString(), 
+                                            status: "pending"});
+    setUnencrypted(transactions, 'transactions');
+    return transactions[tokenKey][pubKey];
+  } catch (e) {
+    throw new Error(e.message);
+  }
+  
+}
+
+exports.getTransactions = (tokenKey, pubKey) =>  {
+  try {
+    let transactions = getUnencrypted('transactions');
+    let transactionList = transactions[tokenKey][pubKey];
+    return transactionList;
+  } catch (e){
+    throw new Error(e.message);
+  }
+}
+
+exports.setTransactionStatus = (tokenKey, pubKey, txHash, status) => {
+  let transactions = getUnencrypted('transactions');
+  let transactionList = transactions[tokenKey][pubKey];
+  for (let transaction in transactionList){
+    if (transaction.txHash === txHash){
+      transaction.status = status;
+    }
+  }
+  transactions[tokenKey][pubKey] = transactionList;
+  setUnencrypted(transactions);
+  return transactions[tokenKey][pubKey];
 }
 
 exports.addKey = (tokenKey, networkSymbol, privateKey, label) => {
@@ -354,6 +400,8 @@ exports.getToken = (TokenKey) => {
   return tokens[tokenKey];
 }
 
+
+
 exports.genEthKey = () => {
     /* ethKey = {
      *   privateKey: <Buffer ...>,
@@ -389,69 +437,6 @@ exports.generateKey = (networkSymbol) => {
     }
 
 }
-
-exports.addTauKey = (networkSymbol) => {
-}
-
-exports.unlockStorage = (pass) => {
-  password = pass;
-  try {
-    getPrivateKeys();
-  } catch (e) {
-    console.log(e.message);
-    password = undefined;
-    if (e.message === 'Decryption failed') {
-      throw new Error('Incorrect password');
-    } else {
-      throw e;
-    }
-  }
-};
-
-exports.lockStorage = () => {
-  password = undefined;
-};
-
-exports.removePrivateKey = (networkSymbol, address) => {
-  if (password === undefined) {
-    throw new Error('Storage is locked');
-  }
-  const keys = getPrivateKeys();
-  if (keys[networkSymbol] === undefined || keys[networkSymbol][address] === undefined) {
-    throw new Error('Key not found');
-  }
-  delete keys[networkSymbol][address];
-  if (Object.keys(keys[networkSymbol]).length === 0) {
-    delete keys[networkSymbol];
-  }
-  setPrivateKeys(keys);
-};
-
-exports.getAvailableKeys = () => {
-  if (password === undefined) {
-    throw new Error('Storage is locked');
-  }
-  const keys = getPrivateKeys();
-  return Object.keys(keys).sort().reduce((obj, key) => {
-    // eslint-disable-next-line no-param-reassign
-    obj[key] = Object.keys(keys[key]).map(address => ({
-      address,
-      label: keys[key][address].label || '',
-    })).sort((keyA, keyB) => {
-      const keyDiff = keyA.address.localeCompare(keyB.address);
-      if (keyA.label && keyB.label) {
-        const labelDiff = keyA.label.localeCompare(keyB.label);
-        return labelDiff === 0 ? keyDiff : labelDiff;
-      } else if (keyA.label) {
-        return -1;
-      } else if (keyB.label) {
-        return 1;
-      }
-      return keyDiff;
-    });
-    return obj;
-  }, {});
-};  
 
 exports.getTauWallet = () => {
   return tauWallet;

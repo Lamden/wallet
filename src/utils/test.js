@@ -22,7 +22,7 @@ privKeys[tokenKey]['d88s7s7a6d6f78h5a38d8aslkjdsfljasdpjfiss'] = {privateKey, la
 console.log(privKeys);
 delete privKeys[tokenKey][pubKey2];
 console.log(privKeys);
-*/
+
 
 const tauWallet = require('./wallet');
 //console.log(tauWallet.get_vk('9decc7f7f0b5a4fc87ab5ce700e2d6c5d51b7565923d50ea13cbf78031bb3acf'));
@@ -38,3 +38,13 @@ const tauWallet = require('./wallet');
   .catch(function() {
     this.showMessage('error');
   });
+
+  */
+
+let date = new Date();
+
+console.log(date.toDateString());
+console.log(date.toTimeString());
+console.log(date.toLocaleDateString());
+console.log(date.toLocaleTimeString());
+console.log(date.toLocaleString());

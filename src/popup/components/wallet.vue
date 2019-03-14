@@ -163,6 +163,11 @@
 <!--  TRANSACTIONS PANE                         -->
       <div v-if="sections['transactions'].visible">
         <p>Transactions</p>
+        <span v-for="(transaction, index) in transactions" :key="index">
+        {{transaction.txHash}}<br> 
+        {{transaction.amount + "   " + transaction.date + " " + transaction.time}}<br>
+        {{transaction.status}}<br>
+        </span>
         </div>
       </el-footer>
   </el-container>
@@ -183,6 +188,7 @@ export default {
     showOverflowTooltip: true,
     keysDropdown: {},
     networkKeys: {},
+    transactions: [],
     disableRefreshBalance: false,
     forceRefreshKeys: {balance: 0},
     sections: {'transactions': {visible: true},
@@ -205,15 +211,27 @@ export default {
     addWalletLabelEmpty: function labelNotEmpty(){
       if (this.sections['add'].newlabel.length === 0) {return true}
       return false;
+    },
+    formatAddress: function formatAddress(address, length){
+      let newAddress = address.substr(0, length); 
+      return  newAddress;
     }
   },
   created() {
-    this.networkKeys['DarkTauDTAU'] = this.storage.getPubKeyInfo('DarkTauDTAU');
+    this.networkKeys[this.network] = this.storage.getPubKeyInfo('DarkTauDTAU');
 
     for (let key in this.networkKeys[this.network]){
       this.networkKeys[this.network][key].uiDefault ? this.currentKey = key : null;
     }
     this.refreshBalance();
+    
+    try {
+      this.transactions = this.storage.getTransactions(this.network, this.currentKey);
+    } catch (e){
+      console.log(e.message);
+    }
+    
+    console.log(this.transactions)
   },
   methods: {
     swapNet() {
@@ -274,11 +292,6 @@ export default {
         this.sections['edit'].defaultChecked = this.networkKeys[this.network][this.currentKey].uiDefault;
         this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
         this.sections['edit'].showPrivKey = false;
-      }
-    },
-    showTransactions(){
-      for (let section in this.sections){
-        section === 'transactions' ? this.sections[section].visible = true : this.sections[section].visible = false;
       }
     },
     showMessage(message){
@@ -387,7 +400,7 @@ export default {
     },
     resetSend(){
       this.showTransactions();
-      let sendDefault = {disableSendButton: false, txDestination: "", txAmount: 0};
+      let sendDefault = {disableSendButton: false, txDestination: "", txAmount: 0, txStamps: 3000};
       this.$set(this.sections, 'send', sendDefault);
     },
     revertToDefaultAddress(){
@@ -398,19 +411,36 @@ export default {
     sendTransaction(){
       let s = this.sections['send'];
       if (this.validateTransaction(s)){
-        this.sections['send'].disableSendButton = true;
         const tauWallet = this.storage.getTauWallet();
 
         tauWallet.submit_tx_to_network(s.txAmount, s.txStamps, s.txDestination,
                                       this.currentKey,
                                       this.storage.getPrivateKey(this.network, this.currentKey))
         .then((result) => {
+          console.log(result);
           this.showMessage(result.success);
           if (result.success.includes("successfully")){
-
-            this.resetSend();
+            try{
+              let transactionList = this.storage.addTransaction(this.network, this.currentKey, result.hash, 
+                                                              s.txDestination, s.txAmount, s.txStamps);
+              console.log("Returned from Storage" + transactionList);
+              this.transactions = transactionList;
+              this.resetSend();
+            }catch (e){
+              console.log(e.message);
+              this.showMessage(e.message);
+            }
           }
+        })
+        .catch((reject) => {
+          console.log(reject);
         });
+      }
+    },
+    showTransactions(){
+      this.transactions = this.storage.getTransactions(this.network, this.currentKey);
+      for (let section in this.sections){
+        section === 'transactions' ? this.sections[section].visible = true : this.sections[section].visible = false;
       }
     },
     validateTransaction(s){
@@ -449,6 +479,8 @@ export default {
     text-align: center;
     padding: 0;
     height: 233px!important;
+    overflow:scroll;
+    overflow-x: hidden;
   }
 
   .walletTransactions {
