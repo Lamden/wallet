@@ -243,8 +243,6 @@ export default {
       let pubInfo = this.storage.getPubKeyInfo(this.network);
       //Set the new storage object into reactivity layer
       this.$set(this.networkKeys, this.network, pubInfo);
-      console.log(this.networkKeys[this.network]);
-      this.refreshBalance();
     },
     refreshBalance(){
       this.disableRefreshBalance = true;
@@ -254,18 +252,16 @@ export default {
         .then((result) => {
           let walletBalance = result.value !== 'null' ? parseFloat(result.value) : 0;
           this.$set(this.networkKeys[this.network][this.currentKey], 'balance', walletBalance);
+          this.disableRefreshBalance = false;
           this.forceRefreshKeys.balance += 1;
         })
         .catch((e) => {
-          console.log(e);
-        })
-        .then((result) => {
-          this.disableRefreshBalance = false;
+          this.showMessage(e);
         });
     },
     handleCommand(choice) {
-        this.showTransactions();
         this.currentKey = choice;
+        this.showTransactions();
         this.refreshBalance();
     },
     showSection(swapTo){
@@ -335,9 +331,10 @@ export default {
             this.revertToDefaultAddress();
             this.resetEdit();
             this.showTransactions();
+            this.refreshBalance();
             this.$message({
               type: 'success',
-              message: 'Delete completed'
+              message: 'Deleted Wallet Address'
             });
           }catch (e){
             this.showMessage(e.message);
@@ -359,6 +356,7 @@ export default {
         //switch to the new wallet that was just created
         this.currentKey = newPubKey;
         this.cancelAddSection();
+        this.refreshBalance();
       }catch (e){
         this.showMessage(e.message);
       }
@@ -372,6 +370,7 @@ export default {
         this.refreshNetworkKeys();
         //switch to the new wallet that was just created
         this.currentKey = newPubKey;
+        this.refreshBalance();
         this.cancelAddSection();
       }catch (e){
         this.showMessage(e.message);
@@ -407,7 +406,6 @@ export default {
                                       this.storage.getPrivateKey(this.network, this.currentKey))
         .then((result) => {
           this.showMessage(result.success);
-          console.log(result);
           if (result.success.includes("successfully")){
 
             this.resetSend();

@@ -70,17 +70,6 @@ function generateDTAUWallet(pass){
   }
 }
 
-function authenticate(pass){
-  const auth = localStorage.authenticate;
-  try {
-    const decrypted = CryptoJS.AES.decrypt(auth, pass, { format: JsonFormatter });
-    JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-    return true;
-  } catch (e) {
-    throw new Error('Incorrect Password');
-  }
-}
-
 exports.authenticate = (pass) => {
   const auth = localStorage.authenticate;
   try {
@@ -102,6 +91,8 @@ exports.initiateKeyStore = (pass) => {
   password = pass;
 
   if (!localStorage.privKeys){
+    let testnetKey = ['DarkTauDTAU'];
+    let mainnetKey = ['LamdenMainNet'];
     let darkTAUWallet = generateDTAUWallet(password);
     //use this storage object to authenticate the user's password withough having to decrypt the private key store
     const authenticate = CryptoJS.AES.encrypt(JSON.stringify('authenticate'), password, { format: JsonFormatter }).toString();
@@ -109,26 +100,31 @@ exports.initiateKeyStore = (pass) => {
 
     //Encrypted storage for private keys.  
     //This only unencrypted when something needs to be signed, exported or the user wants to view it
-    let tokenKey = ['DarkTauDTAU']; 
     let privKeys = {};
-    privKeys[tokenKey] = {};
-    privKeys[tokenKey][darkTAUWallet.wallet.vk] = darkTAUWallet.wallet.sk;
+    privKeys[testnetKey] = {};
+    privKeys[testnetKey][darkTAUWallet.wallet.vk] = darkTAUWallet.wallet.sk;
 
     const encrypted = CryptoJS.AES.encrypt(JSON.stringify(privKeys), password, { format: JsonFormatter }).toString();
     localStorage.setItem('privKeys', encrypted);
 
     //unencrypted storage for the public key information as well as UI info for each key
     let pubKeys = {};
-    pubKeys[tokenKey] = {};
-    pubKeys[tokenKey][darkTAUWallet.wallet.vk] = {label: "Lamden Wallet Dark TAU Address", balance: 0, stamps: 0, uiDefault: true};
-    pubKeys['LamdenMainNet'] = {};
-    pubKeys['LamdenMainNet']['unavailable'] = {label:'Comming Soon', balance: 0, stamps: 0, uiDefault: true, };
+    pubKeys[testnetKey] = {};
+    pubKeys[testnetKey][darkTAUWallet.wallet.vk] = {label: "Lamden Wallet Dark TAU Address", balance: 0, stamps: 0, uiDefault: true};
+    pubKeys[mainnetKey] = {};
+    pubKeys[mainnetKey]['unavailable'] = {label:'Comming Soon', balance: 0, stamps: 0, uiDefault: true, };
     setUnencrypted(pubKeys, 'pubKeys')
 
     //unencrypted storage of the user's active token list. 
     //These are tokens the user added to their clove wallet view
     let activeTokens = ['LamdenTAU','BitcoinBTC', 'EthereumETH'];
     setUnencrypted(activeTokens, 'activeTokens')
+
+    //Instantiate the transactions storage
+    let transactions = {};
+    transactions[testnetKey] = [];
+    transactions[mainnetKey] = [];
+    setUnencrypted(transactions, 'transactions')
   }
 }
 
