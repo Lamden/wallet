@@ -61,7 +61,7 @@
             </el-timeline>
           </div>
           <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle plain 
-                     click="deleteTransactions" title="delete transaction history">
+                     @click="deleteTransactions" title="delete transaction history">
           </el-button>   
         </el-tab-pane>
 
@@ -231,7 +231,6 @@ export default {
     formattedTransactions: function formattedTransactions(){
       let trans = [];
       for (let transaction in this.transactions){
-          console.log(this.transactions[transaction])
           let t = {}
         t.timestamp = this.transactions[transaction].date + ' ' + this.transactions[transaction].time ;
         t.size="large"
@@ -251,7 +250,6 @@ export default {
         t.sent = t.sent + this.transactions[transaction].amount;
         trans.push(t);
       }
-      console.log(trans);
       return trans;
     }
   },
@@ -268,13 +266,10 @@ export default {
     } catch (e){
       console.log(e.message);
     }
-    console.log(this.transactions);
     this.determinePendingTransactions(this.currentKey);
   },
   methods: {
     handleTabs(tab, event){
-      console.log(tab, event);
-      console.log(tab.label)
       tab.label !== "Edit" ? this.resetEdit() : null;
       tab.label !== "Add" ? this.cancelAddSection() : null;
 
@@ -476,7 +471,6 @@ export default {
               this.transactions = transactionList;
               this.resetSend();
             }catch (e){
-              console.log(e.message);
               this.showMessage(e.message);
             }
           }
