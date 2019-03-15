@@ -225,6 +225,7 @@ exports.check_tx = (txHash, tokenKey, pubKey) => {
                     resolve(data);
                 }else{
                     data.status = 'pending';
+                    data.txHash = txHash;
                     resolve(data);
                 }
             }

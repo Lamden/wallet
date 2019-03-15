@@ -16,7 +16,7 @@
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
         </div>
         <div class="balance-box">
-          <span :key="forceRefreshKeys.balance">{{networkKeys[network][currentKey].balance}}</span>
+          <span :key="forceRefreshKeys.balance">{{networkKeys[network][currentKey].balance + ' ' + symbols[network]}}</span>
           
         </div>
         <br class="newline">
@@ -43,7 +43,7 @@
 
 
 <!--  TRANSACTIONS PANE  ------------------------------------------>
-          <el-tab-pane label="Transactions" name="Transactions">
+          <el-tab-pane label="Transactions" name="Transactions" :key="forceRefreshKeys.balance">
           <div class="block">
               <el-timeline>
                   <el-timeline-item
@@ -74,7 +74,7 @@
                         v-model="sections['send'].txDestination"></el-input>
               <el-row>
                 <el-col :span=12>
-                  <h3>Amount</h3>
+                  <h3>Amount ({{symbols[network]}})</h3>
                 </el-col>
                 <el-col :span=12>
                   <h3>Stamps</h3>
@@ -92,7 +92,7 @@
                 </el-col>
               </el-row>
               <el-button class="send-transactions-floating-button" type="success" icon="el-icon-d-arrow-right" circle plain
-                @click="sendTransaction" title="send transaction"></el-button>
+                @click="sendTransaction" v-if="showSendButton" title="send transaction"></el-button>
             </div>
           </el-tab-pane>
 
@@ -191,6 +191,7 @@ export default {
   props: ['storage'],
   data: () => ({
     network: "DarkTauDTAU",
+    symbols: {"DarkTauDTAU": "dTau", "LamdenMainNet" : "Tau"},
     precision: 0,
     currentKey: "",
     togTestNet: true,
@@ -199,11 +200,13 @@ export default {
     networkKeys: {},
     transactions: [],
     pendingTransactions: [],
+    checkingTransactions: [],
     disableRefreshBalance: false,
-    forceRefreshKeys: {balance: 0},
+    showSendButton: true,
+    forceRefreshKeys: {balance: 0, transactions: 0},
     activeName:"Transactions",
     sections: {'transactions': {visible: true},
-              'send': {visible: false, disableSendButton: false, txDestination: "", txAmount: 0, txStamps: 3000},
+              'send': {visible: false, txDestination: "", txAmount: 0, txStamps: 3000},
               'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
               'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
   }),
@@ -237,17 +240,19 @@ export default {
         t.color = 'orange';
         t.icon = 'el-icon-more';
         t.sent = 'Amount: '
-        if (this.transactions[transaction].status === 'SUCC'){
+        let status = this.transactions[transaction].status;
+        if (status.includes('SUCC')){
               t.color = 'green'
               t.icon = 'el-icon-check'
               t.sent = "Sent: "
         }
-        if (this.transactions[transaction].status === 'FAIL'){
+        if (status.includes('FAIL')){
               t.color = 'red'
               t.icon = 'el-icon-close'
+              t.sent = "Failed: "
         }
-        t.content = 'txHash:  ' +  this.formatAddress(this.transactions[transaction].txHash, 22);
-        t.sent = t.sent + this.transactions[transaction].amount;
+        t.content = this.formatAddress(this.transactions[transaction].txHash, 30);
+        t.sent = t.sent + this.transactions[transaction].amount + ' ' +  this.symbols[this.network];
         trans.push(t);
       }
       return trans;
@@ -270,9 +275,16 @@ export default {
   },
   methods: {
     handleTabs(tab, event){
-      tab.label !== "Edit" ? this.resetEdit() : null;
       tab.label !== "Add" ? this.cancelAddSection() : null;
-
+      tab.label === 'Send' ? this.showSendButton = true : this.resetSend();
+  
+      if (tab.label === 'Edit'){
+        this.sections['edit'].defaultChecked = this.networkKeys[this.network][this.currentKey].uiDefault;
+        this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
+        this.sections['edit'].showPrivKey = false;
+      }else {
+        this.resetEdit();
+      }
     },
     swapNet() {
       let newNetwork = "";
@@ -282,6 +294,10 @@ export default {
       for (let key in pubInfo){
         pubInfo[key].uiDefault ? this.currentKey = key : null;
       }
+
+      this.resetSend();
+      this.resetEdit();
+      this.cancelAddSection();
 
       this.showTransactions();
       this.$set(this.networkKeys, newNetwork, pubInfo);
@@ -445,8 +461,7 @@ export default {
       this.$set(this.sections, 'edit', editDefault);
     },
     resetSend(){
-      this.showTransactions();
-      let sendDefault = {disableSendButton: false, txDestination: "", txAmount: 0, txStamps: 3000};
+      let sendDefault = {txDestination: "", txAmount: 0, txStamps: 3000};
       this.$set(this.sections, 'send', sendDefault);
     },
     revertToDefaultAddress(){
@@ -455,10 +470,12 @@ export default {
       }
     },
     sendTransaction(){
+      this.showSendButton = false;
       let s = this.sections['send'];
-      if (this.validateTransaction(s)){
-        const tauWallet = this.storage.getTauWallet();
 
+      if (this.validateTransaction(s)){
+        this.showTransactions();
+        const tauWallet = this.storage.getTauWallet();
         tauWallet.submit_tx_to_network(s.txAmount, s.txStamps, s.txDestination,
                                       this.currentKey,
                                       this.storage.getPrivateKey(this.network, this.currentKey))
@@ -469,10 +486,12 @@ export default {
               let transactionList = this.storage.addTransaction(this.network, this.currentKey, result.hash, 
                                                               s.txDestination, s.txAmount, s.txStamps);
               this.transactions = transactionList;
-              this.resetSend();
+              this.determinePendingTransactions(this.currentKey);
             }catch (e){
-              this.showMessage(e.message);
+                this.showMessage(e.message);
             }
+          }else{
+              console.log(result);
           }
         })
         .catch((reject) => {
@@ -487,6 +506,9 @@ export default {
       } else if (parseFloat(s.txAmount) < 0) {
           this.$message("Amount must be a positive number");
           return false;
+      } else if ((parseFloat(s.txAmount) + parseFloat(s.txStamps)) > this.networkKeys[this.network][this.currentKey].balance) {
+          this.$message("You do not have enough " + this.symbols[this.network] + ' to complete this transfer'  );
+          return false;
       } else if (s.txDestination === "" || s.txDestination === null) {
           this.$message("Enter a destination wallet address");
           return false;
@@ -499,48 +521,54 @@ export default {
 
     },
     determinePendingTransactions(initiatingKey){
-      let pendingTransactions = [];
-      for (let index in this.transactions){
-        let t = this.transactions[index];
-        if(t.status === "pending"){
-          pendingTransactions.push(t);
-        }
-      }
-      if (pendingTransactions.length > 0){
-        this.updateTransactions(initiatingKey, pendingTransactions);
-      }
-    },
-    removeFromPending(txHash){
-      if (txHash.pubKey = this.currentKey){
-        for (let index in this.pendingTransactions){
-          let t = this.pendingTransactions[index];
-          if(t.txHash === txHash){
-            this.pendingTransactions.pop(index);
+      if (this.checkingTransactions.length === 0){
+        this.pendingTransactions = [];
+        for (let index in this.transactions){
+          let t = this.transactions[index];
+          if(t.status === "pending" && !this.checkingTransactions.includes(t.txHash)){
+            this.pendingTransactions.push(t);
           }
         }
+        if (this.pendingTransactions.length > 0){
+          this.updateTransactions(initiatingKey, this.pendingTransactions);
+        }
       }
     },
-    updateTransactions(initiatingKey, pendingTransactions){
-      if (initiatingKey === this.currentKey){
-        const tauWallet = this.storage.getTauWallet();
-        for (let index in pendingTransactions){
-          tauWallet.check_tx(pendingTransactions[index].txHash, this.network, initiatingKey)
-            .then((result) => {
-              if (result.status === 'SUCC' || result.status === 'FAIL'){
-                try{
-                  this.transactions = this.storage.setTransactionStatus(result.tokenKey, result.pubKey, result);
-                } catch (e){
-                  console.log(e.message);
-                }
-              } else if (result.status === 'pending'){
-                this.determinePendingTransactions(initiatingKey);
-              }
-            })
-            .catch((reject) => {
-              console.log(reject);
-            });
-        } 
-      }
+    updateTransactions(initiatingKey){
+        if (initiatingKey === this.currentKey){
+          for (let index in this.pendingTransactions){
+
+            // Check if his is already in processing loop
+            if (!this.checkingTransactions.includes(this.pendingTransactions[index].txHash)){
+              //Add txHash to processing loop
+              this.checkingTransactions.push(this.pendingTransactions[index].txHash)
+
+              const tauWallet = this.storage.getTauWallet();
+              tauWallet.check_tx(this.pendingTransactions[index].txHash, this.network, initiatingKey)
+                .then((result) => {
+                  // Remove txHash from processing loop
+                  this.checkingTransactions = this.checkingTransactions.filter(function(value, index, arr){
+                    return value !== result.txHash;
+                  });
+
+                  if (result.status.includes('SUCC') || result.status.includes('FAIL') ){
+                    try{
+                      this.transactions = this.storage.setTransactionStatus(result.tokenKey, result.pubKey, result);
+                      this.refreshBalance()
+                    } catch (e){
+                      console.log(e.message);
+                    }
+                  }
+
+                  //Run loop again which will check this again if the status is still pending
+                  this.determinePendingTransactions(initiatingKey);
+                })
+                .catch((reject) => {
+                  console.log(reject);
+                });
+            }
+          } 
+        }
     },
     deleteTransactions(){
       this.transactions = this.storage.deleteTransactions(this.network, this.currentKey);

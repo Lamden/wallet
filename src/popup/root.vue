@@ -12,15 +12,15 @@
               <i class="el-icon-menu"></i>
               <span>Lamden Wallet</span>
             </el-menu-item>
-            <el-menu-item index="1" @click="navController('Clove Wallet')">
+      <!--      <el-menu-item index="1" @click="navController('Clove Wallet')">
               <i class="el-icon-menu"></i>
               <span>Clove Wallet</span>
             </el-menu-item>
-            <el-menu-item index="2" @click="navController('Lock Wallet')">
+       -->     <el-menu-item index="2" @click="navController('Lock Wallet')">
               <i class="el-icon-setting"></i>
               <span>Lock Wallet</span>
             </el-menu-item>
-            <el-menu-item index="2" @click="navController('dev')">
+      <!--      <el-menu-item index="2" @click="navController('dev')">
               <i class="el-icon-setting"></i>
               <span>Dev</span>
             </el-menu-item>
@@ -36,7 +36,7 @@
               <i class="el-icon-setting"></i>
               <span>Timeline</span>
             </el-menu-item>
-          </el-menu>
+      -->    </el-menu>
         </div>
       </div>
     <component
