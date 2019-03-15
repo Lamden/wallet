@@ -32,6 +32,10 @@
               <i class="el-icon-setting"></i>
               <span>Backup and Restore</span>
             </el-menu-item>
+            <el-menu-item index="2" @click="navController('timeline')">
+              <i class="el-icon-setting"></i>
+              <span>Timeline</span>
+            </el-menu-item>
           </el-menu>
         </div>
       </div>
@@ -47,6 +51,7 @@
       @dev="switchView('clove')"
       @firstRun="switchView('firstRun')"
       @backup="switchView('backup')"
+      @timeline="switchView('timeline')"
       />
     </div>
   </el-container>
@@ -63,6 +68,7 @@ import clove from './components/clove';
 import dev from './components/dev';
 import firstRun from './components/firstRun';
 import backup from './components/backup';
+import timeline from './components/timeline-test';
 
 export default {
   data: () => ({
@@ -138,6 +144,9 @@ export default {
 
       }else if (page == "backup") {
         this.currentView = "backup";
+
+      }else if (page == "timeline") {
+        this.currentView = "timeline";
       }
       this.menu = false
     }
@@ -153,7 +162,8 @@ export default {
     clove,
     dev,
     firstRun,
-    backup
+    backup,
+    timeline
   },
 };
 </script>

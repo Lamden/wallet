@@ -35,48 +35,35 @@
             <el-button @click="showMessage('Copied!')" v-if="togTestNet" v-clipboard:copy="currentKey" size="mini" icon="el-icon-document" circle title="copy wallet address"></el-button>
             <el-button  :disabled="disableRefreshBalance" @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
         </el-dropdown>
-  <!--       <br>
-        <el-button @click="showSection('send')" v-if="togTestNet" size="mini" icon="el-icon-d-arrow-right" circle title="send transaction"></el-button>
-        
-        <el-button @click="showSection('edit')" v-if="togTestNet" size="mini" icon="el-icon-edit" circle title="edit address"></el-button>
-        <el-button @click="showSection('add')" v-if="togTestNet" size="mini" icon="el-icon-plus" circle title="add new address"></el-button>
-  -->  
       </el-main>
 
       
       <el-footer class="walletFooter">
         <el-tabs v-model="activeName" @tab-click="handleTabs">
+
+
+<!--  TRANSACTIONS PANE  ------------------------------------------>
           <el-tab-pane label="Transactions" name="Transactions">
-        <!--  TRANSACTIONS PANE                         -->
-            <div class="tab-boxes">
-              <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle
-              title="delete transaction history"></el-button>
-              <h3 class="lamden-text" v-if="!showDeleteTransactionsButton">Transaction Log Empty</h3>
-            <div class="block">
+          <div class="block">
               <el-timeline>
-                <el-timeline-item
-                  v-for="(transaction, index) in transactions"
+                  <el-timeline-item
+                  v-for="(activity, index) in formattedTransactions"
                   :key="index"
-                  :icon="el-icon-check"
-                  :type="primary"
-                  :color="green"
-                  :size="large"
-                  :timestamp="transaction.date">
-                  {{transaction.amount}}
-                </el-timeline-item>
-              </el-timeline>
-            </div>
-         <!--     <el-button v-if="showDeleteTransactionsButton"  @click="deleteTransactions" type="text"  size="mini">
-                delete history </el-button><br>
-            <span v-for="(transaction, index) in transactions" :key="index">
-              <p class="transaction-lines">{{'txHash: ' + transaction.txHash.substr(0,30)+"..." + '    Status: ' + transaction.status}} </p>
-              <p class="transaction-lines">{{'Sent: ' + transaction.amount + '  on ' +  transaction.date + ' @ ' + transaction.time  }}</p>
-              </span>
-      -->    </div>
-          </el-tab-pane>
-    
+                  :icon="activity.icon"
+                  :color="activity.color"
+                  :size="activity.size"
+                  :timestamp="activity.timestamp">
+                  {{activity.content}}
+                  </el-timeline-item>
+            </el-timeline>
+          </div>
+          <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle title="delete transaction history">
+          </el-button>   
+        </el-tab-pane>
+
+
+<!--  SEND TRANSACTION PANE  ------------------------------------------>
           <el-tab-pane label="Send" name="Send">
-<!--  SEND TRANSACTION PANE                         -->
             <div class="send-box">
               <h1 class="send-title">Send Dark TAU</h1>
               <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" 
@@ -111,7 +98,7 @@
             </div>
           </el-tab-pane>
 
-<!--  EDIT ADDRESS PANE                         -->
+<!--  EDIT ADDRESS PANE  ------------------------------------------>
           <el-tab-pane label="Edit" name="Edit">
             <div  class="send-box">
               <el-row :gutter=6>
@@ -147,7 +134,7 @@
               </div>
             </el-tab-pane>
 
-       <!--  ADD ADDRESS PANE  -->
+ <!--  ADD ADDRESS PANE  ------------------------------------------>
             <el-tab-pane label="Add" name="Add">
               <div class="send-box">
                 <div v-if="displayAddMainSection">
@@ -247,6 +234,29 @@ export default {
       if (!this.transactions) {return false}
       if (this.transactions.length === 0) {return false}
       return true;
+    },
+    formattedTransactions: function formattedTransactions(){
+      let trans = [];
+      for (let transaction in this.transactions){
+          console.log(transaction)
+          let t = {}
+        t.timestamp = this.transactions[transaction].date + ' ' + this.transactions[transaction].time ;
+        t.content = this.formatAddress(this.transactions[transaction].txHash, 30);
+        t.size="large"
+        t.color = 'orange';
+        t.icon = 'el-icon-loading';
+        if (this.transactions[transaction].status === 'SUCC'){
+              t.color = 'green'
+              t.icon = 'el-icon-check'
+        }
+        if (this.transactions[transaction].status === 'FAIL'){
+              t.color = 'red'
+              t.icon = 'el-icon-close'
+        }
+        trans.push(t);
+      }
+      console.log(trans);
+      return trans;
     }
   },
   created() {
@@ -540,6 +550,9 @@ export default {
     },
     deleteTransactions(){
       this.transactions = this.storage.deleteTransactions(this.network, this.currentKey);
+    },
+    formatAddress(address, length){
+      return address.substr(0,length) + "..."
     }
   },
   components: {
@@ -627,11 +640,15 @@ export default {
   }
 
   .el-tabs__header{
-    margin: 0;
+    margin: 10px 0 0 0;
   }
 
   .el-tabs__nav {
     float: none!important;
+  }
+
+  .el-timeline{
+    margin: 10px 0 0 0;
   }
 
   .send-box {
@@ -678,9 +695,9 @@ export default {
   }
 
   .del-transactions-floating-button{
-    position: relative;
-    bottom: -134px;
-    right: -152px;
+    position: fixed;
+    bottom: 14px;
+    right: 32px;
     z-index: 10000;
     box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.5);
   }
