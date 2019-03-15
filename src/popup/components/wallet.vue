@@ -569,9 +569,10 @@ export default {
     text-align: center;
     padding: 0;
     height: 238px!important;
-    overflow:scroll;
+    overflow: hidden;
     overflow-x: hidden;
     margin: -12px 0 0 0;
+    overflow-y: hidden;
   }
 
   .walletTransactions {
@@ -630,7 +631,7 @@ export default {
   }
 
   .el-tabs__active-bar{
-    left: 40px!important;
+    left: 50px!important;
     background-color: rgb(156, 60, 139);
   }
 
@@ -640,6 +641,13 @@ export default {
 
   .el-tabs__nav {
     float: none!important;
+  }
+
+  .el-tabs__content{
+    overflow: scroll!important;
+    position: relative;
+    height: 199px;
+    overflow-x: hidden!important;
   }
 
   .el-timeline-item__icon{
