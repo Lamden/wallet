@@ -1,24 +1,59 @@
 <template>
   <el-container class="popup">
     <div>
-      <div class="header-container">
-          <div class="header">
-              <h1>Lamden Wallet</h1>
-              <div class='nav__hamburger'>
-                  <div></div>
-              </div>
-          </div>
+      <input class='nav__toggler' type='checkbox' v-on:click='hideMenu' v-if="menu" />
+      <div class='nav__hamburger' v-on:click='showMenu' v-if="showHamburger">
+          <div></div>
       </div>
-    </div>
-    <!--<steps v-if="currentView!=='confirm'" :step="step"/> -->
+      <div class='nav__menu' v-if="menu">
+        <div class="nav__internal">
+          <el-menu default-active="1">
+            <el-menu-item index="1" @click="navController('Lamden Wallet')">
+              <i class="el-icon-menu"></i>
+              <span>Lamden Wallet</span>
+            </el-menu-item>
+      <!--      <el-menu-item index="1" @click="navController('Clove Wallet')">
+              <i class="el-icon-menu"></i>
+              <span>Clove Wallet</span>
+            </el-menu-item>
+       -->     <el-menu-item index="2" @click="navController('Lock Wallet')">
+              <i class="el-icon-setting"></i>
+              <span>Lock Wallet</span>
+            </el-menu-item>
+      <!--      <el-menu-item index="2" @click="navController('dev')">
+              <i class="el-icon-setting"></i>
+              <span>Dev</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="navController('firstRun')">
+              <i class="el-icon-setting"></i>
+              <span>First Run</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="navController('backup')">
+              <i class="el-icon-setting"></i>
+              <span>Backup and Restore</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="navController('timeline')">
+              <i class="el-icon-setting"></i>
+              <span>Timeline</span>
+            </el-menu-item>
+      -->    </el-menu>
+        </div>
+      </div>
     <component
       :is="currentView"
-      :storage="keyStorage"
-      @select="switchView('select-key')"
+      :storage=keyStorage
+      :lastView="lastView"
+      @unlock="unlockView"
       @sign="switchView('sign-tx')"
       @manage="switchView('manage-keys')"
-      @wallet="switchView('main-wallet')"
-    />
+      @wallet="switchView('wallet')"
+      @clove="switchView('clove')"
+      @dev="switchView('clove')"
+      @firstRun="switchView('firstRun')"
+      @backup="switchView('backup')"
+      @timeline="switchView('timeline')"
+      />
+    </div>
   </el-container>
 </template>
 <script>
@@ -28,12 +63,19 @@ import steps from './components/steps';
 import unlock from './components/unlock';
 import signTx from './components/signTx';
 import manageKeys from './components/manageKeys';
-import mainWallet from './components/mainWallet';
+import wallet from './components/wallet';
+import clove from './components/clove';
+import dev from './components/dev';
+import firstRun from './components/firstRun';
+import backup from './components/backup';
+import timeline from './components/timeline-test';
 
 export default {
   data: () => ({
-    currentView: 'select-key',
+    currentView: 'wallet',
+    lastView: 'wallet',
     keyStorage: null,
+    menu: false
   }),
   computed: {
     step: function step() {
@@ -44,23 +86,70 @@ export default {
       }
       return 2;
     },
+    showHamburger: function showHamburger(){
+      if (this.currentView === 'unlock' || this.currentView === 'firstrun') {return false}
+      return true;
+    }
   },
   created() {
     this.keyStorage = Object.assign({}, chrome.extension.getBackgroundPage().keyStorage);
 
-    try {
-      this.keyStorage.getAvailableKeys();
-    } catch (e) {
-      this.currentView = 'unlock';
-    }
+    this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
+
     if (window.location.hash === '#confirm') {
-      this.currentView = 'confirm';
-    }
+        this.currentView = 'confirm';
+      }
+
+          if (window.location.hash === '#confirm') {
+        this.currentView = 'confirm';
+      }
   },
   methods: {
     switchView(value) {
-      this.currentView = value;
+      this.currentView = value
     },
+    unlockView(e) {
+      this.currentView = e
+    },
+    showMenu() {
+      if (this.menu) {
+        this.menu = false;
+      } else {
+        this.menu = true;
+      }
+    },
+    hideMenu() {
+      if (this.menu) {
+        this.menu = false;
+      }
+    },
+    navController(page) {
+      this.lastView = this.currentView;
+
+      if (page == "Lock Wallet") {
+        this.keyStorage.lock();
+        this.currentView = "unlock";
+
+      } else if (page == "Lamden Wallet") {
+        this.currentView = "wallet";
+
+      } else if (page == "Clove Wallet") {
+        this.currentView = "clove";
+
+      } else if (page == "dev") {
+        this.currentView = "dev";
+
+      } else if (page == "firstRun") {
+        this.currentView = "firstRun";
+
+      }else if (page == "backup") {
+        this.currentView = "backup";
+
+      }else if (page == "timeline") {
+        this.currentView = "timeline";
+      }
+      this.menu = false
+    }
   },
   components: {
     'select-key': select,
@@ -69,7 +158,12 @@ export default {
     steps,
     'manage-keys': manageKeys,
     'sign-tx': signTx,
-    'main-wallet': mainWallet,
+    wallet,
+    clove,
+    dev,
+    firstRun,
+    backup,
+    timeline
   },
 };
 </script>
@@ -110,10 +204,6 @@ body {
   }
 }
 
-.el-button {
-  height: 40px;
-  width: 120px;
-}
 
 .el-button--primary{
   background-color: #5368E7;
@@ -145,22 +235,9 @@ body {
 .popup {
   min-height: 515px;
   max-height: 550px;
-  width: 620px;
+  width: 380px;
   background-color: #FFFFFF;
-  padding: 30px;
   flex-direction: column;
-}
-
-.header-container {
-  display: flex;
-  justify-content: center;
-}
-
-.header {
-  color: #E7267E;
-  font-size: 20px;
-  line-height: 32px;
-  padding-bottom: 30px;
 }
 
 .input-description{
@@ -188,48 +265,93 @@ body {
 }
 
 .nav__hamburger {
-    display: flex;
-    position: absolute;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    width: 25px;
-    height: 25px;
-    padding: 17px;
-    cursor: pointer;
-    backface-visibility: hidden;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 25px;
+  height: 25px;
+  padding: 17px;
+  cursor: pointer;
+  backface-visibility: hidden;
 }
 
 .nav__hamburger div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    flex: none;
-    width: 100%;
-    height: 2px;
-    background: #E7267E;
-    transition: all $fast ease;
-    border-radius: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 2px;
+  background: #000000;
+  transition: all $fast ease;
+  border-radius: 1px;
 }
 
 .nav__hamburger div::before, .nav__hamburger div::after {
-    content: '';
-    position: absolute;
-    z-index: 1;
-    top: 7px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #E7267E;
-    transition: all $fast ease;
-    border-radius: 1px;
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #000000;
+  transition: all $fast ease;
+  border-radius: 1px;
 }
 
 .nav__hamburger div::after {
-    top: auto;
-    bottom: 7px;
+  top: auto;
+  bottom: 7px;
+}
+
+.nav__menu {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  background-color: #FFFFFF;
+  height: 100%;
+  width: 50%;
+  z-index: 100;
+  border-right: 1px solid #c0c4cc;
+  padding: 0;
+}
+
+.nav__internal {
+  margin: 56px auto 0px;
+  height: 100%;
+}
+
+.nav__toggler {
+  display: block;
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.logo__img {
+  margin: 0 auto;
+}
+
+.nav__internal h2 {
+  font-family: Avenir-Light;
+  font-weight: 400;
+  font-size: 24px;
+  margin: 8px auto;
+  text-align: left;
+}
+
+.menuitem {
+  cursor: pointer;
 }
 </style>

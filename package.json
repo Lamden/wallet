@@ -81,16 +81,23 @@
   },
   "dependencies": {
     "abi-decoder": "^1.2.0",
+    "assert": "^1.4.1",
+    "big-integer": "^1.6.42",
     "bitcoinjs-lib": "^4.0.2",
-    "element-ui": "^2.4.7",
+    "capnp-ts": "^0.4.0",
+    "element-ui": "^2.6.1",
     "eth-lightwallet": "^3.0.1",
     "ethereumjs-tx": "^1.3.4",
     "ethereumjs-util": "^5.2.0",
     "fs": "0.0.1-security",
+    "jssha": "^2.3.1",
     "keythereum": "^1.0.4",
+    "md5": "^2.2.1",
     "node-cryptojs-aes": "^0.4.0",
+    "tweetnacl": "^1.0.0",
     "vue": "^2.5.2",
     "vue-clipboard2": "^0.2.0",
-    "web3": "^1.0.0-beta.37"
+    "web3": "^1.0.0-beta.37",
+    "xhr2": "^0.1.4"
   }
 }

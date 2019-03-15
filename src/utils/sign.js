@@ -3,6 +3,7 @@ const EthereumTx = require('ethereumjs-tx');
 const btcNetworks = require('./bitcoin_networks');
 const ethNetworks = require('./ethereum_networks');
 
+
 // eslint-disable-next-line arrow-body-style
 exports.stripHexPrefix = (hexString) => {
   return hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;

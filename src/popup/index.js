@@ -5,6 +5,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import VueClipboard from 'vue-clipboard2';
 import root from './root';
 
+Vue.config.devtools = true
 Vue.config.productionTip = false;
 Vue.use(ElementUI, { locale: elementLocale });
 Vue.use(VueClipboard);

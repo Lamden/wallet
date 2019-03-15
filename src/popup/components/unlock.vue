@@ -1,66 +1,93 @@
 <template>
-  <el-form
-    :model="unlockForm"
-    class="unlock"
-    @submit.native.prevent
-    status-icon>
-    <p class="input-description password-description">Security password</p>
-    <el-form-item prop="password" :error="error">
-      <el-input
-        v-model="unlockForm.password"
-        @input="resetError"
-        class="short-input"
-        type="password"
-        autofocus
-        @keyup.enter.native="submit"
-        placeholder="Enter your password">
-      </el-input>
-      <el-button
-        type="primary"
-        :disabled="isButtonDisabled"
-        @click="submit">
-        Unlock
-      </el-button>
-    </el-form-item>
-  </el-form>
+  <el-container>
+    <el-header class="walletHeader">
+      <span></span>
+    </el-header>
+    <el-main class="walletMain">
+      <div class="lamden-logo-box">
+        <lamdenLogo></lamdenLogo>   
+      </div>     
+    </el-main>
+    <el-footer class="unlock-footer">
+      <el-row>
+        <h1 class="unlock-title-h1">Unlock Wallet</h1>
+      </el-row>
+      <el-row>
+        <el-input
+          v-model="password"
+          class="password-input"
+          type="password"
+          autofocus
+          size="small"
+          @keyup.enter.native="unlock"
+          placeholder="Enter your password">
+        </el-input>
+      </el-row>
+    </el-footer>
+  </el-container>
 </template>
+
 <script>
-import errorMixin from '../mixins/error';
+import lamdenLogo from './lamdenLogo';
 
 export default {
-  props: ['storage'],
-  mixins: [errorMixin],
+  props: ['storage','lastView'],
   data() {
     return {
-      unlockForm: {
-        password: '',
-      },
+      logo: "/images/logo_lamden_color.svg",
+      password: ''
     };
   },
   computed: {
-    isButtonDisabled: function isButtonDisabled() {
-      return this.unlockForm.password.length === 0;
-    },
   },
   methods: {
-    submit: function submit() {
-      try {
-        this.storage.unlockStorage(this.unlockForm.password);
-        this.$emit('select');
-      } catch (e) {
-        this.setError('Incorrect password');
+    unlock(){
+      if (this.storage.unlock(this.password)){
+        this.$emit('unlock', this.lastView);  
+      }else{
+         this.showMessage('Incorrect Password');
       }
     },
+    showMessage(message){
+      this.$message(message);
+    }
   },
+  components: {
+    lamdenLogo
+  }
 };
 </script>
+
 <style>
-.unlock {
-  display: flex;
-  flex-direction: column;
+.unlock-footer {
+  padding: 0 20px 0 20px;
+  width: 100%;
+  height: 100%!important;
+  text-align: center;
+}
+
+.lamden-logo-box {
+  width: 150px;
+  height: 150px;
+  margin: 0 0 0 0;
+  padding: 0 0 0 30%;
+}
+
+.unlock-title-h1 {
+  color: gray;
+}
+
+.password-input {
+  width: 100%;
+  height: 40px;
 }
 
 .password-description{
   padding-top: 80px;
 }
+
+p.small {
+  line-height: 1.2;
+}
+
 </style>

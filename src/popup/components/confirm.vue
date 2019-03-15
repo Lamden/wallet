@@ -13,7 +13,8 @@
         />
       </el-form-item>
       <el-button
-        type="primary"
+        type="info"
+        plain
         class="submit-button"
         :disabled="isButtonDisabled"
         @click="confirm">
