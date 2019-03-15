@@ -53,11 +53,15 @@
                   :color="activity.color"
                   :size="activity.size"
                   :timestamp="activity.timestamp">
-                  {{activity.content}}
+                  <div :style="{'text-align':'left'}">
+                    {{activity.sent}}<br>
+                    {{"txHash: "}} <el-button class="el-timeline-hash-button" type="text" size="small">{{activity.content}}</el-button>
+                  </div>
                   </el-timeline-item>
             </el-timeline>
           </div>
-          <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle title="delete transaction history">
+          <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle plain 
+                     click="deleteTransactions" title="delete transaction history">
           </el-button>   
         </el-tab-pane>
 
@@ -87,14 +91,8 @@
                   </el-input-number>
                 </el-col>
               </el-row>
-              <el-row :gutter=10>
-                <el-button :disabled="sections['send'].disableSendButton" @click="resetSend" class="send-button-padding" 
-                          type="info" plain size="mini">
-                  Cancel</el-button>
-                <el-button :disabled="sections['send'].disableSendButton" @click="sendTransaction" class="send-button-padding" 
-                          type="success" plain size="mini">
-                  Send Transaction</el-button>
-              </el-row>
+              <el-button class="send-transactions-floating-button" type="success" icon="el-icon-d-arrow-right" circle plain
+                @click="sendTransaction" title="send transaction"></el-button>
             </div>
           </el-tab-pane>
 
@@ -125,12 +123,10 @@
                   </el-input>
                   <p v-if="this.sections['edit'].showPrivKey === false" class="error-text">{{sections['edit'].error}}</p>
                 </div>
-                <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
-                  Cancel</el-button>
                 <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">
                   Save Info</el-button>
-                <el-button @click="confirmDeleteAddress" :disabled="deleteButtonDisabled" class="send-button-padding" type="danger" plain size="mini">
-                  Delete Wallet</el-button>
+                <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle plain 
+                           v-if="this.sections['edit'].showPrivKey" @click="confirmDeleteAddress" title="delete address from wallet"></el-button>
               </div>
             </el-tab-pane>
 
@@ -143,9 +139,6 @@
                   <br>
                   <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">
                     Add from Private Key</el-button>
-                  <br>
-                  <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
-                    Cancel</el-button>
                 </div>
                 
                 <div v-if="sections['add'].newWallet">
@@ -160,7 +153,7 @@
                   </el-row>
                   <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">
                     Generate New Wallet</el-button>
-                  <el-button @click="resetSend" class="send-button-padding" type="info" plain size="mini">
+                  <el-button @click="sections['add'].newWallet = false" class="send-button-padding" type="info" plain size="mini">
                     Cancel</el-button>
                 </div>
 
@@ -179,7 +172,7 @@
                   </el-input>
                   <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">
                     Add Address</el-button>
-                  <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+                  <el-button @click="sections['add'].fromPrivate  = false" class="send-button-padding" type="info" plain size="mini">
                     Cancel</el-button>
                 </div>
               </div>
@@ -218,9 +211,9 @@ export default {
     displayPublicKey: function displayPublicKey(){
       return 'Public Wallet Address: ' + this.currentKey;
     },
-    deleteButtonDisabled: function deleteButtonDisabled(){
-      if (this.sections['edit'].showPrivKey) {return false}
-      return true;
+    deleteButtonVisbile: function deleteButtonVisbile(){
+      if (this.sections['edit'].showPrivKey) {return true}
+      return false;
     },
     displayAddMainSection: function displayAddMainSection(){
       if (this.sections['add'].newWallet || this.sections['add'].fromPrivate) {return false}
@@ -238,21 +231,24 @@ export default {
     formattedTransactions: function formattedTransactions(){
       let trans = [];
       for (let transaction in this.transactions){
-          console.log(transaction)
+          console.log(this.transactions[transaction])
           let t = {}
         t.timestamp = this.transactions[transaction].date + ' ' + this.transactions[transaction].time ;
-        t.content = this.formatAddress(this.transactions[transaction].txHash, 30);
         t.size="large"
         t.color = 'orange';
-        t.icon = 'el-icon-loading';
+        t.icon = 'el-icon-more';
+        t.sent = 'Amount: '
         if (this.transactions[transaction].status === 'SUCC'){
               t.color = 'green'
               t.icon = 'el-icon-check'
+              t.sent = "Sent: "
         }
         if (this.transactions[transaction].status === 'FAIL'){
               t.color = 'red'
               t.icon = 'el-icon-close'
         }
+        t.content = 'txHash:  ' +  this.formatAddress(this.transactions[transaction].txHash, 22);
+        t.sent = t.sent + this.transactions[transaction].amount;
         trans.push(t);
       }
       console.log(trans);
@@ -272,12 +268,16 @@ export default {
     } catch (e){
       console.log(e.message);
     }
-
+    console.log(this.transactions);
     this.determinePendingTransactions(this.currentKey);
   },
   methods: {
-    handleTabs(){
+    handleTabs(tab, event){
       console.log(tab, event);
+      console.log(tab.label)
+      tab.label !== "Edit" ? this.resetEdit() : null;
+      tab.label !== "Add" ? this.cancelAddSection() : null;
+
     },
     swapNet() {
       let newNetwork = "";
@@ -436,10 +436,14 @@ export default {
         this.showMessage(e.message);
       }
     },
+    showTransactions(){
+      this.transactions = this.storage.getTransactions(this.network, this.currentKey);
+      this.determinePendingTransactions(this.currentKey);
+      this.activeName = 'Transactions'
+    },
     cancelAddSection(){
       let addDefault = {privateKey: "", newlabel: "", fromPrivate: false , newWallet: false}
       this.$set(this.sections, 'add', addDefault);
-      this.showTransactions();
     },
     resetEdit(){
       let editDefault = {password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false}
@@ -482,21 +486,17 @@ export default {
         });
       }
     },
-    showTransactions(){
-      this.transactions = this.storage.getTransactions(this.network, this.currentKey);
-      this.determinePendingTransactions(this.currentKey);
-      for (let section in this.sections){
-        section === 'transactions' ? this.sections[section].visible = true : this.sections[section].visible = false;
-      }
-    },
     validateTransaction(s){
       if (s.txAmount === null || s.txAmount === "" || parseFloat(s.txAmount) === 0) {
-          this.showmessage("You must input an amount");
+          this.$message("You must input an amount");
           return false;
       } else if (parseFloat(s.txAmount) < 0) {
-          this.showmessage("Amount must be a positive number");
+          this.$message("Amount must be a positive number");
           return false;
-      } 
+      } else if (s.txDestination === "" || s.txDestination === null) {
+          this.$message("Enter a destination wallet address");
+          return false;
+      }
       //else if (!assert_valid_vk(destDiv.value)) {
       //    this.showmessage("Invalid destination, ensure it is a 64 character hexidecimal string");
       //   return false;
@@ -574,9 +574,10 @@ export default {
     color: #333;
     text-align: center;
     padding: 0;
-    height: 226px!important;
+    height: 238px!important;
     overflow:scroll;
     overflow-x: hidden;
+    margin: -12px 0 0 0;
   }
 
   .walletTransactions {
@@ -640,15 +641,28 @@ export default {
   }
 
   .el-tabs__header{
-    margin: 10px 0 0 0;
+    margin:0 0 0 0;
   }
 
   .el-tabs__nav {
     float: none!important;
   }
 
+  .el-timeline-item__icon{
+    padding: 0 0 0 0!important;
+  }
+  
+  .el-timeline-item__timestamp{
+    line-height: 0px;
+    margin-top: 5px;
+  }
+
   .el-timeline{
     margin: 10px 0 0 0;
+  }
+
+  .el-timeline-hash-button{
+   padding: 0px!important; 
   }
 
   .send-box {
@@ -700,6 +714,14 @@ export default {
     right: 32px;
     z-index: 10000;
     box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.5);
+  }
+
+  .send-transactions-floating-button{
+    position: fixed;
+    bottom: 14px;
+    right: 178px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(44, 194, 89, 0.363);
   }
 
   .tab-boxes {
