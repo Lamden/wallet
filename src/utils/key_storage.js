@@ -75,12 +75,22 @@ exports.authenticate = (pass) => {
   try {
     const decrypted = CryptoJS.AES.decrypt(auth, pass, { format: JsonFormatter });
     JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-    password = pass;
     return true;
   } catch (e) {
-    password = undefined;
     return false;
   }
+}
+
+exports.unlock = (pass) => {
+  if (exports.authenticate(pass)){
+    password = pass;
+    return true;
+  }
+  return false;
+}
+
+exports.lock = (pass) => {
+  password = null;
 }
 
 exports.firstRun = () => {
@@ -188,9 +198,11 @@ exports.getPrivateKeysStorage = () => {
 
 exports.getPrivateKey = (tokenKey, pubKey) => {
   try {
-    let privKeys = getPrivateKeys();
+    const privKeys = getPrivateKeys();
+    if (privKeys[tokenKey] === undefined || privKeys[tokenKey][pubKey] === undefined) {
+      throw new Error('Key not found');
+    }
     return privKeys[tokenKey][pubKey];
-
   } catch (e) {
     return e.message;
   }
@@ -279,7 +291,7 @@ exports.setActiveToken = (tokenKey) => {
   // Added the tokenKey to the list of tokens that will exists on the user's Clove page
     let activeTokens = getUnencrypted('activeTokens');
     activeTokens.push(tokenKey);
-    setUnencrypted(activeTokens);
+    setUnencrypted(activeTokens, 'activeTokens');
   }
 
 exports.removeActiveToken = (tokenKey) => {
@@ -364,7 +376,7 @@ exports.addKey = (tokenKey, privateKey, label) => {
         if (key.length === 0) {
           throw new Error('Invalid private key:' + privateKey);
         }
-        publicKey = '0x'+ ethUtil.privateToAddress(key).toString('hex');
+        publicKey = ethUtil.privateToAddress(key).toString('hex');
       }catch (e){
         throw new Error('Ethereum error: ' + e.message + " - " + privateKey);
       }
@@ -451,18 +463,41 @@ exports.genBtcKey = (network) => {
     return btcPriv;
 }
 
-exports.generateKey = (networkSymbol) => {
-    var privKey = null;
-    if (networkSymbol in btcNetworks) {
-        privKey = genBtcKey(btcNetworks[networkSymbol]);
-    } else if (networkSymbol in ethNetworks) {
-        privKey = genEthKey();
-    } else if (networkSymbol in tauNetworks) {
-        privKey = genTauKey();
-    } else {
-        throw new Error("Network Symbol provided (" + networkSymbol + ") not supported");
-    }
+exports.genTauKey = (password) => {
+  let tauKeys = generateDTAUWallet(password);
+  return tauKeys.wallet;
+}
 
+exports.generateWallet = (tokenKey) => {
+
+  let tokenNetwork = tokenInfo[tokenKey].network;
+  let networkSymbol = tokenInfo[tokenKey].symbol;
+  let tokenName = tokenInfo[tokenKey].name;
+  let tokenLabel = 'Default ' +  tokenName + ' ' + networkSymbol +  ' Wallet';
+  let privateKey = "";
+  let wallet = {tokenName, networkSymbol};
+  let key;
+  
+  if (tokenNetwork === 'Bitcoin') {
+    wallet.privateKey = exports.genBtcKey(btcNetworks[networkSymbol]);
+    key = sign.getBitcoinKey(wallet.privateKey, btcNetworks[networkSymbol]);
+    const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey });
+    wallet.publicKey = address;
+
+  } else if (tokenNetwork === 'Ethereum') {
+    wallet.privateKey = exports.genEthKey();
+    key = sign.getHexBuffer(wallet.privateKey);
+    wallet.publicKey = ethUtil.privateToAddress(key).toString('hex');
+
+  } else if (tokenNetwork === 'Cilantro') {
+    tauKeys = exports.genTauKey();
+    wallet.privateKey = tauKeys.sk;
+    wallet.publickKey = tauKeys.vk;
+
+  } else {
+      throw new Error("Network Symbol provided (" + networkSymbol + ") not supported");
+  }
+    return wallet;
 }
 
 exports.getTauWallet = () => {

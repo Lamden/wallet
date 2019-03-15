@@ -93,7 +93,6 @@ export default {
           token.balance = 0;
         } 
       })
-      
     } 
   },  
   components: {

@@ -20,12 +20,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { network, rawTx, contract } = message;
     let { address } = message;
 
-    if (ethNetworks.includes(network)) {
+    if (ethNetworks[network]) {
       address = normalizeAddress(address, network);
     }
 
     try {
-      window.keyStorage.getPrivateKey(network, address);
+      window.keyStorage.getPrivateKey(ethNetworks[network].tokenKey, address);
     } catch (e) {
       sendResponse({ type: 'signedTx', error: e.message });
       return;

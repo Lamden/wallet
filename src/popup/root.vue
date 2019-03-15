@@ -2,7 +2,7 @@
   <el-container class="popup">
     <div>
       <input class='nav__toggler' type='checkbox' v-on:click='hideMenu' v-if="menu" />
-      <div class='nav__hamburger' v-on:click='showMenu' v-if="currentView != 'unlock'">
+      <div class='nav__hamburger' v-on:click='showMenu' v-if="showHamburger">
           <div></div>
       </div>
       <div class='nav__menu' v-if="menu">
@@ -38,7 +38,7 @@
     <component
       :is="currentView"
       :storage=keyStorage
-      :lastView=lastView
+      :lastView="lastView"
       @unlock="unlockView"
       @sign="switchView('sign-tx')"
       @manage="switchView('manage-keys')"
@@ -80,20 +80,23 @@ export default {
       }
       return 2;
     },
+    showHamburger: function showHamburger(){
+      if (this.currentView === 'unlock' || this.currentView === 'firstrun') {return false}
+      return true;
+    }
   },
   created() {
     this.keyStorage = Object.assign({}, chrome.extension.getBackgroundPage().keyStorage);
 
     this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
 
-  //  try {
- //     this.keyStorage.getAvailableKeys();
- //   } catch (e) {
-  //    this.currentView = 'wallet';
-  //  }
-  //  if (window.location.hash === '#confirm') {
-  //    this.currentView = 'confirm';
-  //  }
+    if (window.location.hash === '#confirm') {
+        this.currentView = 'confirm';
+      }
+
+          if (window.location.hash === '#confirm') {
+        this.currentView = 'confirm';
+      }
   },
   methods: {
     switchView(value) {
@@ -115,18 +118,24 @@ export default {
       }
     },
     navController(page) {
-      this.lastView = this.currentView
+      this.lastView = this.currentView;
+
       if (page == "Lock Wallet") {
-        this.keyStorage.lockStorage();
+        this.keyStorage.lock();
         this.currentView = "unlock";
+
       } else if (page == "Lamden Wallet") {
         this.currentView = "wallet";
+
       } else if (page == "Clove Wallet") {
         this.currentView = "clove";
+
       } else if (page == "dev") {
         this.currentView = "dev";
+
       } else if (page == "firstRun") {
         this.currentView = "firstRun";
+
       }else if (page == "backup") {
         this.currentView = "backup";
       }

@@ -17,13 +17,14 @@
             <el-row :gutter="0" >
               <h3 class="lamden-text key-label" >{{keys[key].label}}</h3>
             </el-row>
-            <el-input type="textarea" :rows="2" size="mini" resize="none" :readonly="true" v-model="key"></el-input>
+            <el-input type="textarea" :rows="1" size="mini" resize="none" :readonly="true" v-model="key"></el-input>
             <el-input type="textarea" :rows="2" size="mini" resize="none" :readonly="true" v-model="keys[key].privateKey"
               v-if="showPrivKey"></el-input>
             <el-button @click="confirmDeleteAddress(key, keys[key])" v-if="showPrivKey" class="send-button-padding" type="text" size="mini">
               Delete Wallet</el-button>
           </div>
         </div>
+
       <!-- ADD Private Key if none exist -->
       <div class="box-token-keys">
         <el-input 
@@ -264,11 +265,16 @@ export default {
     text-align: right;
   }
 
+  .el-collapse-item__content{
+    padding: 0 25px 0 25px!important;
+  }
+
   .box-token-keys{
     text-align: center;
   }
   .key-label {
     text-align: center;
+    margin: 10px 0 0 0;
   }
 
   .show-privatekeys{
@@ -319,7 +325,6 @@ export default {
 
   .lamden-text{
     color:rgb(118, 58, 134);
-    margin:0!important;
   }
 
   .bg {

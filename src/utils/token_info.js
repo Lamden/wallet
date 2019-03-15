@@ -5,6 +5,12 @@ module.exports = {
               symbol: "TAU", 
               icon: "/icons/tokens/TAU.svg", 
               color: {color:"rgb(179,59,117)"}},
+ /*      DarkTauDTAU:
+              {name: "Lamden DarkTAU",
+              network: "Cilantro",
+              symbol: "DTAU", 
+              icon: "/icons/tokens/DTAU.svg", 
+              color: {color:"black"}},*/
        BitcoinBTC: 
               {name: "Bitcoin",
               network: "Bitcoin",
@@ -23,18 +29,18 @@ module.exports = {
               symbol: "LTC",  
               icon: "/icons/tokens/LTC-c.svg", 
               color: {color:"#8d8d8d"}},
-       "Bitcoin CashBCH": 
+   /*    "Bitcoin CashBCH": 
               {name: "Bitcoin Cash",
               network: "Bitcoin", 
               symbol: "BCH", 
               icon: "/icons/tokens/BCH-alt-c.svg", 
-              color: {color:"#ee8c28"}},
+              color: {color:"#ee8c28"}}, 
        "Bitcoin SVBSV": 
               {name: "Bitcoin SV",
               network: "Bitcoin",
               symbol: "BSV", 
               icon: "/icons/tokens/BTA-c.svg", 
-              color: {color:"#EAB300"}},
+              color: {color:"#EAB300"}}, */
        DashDASH:     
               {name: "Dash",
               network: "Bitcoin",

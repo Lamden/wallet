@@ -17,7 +17,7 @@
         </div>
         <div class="balance-box">
           <span :key="forceRefreshKeys.balance">{{networkKeys[network][currentKey].balance}}</span>
-          <el-button class="balance-button" :disabled="disableRefreshBalance" @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
+          
         </div>
         <br class="newline">
         <el-dropdown @command="handleCommand" trigger="click">
@@ -31,146 +31,173 @@
               :command="key">
               {{networkKeys[network][key].label}}
             </el-dropdown-item>
-          </el-dropdown-menu>
+            </el-dropdown-menu>
+            <el-button @click="showMessage('Copied!')" v-if="togTestNet" v-clipboard:copy="currentKey" size="mini" icon="el-icon-document" circle title="copy wallet address"></el-button>
+            <el-button  :disabled="disableRefreshBalance" @click="refreshBalance" size="mini" icon="el-icon-refresh" circle title="refresh balance"></el-button>
         </el-dropdown>
-        <br>
+  <!--       <br>
         <el-button @click="showSection('send')" v-if="togTestNet" size="mini" icon="el-icon-d-arrow-right" circle title="send transaction"></el-button>
-        <el-button @click="showMessage('Copied!')" v-if="togTestNet" v-clipboard:copy="currentKey" size="mini" icon="el-icon-document" circle title="copy wallet address"></el-button>
+        
         <el-button @click="showSection('edit')" v-if="togTestNet" size="mini" icon="el-icon-edit" circle title="edit address"></el-button>
         <el-button @click="showSection('add')" v-if="togTestNet" size="mini" icon="el-icon-plus" circle title="add new address"></el-button>
+  -->  
       </el-main>
 
       
       <el-footer class="walletFooter">
-
+        <el-tabs v-model="activeName" @tab-click="handleTabs">
+          <el-tab-pane label="Transactions" name="Transactions">
+        <!--  TRANSACTIONS PANE                         -->
+            <div class="tab-boxes">
+              <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle
+              title="delete transaction history"></el-button>
+              <h3 class="lamden-text" v-if="!showDeleteTransactionsButton">Transaction Log Empty</h3>
+            <div class="block">
+              <el-timeline>
+                <el-timeline-item
+                  v-for="(transaction, index) in transactions"
+                  :key="index"
+                  :icon="el-icon-check"
+                  :type="primary"
+                  :color="green"
+                  :size="large"
+                  :timestamp="transaction.date">
+                  {{transaction.amount}}
+                </el-timeline-item>
+              </el-timeline>
+            </div>
+         <!--     <el-button v-if="showDeleteTransactionsButton"  @click="deleteTransactions" type="text"  size="mini">
+                delete history </el-button><br>
+            <span v-for="(transaction, index) in transactions" :key="index">
+              <p class="transaction-lines">{{'txHash: ' + transaction.txHash.substr(0,30)+"..." + '    Status: ' + transaction.status}} </p>
+              <p class="transaction-lines">{{'Sent: ' + transaction.amount + '  on ' +  transaction.date + ' @ ' + transaction.time  }}</p>
+              </span>
+      -->    </div>
+          </el-tab-pane>
+    
+          <el-tab-pane label="Send" name="Send">
 <!--  SEND TRANSACTION PANE                         -->
-      <div v-if="sections['send'].visible" class="send-box">
-        <h1 class="send-title">Send Dark TAU</h1>
-        <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" 
-                  v-model="sections['send'].txDestination"></el-input>
-        <el-row>
-          <el-col :span=12>
-            <h3>Amount</h3>
-          </el-col>
-          <el-col :span=12>
-            <h3>Stamps</h3>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span=12>
-            <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"
-            :controls="false"></el-input-number>
-          </el-col>
-          <el-col :span=12>
-            <el-input-number disabled label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini" :controls="false"
-              title="Stamps are locked at 3000 in Test Net">
-            </el-input-number>
-          </el-col>
-        </el-row>
-        <el-row :gutter=10>
-          <el-button :disabled="sections['send'].disableSendButton" @click="resetSend" class="send-button-padding" 
-                     type="info" plain size="mini">
-            Cancel</el-button>
-          <el-button :disabled="sections['send'].disableSendButton" @click="sendTransaction" class="send-button-padding" 
-                     type="success" plain size="mini">
-            Send Transaction</el-button>
-        </el-row>
-      </div>
+            <div class="send-box">
+              <h1 class="send-title">Send Dark TAU</h1>
+              <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" 
+                        v-model="sections['send'].txDestination"></el-input>
+              <el-row>
+                <el-col :span=12>
+                  <h3>Amount</h3>
+                </el-col>
+                <el-col :span=12>
+                  <h3>Stamps</h3>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span=12>
+                  <el-input-number label="Amount" v-model="sections['send'].txAmount" :min="0" size="mini"
+                  :controls="false"></el-input-number>
+                </el-col>
+                <el-col :span=12>
+                  <el-input-number disabled label="Stamps" v-model="sections['send'].txStamps"  :min="0" size="mini" :controls="false"
+                    title="Stamps are locked at 3000 in Test Net">
+                  </el-input-number>
+                </el-col>
+              </el-row>
+              <el-row :gutter=10>
+                <el-button :disabled="sections['send'].disableSendButton" @click="resetSend" class="send-button-padding" 
+                          type="info" plain size="mini">
+                  Cancel</el-button>
+                <el-button :disabled="sections['send'].disableSendButton" @click="sendTransaction" class="send-button-padding" 
+                          type="success" plain size="mini">
+                  Send Transaction</el-button>
+              </el-row>
+            </div>
+          </el-tab-pane>
 
 <!--  EDIT ADDRESS PANE                         -->
-      <div v-if="sections['edit'].visible" class="send-box">
-        <el-row :gutter=6>
-          <el-col :span=4>
-            <h3 class="label-beside-input">Label</h3>
-          </el-col>
-          <el-col :span=16>
-            <el-input size="mini" resize="none" v-model="sections['edit'].labelText">
-            </el-input>
-          </el-col>
-        </el-row>
-        <el-row :style="{'text-align': 'right'}">
-          <el-checkbox :disabled="networkKeys[network][currentKey].uiDefault" v-model="sections['edit'].defaultChecked">
-            Default Address</el-checkbox>
-        </el-row>
-        <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey">
-        </el-input>
-        <el-input v-if="this.sections['edit'].showPrivKey" type="textarea" :rows="3" size="mini" resize="none" :readonly="true"
-          v-model="networkKeys[network][currentKey].privateKey">
-        </el-input>
-        <div v-if="this.sections['edit'].showPrivKey === false">
-            <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
-              placeholder="Enter your password to show private key">
-            </el-input>
-            <p v-if="this.sections['edit'].showPrivKey === false" class="error-text">{{sections['edit'].error}}</p>
-          </div>
-          <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
-            Cancel</el-button>
-          <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">
-            Save Info</el-button>
-          <el-button @click="confirmDeleteAddress" :disabled="deleteButtonDisabled" class="send-button-padding" type="danger" plain size="mini">
-            Delete Wallet</el-button>
-      </div>
-
-<!--  ADD ADDRESS PANE                         -->
-      <div v-if="sections['add'].visible" class="send-box">
-        <div v-if="displayAddMainSection">
-          <el-button class="add-button-padding" @click="sections['add'].newWallet = true" type="success" plain size="mini">
-            Generate New Wallet</el-button>
-          <br>
-          <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">
-            Add from Private Key</el-button>
-          <br>
-          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
-            Cancel</el-button>
-        </div>
-        
-        <div v-if="sections['add'].newWallet">
-           <el-row :gutter=6>
-            <el-col :span=6>
-              <h3 class="label-beside-input">Create Wallet Label</h3>
-            </el-col>
-            <el-col :span=16>
-              <el-input size="mini" resize="none" v-model="sections['add'].newlabel">
+          <el-tab-pane label="Edit" name="Edit">
+            <div  class="send-box">
+              <el-row :gutter=6>
+                <el-col :span=4>
+                  <h3 class="label-beside-input">Label</h3>
+                </el-col>
+                <el-col :span=16>
+                  <el-input size="mini" resize="none" v-model="sections['edit'].labelText">
+                  </el-input>
+                </el-col>
+              </el-row>
+              <el-row :style="{'text-align': 'right'}">
+                <el-checkbox :disabled="networkKeys[network][currentKey].uiDefault" v-model="sections['edit'].defaultChecked">
+                  Default Address</el-checkbox>
+              </el-row>
+              <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey">
               </el-input>
-            </el-col>
-          </el-row>
-          <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">
-            Generate New Wallet</el-button>
-          <el-button @click="resetSend" class="send-button-padding" type="info" plain size="mini">
-            Cancel</el-button>
-        </div>
-
-        <div v-if="sections['add'].fromPrivate">
-           <el-row :gutter=6>
-            <el-col :span=6>
-              <h3 class="label-beside-input">Wallet Label</h3>
-            </el-col>
-            <el-col :span=16>
-              <el-input  size="mini" resize="none" v-model="sections['add'].newlabel">
+              <el-input v-if="this.sections['edit'].showPrivKey" type="textarea" :rows="3" size="mini" resize="none" :readonly="true"
+                v-model="networkKeys[network][currentKey].privateKey">
               </el-input>
-            </el-col>
-          </el-row>
-          <h3 class="section-text">Enter PRIVATE Key</h3>
-          <el-input type="textarea" :rows="2" size="mini" resize="none" v-model="sections['add'].privateKey">
-          </el-input>
-          <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">
-            Add Address</el-button>
-          <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
-            Cancel</el-button>
-        </div>
-      </div>
+              <div v-if="this.sections['edit'].showPrivKey === false">
+                  <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
+                    placeholder="Enter your password to show private key">
+                  </el-input>
+                  <p v-if="this.sections['edit'].showPrivKey === false" class="error-text">{{sections['edit'].error}}</p>
+                </div>
+                <el-button @click="showTransactions" class="send-button-padding" type="info" plain size="mini">
+                  Cancel</el-button>
+                <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">
+                  Save Info</el-button>
+                <el-button @click="confirmDeleteAddress" :disabled="deleteButtonDisabled" class="send-button-padding" type="danger" plain size="mini">
+                  Delete Wallet</el-button>
+              </div>
+            </el-tab-pane>
 
-<!--  TRANSACTIONS PANE                         -->
-      <div v-if="sections['transactions'].visible">
-        <p>Transactions</p>
-        <el-button v-if="showDeleteTransactionsButton"  @click="deleteTransactions" type="text"  size="mini">
-        delete history </el-button><br>
-        <span v-for="(transaction, index) in transactions" :key="index">
-        {{transaction.txHash.substr(0,20)+"..."}}<br> 
-        {{transaction.amount + "   " + transaction.date + " " + transaction.time}}<br>
-        {{transaction.status}}<br>
-        </span>
-        </div>
+       <!--  ADD ADDRESS PANE  -->
+            <el-tab-pane label="Add" name="Add">
+              <div class="send-box">
+                <div v-if="displayAddMainSection">
+                  <el-button class="add-button-padding" @click="sections['add'].newWallet = true" type="success" plain size="mini">
+                    Generate New Wallet</el-button>
+                  <br>
+                  <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">
+                    Add from Private Key</el-button>
+                  <br>
+                  <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+                    Cancel</el-button>
+                </div>
+                
+                <div v-if="sections['add'].newWallet">
+                  <el-row :gutter=6>
+                    <el-col :span=6>
+                      <h3 class="label-beside-input">Create Wallet Label</h3>
+                    </el-col>
+                    <el-col :span=16>
+                      <el-input size="mini" resize="none" v-model="sections['add'].newlabel">
+                      </el-input>
+                    </el-col>
+                  </el-row>
+                  <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">
+                    Generate New Wallet</el-button>
+                  <el-button @click="resetSend" class="send-button-padding" type="info" plain size="mini">
+                    Cancel</el-button>
+                </div>
+
+                <div v-if="sections['add'].fromPrivate">
+                  <el-row :gutter=6>
+                    <el-col :span=6>
+                      <h3 class="label-beside-input">Wallet Label</h3>
+                    </el-col>
+                    <el-col :span=16>
+                      <el-input  size="mini" resize="none" v-model="sections['add'].newlabel">
+                      </el-input>
+                    </el-col>
+                  </el-row>
+                  <h3 class="section-text">Enter PRIVATE Key</h3>
+                  <el-input type="textarea" :rows="2" size="mini" resize="none" v-model="sections['add'].privateKey">
+                  </el-input>
+                  <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">
+                    Add Address</el-button>
+                  <el-button @click="cancelAddSection" class="send-button-padding" type="info" plain size="mini">
+                    Cancel</el-button>
+                </div>
+              </div>
+            </el-tab-pane>
+        </el-tabs>
       </el-footer>
   </el-container>
 </template>
@@ -194,6 +221,7 @@ export default {
     pendingTransactions: [],
     disableRefreshBalance: false,
     forceRefreshKeys: {balance: 0},
+    activeName:"Transactions",
     sections: {'transactions': {visible: true},
               'send': {visible: false, disableSendButton: false, txDestination: "", txAmount: 0, txStamps: 3000},
               'edit': {visible: false, password: "", showPrivKey: false, labelText: "", error:"", defaultChecked: false},
@@ -238,6 +266,9 @@ export default {
     this.determinePendingTransactions(this.currentKey);
   },
   methods: {
+    handleTabs(){
+      console.log(tab, event);
+    },
     swapNet() {
       let newNetwork = "";
       this.network === 'LamdenMainNet' ? newNetwork = 'DarkTauDTAU' :  newNetwork = 'LamdenMainNet';
@@ -530,7 +561,7 @@ export default {
     color: #333;
     text-align: center;
     padding: 0;
-    height: 233px!important;
+    height: 226px!important;
     overflow:scroll;
     overflow-x: hidden;
   }
@@ -545,7 +576,7 @@ export default {
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
-    padding: 0px 0 15px 0!important;
+    padding: 0px 0 0px 0!important;
   }
 
   .el-dropdown {
@@ -590,6 +621,19 @@ export default {
     width: 95%;
   }
 
+  .el-tabs__active-bar{
+    left: 40px!important;
+    background-color: rgb(156, 60, 139);
+  }
+
+  .el-tabs__header{
+    margin: 0;
+  }
+
+  .el-tabs__nav {
+    float: none!important;
+  }
+
   .send-box {
     padding: 0 15px 0 15px; 
   }
@@ -628,9 +672,21 @@ export default {
     text-align: left;
   }
 
-  .newline {
-    margin: 0px;
-    padding: 0px;
+  .transaction-lines{
+    padding:0;
+    margin: 0;
+  }
+
+  .del-transactions-floating-button{
+    position: relative;
+    bottom: -134px;
+    right: -152px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.5);
+  }
+
+  .tab-boxes {
+    min-height: 187px;
   }
 
   [debug], [debug] *:not(g):not(path) {

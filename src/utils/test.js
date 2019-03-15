@@ -1,8 +1,27 @@
 const ks = require('./key_storage');
+const tokenInfo = require('./token_info');
+const ethNetworks = require('./ethereum_networks');
 
-let ETHpubkey = ks.addKeyTest('LamdenTAU', '49f876a17dc1c3ffe94e688db8513c817208789fb8b811042c8189283195bc1f');
-console.log(ETHpubkey);
+//console.log(ks.genEthKey('ETH'));
+//console.log(ks.genBtcKey('BTC'));
 
-let BTCpubKey = ks.addKeyTest('BitcoinBTC', 'L55r8d3apuqyZ3Ly47BEFA4hiC6w5b8F7v3LufXgv67QLD2Gf2gs');
-console.log(BTCpubKey);
+//console.log(ks.generateWallet('BitcoinBTC'))
 
+/*
+for (let token in tokenInfo){
+  console.log('Creating wallet for ' + tokenInfo[token].name)
+  console.log(ks.generateWallet(token))
+}*/
+
+let tokenKey1 = ethNetworks['TAU'].tokenKey || null;
+
+if (ethNetworks['XXX']){
+  console.log(ethNetworks['XXX'].tokenKey)
+}
+
+if (ethNetworks['TAU']){
+  console.log(ethNetworks['TAU'].tokenKey)
+}
+
+
+//if (tokenKey2){console.log(tokenKey2)}

@@ -3,11 +3,13 @@
         <img :src=token.icon class="select-image">
         <div style="padding: 4spx;">
             <h1 class="select-name" >{{token.name}}</h1>
+            <span class="keys-count">{{countKeys}}</span>
             <div class="bottom clearfix">
                 <el-switch 
                     :value="tokenActive"
                     @change="handleChange">
                 </el-switch>
+                
             </div>
         </div>
     </el-card>
@@ -15,20 +17,31 @@
 
 <script> 
 export default {
-    props:['tokenActive', 'token', 'storage'],
-    data: () => ({}),
+  props:{token: {type: Object}, 
+         storage: {type: Object},
+         tokenActive: {type: Boolean}
+        },
+    data () {
+      return {
+        tokenKey: "",
+        keys: {},
+        countKeys: 'keys 0'
+    }},
+    created(){
+      this.tokenKey = this.token.name + this.token.symbol;
+      this.keys = this.storage.getPubKeyInfo(this.tokenKey);
+      let numOfKeys = Object.keys(this.keys).length;
+      if (numOfKeys) {
+        this.countKeys = 'keys ' + numOfKeys;
+      }
+    },
     methods:{
       handleChange: function handleChange() {
-        let tokenKey = this.token.name + this.token.symbol;
-        try{
-          this.$emit('update:tokenActive', !this.tokenActive);
-          if (this.tokenActive){
-            this.storage.removeActiveToken(tokenKey);
-          }else{
-            this.storage.setActiveToken(tokenKey);
-          }
-        } catch (e) {
-          console.log(e.message);
+        this.$emit('update:tokenActive', !this.tokenActive);
+        if (this.tokenActive){
+          this.storage.removeActiveToken(this.tokenKey);
+        }else{
+          this.storage.setActiveToken(this.tokenKey);
         }
       }
     }
@@ -42,7 +55,7 @@ export default {
   }
   
   .bottom {
-    margin-top: 13px;
+    margin-top: 5px;
     line-height: 12px;
   }
 
@@ -59,7 +72,7 @@ export default {
 
   .select-name {
     font-size: 1em;
-    margin: 5px 0 5px 0;
+    margin: 5px 0 0px 0;
   }
 
   .clearfix:before,
@@ -72,17 +85,24 @@ export default {
       clear: both
   }
 
-    .el-card {
-        width: 80px!important;
-        height: 145px!important;
-        padding: 5px 5px 5px 5px;
-        margin: 5px 5px 5px 5px;
-    }
+  .el-card {
+      width: 90px!important;
+      height: 172px!important;
+      margin: 5px 5px 5px 5px;
+      text-align: center;
+  }
 
-    .el-card__body {
-        height: 100%;
-        text-align: center;
-    }
+  .el-card__body {
+      text-align: center;
+      padding: 10px;
+  }
+
+  .keys-count{
+    padding: 0;
+    margin: 0;
+    font-size: 0.8em;
+    color: rgb(158, 158, 158);
+  }
 
   [debug], [debug] *:not(g):not(path) {
     color:                 hsla(210, 100%, 100%, 0.9) !important;

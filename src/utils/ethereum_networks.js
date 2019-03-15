@@ -1,9 +1,7 @@
-module.exports = [
-  'ETH',
-  'ETH-TESTNET',
-  'EGEM',
-  'ELLA',
-  'ELLA-TESTNET',
-  'EXP',
-  'MUSIC',
-];
+module.exports = {
+  ETH: {tokenKey: 'EthereumETH'},
+  TAU: {tokenKey: 'LamdenTAU'},
+  ETC: {tokenKey: "Ethereum ClassicETC"},
+  VET: {tokenKey: "VeChainVET"},
+  REP: {tokenKey: "AugurREP"}
+};
