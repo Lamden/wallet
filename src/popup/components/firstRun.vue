@@ -16,7 +16,7 @@
                 <el-button type="warning" size="small" round @click="skipIntro = !skipIntro" class="button-skip" v-if="item==4">
                   I understand storing my password is my responsibilty
                 </el-button>
-                <h3>{{ content[item-1] }}</h3>
+                <h3 class="content-text" id="content-text">{{ content[item-1] }}</h3>
             </el-carousel-item>
         </el-carousel>
       </div>
@@ -32,14 +32,14 @@
             <h1 class="el-form-item-h1">Create your wallet password</h1>
           </el-form-item label="Password" prop="pass">
           <el-form-item label="Password" prop="pass">
-            <el-input type="password" v-model="ruleForm2.pass" autocomplete="off"></el-input>
+            <el-input type="password" v-model="ruleForm2.pass" autocomplete="off" size="small"></el-input>
           </el-form-item>
           <el-form-item label="Confirm" prop="checkPass">
-            <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off"></el-input>
+            <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off" size="small"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="button-position"> 
-              <el-button  type="primary" @click="submitForm('ruleForm2')">Submit</el-button>
+              <el-button  size="small" type="primary" @click="submitForm('ruleForm2')">Submit</el-button>
             </div>
           </el-form-item>
         </el-form>
@@ -123,6 +123,9 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
+      },
+      next() {
+        if (this.active++ > 2) this.active = 0;
       }
   },
   components: {
@@ -137,12 +140,11 @@ export default {
   flex-direction: column;
 }
 
-.el-carousel__item h3 {
-    color: #475669;
+#content-text{
     font-size: 18px;
     opacity: 0.75;
-    line-height: 300px;
     margin: 0;
+    padding: 20px 0 0 0;
 }
 
 .el-carousel__item:nth-child(2n) {
@@ -167,7 +169,7 @@ export default {
 
 .el-carousel__size {
   width: 100%;
-  height: 240px;
+  height: 255px;
 }
 
 .el-carousel__container {

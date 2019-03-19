@@ -87,7 +87,7 @@ export default {
       return 2;
     },
     showHamburger: function showHamburger(){
-      if (this.currentView === 'unlock' || this.currentView === 'firstrun') {return false}
+      if (this.currentView === 'unlock' || this.currentView === 'firstRun') {return false}
       return true;
     }
   },
