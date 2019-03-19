@@ -1,6 +1,6 @@
 {
   "name": "clove-sign-plugin",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "Tool for signing transactions in bitcoin and ethereum based networks",
   "private": true,
   "scripts": {
