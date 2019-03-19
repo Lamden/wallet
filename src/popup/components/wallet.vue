@@ -309,7 +309,7 @@ export default {
         this.precision = 8;
         this.$notify({
           title: 'Main Net Unavailable',
-          message: 'Comming Soon!'})
+          message: 'Coming Soon!'})
       }
     },
     refreshNetworkKeys(){

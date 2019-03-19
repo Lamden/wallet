@@ -122,7 +122,7 @@ exports.initiateKeyStore = (pass) => {
     pubKeys[testnetKey] = {};
     pubKeys[testnetKey][darkTAUWallet.wallet.vk] = {label: "Lamden Wallet Dark TAU Address", balance: 0, stamps: 0, uiDefault: true};
     pubKeys[mainnetKey] = {};
-    pubKeys[mainnetKey]['unavailable'] = {label:'Comming Soon', balance: 0, stamps: 0, uiDefault: true, };
+    pubKeys[mainnetKey]['unavailable'] = {label:'Coming Soon', balance: 0, stamps: 0, uiDefault: true, };
     setUnencrypted(pubKeys, 'pubKeys')
 
     //unencrypted storage of the user's active token list. 
