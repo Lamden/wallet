@@ -6,7 +6,7 @@ import { stripHexPrefix } from '../utils/sign';
 window.keyStorage = keyStorage;
 
 function normalizeAddress(address, networkSymbol) {
-  if (ethNetworks.includes(networkSymbol)) {
+  if (networkSymbol in ethNetworks) {
     return stripHexPrefix(address).toLowerCase();
   }
 
@@ -20,12 +20,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { network, rawTx, contract } = message;
     let { address } = message;
 
-    if (ethNetworks[network]) {
+    if (network in ethNetworks) {
       address = normalizeAddress(address, network);
     }
 
     try {
-      window.keyStorage.getPrivateKey(ethNetworks[network].tokenKey, address);
+      window.keyStorage.getPrivateKey_FromPublic(address);
     } catch (e) {
       sendResponse({ type: 'signedTx', error: e.message });
       return;
@@ -42,7 +42,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.windows.create({
       url: '/pages/popup.html#confirm', width: 620, height: 700, type: 'popup',
     });
-  } else if (message.type === "swap") {
   }
 });
 

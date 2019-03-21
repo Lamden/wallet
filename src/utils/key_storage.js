@@ -90,7 +90,7 @@ exports.unlock = (pass) => {
 }
 
 exports.lock = (pass) => {
-  password = null;
+  password = undefined;
 }
 
 exports.firstRun = () => {
@@ -198,14 +198,40 @@ exports.getPrivateKeysStorage = () => {
 
 exports.getPrivateKey = (tokenKey, pubKey) => {
   try {
-    const privKeys = getPrivateKeys();
-    if (privKeys[tokenKey] === undefined || privKeys[tokenKey][pubKey] === undefined) {
-      throw new Error('Key not found');
-    }
-    return privKeys[tokenKey][pubKey];
-  } catch (e) {
-    return e.message;
+    var privKeys = getPrivateKeys();
+  } catch (e){
+    throw new Error(e.message);
   }
+  if (privKeys[tokenKey] === undefined || privKeys[tokenKey][pubKey] === undefined) {
+    throw new Error('Key not found');
+  }
+  return privKeys[tokenKey][pubKey];
+}
+
+exports.getPrivateKey_FromPublic = (publicKey) => {
+  try {
+    var privKeys = getPrivateKeys();
+  } catch (e){
+    throw new Error(e.message);
+  }
+  for (let tokenKey in privKeys){
+    for (let pubkey in privKeys[tokenKey]){
+      if (pubkey === publicKey){
+        return privKeys[tokenKey][pubkey];
+      }
+    }
+  }
+  throw new Error('Key not found');
+}
+  
+exports.getTokenInfo = (networkSymbol) => {
+  for (let token in tokenInfo){
+    if (tokenInfo[token].symbol === networkSymbol){
+      tokenInfo[token].tokenKey = token;
+      return tokenInfo[token];
+    }
+  }
+  throw new Error('Unsupported Token/Coin');
 }
 
 exports.deletePrivateKey = (tokenKey, pubKey) => {

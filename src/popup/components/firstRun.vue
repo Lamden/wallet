@@ -11,8 +11,8 @@
     <!-- The Main New Uers intro logic -->
     <el-footer class="first-run-footer__carousel">
       <div v-if="!skipIntro">
-        <el-carousel class="el-carousel__size" :interval="5000" arrow="always" trigger="click" :autoplay="false">
-            <el-carousel-item v-for="item in 4" :key="item">
+        <el-carousel class="el-carousel__size" id="firstrun-carousel" :interval="5000" arrow="always" trigger="click" :autoplay="false">
+            <el-carousel-item v-for="item in 4" :key="item" id="firstrun-carousel-item">
                 <el-button type="warning" size="small" round @click="skipIntro = !skipIntro" class="button-skip" v-if="item==4">
                   I understand storing my password is my responsibilty
                 </el-button>
@@ -142,17 +142,18 @@ export default {
 
 #content-text{
     font-size: 18px;
-    opacity: 0.75;
-    margin: 0;
-    padding: 20px 0 0 0;
+    margin: 69px 0 0 0;
+    padding: 0 10px 0 10px;
 }
 
 .el-carousel__item:nth-child(2n) {
     background-color: rgb(39,68,94);
+    color: rgb(62,134,79);
 }
 
 .el-carousel__item:nth-child(2n-1) {
     background-color: rgb(117,46,104);
+    color: rgb(211,66,123);
 }
 
 .first-run-footer__form {
@@ -162,31 +163,34 @@ export default {
 }
 
 .first-run-footer__carousel {
-  padding: 50px 0 0 0!important;
-  height:100%!important;
+  padding: 66px 0 0 0;
   text-align: center;
 }
 
-.el-carousel__size {
-  width: 100%;
-  height: 255px;
-}
-
-.el-carousel__container {
-  height:100%!important;
-}
-
-.el-carousel__item h3 {
-  line-height: 40px!important;
-  color: rgb(224, 224, 224);
+#firstrun-carousel{
+    width: 100%;
+    height: 239px;
+    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .el-form-item-h1 {
   color: grey;
   margin: 0 0 20px -65px;;
 }
-.el-carousel__arrow {
-  top: 80%!important;
+#firstrun-carousel .el-carousel__arrow--left {
+  left: -80px;
+}
+
+#firstrun-carousel .el-carousel__arrow--right {
+    right: 18px;
+    top: 205px;
+    font-size: 27px;
+}
+
+#firstrun-carousel .el-carousel__indicators {
+  bottom: 21px;
 }
 
 .button-skip {

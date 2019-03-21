@@ -104,7 +104,7 @@ exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
 };
 
 exports.signTx = (rawTransaction = '', privateKey = '', networkSymbol = '') => {
-  if (ethNetworks.includes(networkSymbol)) {
+  if (networkSymbol in ethNetworks) {
     return exports.signEthereumTx(rawTransaction, privateKey);
   }
 

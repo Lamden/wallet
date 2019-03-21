@@ -70,7 +70,7 @@ export default {
       const address = localStorage.getItem('lastAddress');
 
       try {
-        const key = this.storage.getPrivateKey(network, address);
+        const key = this.storage.getPrivateKey_FromPublic(address);
         this.signForm.signedTransaction = sign.signTx(
           this.signForm.unsignedTransaction,
           key,

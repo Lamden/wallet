@@ -1,6 +1,6 @@
 # Lamden Wallet
 
-version number: 0.0.2
+version number: 0.0.5
 
 ## Overview
 Official Lamden wallet for the unique Lamden blockchain. Also features signing tools for the Lamden swaps which will be completed shortly. This wallet will be an 'all-in-one' plugin for Lamden dapp interaction and basic wallet functionality.

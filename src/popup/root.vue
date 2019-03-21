@@ -12,15 +12,15 @@
               <i class="el-icon-menu"></i>
               <span>Lamden Wallet</span>
             </el-menu-item>
-      <!--      <el-menu-item index="1" @click="navController('Clove Wallet')">
+            <el-menu-item index="1" @click="navController('Clove Wallet')">
               <i class="el-icon-menu"></i>
               <span>Clove Wallet</span>
             </el-menu-item>
-       -->     <el-menu-item index="2" @click="navController('Lock Wallet')">
+            <el-menu-item index="2" @click="navController('Lock Wallet')">
               <i class="el-icon-setting"></i>
               <span>Lock Wallet</span>
             </el-menu-item>
-      <!--      <el-menu-item index="2" @click="navController('dev')">
+           <el-menu-item index="2" @click="navController('dev')">
               <i class="el-icon-setting"></i>
               <span>Dev</span>
             </el-menu-item>
@@ -28,7 +28,7 @@
               <i class="el-icon-setting"></i>
               <span>First Run</span>
             </el-menu-item>
-            <el-menu-item index="2" @click="navController('backup')">
+      <!--       <el-menu-item index="2" @click="navController('backup')">
               <i class="el-icon-setting"></i>
               <span>Backup and Restore</span>
             </el-menu-item>
@@ -75,7 +75,8 @@ export default {
     currentView: 'wallet',
     lastView: 'wallet',
     keyStorage: null,
-    menu: false
+    menu: false,
+    hideHamburger: ['unlock', 'firstRun', 'confirm','signTx']
   }),
   computed: {
     step: function step() {
@@ -87,7 +88,7 @@ export default {
       return 2;
     },
     showHamburger: function showHamburger(){
-      if (this.currentView === 'unlock' || this.currentView === 'firstRun') {return false}
+      if (this.hideHamburger.includes(this.currentView)) {return false}
       return true;
     }
   },
@@ -97,10 +98,7 @@ export default {
     this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
 
     if (window.location.hash === '#confirm') {
-        this.currentView = 'confirm';
-      }
 
-          if (window.location.hash === '#confirm') {
         this.currentView = 'confirm';
       }
   },
