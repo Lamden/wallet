@@ -10,7 +10,7 @@
           inactive-color="#990099">
         </el-switch>
       </el-header>
-      <el-main class="walletMain">
+      <el-main id="walletMain">
         <div id="lamden-logo-box">
           <lamdenLogo v-if="!togTestNet"></lamdenLogo>
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
@@ -279,6 +279,9 @@ export default {
     this.determinePendingTransactions(this.currentKey);
   },
   methods: {
+    showMessage(message){
+      this.$message(message);
+    },
     handleTabs(tab, event){
       tab.label !== "Add" ? this.cancelAddSection() : null;
       tab.label === 'Send' ? this.showSendButton = true : this.resetSend();
@@ -354,9 +357,6 @@ export default {
         this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
         this.sections['edit'].showPrivKey = false;
       }
-    },
-    showMessage(message){
-      this.$message(message);
     },
     saveEdit(){
       try {
@@ -613,7 +613,7 @@ export default {
     overflow: auto!important;
   }
   
-  .walletMain {
+  #walletMain {
     color: #333;
     text-align: center;
     white-space: nowrap;

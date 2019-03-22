@@ -93,6 +93,10 @@ exports.lock = (pass) => {
   password = undefined;
 }
 
+exports.isUnlocked = () =>{
+  return storageUnlocked()
+}
+
 exports.firstRun = () => {
   return localStorage.privKeys ? true : false;
 }
@@ -183,6 +187,17 @@ exports.newCilantroWallet_FromPrivateKey = (tokenKey, privKey, labelText) => {
 exports.backupPrivateKeys = () => {
   let href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(localStorage.privKeys);
   return href;
+}
+
+exports.restorePrivateKeys = (file, password) => {
+  try{
+    const decrypted = CryptoJS.AES.decrypt(file, password, { format: JsonFormatter });
+    importKeys = JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+    privKeys = getPrivateKeys();
+    
+  } catch (e) {
+    throw new Error('Password Incorrect');
+  }
 }
 
 exports.getPrivateKeysStorage = () => {

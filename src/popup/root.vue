@@ -28,11 +28,11 @@
               <i class="el-icon-setting"></i>
               <span>First Run</span>
             </el-menu-item>
-      <!--       <el-menu-item index="2" @click="navController('backup')">
+             <el-menu-item index="2" @click="navController('backup')">
               <i class="el-icon-setting"></i>
               <span>Backup and Restore</span>
             </el-menu-item>
-            <el-menu-item index="2" @click="navController('timeline')">
+      <!--      <el-menu-item index="2" @click="navController('timeline')">
               <i class="el-icon-setting"></i>
               <span>Timeline</span>
             </el-menu-item>
@@ -98,9 +98,14 @@ export default {
     this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
 
     if (window.location.hash === '#confirm') {
-
         this.currentView = 'confirm';
-      }
+    }
+
+    if (!this.keyStorage.isUnlocked()){
+      this.currentView = 'unlock';
+    } else {
+      this.currentView = this.lastView;
+    }
   },
   methods: {
     switchView(value) {
@@ -236,6 +241,8 @@ body {
   width: 380px;
   background-color: #FFFFFF;
   flex-direction: column;
+  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .input-description{

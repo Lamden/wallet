@@ -2,12 +2,13 @@
     <el-container>
       <!-- hidden select tokens dialog box -->
       <el-dialog
+        id="select-token"
         title="Select Tokens"
         :visible.sync="dialogVisible"
         width="30%">
           <selectToken 
-            v-for="(value, key) in tokens"
-            :key="tokens[key].symbol" 
+            v-for="(value, key, index) in tokens"
+            :key="index" 
             :storage.sync="storage"
             :tokenActive.sync="tokens[key].active"
             :token="tokens[key]">
@@ -23,17 +24,18 @@
       <!-- Token list, each on is a "CloveToken" component -->
       <el-footer class="cloveFooter">
         <div>
+          <el-collapse v-model="activePanel" accordion @change="handleChange">
           <cloveToken
-            v-for="(value, key) in tokens" 
-            :key="key"
-            :showAddButton.sync="showAddButton"
+            v-for="(value, key, index) in tokens" 
+            :key="index"
             v-show="tokens[key].active"
             :storage="storage"
             :unlockedTokens="unlockedTokens"
             :token="tokens[key]"
             @unlockPrivate="unlockPrivate"
             @removeToken="removeToken">
-          </cloveToken>  
+          </cloveToken> 
+          </el-collapse> 
 
         <!-- Button to make the Select Token Dialoge viable so the token list can be edited -->
           <div class="box-add-button">
@@ -64,6 +66,7 @@ export default {
         dialogVisible: false,
         unlockedTokens: [],
         activeTokens: [],
+        activePanel: "",
         tokens: [],
         showAddButton: true
   }),
@@ -93,7 +96,10 @@ export default {
           token.balance = 0;
         } 
       })
-    } 
+    },
+    handleChange(val){
+      this.showAddButton = !this.showAddButton;
+    }, 
   },  
   components: {
     cloveToken,
