@@ -135,25 +135,10 @@ export default {
 </script>
 
 <style>
-.unlock {
-  display: flex;
-  flex-direction: column;
-}
-
 #content-text{
     font-size: 18px;
     margin: 69px 0 0 0;
     padding: 0 10px 0 10px;
-}
-
-.el-carousel__item:nth-child(2n) {
-    background-color: rgb(39,68,94);
-    color: rgb(62,134,79);
-}
-
-.el-carousel__item:nth-child(2n-1) {
-    background-color: rgb(117,46,104);
-    color: rgb(211,66,123);
 }
 
 .first-run-footer__form {
@@ -167,17 +152,17 @@ export default {
   text-align: center;
 }
 
+.el-form-item-h1 {
+  color: grey;
+  margin: 0 0 20px -65px;;
+}
+
 #firstrun-carousel{
     width: 100%;
     height: 239px;
     overflow: hidden;
     overflow-x: hidden;
     overflow-y: hidden;
-}
-
-.el-form-item-h1 {
-  color: grey;
-  margin: 0 0 20px -65px;;
 }
 #firstrun-carousel .el-carousel__arrow--left {
   left: -80px;
@@ -191,6 +176,16 @@ export default {
 
 #firstrun-carousel .el-carousel__indicators {
   bottom: 21px;
+}
+
+#firstrun-carousel .el-carousel__item:nth-child(2n) {
+    background-color: rgb(39,68,94);
+    color: rgb(58, 155, 81);
+}
+
+#firstrun-carousel .el-carousel__item:nth-child(2n-1) {
+    background-color: rgb(117,46,104);
+    color: rgb(241, 91, 151);
 }
 
 .button-skip {

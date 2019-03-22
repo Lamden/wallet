@@ -72,30 +72,30 @@ exports.signBitcoinTx = (rawTransaction = '', privateKey = '', network) => {
 
   const key = exports.getBitcoinKey(privateKey, network);
 
-  if (txb.inputs[0].prevOutType === 'nonstandard') {
+  if (txb.__inputs[0].prevOutType === 'nonstandard') {
     const contract = bitcoin.script.decompile(tx.ins[0].script).pop();
-    txb.inputs[0].prevOutScript =
+    txb.__inputs[0].prevOutScript =
       bitcoin.script.scriptHash.output.encode(bitcoin.crypto.hash160(contract));
-    txb.inputs[0].prevOutType = bitcoin.script.types.P2SH;
-    txb.inputs[0].signScript = contract;
-    txb.inputs[0].signType = bitcoin.script.types.P2SH;
+    txb.__inputs[0].prevOutType = bitcoin.script.types.P2SH;
+    txb.__inputs[0].signScript = contract;
+    txb.__inputs[0].signType = bitcoin.script.types.P2SH;
 
-    txb.inputs[0].pubKeys = [key.getPublicKeyBuffer()];
-    txb.inputs[0].signatures = [undefined];
+    txb.__inputs[0].pubKeys = [key.getPublicKeyBuffer()];
+    txb.__inputs[0].signatures = [undefined];
 
     txb.sign(0, key, contract);
 
     const sig = bitcoin.script.scriptHash.input.encodeStack(
-      txb.inputs[0].signatures[0],
-      txb.inputs[0].pubKeys[0],
+      txb.__inputs[0].signatures[0],
+      txb.__inputs[0].pubKeys[0],
     );
 
     sig.push(...bitcoin.script.decompile(tx.ins[0].script));
-    txb.tx.setInputScript(0, bitcoin.script.compile(sig));
-    return txb.tx.toHex();
+    txb.__tx.setInputScript(0, bitcoin.script.compile(sig));
+    return txb.__tx.toHex();
   }
 
-  txb.inputs.forEach((input, i) => {
+  txb.__inputs.forEach((input, i) => {
     if (!('signatures' in input) || input.signatures.length === 0) {
       txb.sign(i, key);
     }
