@@ -29,12 +29,11 @@
               style="{width: 50%}"
               type="password"
               autofocus
-              @keyup.enter.native="restoreKeys"
               placeholder="Enter password">
             </el-input><br>
           </el-col>
           <el-col :span="8">
-            <el-button id="restore-keys-button" type="warning" size="mini" plain :disabled="restoreKeysDisabled" @click="restoreKeys">
+            <el-button id="restore-keys-button" type="warning" size="mini" plain :disabled="restoreKeysDisabled" @click="handelRestoreKeys">
               Restore Keys</el-button>
           </el-col>
         </el-row>
@@ -88,18 +87,25 @@
       handleRemove(){
         this.file = undefined;
       },
-      restoreKeys(){
+      handelRestoreKeys(){
         if (this.password.length === 0){
            this.showMessage("password cannot be empty");
         }else{
           if (!this.file){
             this.showMessage("Plesee select a restore file");
           }
-            console.log(this.file)
             const reader = new FileReader();
             reader.readAsText(this.file);
-            reader.onload = e => this.storage.restorePrivateKeys(e.target.result, this.password);         
+            reader.onload = e => this.restoreKeys(e.target.result);       
         }
+      },
+      restoreKeys(file){
+        try{
+          let numKeys = this.storage.restorePrivateKeys(file, this.password);
+          numKeys > 0 ? this.showMessage(numKeys + " keys restored!") : this.showMessage("Found no keys to restore");
+        }catch (e){
+          this.showMessage(e.message)
+        }  
       }
     },
     components: {}

@@ -148,7 +148,7 @@ export default {
 }
 
 .first-run-footer__carousel {
-  padding: 66px 0 0 0;
+  padding: 26px 0 0 0;
   text-align: center;
 }
 

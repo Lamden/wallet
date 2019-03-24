@@ -1,6 +1,6 @@
 /* global localStorage
 
-Token Storage Notes:
+Token Storage Notes:dele
  -  Tokens are now stored with a "name + symbol" key. 
     This is to allow for the possibilty of two different project with the same symbol
 */
@@ -189,15 +189,35 @@ exports.backupPrivateKeys = () => {
   return href;
 }
 
-exports.restorePrivateKeys = (file, password) => {
+exports.restorePrivateKeys = (file, pass) => {
   try{
-    const decrypted = CryptoJS.AES.decrypt(file, password, { format: JsonFormatter });
-    importKeys = JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-    privKeys = getPrivateKeys();
-    
+    let decrypted = CryptoJS.AES.decrypt(file, pass, { format: JsonFormatter });
+    var importKeys = JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
   } catch (e) {
     throw new Error('Password Incorrect');
   }
+
+  let privKeys = getPrivateKeys();
+  let pubKeys = getUnencrypted('pubKeys');
+  let numKeysRestored = 0;
+  for (let tokenKey in importKeys){
+    let chkTokenKey = tokenKey in privKeys; 
+    if (!chkTokenKey){
+      privKeys[tokenKey] = {};
+      pubKeys[tokenKey] = {};
+    }
+    for (let pubKey in importKeys[tokenKey]){
+      let chkPubKey = pubKey in privKeys[tokenKey]; 
+      if (!chkPubKey){
+        privKeys[tokenKey][pubKey] = importKeys[tokenKey][pubKey];
+        pubKeys[tokenKey][pubKey] = {label: "Imported Key " + numKeysRestored + ": " + tokenKey, balance: 0, stamps: 0, uiDefault: false};
+        numKeysRestored++;
+      }
+    }
+  }
+  setPrivateKeys(privKeys);
+  setUnencrypted(pubKeys, 'pubKeys');
+  return numKeysRestored;
 }
 
 exports.getPrivateKeysStorage = () => {

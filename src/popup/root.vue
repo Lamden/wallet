@@ -16,25 +16,25 @@
               <i class="el-icon-menu"></i>
               <span>Clove Wallet</span>
             </el-menu-item>
-            <el-menu-item index="2" @click="navController('Lock Wallet')">
+            <el-menu-item index="2" @click="navController('backup')">
+              <i class="el-icon-setting"></i>
+              <span>Backup and Restore</span>
+            </el-menu-item>
+            <el-menu-item class="sit-at-bottom" index="2" @click="navController('Lock Wallet')">
               <i class="el-icon-setting"></i>
               <span>Lock Wallet</span>
             </el-menu-item>
-           <el-menu-item index="2" @click="navController('dev')">
+      <!--      <el-menu-item index="2" @click="navController('timeline')">
               <i class="el-icon-setting"></i>
-              <span>Dev</span>
+              <span>Timeline</span>
             </el-menu-item>
             <el-menu-item index="2" @click="navController('firstRun')">
               <i class="el-icon-setting"></i>
               <span>First Run</span>
             </el-menu-item>
-             <el-menu-item index="2" @click="navController('backup')">
+            <el-menu-item index="2" @click="navController('dev')">
               <i class="el-icon-setting"></i>
-              <span>Backup and Restore</span>
-            </el-menu-item>
-      <!--      <el-menu-item index="2" @click="navController('timeline')">
-              <i class="el-icon-setting"></i>
-              <span>Timeline</span>
+              <span>Dev</span>
             </el-menu-item>
       -->    </el-menu>
         </div>
@@ -358,5 +358,10 @@ body {
 
 .menuitem {
   cursor: pointer;
+}
+
+.sit-at-bottom{
+  position: relative;
+  top: 235px;
 }
 </style>
