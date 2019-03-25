@@ -1,6 +1,6 @@
 {
-  "name": "Lamden",
-  "version": "0.0.5",
+  "name": "Lamden Wallet",
+  "version": "0.1.0",
   "description": "Wallet for Lamden's Cilanto blockchain as well as a tool for taking part in Lamden's atomic swap platform",
   "manifest_version": 2,
   "icons": {

@@ -1,6 +1,6 @@
 /* global localStorage
 
-Token Storage Notes:
+Token Storage Notes:dele
  -  Tokens are now stored with a "name + symbol" key. 
     This is to allow for the possibilty of two different project with the same symbol
 */
@@ -90,11 +90,15 @@ exports.unlock = (pass) => {
 }
 
 exports.lock = (pass) => {
-  password = null;
+  password = undefined;
+}
+
+exports.isUnlocked = () =>{
+  return storageUnlocked()
 }
 
 exports.firstRun = () => {
-  return localStorage.privKeys ? true : false;
+  return !localStorage.privKeys ? true : false;
 }
 
 exports.initiateKeyStore = (pass) => {
@@ -185,6 +189,37 @@ exports.backupPrivateKeys = () => {
   return href;
 }
 
+exports.restorePrivateKeys = (file, pass) => {
+  try{
+    let decrypted = CryptoJS.AES.decrypt(file, pass, { format: JsonFormatter });
+    var importKeys = JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+  } catch (e) {
+    throw new Error('Password Incorrect');
+  }
+
+  let privKeys = getPrivateKeys();
+  let pubKeys = getUnencrypted('pubKeys');
+  let numKeysRestored = 0;
+  for (let tokenKey in importKeys){
+    let chkTokenKey = tokenKey in privKeys; 
+    if (!chkTokenKey){
+      privKeys[tokenKey] = {};
+      pubKeys[tokenKey] = {};
+    }
+    for (let pubKey in importKeys[tokenKey]){
+      let chkPubKey = pubKey in privKeys[tokenKey]; 
+      if (!chkPubKey){
+        privKeys[tokenKey][pubKey] = importKeys[tokenKey][pubKey];
+        pubKeys[tokenKey][pubKey] = {label: "Imported Key " + numKeysRestored + ": " + tokenKey, balance: 0, stamps: 0, uiDefault: false};
+        numKeysRestored++;
+      }
+    }
+  }
+  setPrivateKeys(privKeys);
+  setUnencrypted(pubKeys, 'pubKeys');
+  return numKeysRestored;
+}
+
 exports.getPrivateKeysStorage = () => {
   if (storageUnlocked()){
     let storedTokens = localStorage.privKeys;
@@ -198,14 +233,40 @@ exports.getPrivateKeysStorage = () => {
 
 exports.getPrivateKey = (tokenKey, pubKey) => {
   try {
-    const privKeys = getPrivateKeys();
-    if (privKeys[tokenKey] === undefined || privKeys[tokenKey][pubKey] === undefined) {
-      throw new Error('Key not found');
-    }
-    return privKeys[tokenKey][pubKey];
-  } catch (e) {
-    return e.message;
+    var privKeys = getPrivateKeys();
+  } catch (e){
+    throw new Error(e.message);
   }
+  if (privKeys[tokenKey] === undefined || privKeys[tokenKey][pubKey] === undefined) {
+    throw new Error('Key not found');
+  }
+  return privKeys[tokenKey][pubKey];
+}
+
+exports.getPrivateKey_FromPublic = (publicKey) => {
+  try {
+    var privKeys = getPrivateKeys();
+  } catch (e){
+    throw new Error(e.message);
+  }
+  for (let tokenKey in privKeys){
+    for (let pubkey in privKeys[tokenKey]){
+      if (pubkey === publicKey){
+        return privKeys[tokenKey][pubkey];
+      }
+    }
+  }
+  throw new Error('Key not found');
+}
+  
+exports.getTokenInfo = (networkSymbol) => {
+  for (let token in tokenInfo){
+    if (tokenInfo[token].symbol === networkSymbol){
+      tokenInfo[token].tokenKey = token;
+      return tokenInfo[token];
+    }
+  }
+  throw new Error('Unsupported Token/Coin');
 }
 
 exports.deletePrivateKey = (tokenKey, pubKey) => {

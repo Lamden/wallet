@@ -1,5 +1,5 @@
 <template>
-    <el-container>
+    <el-container id="walletMain">
       <el-header>
         <el-switch 
           v-model="togTestNet" 
@@ -10,8 +10,8 @@
           inactive-color="#990099">
         </el-switch>
       </el-header>
-      <el-main class="walletMain">
-        <div class="lamden-logo-box">
+      <el-main >
+        <div id="lamden-logo-box">
           <lamdenLogo v-if="!togTestNet"></lamdenLogo>
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
         </div>
@@ -39,12 +39,12 @@
 
       
       <el-footer class="walletFooter">
-        <el-tabs v-model="activeName" @tab-click="handleTabs">
+        <el-tabs v-model="activeName" @tab-click="handleTabs" id="wallet-tabs">
 
 
 <!--  TRANSACTIONS PANE  ------------------------------------------>
           <el-tab-pane label="Transactions" name="Transactions" :key="forceRefreshKeys.balance">
-          <div class="block">
+          <div id="transactions-timeline">
               <el-timeline>
                   <el-timeline-item
                   v-for="(activity, index) in formattedTransactions"
@@ -55,22 +55,21 @@
                   :timestamp="activity.timestamp">
                   <div :style="{'text-align':'left'}">
                     {{activity.sent}}<br>
-                    {{"txHash: "}} <el-button class="el-timeline-hash-button" type="text" size="small">{{activity.content}}</el-button>
+                    {{"txHash: "}} <el-button id="el-timeline-hash-button" type="text" size="small">{{activity.content}}</el-button>
                   </div>
                   </el-timeline-item>
             </el-timeline>
-          </div>
-          <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle plain 
-                     @click="deleteTransactions" title="delete transaction history">
-          </el-button>   
+            <el-button id="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle plain 
+                      @click="deleteTransactions" title="delete transaction history" v-if="transactions">
+            </el-button> 
+          </div>  
         </el-tab-pane>
 
 
 <!--  SEND TRANSACTION PANE  ------------------------------------------>
           <el-tab-pane label="Send" name="Send">
-            <div class="send-box">
-              <h1 class="send-title">Send Dark TAU</h1>
-              <el-input type="textarea" :rows="2" placeholder="Enter recipient's wallet address" size="mini" resize="none" 
+            <div id="send-transaction">
+              <el-input type="textarea" :rows="2" :placeholder="sendTransactionPlaceholder" size="mini" resize="none" 
                         v-model="sections['send'].txDestination"></el-input>
               <el-row>
                 <el-col :span=12>
@@ -91,17 +90,17 @@
                   </el-input-number>
                 </el-col>
               </el-row>
-              <el-button class="send-transactions-floating-button" type="success" icon="el-icon-d-arrow-right" circle plain
+              <el-button id="send-transactions-floating-button" type="success" icon="el-icon-message" circle plain
                 @click="sendTransaction" v-if="showSendButton" title="send transaction"></el-button>
             </div>
           </el-tab-pane>
 
 <!--  EDIT ADDRESS PANE  ------------------------------------------>
           <el-tab-pane label="Edit" name="Edit">
-            <div  class="send-box">
+            <div  id="edit-address">
               <el-row :gutter=6>
-                <el-col :span=4>
-                  <h3 class="label-beside-input">Label</h3>
+                <el-col :span=8>
+                  <h3 class="label-beside-input">Address Label</h3>
                 </el-col>
                 <el-col :span=16>
                   <el-input size="mini" resize="none" v-model="sections['edit'].labelText">
@@ -112,68 +111,68 @@
                 <el-checkbox :disabled="networkKeys[network][currentKey].uiDefault" v-model="sections['edit'].defaultChecked">
                   Default Address</el-checkbox>
               </el-row>
-              <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey">
+              <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey"  class="keys">
               </el-input>
               <el-input v-if="this.sections['edit'].showPrivKey" type="textarea" :rows="3" size="mini" resize="none" :readonly="true"
-                v-model="networkKeys[network][currentKey].privateKey">
+                v-model="networkKeys[network][currentKey].privateKey" class="keys">
               </el-input>
               <div v-if="this.sections['edit'].showPrivKey === false">
                   <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
-                    placeholder="Enter your password to show private key">
+                    placeholder="Enter your password to show private key"  class="keys">
                   </el-input>
-                  <p v-if="this.sections['edit'].showPrivKey === false" class="error-text">{{sections['edit'].error}}</p>
                 </div>
-                <el-button @click="saveEdit" class="send-button-padding" type="success" plain size="mini">
-                  Save Info</el-button>
-                <el-button class="del-transactions-floating-button" type="danger" icon="el-icon-delete" circle plain 
+                <el-button id="save-address-floating-button" type="primary" icon="el-icon-check" circle plain 
+                           @click="saveEdit" title="save address information"></el-button>
+                <el-button id="del-address-floating-button" type="danger" icon="el-icon-delete" circle plain 
                            v-if="this.sections['edit'].showPrivKey" @click="confirmDeleteAddress" title="delete address from wallet"></el-button>
               </div>
             </el-tab-pane>
 
  <!--  ADD ADDRESS PANE  ------------------------------------------>
             <el-tab-pane label="Add" name="Add">
-              <div class="send-box">
+              <div id="add-address">
                 <div v-if="displayAddMainSection">
-                  <el-button class="add-button-padding" @click="sections['add'].newWallet = true" type="success" plain size="mini">
+                  <el-button id="add-button" @click="sections['add'].newWallet = true" type="success" plain size="mini">
                     Generate New Wallet</el-button>
                   <br>
-                  <el-button class="add-button-padding" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">
+                  <el-button id="add-button" @click="sections['add'].fromPrivate  = true" type="success" plain size="mini">
                     Add from Private Key</el-button>
                 </div>
                 
                 <div v-if="sections['add'].newWallet">
                   <el-row :gutter=6>
-                    <el-col :span=6>
-                      <h3 class="label-beside-input">Create Wallet Label</h3>
+                    <el-col :span=8>
+                      <h3 id="label-beside-input">Address Label</h3>
                     </el-col>
                     <el-col :span=16>
                       <el-input size="mini" resize="none" v-model="sections['add'].newlabel">
                       </el-input>
                     </el-col>
                   </el-row>
-                  <el-button :disabled="addWalletLabelEmpty" class="add-button-padding" @click="generateNewWallet" type="success" plain size="mini">
-                    Generate New Wallet</el-button>
-                  <el-button @click="sections['add'].newWallet = false" class="send-button-padding" type="info" plain size="mini">
-                    Cancel</el-button>
+                  <el-button id="add-gen-address-floating-button" type="primary" icon="el-icon-news" circle plain :disabled="addWalletLabelEmpty"
+                    @click="generateNewWallet" title="generate new address"></el-button>
+                  <el-button id="cancel-address-floating-button" type="info" icon="el-icon-close" circle plain 
+                    @click="sections['add'].newWallet  = false" title="cancel"></el-button>
                 </div>
 
                 <div v-if="sections['add'].fromPrivate">
                   <el-row :gutter=6>
-                    <el-col :span=6>
-                      <h3 class="label-beside-input">Wallet Label</h3>
+                    <el-col :span=8>
+                      <h3 id="label-beside-input">Address Label</h3>
                     </el-col>
                     <el-col :span=16>
-                      <el-input  size="mini" resize="none" v-model="sections['add'].newlabel">
+                      <el-input  size="mini" resize="none" v-model="sections['add'].newlabel"
+                        placeholder="Enter address label">
                       </el-input>
                     </el-col>
                   </el-row>
-                  <h3 class="section-text">Enter PRIVATE Key</h3>
-                  <el-input type="textarea" :rows="2" size="mini" resize="none" v-model="sections['add'].privateKey">
+                  <el-input id="add-address-input" type="textarea" :rows="2" size="mini" resize="none" v-model="sections['add'].privateKey"
+                    :placeholder="addPrivateKeyPlaceholder">
                   </el-input>
-                  <el-button class="add-button-padding" @click="newWalletFromPrivateKey" type="success" plain size="mini">
-                    Add Address</el-button>
-                  <el-button @click="sections['add'].fromPrivate  = false" class="send-button-padding" type="info" plain size="mini">
-                    Cancel</el-button>
+                  <el-button id="add-address-floating-button" type="primary" icon="el-icon-check" circle plain 
+                    @click="newWalletFromPrivateKey" title="add address"></el-button>
+                  <el-button id="cancel-address-floating-button" type="info" icon="el-icon-close" circle plain 
+                    @click="sections['add'].fromPrivate  = false" title="cancel"></el-button>
                 </div>
               </div>
             </el-tab-pane>
@@ -211,6 +210,12 @@ export default {
               'add': {visible: false, publickKey: "", privateKey:"", newlabel: "", fromPrivate: false , newWallet: false}}
   }),
   computed: {
+    sendTransactionPlaceholder: function sendTransactionPlaceholder(){
+      return 'Enter recipients ' + this.symbols[this.network] + ' wallet address';
+    },
+    addPrivateKeyPlaceholder: function addPrivateKeyPlaceholder(){
+      return 'Enter ' + this.symbols[this.network] + ' PRIVATE (secret) address';
+    },
     displayPublicKey: function displayPublicKey(){
       return 'Public Wallet Address: ' + this.currentKey;
     },
@@ -266,14 +271,13 @@ export default {
     }
     this.refreshBalance();
     
-    try {
-      this.transactions = this.storage.getTransactions(this.network, this.currentKey);
-    } catch (e){
-      console.log(e.message);
-    }
+    this.transactions = this.storage.getTransactions(this.network, this.currentKey);
     this.determinePendingTransactions(this.currentKey);
   },
   methods: {
+    showMessage(message){
+      this.$message(message);
+    },
     handleTabs(tab, event){
       tab.label !== "Add" ? this.cancelAddSection() : null;
       tab.label === 'Send' ? this.showSendButton = true : this.resetSend();
@@ -349,9 +353,6 @@ export default {
         this.sections['edit'].labelText = this.networkKeys[this.network][this.currentKey].label;
         this.sections['edit'].showPrivKey = false;
       }
-    },
-    showMessage(message){
-      this.$message(message);
     },
     saveEdit(){
       try {
@@ -490,8 +491,6 @@ export default {
             }catch (e){
                 this.showMessage(e.message);
             }
-          }else{
-              console.log(result);
           }
         })
         .catch((reject) => {
@@ -585,7 +584,7 @@ export default {
 </script>
 
 <style>
-  .el-header {
+  #walletMain .el-header {
     color: #333;
     text-align: center;
     background-color: #fafaff;
@@ -608,7 +607,7 @@ export default {
     overflow: auto!important;
   }
   
-  .walletMain {
+  #walletMain {
     color: #333;
     text-align: center;
     white-space: nowrap;
@@ -616,105 +615,180 @@ export default {
     padding: 0px 0 0px 0!important;
   }
 
-  .el-dropdown {
+  #walletMain .el-dropdown {
     top: -10px;
     color: rgb(156, 60, 139);
   }
 
-  .el-dropdown-menu__item {
+  #walletMain .el-dropdown-menu__item {
     font-size: 1em;
     color: rgb(156, 60, 139); 
   }
     
-  .el-dropdown-link {
+  #walletMain .el-dropdown-link {
     cursor: pointer;
     color: rgb(156, 60, 139);
   }
 
-  .el-icon-arrow-down {
+  #walletMain .el-icon-arrow-down {
     font-size: 12px;
   }
 
-  .el-message-box {
+  #walletMain .el-message-box {
     margin: 0 10px 0 10px;
     width: unset!important;
   }
-
-  .el-icon-loading {
-    font-family: element-icons!important;
-    font-style: normal;
-    font-weight: 400;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    vertical-align: baseline;
-    display: inline-block;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .el-input-number {
+  #walletMain .el-input-number {
     padding-left: 0px;
     padding-right: 0px;
     width: 95%;
   }
 
-  .el-tabs__active-bar{
+/* ----------- TABS ------------ */
+
+  #wallet-tabs .el-tabs__active-bar{
     left: 50px!important;
     background-color: rgb(156, 60, 139);
   }
 
-  .el-tabs__header{
+  #wallet-tabs .el-tabs__header{
     margin:0 0 0 0;
   }
 
-  .el-tabs__nav {
+  #wallet-tabs .el-tabs__nav {
     float: none!important;
   }
 
-  .el-tabs__content{
+  #wallet-tabs .el-tabs__content{
     overflow: scroll!important;
     position: relative;
     height: 199px;
     overflow-x: hidden!important;
   }
 
-  .el-timeline-item__icon{
-    padding: 0 0 0 0!important;
+  #wallet-tabs  .tab-boxes {
+    min-height: 187px;
+  }
+
+/* ----------- TRANSACTIONS TAB ------------ */
+
+  #transactions-timeline{
+    color:rgb(118, 58, 134);
+  }
+
+  #transactions-timeline .el-timeline{
+    margin: 15px 0 0 0;
+    list-style: none;
+    padding: 0 15px 0 15px;
   }
   
-  .el-timeline-item__timestamp{
+  #transactions-timeline .el-timeline-item__timestamp{
     line-height: 0px;
-    margin-top: 5px;
+    text-align: right;
   }
 
-  .el-timeline{
-    margin: 10px 0 0 0;
+  #transactions-timeline #el-timeline-hash-button{
+   padding: 0px; 
   }
 
-  .el-timeline-hash-button{
-   padding: 0px!important; 
+  #transactions-timeline  #del-transactions-floating-button{
+    position: fixed;
+    bottom: 11px;
+    right: 27px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.25);
   }
 
-  .send-box {
-    padding: 0 15px 0 15px; 
+/* --------------- SEND TAB --------------- */
+  #send-transaction {
+    padding: 15px 15px 0 15px; 
+    color:rgb(118, 58, 134);
   }
 
-  .send-button-padding {
-    margin: 20px 0 0 0;
+  #send-transaction #send-transactions-floating-button{
+    position: fixed;
+    bottom: 11px;
+    right: 27px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(44, 194, 89, 0.25);
+    font-size: 18px;
+    padding: 10px;
   }
 
-  .add-button-padding {
+/* -------------- EDIT TAB ----------------- */
+
+  #edit-address {
+    padding: 15px 15px 0 15px; 
+    color:rgb(118, 58, 134);
+  }
+
+  #edit-address .label-beside-input{
+    margin: 7px 0 0 0;
+  }
+
+  #edit-address .keys {
+    padding: 5px;
+  }
+
+  #edit-address #save-address-floating-button{
+    position: fixed;
+    bottom: 11px;
+    right: 27px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(44, 194, 89, 0.25);
+  }
+
+  #edit-address #del-address-floating-button{
+    position: fixed;
+    bottom: 60px;
+    right: 27px;
+    z-index: 9000;
+    box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.25);
+  }
+
+/* -------------- ADD TAB ----------------- */
+  #add-address {
+    padding: 15px 15px 0 15px;  
+    color:rgb(118, 58, 134);
+  }
+
+  #add-address #add-button {
     margin: 5px 0 0 0;
   }
 
-  .send-title {
-    margin: 5px;
-    color: rgb(117,46,104);
+  #add-address #label-beside-input{
+    margin: 7px 0 0 0;
   }
 
-  .label-beside-input{
-    margin: 7px 0 0 0;
-    color: rgb(156, 60, 139);
+  #add-address #add-address-input {
+    margin: 15px 0 0px 0px;
+  }
+  
+    #add-address #add-address-floating-button{
+    position: fixed;
+    bottom: 11px;
+    right: 27px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(44, 194, 89, 0.25);
+    font-size: 18px;
+    padding: 10px;
+  }
+  #add-address #add-gen-address-floating-button{
+    position: fixed;
+    bottom: 11px;
+    right: 27px;
+    z-index: 10000;
+    box-shadow: 0px 3px 14px rgba(44, 194, 89, 0.25);
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  #add-address #cancel-address-floating-button{
+    position: fixed;
+    bottom: 60px;
+    right: 27px;
+    z-index: 9000;
+    box-shadow: 0px 3px 14px rgba(0, 0, 0, 0.25);
   }
 
   .section-text {
@@ -733,30 +807,12 @@ export default {
     text-align: left;
   }
 
-  .transaction-lines{
+  #walletMain .transaction-lines{
     padding:0;
     margin: 0;
   }
 
-  .del-transactions-floating-button{
-    position: fixed;
-    bottom: 14px;
-    right: 32px;
-    z-index: 10000;
-    box-shadow: 0px 3px 14px rgba(194, 44, 119, 0.5);
-  }
 
-  .send-transactions-floating-button{
-    position: fixed;
-    bottom: 14px;
-    right: 178px;
-    z-index: 10000;
-    box-shadow: 0px 3px 14px rgba(44, 194, 89, 0.363);
-  }
-
-  .tab-boxes {
-    min-height: 187px;
-  }
 
   [debug], [debug] *:not(g):not(path) {
     color:                 hsla(210, 100%, 100%, 0.9) !important;

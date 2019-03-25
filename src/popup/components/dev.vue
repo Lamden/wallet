@@ -41,9 +41,7 @@ export default {
     },
     getActiveTokens (){
       let activeTokens =  this.storage.getActiveTokens();
-      console.log(typeof(activeTokens))
       for (let tokenKey in activeTokens){
-        console.log(activeTokens[tokenKey]);
       }
       return activeTokens;
       

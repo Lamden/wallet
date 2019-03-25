@@ -13,8 +13,7 @@
         />
       </el-form-item>
       <el-button
-        type="info"
-        plain
+        type="primary"
         class="submit-button"
         :disabled="isButtonDisabled"
         @click="confirm">
@@ -56,9 +55,9 @@ export default {
       const { network, address } = this.signData;
       let signedTx = '';
       let errorMsg = '';
-
+      
       try {
-        const key = this.storage.getPrivateKey(network, address);
+        const key = this.storage.getPrivateKey_FromPublic(address);
         signedTx = sign.signTx(
           this.signData.rawTx,
           key,

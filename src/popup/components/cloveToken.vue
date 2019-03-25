@@ -1,7 +1,7 @@
 <template>
-  <el-collapse  @change="handleChange">
+
   <!-- TOKEN BANNER (logo, name, balance) -->
-    <el-collapse-item name="1">
+    <el-collapse-item>
       <template slot="title"  >
         <div class="tokenBox" >
           <div class="bg" :style="{ backgroundImage: 'url(' + token.icon + ')' }"></div>
@@ -13,7 +13,7 @@
       </template>
 
         <div v-if="hasKeys">
-          <div v-for="(value, key) in keys" :key="key">
+          <div v-for="(value, key, index) in keys" :key="index">
             <el-row :gutter="0" >
               <h3 class="lamden-text key-label" >{{keys[key].label}}</h3>
             </el-row>
@@ -45,7 +45,6 @@
         </el-input>
         <el-button  @click="resetAddKeys" type="text" v-if="showCancel">Cancel</el-button>
         <el-button @click="handleAddKeys" type="text" >Add Key</el-button>
-
       </div>
  
       <div>
@@ -65,7 +64,6 @@
         </el-row>
       </div>
     </el-collapse-item>
-  </el-collapse>
 </template>
 
 <script>
@@ -79,15 +77,13 @@ export default {
       tokenKey: "",
       privKeyInput: "",
       privKeyLabel: "",
-      error: "",
       keys: {},
       hasKeys: false,
       showPrivKey: false,
       showPassBox: false,
       password:"",
       showAddKeys: false,
-      showCancel: false,
-      activeNames: ""
+      showCancel: false
   }},
   computed: {
     showManagePrivateKeys: function showAddKeysButton() {
@@ -139,18 +135,12 @@ export default {
           for (let key in this.keys){
             this.$set(this.keys[key], 'privateKey', this.storage.getPrivateKey(this.tokenKey, key))
           }
-          console.log(this.keys);
           this.showPrivKey = true;
           this.resetPasswordBox();
         }catch (e){
           this.showMessage(e.message);
         } 
       }
-    },
-    handleChange(val){
-      console.log(val);
-      console.log(this.showAddButton);
-      this.$emit('update:showAddButton', !this.showAddButton);
     },
     confirmDeleteAddress(key, keyInfo) {
         this.$confirm('If you do not have a backup of these keys then funds could be lost. ARE YOU SURE?', 
@@ -178,12 +168,6 @@ export default {
           });          
         });
     },
-    handleConfirmDelete(pubKey) {
-      try {
-      }catch (e) {
-        console.log(e.message);
-      }
-    },
     handleAddKeys(){
       if (this.showAddKeys) {
         this.addKey();
@@ -191,10 +175,6 @@ export default {
         this.showAddKeys = true;
         this.showCancel = true;
       }
-    },
-    keysEmpty(){
-      for (let x in this.keys) {return true} 
-      return false;
     },
     resetAddKeys(){
       this.privKeyInput = "";
@@ -205,10 +185,7 @@ export default {
     resetPasswordBox(){
       this.showPassBox = false;
       this.password = "";
-    },
-    togglePopover(pubKey){
-      this.$set(this.showPopovers, pubKey, !this.showPopovers[pubKey]); 
-    }    
+    }  
   },
   components: {
   }

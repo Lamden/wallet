@@ -65,9 +65,9 @@ export default {
   computed: {
     details() {
       const order = Object.values(this.labels);
+      
 
-      const ethBased = ethNetworks.includes(this.signData.network);
-
+      const ethBased = this.signData.network in ethNetworks;
       let txDetails = [];
 
       if (this.signData.rawTx) {
@@ -137,7 +137,7 @@ export default {
         txDetails.push({ label: this.labels.value, value });
         return txDetails;
       }
-
+      
       if (decodedData === undefined) {
         txDetails.push({ label: this.labels.txType, value: 'Unknown' });
         txDetails.push({ label: this.labels.value, value });
@@ -195,7 +195,7 @@ export default {
       } catch (e) {
         return txDetails;
       }
-
+      
       if (tx.outs.length === 1 && tx.ins.length === 1) {
         const txInScript = bitcoin.script.decompile(tx.ins[0].script);
         const outputDetails = this.extractBtcSwapDataFromInputScript(txInScript);
@@ -256,7 +256,7 @@ export default {
       const outputDetails = [];
 
       outputDetails.push({ label: this.labels.value, value: output.value.toString() });
-
+      
       if (this.isP2SHScript(script)) {
         let txType = 'Pay to script hash';
 

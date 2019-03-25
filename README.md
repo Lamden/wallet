@@ -1,25 +1,25 @@
 # Lamden Wallet
 
-version number: 0.0.5
+version number: 0.1.0
 
 ## Overview
-Official Lamden wallet for the unique Lamden blockchain. Also features signing tools for the Lamden swaps which will be completed shortly. This wallet will be an 'all-in-one' plugin for Lamden dapp interaction and basic wallet functionality.
+Official Lamden wallet for the unique Lamden blockchain. Also features signing tools for the Lamden swaps. This wallet will be an 'all-in-one' plugin for Lamden dapp interaction and basic wallet functionality.
 
 ## Development
-    git clone https://github.com/Lamden/clove-sign-plugin.git
-    cd clove-sign-plugin
+    git clone https://github.com/Lamden/wallet.git
+    cd wallet
     npm install
     npm run build
 
 ##### Load the extension in Chrome & Opera
 1. Open Chrome/Opera browser and navigate to chrome://extensions
 2. Select "Developer Mode" and then click "Load unpacked extension..."
-3. From the file browser, choose `clove-sign-plugin/build`
+3. From the file browser, choose `wallet/build`
 
 
 ##### Load the extension in Firefox
 1. Open Firefox browser and navigate to about:debugging
-2. Click "Load Temporary Add-on" and from the file browser, choose `clove-sign-plugin/build/manifest.json`
+2. Click "Load Temporary Add-on" and from the file browser, choose `wallet/build/manifest.json`
 
 
 #### Live reload

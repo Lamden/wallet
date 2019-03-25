@@ -12,31 +12,19 @@
               <i class="el-icon-menu"></i>
               <span>Lamden Wallet</span>
             </el-menu-item>
-      <!--      <el-menu-item index="1" @click="navController('Clove Wallet')">
+            <el-menu-item index="1" @click="navController('Clove Wallet')">
               <i class="el-icon-menu"></i>
               <span>Clove Wallet</span>
-            </el-menu-item>
-       -->     <el-menu-item index="2" @click="navController('Lock Wallet')">
-              <i class="el-icon-setting"></i>
-              <span>Lock Wallet</span>
-            </el-menu-item>
-      <!--      <el-menu-item index="2" @click="navController('dev')">
-              <i class="el-icon-setting"></i>
-              <span>Dev</span>
-            </el-menu-item>
-            <el-menu-item index="2" @click="navController('firstRun')">
-              <i class="el-icon-setting"></i>
-              <span>First Run</span>
             </el-menu-item>
             <el-menu-item index="2" @click="navController('backup')">
               <i class="el-icon-setting"></i>
               <span>Backup and Restore</span>
             </el-menu-item>
-            <el-menu-item index="2" @click="navController('timeline')">
+            <el-menu-item class="sit-at-bottom" index="2" @click="navController('Lock Wallet')">
               <i class="el-icon-setting"></i>
-              <span>Timeline</span>
+              <span>Lock Wallet</span>
             </el-menu-item>
-      -->    </el-menu>
+          </el-menu>
         </div>
       </div>
     <component
@@ -48,10 +36,8 @@
       @manage="switchView('manage-keys')"
       @wallet="switchView('wallet')"
       @clove="switchView('clove')"
-      @dev="switchView('clove')"
       @firstRun="switchView('firstRun')"
       @backup="switchView('backup')"
-      @timeline="switchView('timeline')"
       />
     </div>
   </el-container>
@@ -65,17 +51,16 @@ import signTx from './components/signTx';
 import manageKeys from './components/manageKeys';
 import wallet from './components/wallet';
 import clove from './components/clove';
-import dev from './components/dev';
 import firstRun from './components/firstRun';
 import backup from './components/backup';
-import timeline from './components/timeline-test';
 
 export default {
   data: () => ({
     currentView: 'wallet',
     lastView: 'wallet',
     keyStorage: null,
-    menu: false
+    menu: false,
+    hideHamburger: ['unlock', 'firstRun', 'confirm','signTx']
   }),
   computed: {
     step: function step() {
@@ -87,22 +72,26 @@ export default {
       return 2;
     },
     showHamburger: function showHamburger(){
-      if (this.currentView === 'unlock' || this.currentView === 'firstRun') {return false}
+      if (this.hideHamburger.includes(this.currentView)) {return false}
       return true;
     }
   },
   created() {
     this.keyStorage = Object.assign({}, chrome.extension.getBackgroundPage().keyStorage);
 
-    this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
-
-    if (window.location.hash === '#confirm') {
-        this.currentView = 'confirm';
+    if (this.keyStorage.firstRun()){
+      this.currentView = 'firstRun';
+    }else{
+      if (window.location.hash === '#confirm') {
+          this.currentView = 'confirm';
       }
 
-          if (window.location.hash === '#confirm') {
-        this.currentView = 'confirm';
+      if (!this.keyStorage.isUnlocked()){
+        this.currentView = 'unlock';
+      } else {
+        this.currentView = this.lastView;
       }
+    }
   },
   methods: {
     switchView(value) {
@@ -136,17 +125,12 @@ export default {
       } else if (page == "Clove Wallet") {
         this.currentView = "clove";
 
-      } else if (page == "dev") {
-        this.currentView = "dev";
-
       } else if (page == "firstRun") {
         this.currentView = "firstRun";
 
       }else if (page == "backup") {
         this.currentView = "backup";
 
-      }else if (page == "timeline") {
-        this.currentView = "timeline";
       }
       this.menu = false
     }
@@ -160,10 +144,8 @@ export default {
     'sign-tx': signTx,
     wallet,
     clove,
-    dev,
     firstRun,
-    backup,
-    timeline
+    backup
   },
 };
 </script>
@@ -204,7 +186,6 @@ body {
   }
 }
 
-
 .el-button--primary{
   background-color: #5368E7;
   border-color: #5368E7;
@@ -238,6 +219,8 @@ body {
   width: 380px;
   background-color: #FFFFFF;
   flex-direction: column;
+  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .input-description{
@@ -353,5 +336,10 @@ body {
 
 .menuitem {
   cursor: pointer;
+}
+
+.sit-at-bottom{
+  position: relative;
+  top: 235px;
 }
 </style>

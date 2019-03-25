@@ -2,12 +2,13 @@
     <el-container>
       <!-- hidden select tokens dialog box -->
       <el-dialog
+        id="select-token"
         title="Select Tokens"
         :visible.sync="dialogVisible"
         width="30%">
           <selectToken 
-            v-for="(value, key) in tokens"
-            :key="tokens[key].symbol" 
+            v-for="(value, key, index) in tokens"
+            :key="index" 
             :storage.sync="storage"
             :tokenActive.sync="tokens[key].active"
             :token="tokens[key]">
@@ -23,17 +24,18 @@
       <!-- Token list, each on is a "CloveToken" component -->
       <el-footer class="cloveFooter">
         <div>
+          <el-collapse v-model="activePanel" accordion @change="handleChange">
           <cloveToken
-            v-for="(value, key) in tokens" 
-            :key="key"
-            :showAddButton.sync="showAddButton"
+            v-for="(value, key, index) in tokens" 
+            :key="index"
             v-show="tokens[key].active"
             :storage="storage"
             :unlockedTokens="unlockedTokens"
             :token="tokens[key]"
             @unlockPrivate="unlockPrivate"
             @removeToken="removeToken">
-          </cloveToken>  
+          </cloveToken> 
+          </el-collapse> 
 
         <!-- Button to make the Select Token Dialoge viable so the token list can be edited -->
           <div class="box-add-button">
@@ -42,7 +44,7 @@
               class="button-add-token" 
               icon="el-icon-plus" 
               circle @click="dialogVisible = true"
-              v-if="showAddButton">
+              v-if="activePanel === ''">
             </el-button>
            <!-- <el-button  @click="removeToken('BTC')">delete </el-button> -->
           </div>
@@ -64,6 +66,7 @@ export default {
         dialogVisible: false,
         unlockedTokens: [],
         activeTokens: [],
+        activePanel: "",
         tokens: [],
         showAddButton: true
   }),
@@ -71,21 +74,17 @@ export default {
   },
   created() {
     this.tokens = this.storage.getAllTokens();
-    console.log(this.storage.getAllTokens());
   },
   methods: {
     unlockPrivate: function unlockPrivate(passInfo) {
       try {
         this.storage.unlockStorage(passInfo.password);
-        console.log("unlocked for sure");
       } catch (e) {
-        console.log('Unlocking Priv Key for: ' + passInfo.token);
         !this.unlockedTokens.includes(passInfo.token) ? this.unlockedTokens.push(passInfo.token): null;
         this.setError('Incorrect password');
       }
     },
     removeToken: function removeToken(tokenToDelete) {
-      console.log("hello " + tokenToDelete)
       this.tokens.forEach (function (token) {
         if (token.symbol === tokenToDelete) {
           token.active = false;
@@ -93,7 +92,10 @@ export default {
           token.balance = 0;
         } 
       })
-    } 
+    },
+    handleChange(val){
+      this.showAddButton = !this.showAddButton;
+    }, 
   },  
   components: {
     cloveToken,

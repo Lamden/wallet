@@ -1,16 +1,16 @@
 <template>
-  <el-container>
-    <el-header class="walletHeader">
+  <el-container id="unlock-view">
+    <el-header>
       <span></span>
     </el-header>
     <el-main class="walletMain">
-      <div class="lamden-logo-box">
+      <div id="lamden-logo-box">
         <lamdenLogo></lamdenLogo>   
       </div>     
     </el-main>
-    <el-footer class="unlock-footer">
+    <el-footer id="unlock-footer">
       <el-row>
-        <h1 class="unlock-title-h1">Unlock Wallet</h1>
+        <h1 class="lamden-text">Unlock Wallet</h1>
       </el-row>
       <el-row>
         <el-input
@@ -20,7 +20,8 @@
           autofocus
           size="small"
           @keyup.enter.native="unlock"
-          placeholder="Enter your password">
+          placeholder="Enter your password"
+          id="unlock-password">
         </el-input>
       </el-row>
     </el-footer>
@@ -59,35 +60,27 @@ export default {
 </script>
 
 <style>
-.unlock-footer {
+#unlock-view .el-header{
+  padding-top: 20px;
+}
+
+#unlock-view .el-footer {
   padding: 0 20px 0 20px;
   width: 100%;
-  height: 100%!important;
+  height: 265px!important;
   text-align: center;
 }
 
-.lamden-logo-box {
+#lamden-logo-box {
   width: 150px;
   height: 150px;
   margin: 0 0 0 0;
-  padding: 0 0 0 30%;
+  padding: 0 0 0 28%;
 }
 
-.unlock-title-h1 {
-  color: gray;
-}
-
-.password-input {
-  width: 100%;
-  height: 40px;
-}
-
-.password-description{
-  padding-top: 80px;
-}
-
-p.small {
-  line-height: 1.2;
+#unlock-view .el-input {
+  margin: 20px;
+  width: 269px;
 }
 
 </style>

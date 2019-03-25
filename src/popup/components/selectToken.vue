@@ -49,68 +49,46 @@ export default {
 </script>
 
 <style>
-  .time {
-    font-size: 13px;
-    color: #999;
-  }
-  
-  .bottom {
-    margin-top: 5px;
-    line-height: 12px;
-  }
 
-  .button {
-    padding: 0;
-    float: right;
-  }
 
-  .select-image {
+ #select-token .select-image {
     max-width: 100%;
     max-height: 100%;
     display: block;
   }
 
-  .select-name {
+  #select-token .select-name {
     font-size: 1em;
     margin: 5px 0 0px 0;
   }
 
-  .clearfix:before,
+  #select-token .clearfix:before,
   .clearfix:after {
       display: table;
       content: "";
   }
   
-  .clearfix:after {
+  #select-token .clearfix:after {
       clear: both
   }
 
-  .el-card {
-      width: 90px!important;
-      height: 172px!important;
+  #select-token .el-card {
+      display: block;
+      width: 90px;
+      height: 172px;
       margin: 5px 5px 5px 5px;
       text-align: center;
   }
 
-  .el-card__body {
+  #select-token  .el-card__body {
       text-align: center;
       padding: 10px;
   }
 
-  .keys-count{
+  #select-token .keys-count{
     padding: 0;
     margin: 0;
     font-size: 0.8em;
     color: rgb(158, 158, 158);
   }
-
-  [debug], [debug] *:not(g):not(path) {
-    color:                 hsla(210, 100%, 100%, 0.9) !important;
-    background:            hsla(210, 100%,  50%, 0.5) !important;
-    outline: solid 0.25rem hsla(210, 100%, 100%, 0.5) !important;
-
-    box-shadow: none !important;
-    filter:     none !important;
-  }
-
 </style>

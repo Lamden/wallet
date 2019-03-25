@@ -1,6 +1,5 @@
 module.exports = {
   BTC: {
-    tokenKey: 'BitcoinBTC',
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -199,7 +198,6 @@ module.exports = {
     wif: 0xef,
   },
   DASH: {
-    tokenKey: 'DashDASH',
     messagePrefix: '',
     bech32: '',
     bip32: {
@@ -398,7 +396,6 @@ module.exports = {
     wif: 0xef,
   },
   LTC: {
-    tokenKey: 'LitecoinLTC',
     messagePrefix: '',
     bech32: '',
     bip32: {
