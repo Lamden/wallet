@@ -75,7 +75,7 @@ export default {
   width: 150px;
   height: 150px;
   margin: 0 0 0 0;
-  padding: 0 0 0 30%;
+  padding: 0 0 0 28%;
 }
 
 .unlock-title-h1 {
