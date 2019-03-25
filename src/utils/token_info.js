@@ -124,6 +124,13 @@ module.exports = {
               network: "Ethereum",
               symbol: "OMG", 
               icon: "/icons/tokens/OMG-c.svg", 
-              color: {color:"#1a53f0"}}
+              color: {color:"#1a53f0"}},
+       HoloHOT:
+              {name: "Holo",
+              network: "Ethereum",
+              symbol: "HOT", 
+              icon: "/icons/tokens/HOT-c.svg", 
+              color: {color:"#8834ff"}}
+
 
 };
