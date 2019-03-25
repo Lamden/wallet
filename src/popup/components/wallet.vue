@@ -271,11 +271,7 @@ export default {
     }
     this.refreshBalance();
     
-    try {
-      this.transactions = this.storage.getTransactions(this.network, this.currentKey);
-    } catch (e){
-      console.log(e.message);
-    }
+    this.transactions = this.storage.getTransactions(this.network, this.currentKey);
     this.determinePendingTransactions(this.currentKey);
   },
   methods: {
@@ -495,8 +491,6 @@ export default {
             }catch (e){
                 this.showMessage(e.message);
             }
-          }else{
-              console.log(result);
           }
         })
         .catch((reject) => {

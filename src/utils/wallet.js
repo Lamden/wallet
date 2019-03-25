@@ -161,7 +161,6 @@ exports.get_balance = (pubKey) => {
             console.error("The request timed out");
         }
 
-        console.log('starting xhr section');
         xhr.timeout = 60000;
         xhr.onerror = reject;
         

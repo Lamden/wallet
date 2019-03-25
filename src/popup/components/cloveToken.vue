@@ -135,7 +135,6 @@ export default {
           for (let key in this.keys){
             this.$set(this.keys[key], 'privateKey', this.storage.getPrivateKey(this.tokenKey, key))
           }
-          console.log(this.keys);
           this.showPrivKey = true;
           this.resetPasswordBox();
         }catch (e){

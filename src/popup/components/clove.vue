@@ -44,7 +44,7 @@
               class="button-add-token" 
               icon="el-icon-plus" 
               circle @click="dialogVisible = true"
-              v-if="showAddButton">
+              v-if="activePanel === ''">
             </el-button>
            <!-- <el-button  @click="removeToken('BTC')">delete </el-button> -->
           </div>
@@ -74,21 +74,17 @@ export default {
   },
   created() {
     this.tokens = this.storage.getAllTokens();
-    console.log(this.storage.getAllTokens());
   },
   methods: {
     unlockPrivate: function unlockPrivate(passInfo) {
       try {
         this.storage.unlockStorage(passInfo.password);
-        console.log("unlocked for sure");
       } catch (e) {
-        console.log('Unlocking Priv Key for: ' + passInfo.token);
         !this.unlockedTokens.includes(passInfo.token) ? this.unlockedTokens.push(passInfo.token): null;
         this.setError('Incorrect password');
       }
     },
     removeToken: function removeToken(tokenToDelete) {
-      console.log("hello " + tokenToDelete)
       this.tokens.forEach (function (token) {
         if (token.symbol === tokenToDelete) {
           token.active = false;

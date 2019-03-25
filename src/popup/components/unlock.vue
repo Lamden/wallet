@@ -10,7 +10,7 @@
     </el-main>
     <el-footer id="unlock-footer">
       <el-row>
-        <h1 class="unlock-title-h1 lamden-text">Unlock Wallet</h1>
+        <h1 class="lamden-text">Unlock Wallet</h1>
       </el-row>
       <el-row>
         <el-input
@@ -76,10 +76,6 @@ export default {
   height: 150px;
   margin: 0 0 0 0;
   padding: 0 0 0 28%;
-}
-
-#unlock-view .unlock-title-h1 {
-  color: gray;
 }
 
 #unlock-view .el-input {

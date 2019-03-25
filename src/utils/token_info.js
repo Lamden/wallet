@@ -102,7 +102,7 @@ module.exports = {
               icon: "/icons/tokens/DCR-c.svg", 
               color: {color:"#65d2c6"}},
        ChainLinkLINK:
-              {name: "Chainlink",
+              {name: "ChainLink",
               network: "Ethereum",
               symbol: "LINK", 
               icon: "/icons/tokens/LINK-c.svg", 
