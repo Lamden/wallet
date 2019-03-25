@@ -1,5 +1,5 @@
 <template>
-  <el-container id="unlock-header">
+  <el-container id="unlock-view">
     <el-header>
       <span></span>
     </el-header>
@@ -10,7 +10,7 @@
     </el-main>
     <el-footer id="unlock-footer">
       <el-row>
-        <h1 class="unlock-title-h1">Unlock Wallet</h1>
+        <h1 class="unlock-title-h1 lamden-text">Unlock Wallet</h1>
       </el-row>
       <el-row>
         <el-input
@@ -60,14 +60,14 @@ export default {
 </script>
 
 <style>
-#unlock-header .el-header{
+#unlock-view .el-header{
   padding-top: 20px;
 }
 
-#unlock-footer {
+#unlock-view .el-footer {
   padding: 0 20px 0 20px;
   width: 100%;
-  height: 100%!important;
+  height: 265px!important;
   text-align: center;
 }
 
@@ -78,11 +78,11 @@ export default {
   padding: 0 0 0 28%;
 }
 
-.unlock-title-h1 {
+#unlock-view .unlock-title-h1 {
   color: gray;
 }
 
-#unlock-password {
+#unlock-view .el-input {
   margin: 20px;
   width: 269px;
 }
