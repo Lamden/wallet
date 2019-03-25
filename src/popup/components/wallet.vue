@@ -1,5 +1,5 @@
 <template>
-    <el-container>
+    <el-container id="walletMain">
       <el-header>
         <el-switch 
           v-model="togTestNet" 
@@ -10,7 +10,7 @@
           inactive-color="#990099">
         </el-switch>
       </el-header>
-      <el-main id="walletMain">
+      <el-main >
         <div id="lamden-logo-box">
           <lamdenLogo v-if="!togTestNet"></lamdenLogo>
           <lamdenLogoDark v-if="togTestNet"></lamdenLogoDark> 
@@ -590,7 +590,7 @@ export default {
 </script>
 
 <style>
-  .el-header {
+  #walletMain .el-header {
     color: #333;
     text-align: center;
     background-color: #fafaff;
@@ -621,43 +621,30 @@ export default {
     padding: 0px 0 0px 0!important;
   }
 
-  .el-dropdown {
+  #walletMain .el-dropdown {
     top: -10px;
     color: rgb(156, 60, 139);
   }
 
-  .el-dropdown-menu__item {
+  #walletMain .el-dropdown-menu__item {
     font-size: 1em;
     color: rgb(156, 60, 139); 
   }
     
-  .el-dropdown-link {
+  #walletMain .el-dropdown-link {
     cursor: pointer;
     color: rgb(156, 60, 139);
   }
 
-  .el-icon-arrow-down {
+  #walletMain .el-icon-arrow-down {
     font-size: 12px;
   }
 
-  .el-message-box {
+  #walletMain .el-message-box {
     margin: 0 10px 0 10px;
     width: unset!important;
   }
-
-  .el-icon-loading {
-    font-family: element-icons!important;
-    font-style: normal;
-    font-weight: 400;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    vertical-align: baseline;
-    display: inline-block;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .el-input-number {
+  #walletMain .el-input-number {
     padding-left: 0px;
     padding-right: 0px;
     width: 95%;
@@ -826,7 +813,7 @@ export default {
     text-align: left;
   }
 
-  .transaction-lines{
+  #walletMain .transaction-lines{
     padding:0;
     margin: 0;
   }

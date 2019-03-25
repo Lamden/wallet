@@ -1,6 +1,6 @@
 <template>
-  <el-container>
-    <el-header class="walletHeader">
+  <el-container id="unlock-header">
+    <el-header>
       <span></span>
     </el-header>
     <el-main class="walletMain">
@@ -60,6 +60,10 @@ export default {
 </script>
 
 <style>
+#unlock-header .el-header{
+  padding-top: 20px;
+}
+
 #unlock-footer {
   padding: 0 20px 0 20px;
   width: 100%;

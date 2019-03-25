@@ -1,7 +1,7 @@
 {
   "name": "clove-sign-plugin",
-  "version": "0.0.5",
-  "description": "Tool for signing transactions in bitcoin and ethereum based networks",
+  "version": "0.1.0",
+  "description": "Wallet for Lamden's Cilanto blockchain as well as a tool for taking part in Lamden's atomic swap platform",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
