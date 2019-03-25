@@ -98,7 +98,7 @@ exports.isUnlocked = () =>{
 }
 
 exports.firstRun = () => {
-  return localStorage.privKeys ? true : false;
+  return !localStorage.privKeys ? true : false;
 }
 
 exports.initiateKeyStore = (pass) => {

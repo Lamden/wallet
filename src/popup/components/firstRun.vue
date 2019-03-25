@@ -22,24 +22,24 @@
       </div>
       <div v-if="skipIntro">
         <el-form 
-          :model="ruleForm2" 
+          :model="ruleForm" 
           status-icon
           :rules="rules2" 
-          ref="ruleForm2" 
+          ref="ruleForm" 
           label-width="120px" 
           class="demo-ruleForm first-run-footer__form">
           <el-form-item>
             <h1 class="el-form-item-h1">Create your wallet password</h1>
           </el-form-item label="Password" prop="pass">
           <el-form-item label="Password" prop="pass">
-            <el-input type="password" v-model="ruleForm2.pass" autocomplete="off" size="small"></el-input>
+            <el-input type="password" v-model="ruleForm.pass" autocomplete="off" size="small"></el-input>
           </el-form-item>
           <el-form-item label="Confirm" prop="checkPass">
-            <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off" size="small"></el-input>
+            <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" size="small"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="button-position"> 
-              <el-button  size="small" type="primary" @click="submitForm('ruleForm2')">Submit</el-button>
+              <el-button  size="small" type="primary" @click="submitForm('ruleForm')">Submit</el-button>
             </div>
           </el-form-item>
         </el-form>
@@ -59,17 +59,19 @@ export default {
       var validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('Please input the password'));
+        }else if(value.length < 8){
+          callback(new Error('Passwords must be at least 8 characters long'));
+        }else if(!this.validate_pass(value)){
+          callback(new Error("Passwords must have one uppercase, lowercase, numeric, and special character"));
         } else {
-          if (this.ruleForm2.checkPass !== '') {
-            this.$refs.ruleForm2.validateField('checkPass');
+          if (this.ruleForm.checkPass !== '') {
+            this.$refs.ruleForm.validateField('checkPass');
           }
           callback();
         }
       };
       var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('Please input the password again'));
-        } else if (value !== this.ruleForm2.pass) {
+        if (value !== this.ruleForm.pass) {
           callback(new Error('Passwords don\'t match!'));
         } else {
           callback();
@@ -77,10 +79,9 @@ export default {
       };
     return {
       skipIntro: false,
-      ruleForm2: {
+      ruleForm: {
           pass: '',
-          checkPass: '',
-          age: ''
+          checkPass: ''
         },
         rules2: {
           pass: [
@@ -113,7 +114,7 @@ export default {
     submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log(this.storage.initiateKeyStore(this.ruleForm2.pass));
+            console.log(this.storage.initiateKeyStore(this.ruleForm.pass));
             this.$emit('unlock', 'wallet'); 
           } else {
             console.log('error submit!!');
@@ -126,6 +127,10 @@ export default {
       },
       next() {
         if (this.active++ > 2) this.active = 0;
+      },
+      validate_pass(pass) {
+        var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+        return strongRegex.test(pass);
       }
   },
   components: {

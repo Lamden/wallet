@@ -103,6 +103,9 @@
         try{
           let numKeys = this.storage.restorePrivateKeys(file, this.password);
           numKeys > 0 ? this.showMessage(numKeys + " keys restored!") : this.showMessage("Found no keys to restore");
+          this.password = "";
+          this.file = undefined;
+          this.fileList = [];
         }catch (e){
           this.showMessage(e.message)
         }  

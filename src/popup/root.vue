@@ -95,16 +95,18 @@ export default {
   created() {
     this.keyStorage = Object.assign({}, chrome.extension.getBackgroundPage().keyStorage);
 
-    this.keyStorage.firstRun() ? this.currentView = 'unlock' : this.currentView = 'firstRun';
+    if (this.keyStorage.firstRun()){
+      this.currentView = 'firstRun';
+    }else{
+      if (window.location.hash === '#confirm') {
+          this.currentView = 'confirm';
+      }
 
-    if (window.location.hash === '#confirm') {
-        this.currentView = 'confirm';
-    }
-
-    if (!this.keyStorage.isUnlocked()){
-      this.currentView = 'unlock';
-    } else {
-      this.currentView = this.lastView;
+      if (!this.keyStorage.isUnlocked()){
+        this.currentView = 'unlock';
+      } else {
+        this.currentView = this.lastView;
+      }
     }
   },
   methods: {
