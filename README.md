@@ -21,6 +21,12 @@ Official Lamden wallet for the unique Lamden blockchain. Also features signing t
 1. Open Firefox browser and navigate to about:debugging
 2. Click "Load Temporary Add-on" and from the file browser, choose `wallet/build/manifest.json`
 
+#### Load the extension in Brave
+1. Open Brave broswer and navigate to brave://extensions/
+2. Turn on developer mode from the top right-hand corner
+3. Click "Load Unpacked Extention"
+4. Select the build directory unzipped from the zip file.
+
 
 #### Live reload
 When you want to start developing the extension and want to enable live reload use
