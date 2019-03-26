@@ -97,7 +97,7 @@ export default {
           size: "mini"
         },
         content: [
-          "Welcome to the Lamden Wallet. This is a place to store your Lamden TAU tokens but also an interface with our Clove Atomic Swap website",
+          "Welcome to the Lamden Wallet. This is a place to store your Lamden TAU tokens and also an interface with our Clove Atomic Swap website.",
           "To interface with the Clove website we will need to store your private keys in this wallet. We use your keys to sign transacations during the Atomic Swap process.",
           "We will encrypt your keys in the broswer using a secure password you will create. Failure to keep this password safe could result in your funds being unrecoverable or stolen."
         ]
