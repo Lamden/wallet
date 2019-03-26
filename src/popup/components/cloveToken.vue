@@ -62,17 +62,22 @@
               Hide Private Keys</el-button>
           </el-col>
         </el-row>
-        <el-row>
-            <div v-if="showPassBox">
+        <el-row id="password-row" v-if="showPassBox">
+          <el-col :span="20">
+            <div >
               <el-input
                 size="mini"
                 v-model="password"
                 type="password"
                 autofocus
                 @keyup.enter.native="handlePassword"
-                placeholder="Enter your password to show  private keys">
+                placeholder="Enter password to show private keys">
               </el-input>
             </div>
+          </el-col>
+          <el-col :span="4" class="center-align">
+            <el-button icon="el-icon-check" circle plain type="success" size="mini" @click="handlePassword" :disabled="password === ''"></el-button>
+          </el-col>
         </el-row>
       </div>
     </el-collapse-item>
@@ -291,6 +296,17 @@ export default {
     text-align: right;
   }
 
+  #password-row{
+    margin: 10px 0 10px 0;
+  }
+
+  .center-align{
+    text-align: center;
+  }
+
+  .left-align{
+    text-align: left;
+  }
 
   .keys-box {
     text-align: center;

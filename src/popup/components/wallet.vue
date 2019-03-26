@@ -90,7 +90,7 @@
                   </el-input-number>
                 </el-col>
               </el-row>
-              <el-button id="send-transactions-floating-button" type="success" icon="el-icon-message" circle plain
+              <el-button id="send-transactions-floating-button" type="success" icon="el-icon-d-arrow-right" circle plain
                 @click="sendTransaction" v-if="showSendButton" title="send transaction"></el-button>
             </div>
           </el-tab-pane>
@@ -111,15 +111,23 @@
                 <el-checkbox :disabled="networkKeys[network][currentKey].uiDefault" v-model="sections['edit'].defaultChecked">
                   Default Address</el-checkbox>
               </el-row>
-              <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey"  class="keys">
+                <el-input type="textarea" :rows="3" size="mini" resize="none" :readonly="true" v-model="displayPublicKey"  class="keys">
               </el-input>
-              <el-input v-if="this.sections['edit'].showPrivKey" type="textarea" :rows="3" size="mini" resize="none" :readonly="true"
+              <el-input v-if="sections['edit'].showPrivKey" type="textarea" :rows="3" size="mini" resize="none" :readonly="true"
                 v-model="networkKeys[network][currentKey].privateKey" class="keys">
               </el-input>
               <div v-if="this.sections['edit'].showPrivKey === false">
-                  <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
-                    placeholder="Enter your password to show private key"  class="keys">
-                  </el-input>
+                  <el-row>
+                    <el-col :span="2" class="center-align">
+                      <el-button icon="el-icon-check" circle plain type="success" size="mini" @click="showPrivateKey" id="password-submit"
+                          :disabled="sections['edit'].password === ''"></el-button>
+                    </el-col>
+                    <el-col :span="18" class="left-align">
+                      <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
+                        placeholder="Enter your password to show private key"  class="keys">
+                      </el-input>
+                    </el-col>
+                  </el-row>
                 </div>
                 <el-button id="save-address-floating-button" type="primary" icon="el-icon-check" circle plain 
                            @click="saveEdit" title="save address information"></el-button>
@@ -211,7 +219,8 @@ export default {
   }),
   computed: {
     sendTransactionPlaceholder: function sendTransactionPlaceholder(){
-      return 'Enter recipients ' + this.symbols[this.network] + ' wallet address';
+      return 'Enter wallet address to send ' + this.symbols[this.network];
+      
     },
     addPrivateKeyPlaceholder: function addPrivateKeyPlaceholder(){
       return 'Enter ' + this.symbols[this.network] + ' PRIVATE (secret) address';
@@ -722,12 +731,17 @@ export default {
     color:rgb(118, 58, 134);
   }
 
+  #edit-address #password-submit{
+    margin: 5px 0 0 0;
+  }
+
   #edit-address .label-beside-input{
     margin: 7px 0 0 0;
   }
 
   #edit-address .keys {
     padding: 5px;
+    display: block;
   }
 
   #edit-address #save-address-floating-button{
