@@ -28,14 +28,15 @@
           ref="ruleForm" 
           label-width="120px" 
           class="demo-ruleForm first-run-footer__form">
-          <el-form-item>
+          <el-form-item label="Password" prop="pass">
             <h1 class="el-form-item-h1">Create your wallet password</h1>
-          </el-form-item label="Password" prop="pass">
+          </el-form-item >
           <el-form-item label="Password" prop="pass">
             <el-input type="password" v-model="ruleForm.pass" autocomplete="off" size="small"></el-input>
           </el-form-item>
           <el-form-item label="Confirm" prop="checkPass">
-            <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" size="small"></el-input>
+            <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" size="small" 
+              @keyup.enter.native.prevent="submitForm('ruleForm')"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="button-position"> 
