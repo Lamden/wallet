@@ -15,52 +15,64 @@
         <div v-if="hasKeys">
           <div v-for="(value, key, index) in keys" :key="index">
             <el-row :gutter="0" >
-              <h3 class="lamden-text key-label" >{{keys[key].label}}</h3>
+              <h3 id="token-label" class="lamden-text" >{{keys[key].label}}</h3>
             </el-row>
-            <el-input type="textarea" :rows="1" size="mini" resize="none" :readonly="true" v-model="key"></el-input>
+            <el-input type="textarea" :rows="1" size="mini" resize="none" :readonly="true" :value="key"></el-input>
             <el-input type="textarea" :rows="2" size="mini" resize="none" :readonly="true" v-model="keys[key].privateKey"
               v-if="showPrivKey"></el-input>
-            <el-button @click="confirmDeleteAddress(key, keys[key])" v-if="showPrivKey" class="send-button-padding" type="text" size="mini">
+            <el-button @click="confirmDeleteAddress(key, keys[key])" v-if="showPrivKey" id="delete-key" class="send-button-padding" type="text" size="mini">
               Delete Wallet</el-button>
           </div>
         </div>
 
       <!-- ADD Private Key if none exist -->
-      <div class="box-token-keys">
-        <el-input 
-          v-if="showAddKeys"
-          size="small" 
-          placeholder="Enter a label for this key" 
-          v-model="privKeyLabel">
-        </el-input>
+      <div class="box-token-keys" v-if="showAddKeys">
+        <div >
+          <el-input 
+            v-if="showAddKeys"
+            size="small" 
+            placeholder="Enter a label for this key" 
+            v-model="privKeyLabel">
+          </el-input>
 
-        <el-input 
-          v-if="showAddKeys"
-          size="small" 
-          type="textarea" 
-          placeholder="Please input private key" 
-          v-model="privKeyInput"
-          @keydown.enter.native.prevent
-          @keyup.enter.native.prevent="addKey">
-        </el-input>
-        <el-button  @click="resetAddKeys" type="text" v-if="showCancel">Cancel</el-button>
-        <el-button @click="handleAddKeys" type="text" >Add Key</el-button>
+          <el-input 
+            v-if="showAddKeys"
+            size="small" 
+            type="textarea" 
+            placeholder="Please input private key" 
+            v-model="privKeyInput"
+            @keydown.enter.native.prevent
+            @keyup.enter.native.prevent="addKey">
+          </el-input>
+          <el-button  @click="resetAddKeys" type="text" size="small">Cancel</el-button>
+          <el-button @click="handleAddKeys" type="text" size="small">Add Key</el-button>
+        </div>
       </div>
  
       <div>
-        <el-row :gutter="0" class="show-privatekeys">
-          <el-button type="text" size="small" @click="showPassBox = !showPassBox" v-if="showManagePrivateKeys">
-            Show Private Keys</el-button>
-          <div v-if="showPassBox">
-            <el-input
-              size="mini"
-              v-model="password"
-              type="password"
-              autofocus
-              @keyup.enter.native="handlePassword"
-              placeholder="Enter your password to show  private keys">
-            </el-input>
-          </div>
+        <el-row>
+          <el-col :span="12" id="add-keys-button">
+            <el-button id="add-keys-button" @click="handleAddKeys" type="text" size="small" v-if="!showAddKeys">
+              {{'Add ' + token.symbol + ' Key'}}</el-button>
+          </el-col>
+          <el-col :span="12"  id="show-priv-keys-button">
+            <el-button type="text" size="small" @click="showPassBox = !showPassBox" v-if="!showPrivKey && !showAddKeys">
+              Show Private Keys</el-button>
+            <el-button type="text" size="small" @click="showPrivKey = false" v-if="showPrivKey && !showAddKeys">
+              Hide Private Keys</el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+            <div v-if="showPassBox">
+              <el-input
+                size="mini"
+                v-model="password"
+                type="password"
+                autofocus
+                @keyup.enter.native="handlePassword"
+                placeholder="Enter your password to show  private keys">
+              </el-input>
+            </div>
         </el-row>
       </div>
     </el-collapse-item>
@@ -82,8 +94,7 @@ export default {
       showPrivKey: false,
       showPassBox: false,
       password:"",
-      showAddKeys: false,
-      showCancel: false
+      showAddKeys: false
   }},
   computed: {
     showManagePrivateKeys: function showAddKeysButton() {
@@ -115,14 +126,20 @@ export default {
       } else {
 
        !this.hasKeys ? this.keys = {} : null; 
-       let pubKeys = this.storage.addKey(this.tokenKey, this.privKeyInput, this.privKeyLabel);
 
-       this.keys = pubKeys;
-      
-       this.hasKeys = true;
-       this.resetAddKeys()
+       let pubKeys;
 
-       //this.$emit('update:tokenKeys', tokenKeys);
+        try{
+          pubKeys = this.storage.addKey(this.tokenKey, this.privKeyInput, this.privKeyLabel);
+          this.keys = pubKeys;
+          this.hasKeys = true;
+          this.resetAddKeys()
+        }catch (e){
+          this.showMessage(e.message)
+          this.resetAddKeys()
+        }
+
+        //this.$emit('update:tokenKeys', tokenKeys);
       }
     },
     handlePassword(pubKey){
@@ -169,18 +186,17 @@ export default {
         });
     },
     handleAddKeys(){
-      if (this.showAddKeys) {
+      if (this.showAddKeys) {        
         this.addKey();
       } else {
-        this.showAddKeys = true;
-        this.showCancel = true;
+        this.showAddKeys = true;       
       }
     },
     resetAddKeys(){
       this.privKeyInput = "";
       this.privKeyLabel = "";
       this.showAddKeys = false;
-      this.showCancel = false;
+      this.showPrivKey = false;
     },
     resetPasswordBox(){
       this.showPassBox = false;
@@ -248,17 +264,33 @@ export default {
 
   .box-token-keys{
     text-align: center;
-  }
-  .key-label {
-    text-align: center;
-    margin: 10px 0 0 0;
+    margin: 10px 3px 10px 3px;
+    border-color: rgba(211, 66, 124, 0.5);
+    border-style: solid;
+    border-width: 1px;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.2);
   }
 
-  .show-privatekeys{
-    text-align: right;
-    font-size: 1em;
-    color: rgb(194, 44, 120)
+  #delete-key .el-button--text{
+    color: rgb(211, 66, 124);
   }
+
+  h3#token-label {
+    text-align: left;
+    margin: 10px 0 0 0;
+    font-size: 1.1em;
+  }
+
+  #add-keys-button{
+    text-align: left;
+  }
+
+  #show-priv-keys-button{
+    text-align: right;
+  }
+
 
   .keys-box {
     text-align: center;

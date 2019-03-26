@@ -82,14 +82,15 @@ export default {
     if (this.keyStorage.firstRun()){
       this.currentView = 'firstRun';
     }else{
-      if (window.location.hash === '#confirm') {
-          this.currentView = 'confirm';
+
+      if (this.keyStorage.isUnlocked()){
+        this.currentView = this.lastView;
+      } else {
+        this.currentView = 'unlock';
       }
 
-      if (!this.keyStorage.isUnlocked()){
-        this.currentView = 'unlock';
-      } else {
-        this.currentView = this.lastView;
+      if (window.location.hash === '#confirm') {
+          this.currentView = 'confirm';
       }
     }
   },
@@ -211,6 +212,10 @@ body {
 
 .el-scrollbar.is-empty {
   display: none;
+}
+
+.el-message-box{
+  width: unset;
 }
 
 .popup {

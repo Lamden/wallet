@@ -114,7 +114,8 @@ export default {
     submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$emit('unlock', 'wallet'); 
+            this.storage.initiateKeyStore(this.ruleForm.pass);
+            this.$emit('wallet'); 
           } else {
             return false;
           }
