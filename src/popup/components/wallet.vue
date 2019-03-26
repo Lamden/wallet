@@ -122,7 +122,7 @@
                       <el-button icon="el-icon-check" circle plain type="success" size="mini" @click="showPrivateKey" id="password-submit"
                           :disabled="sections['edit'].password === ''"></el-button>
                     </el-col>
-                    <el-col :span="18" class="left-align">
+                    <el-col :span="20" class="left-align">
                       <el-input size="mini" v-model="sections['edit'].password" type="password" autofocus @keyup.enter.native="showPrivateKey"
                         placeholder="Enter your password to show private key"  class="keys">
                       </el-input>
