@@ -1,0 +1,49 @@
+html, body  {
+    height:100%;
+}
+
+body{
+    background-color: var(--bg-color);
+    margin: 0;
+    min-height: unset;
+    display: flex; 
+}
+
+ul {
+    list-style-type: none;
+  }
+
+@media only screen and (max-width: 350px){
+    html{
+        width: 300px;
+        height: 500px;
+    }
+
+    body {
+        height: 100%;
+        width: 100%;
+        min-height: 500px;
+         
+    }
+    .content {
+        max-height: 430px;
+        overflow-y: auto;
+    }
+
+    .invisible-scrollbar{
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .invisible-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    
+}
+
+button {
+    font-size: 10px;
+    margin: 2px;
+    padding: 3px;
+}
