@@ -47,6 +47,22 @@ export const numberOfCoins = derived(
     $coinList => $coinList.length
 );
 
+export const coinTotals = derived(
+    coinList,
+    ($coinList) => {
+        let totals = {'wallets':0,'USD_value':0,'coins':$coinList.length};
+        for (let coin in $coinList){
+            for (let pubkey in $coinList[coin][1].pubkeys){
+                totals.wallets += 1;
+                totals.USD_value += $coinList[coin][1].pubkeys[pubkey].USD_value;
+            }
+        }
+        totals.USD_value = "$" + totals.USD_value.toFixed(2)
+        return totals;
+    }
+
+);
+
 export const totalUsdBal = derived(
     coinList,
     ($coinList) => {
@@ -60,7 +76,6 @@ export const totalUsdBal = derived(
     }
 
 );
-
 
 //Settings Stores
 export const SettingsStore = createLocalStore('settings', defaultSettings);

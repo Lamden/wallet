@@ -8,6 +8,12 @@
 
 </script>
 
+<style>
+    div{
+        display: grid;
+    }
+</style>
+
 <h2> Send {coin.name} </h2>
 <div>
     <span>Public Key</span>
@@ -29,6 +35,6 @@
     <small>USD Value 0.0001</small>
 </div>
 <div>
-    TO Address
+    To Address
     <input type="text" bind:value={reciever_address} />
 </div>

@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { totalUsdBal, SettingsStore } from '../../js/stores.js';
+    import { SettingsStore } from '../../js/stores.js';
     
     // Props
         export let coin;
@@ -11,13 +11,15 @@
     });
 
     let totalBalance = 0; 
-    let totalUsdBalance = 0; 
+    let totalUsdBalance = 0;
+    let USD_valueStr = '';
 
     function createTotals(){
         for (let pubkey in coin.pubkeys){
             totalBalance += coin.pubkeys[pubkey].balance
             totalUsdBalance += coin.pubkeys[pubkey].USD_value
         }
+        USD_valueStr = "$" + totalUsdBalance.toFixed(2);
     }
     
 	function switchPage(page, data) {
@@ -44,6 +46,6 @@
     <ul>
         <li># of addresses {Object.keys(coin.pubkeys).length}</li>
         <li>balance {totalBalance} {coin.symbol}</li>
-        <li>( ${totalUsdBalance.toFixed(2)} )</li>
+        <li>( {USD_valueStr} )</li>
     </ul>
 </div>

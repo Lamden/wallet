@@ -3,8 +3,7 @@
 
 
     //Components
-    import { Modal, CoinPublicKey, CoinSend }  from '../../js/router.js'
-    const modals = {CoinPublicKey, CoinSend}
+    import { Modal, Modals }  from '../../js/router.js'
 
     let openModal = false;
     let currentModal = '';
@@ -43,6 +42,12 @@
 
 </script>
 
+<style>
+    div{
+        display: grid;
+    }
+</style>
+
 <h2 on:click={ () => switchPage('CoinsMain')} style="cursor: pointer;"> {"<- Back"} </h2>
 <div>
     <h2>{coin.name}</h2>
@@ -65,6 +70,6 @@
 
 {#if openModal}
 	<Modal on:close="{() => openModal = false}">
-        <svelte:component this={modals[currentModal]} {switchPage} {coin}}/>
+        <svelte:component this={Modals[currentModal]} {switchPage} {coin}}/>
 	</Modal>
 {/if}

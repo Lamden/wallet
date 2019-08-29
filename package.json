@@ -22,6 +22,9 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
+    "bitcoinjs-lib": "^5.1.5",
+    "ethereumjs-tx": "^2.1.0",
+    "ethereumjs-util": "^6.1.0",
     "node-cryptojs-aes": "^0.4.0",
     "node-fetch": "^2.6.0"
   }
