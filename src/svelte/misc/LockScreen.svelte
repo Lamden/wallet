@@ -1,5 +1,5 @@
 <script>
-    import { loggedIn, Hash } from '../js/stores.js';
+    import { loggedIn, Hash } from '../../js/stores.js';
     import nodeCryptoJs from 'node-cryptojs-aes';
     const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 

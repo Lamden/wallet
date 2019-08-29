@@ -4,7 +4,7 @@
 	import { themes } from '../js/themes.js'
 
 	//Components
-	import { Components }  from '../js/router.js'	
+	import { Pages }  from '../js/router.js'	
 
 	CoinStore.useLocalStorage();
 	SettingsStore.useLocalStorage();
@@ -48,7 +48,7 @@
 <div class="container">
 	{#if !$loggedIn}
 		<section class="invisible-scrollbar lockscreen">
-			<svelte:component this={Components['LockScreen']}/>
+			<svelte:component this={Pages['LockScreen']}/>
 		</section>	
 	{/if}
 
@@ -68,7 +68,7 @@
 		</nav>
 
 		<section class="invisible-scrollbar content">
-			<svelte:component this={Components[$currentPage.name]} {switchPage}}/>
+			<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
 		</section>
 	{/if}
 </div>
