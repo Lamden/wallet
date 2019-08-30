@@ -1,5 +1,5 @@
-import { writable, derived } from 'svelte/store';
-import { defaultSettings, testNetworks } from './defaults.js'
+import { readable, writable, derived } from 'svelte/store';
+import { defaultSettings, defaultCoinStore, coin, pubkey } from './defaults.js'
 
 const createLocalStore = (key, startValue) => {
     const { subscribe, set, update } = writable(startValue);
@@ -26,16 +26,19 @@ const createLocalStore = (key, startValue) => {
     };
 }
 
+
 //MISC Stores
 export const loggedIn = writable(false);
 
 export const Hash = createLocalStore('Hash', { 'encode' : undefined });
 Hash.useLocalStorage();
 
+export const defaultOjects = readable({coin, pubkey});
+
 //export const totalUsdBal = writable(0);
 
 // Coin Stores
-export const CoinStore = createLocalStore('networks', testNetworks);
+export const CoinStore = createLocalStore('networks', defaultCoinStore);
 
 export const coinList = derived(
 	CoinStore,

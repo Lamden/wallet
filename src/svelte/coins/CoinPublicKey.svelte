@@ -19,4 +19,4 @@
         {/each}
     </select>
 </div>
-<a href="javascript:void(0)" on:click={() => copyToClipboard(selected.address, () => { alert('copied!') } )}>copy to clipboard</a>
+<a href="javascript:void(0)" on:click={() => copyToClipboard(selected.address)}>copy to clipboard</a>

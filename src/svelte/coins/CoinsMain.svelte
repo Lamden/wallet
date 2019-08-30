@@ -29,6 +29,10 @@
 	function showModal(modal){
         currentModal = modal;
         openModal = true;
+	}
+	
+	function closeModal(){
+        openModal = false;
     }
 
 </script>
@@ -45,8 +49,8 @@
 {/each}
 
 {#if openModal}
-	<Modal on:close="{() => openModal = false}">
-        <svelte:component this={ Modals[currentModal] }/>
+	<Modal on:close="{() => closeModal()}">
+        <svelte:component this={ Modals[currentModal]} {closeModal} {openModal}/>
 	</Modal>
 {/if}
 

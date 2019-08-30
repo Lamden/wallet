@@ -24,15 +24,11 @@
     }
     
     function createTotals(){
-        for (let pubkey in coin.pubkeys){
-            coin.pubkeysList.push({'label': pubkey, 'address' : coin.pubkeys[pubkey].address });
-            coin.totalBalance += coin.pubkeys[pubkey].balance;
-            coin.totalUsdBalance += coin.pubkeys[pubkey].USD_value;
+        for (const pubkey in coin.pubkeys){
+            coin.pubkeysList.push({'label':  coin.pubkeys[pubkey].label, 'address' : pubkey });
+            //coin.totalBalance += coin.pubkeys[pubkey].balance;
+            //coin.totalUsdBalance += coin.pubkeys[pubkey].USD_value;
         }
-    }
-
-    function donenow(){
-        alert('done')
     }
 
     function showModal(modal){

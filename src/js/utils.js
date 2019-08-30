@@ -1,3 +1,6 @@
+import nodeCryptoJs from 'node-cryptojs-aes';
+const { CryptoJS, JsonFormatter } = nodeCryptoJs;
+
 export function copyToClipboard(textTOcopy='', callback=undefined){
     if (typeof textTOcopy === "string"){
         try{
@@ -15,3 +18,22 @@ export function copyToClipboard(textTOcopy='', callback=undefined){
         if (callback){callback()}
     }
 }
+
+export function checkPassword(password, Hash){
+    const decrypted = CryptoJS.AES.decrypt(Hash.encode, password, { format: JsonFormatter });
+    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
+};
+
+export function createPassword(password, Hash){
+    Hash.set({'encode' : CryptoJS.AES.encrypt(JSON.stringify({'date':new Date()}), password, { format: JsonFormatter }).toString() });
+};
+
+export function encryptStrHash(password, string){
+    const encrypt = CryptoJS.AES.encrypt(string, password).toString();
+    return encrypt;
+};
+
+export function decryptStrHash(password, hash){
+    const decrypted = CryptoJS.AES.decrypt(hash, password);
+    return CryptoJS.enc.Utf8.stringify(decrypted);
+};

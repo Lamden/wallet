@@ -1,32 +1,35 @@
 <script>
-    import { loggedIn, Hash } from '../../js/stores.js';
+    import { loggedIn, Hash, defautPubkey } from '../../js/stores.js';
+    import { checkPassword, createPassword } from '../../js/utils.js';
     import nodeCryptoJs from 'node-cryptojs-aes';
     const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 
-    let password = '';
+    let password;
     let error = '';
-
-    function createPassword(){
-        Hash.set({'encode' :  CryptoJS.AES.encrypt(JSON.stringify({'date':new Date()}), password, { format: JsonFormatter }).toString() });
-        login();
-    };
         
     function login(){
-        loggedIn.set(true)
+        loggedIn.set(true);
         /*
         try {
-            checkLogin()
-            password = ''
-            loggedIn.set(true)
+            checkPassword(password, $Hash.encode);
+            password = undefined;
+            loggedIn.set(true);
         } catch (e) {
-            error = 'Incorrect password - Decryption failed'
-        }*/
+            error = 'incorrect password';
+        }
+        */
     }
 
-    function checkLogin(){
-        const decrypted = CryptoJS.AES.decrypt($Hash.encode, password, { format: JsonFormatter });
-        return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-    };
+    function firstLogin(){
+        try {
+            createPassword(password, Hash);
+            password = undefined;
+            loggedIn.set(true)
+        } catch (e) {
+            error = e;
+            new Error(`Error setting new password: ${e}`);
+        }
+    }
 
 </script>
 
@@ -46,7 +49,7 @@
     <div>
         <h2>Create Password</h2>
         <input bind:value={password} />
-        <button on:click={() => createPassword() }> Create Password </button>
+        <button on:click={() => firstLogin() }> Create Password </button>
     </div>
 {/if}
 
