@@ -1,5 +1,6 @@
 <script>
     let password;
+    let switchPage;
 
     function handleSubmit(){
         null;
