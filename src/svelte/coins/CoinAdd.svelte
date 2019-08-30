@@ -131,7 +131,10 @@
         
         {#if showKeyBox}
             <div>
-                <input bind:value={privateKey} />
+                <textarea bind:value={privateKey}
+                          placeholder={`Enter ${selected.name} Private Key`}
+                          wrap="hard"
+                          rows="3"  />
             </div>
         {/if}
         <div>
@@ -150,3 +153,18 @@
     {/await}
 
 </div>
+
+<style>
+  input:required:invalid, input:focus:invalid {
+    background-image: url(/img/validators/error.svg);
+    fill: red;
+    background-position: right top;
+    background-repeat: no-repeat;
+  }
+  input:required:valid {
+    background-image: url(/img/validators/check.svg);
+    fill: green;
+    background-position: right top;
+    background-repeat: no-repeat;
+  }
+</style>

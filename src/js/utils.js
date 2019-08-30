@@ -25,7 +25,11 @@ export function checkPassword(password, Hash){
 };
 
 export function createPassword(password, Hash){
-    Hash.set({'encode' : CryptoJS.AES.encrypt(JSON.stringify({'date':new Date()}), password, { format: JsonFormatter }).toString() });
+    if (!password || !Hash ){
+        !password ? new TypeError('password is undefined') : new TypeError('Hash is undefined');
+    }else{
+        Hash.set({'encode' : CryptoJS.AES.encrypt(JSON.stringify({'date':new Date()}), password, { format: JsonFormatter }).toString() });
+    }
 };
 
 export function encryptStrHash(password, string){

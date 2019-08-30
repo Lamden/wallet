@@ -28,6 +28,7 @@ const createLocalStore = (key, startValue) => {
 
 
 //MISC Stores
+export const firstRun = writable(true);
 export const loggedIn = writable(false);
 
 export const Hash = createLocalStore('Hash', { 'encode' : undefined });

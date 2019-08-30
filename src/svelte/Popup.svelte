@@ -1,10 +1,10 @@
 <script>
 	import { onMount } from 'svelte';
-	import { CoinStore, SettingsStore, currentPage, themeStyle, loggedIn } from '../js/stores.js';
+	import { CoinStore, SettingsStore, currentPage, themeStyle, loggedIn} from '../js/stores.js';
 	import { themes } from '../js/themes.js'
 
 	//Components
-	import { Pages }  from '../js/router.js'	
+	import { Pages, FirstRun }  from '../js/router.js'	
 
 	CoinStore.useLocalStorage();
 	SettingsStore.useLocalStorage();
@@ -46,30 +46,33 @@
 </script>
 
 <div class="container">
-	{#if !$loggedIn}
-		<section class="invisible-scrollbar lockscreen">
-			<svelte:component this={Pages['LockScreen']}/>
-		</section>	
-	{/if}
+	{#if $SettingsStore.firstRun}
+		<svelte:component this={ FirstRun.pages['FirstRunMain'] } />
+	{:else}
+		{#if !$loggedIn}
+			<section class="invisible-scrollbar lockscreen">
+				<svelte:component this={Pages['LockScreen']}/>
+			</section>	
+		{/if}
 
-	{#if $loggedIn}
-		<nav>
-			<div class="soflexy">
-				<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
-				<button on:click={ () => switchPage('SwapsMain') }> SwapsMain </button>
-				<button on:click={ () => logout() }> Log Out </button>
-			</div>
-			<div class='controls soflexy'>
-				<button on:click={ () => toggleTheme() }> Toggle Theme </button>
-				<button on:click={ CoinStore.reset }> Reset Coins </button>
-				<button on:click={ () => expand() }> Expand </button>
-			</div>		
-			
-		</nav>
+		{#if $loggedIn}
+			<nav>
+				<div class="soflexy">
+					<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
+					<button on:click={ () => switchPage('SwapsMain') }> SwapsMain </button>
+					<button on:click={ () => logout() }> Log Out </button>
+				</div>
+				<div class='controls soflexy'>
+					<button on:click={ () => toggleTheme() }> Toggle Theme </button>
+					<button on:click={ CoinStore.reset }> Reset Coins </button>
+					<button on:click={ () => expand() }> Expand </button>
+				</div>		
+			</nav>
 
-		<section class="invisible-scrollbar content">
-			<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
-		</section>
+			<section class="invisible-scrollbar content">
+				<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
+			</section>
+		{/if}
 	{/if}
 </div>
 

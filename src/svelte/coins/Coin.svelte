@@ -36,9 +36,7 @@
     .container{
         display: grid;
         grid-auto-flow: column;
-        
     }
-
 </style>
 
 <div class="container">
