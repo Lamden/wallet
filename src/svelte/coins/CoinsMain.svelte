@@ -45,7 +45,7 @@
 <h2> Total USD Value: {$coinTotals.USD_value}</h2>
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 {#each $coinList as coin, id}
-	<Coin coin={coin[1]} />
+	<Coin coin={coin} />
 {/each}
 
 {#if openModal}

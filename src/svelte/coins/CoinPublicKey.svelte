@@ -1,16 +1,21 @@
 <script>
+    //Utils
     import { copyToClipboard } from '../../js/utils.js'
 
+    //Props
     export let coin;
+    
     let selected;
 
 </script>
 
 <h2> Receive {coin.name} </h2>
 <div>
-    <span>Public Key</span>
-    <span><small>{coin.name} {coin.totalBalance} {coin.symbol}</small></span>
-    <span><small>${coin.totalUsdBalance.toFixed(2)}</small></span>
+    <span>
+        Public Key
+        <small>{coin.name} {coin.totalBalance} {coin.symbol}</small>
+        <small>${coin.totalUsdBalance.toFixed(2)}</small>
+    </span>
 </div>
 <div>
     <select id='ddPubkeys' bind:value={selected}>

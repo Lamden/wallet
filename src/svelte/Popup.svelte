@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { CoinStore, SettingsStore, currentPage, themeStyle, loggedIn} from '../js/stores.js';
+	import { CoinStore, SettingsStore, currentPage, themeStyle, loggedIn, firstRun} from '../js/stores.js';
 	import { themes } from '../js/themes.js'
 
 	//Components
@@ -46,7 +46,7 @@
 </script>
 
 <div class="container">
-	{#if $SettingsStore.firstRun}
+	{#if $firstRun}
 		<svelte:component this={ FirstRun.pages['FirstRunMain'] } />
 	{:else}
 		{#if !$loggedIn}
@@ -60,6 +60,7 @@
 				<div class="soflexy">
 					<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
 					<button on:click={ () => switchPage('SwapsMain') }> SwapsMain </button>
+					<button on:click={ () => switchPage('BackupMain') }> Backup </button>
 					<button on:click={ () => logout() }> Log Out </button>
 				</div>
 				<div class='controls soflexy'>

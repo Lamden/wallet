@@ -53,9 +53,7 @@
             error = 'please provile a label for your new wallet';
             return
         }
-        try{
-            checkPassword(password, $Hash)
-        } catch (e) {
+        if (!checkPassword(password, $Hash)){
             error = 'Incorrect Password';
             new Error(e)
             return
@@ -87,8 +85,8 @@
             //if not then add it
             let newPubkey = JSON.parse(JSON.stringify($defaultOjects.pubkey))
             newPubkey.label = label;
-            newPubkey.pubkey = publicKey;
-            newPubkey.privateKey = encryptStrHash(password, privateKey);
+            newPubkey.vk = publicKey;
+            newPubkey.sk = encryptStrHash(password, privateKey);
             newStore[selected.network][selected.symbol]['pubkeys'][publicKey] = newPubkey;
             
             //Set new CoinStore

@@ -7,6 +7,7 @@ export const defaultSettings = {
     'currentPage' : {'name': 'CoinsMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
+    'version':'v0_0_2'
 }
 
 export const coin = {
@@ -18,8 +19,8 @@ export const coin = {
 
 export const pubkey = {
     label : '',
-    pubkey : '',
     balance: 0,
     USD_value : 0,
-    privateKey : '',
+    vk : '',
+    sk : '',
 }

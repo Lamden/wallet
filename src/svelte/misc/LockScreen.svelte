@@ -10,11 +10,10 @@
     function login(){
         loggedIn.set(true);
         /*
-        try {
-            checkPassword(password, $Hash.encode);
+        if(checkPassword(password, $Hash.encode)){
             password = undefined;
             loggedIn.set(true);
-        } catch (e) {
+        } else {
             error = 'incorrect password';
         }
         */

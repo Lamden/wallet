@@ -1,4 +1,5 @@
 <script>
+    //Props
     export let switchPage;
 </script>
 

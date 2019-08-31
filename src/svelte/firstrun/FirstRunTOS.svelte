@@ -1,11 +1,16 @@
 <script>
-    import { loggedIn, Hash, SettingsStore } from '../../js/stores.js';
+    //Stores
+    import { loggedIn, Hash, SettingsStore, currentPage } from '../../js/stores.js';
+
+    //Props
     export let switchPage;
 
     function accept(){
-        $SettingsStore.firstRun = false;
+        newStore = $SettingsStore;
+        newStore.firstRun = false;
+        newStore.currentPage = 'CoinsMain';
+        SettingsStore.set(newStore);
         $loggedIn = true;
-        console.log('done');
     }
 
     function startOver(){

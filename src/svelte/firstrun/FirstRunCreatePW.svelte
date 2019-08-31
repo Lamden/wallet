@@ -1,10 +1,13 @@
 <script>
+    //Stores
     import { Hash } from '../../js/stores.js';
 
     //Utils
     import { createPassword } from '../../js/utils.js';
 
+    //Props
     export let switchPage;
+    
     let form = {};
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
     let password = '';

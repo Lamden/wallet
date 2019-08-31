@@ -19,13 +19,14 @@ import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 import SwapsMain from '../svelte/swaps/SwapsMain.svelte';
 
 //Misc
+import BackupMain from '../svelte/misc/BackupMain.svelte';
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Modal from '../svelte/misc/Modal.svelte';
 
 const FirstRun = {};
 FirstRun.pages = { FirstRunMain, FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const Pages = { CoinsMain,CoinDetails,SwapsMain, LockScreen };
+const Pages = { CoinsMain, CoinDetails, SwapsMain, LockScreen, BackupMain };
 
 const Modals = { CoinSend, CoinPublicKey, CoinAdd };
 
@@ -39,6 +40,7 @@ export {
     CoinPublicKey,
     CoinSend,
     CoinAdd,
+    BackupMain,
     SwapsMain,
     LockScreen,
     Modal,

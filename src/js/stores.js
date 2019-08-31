@@ -28,7 +28,6 @@ const createLocalStore = (key, startValue) => {
 
 
 //MISC Stores
-export const firstRun = writable(true);
 export const loggedIn = writable(false);
 
 export const Hash = createLocalStore('Hash', { 'encode' : undefined });
@@ -43,7 +42,14 @@ export const CoinStore = createLocalStore('networks', defaultCoinStore);
 
 export const coinList = derived(
 	CoinStore,
-	$CoinStore => [...Object.entries($CoinStore.bitcoin), ...Object.entries($CoinStore.ethereum)]
+    ($CoinStore) => {
+        let coinList = [];
+        let coins = [...Object.entries($CoinStore.bitcoin), ...Object.entries($CoinStore.ethereum)];
+        for (const coin in coins){
+            coinList.push(coins[coin][1]);
+        }
+        return coinList;
+    }
 );
 
 export const numberOfCoins = derived(
@@ -56,9 +62,9 @@ export const coinTotals = derived(
     ($coinList) => {
         let totals = {'wallets':0,'USD_value':0,'coins':$coinList.length};
         for (let coin in $coinList){
-            for (let pubkey in $coinList[coin][1].pubkeys){
+            for (let pubkey in $coinList[coin].pubkeys){
                 totals.wallets += 1;
-                totals.USD_value += $coinList[coin][1].pubkeys[pubkey].USD_value;
+                totals.USD_value += $coinList[coin].pubkeys[pubkey].USD_value;
             }
         }
         totals.USD_value = "$" + totals.USD_value.toFixed(2)
@@ -88,6 +94,11 @@ SettingsStore.useLocalStorage();
 export const currentPage = derived(
 	SettingsStore,
 	$SettingsStore => loggedIn ? $SettingsStore.currentPage : {'name' : 'LockScreen', 'data' : {} }
+);
+
+export const firstRun = derived(
+	SettingsStore,
+	$SettingsStore => $SettingsStore.firstRun
 );
 
 export const themeStyle = derived(
