@@ -1,6 +1,8 @@
 <script>
-    //Props
-    export let switchPage;
+    import { getContext } from 'svelte';
+
+    const { switchPage } = getContext('switchPage');
+
 </script>
 
 <h1>Intro</h1>

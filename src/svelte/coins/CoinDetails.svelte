@@ -15,17 +15,14 @@
     let selected;
     createTotals()
 
-	function switchPage(page, data) {
-		data = data || {}
-		let newStore = $SettingsStore;
-		newStore.currentPage.name = page;
-        newStore.currentPage.data = data;
-		SettingsStore.set(newStore);
+	function switchPage(name, data) {
+        data = data || {}
+        $SettingsStore.currentPage = {name, data}
     }
     
     function createTotals(){
         for (const pubkey in coin.pubkeys){
-            coin.pubkeysList.push({'label':  coin.pubkeys[pubkey].label, 'address' : pubkey });
+            coin.pubkeysList.push({'nickname':  coin.pubkeys[pubkey].nickname, 'address' : pubkey });
             //coin.totalBalance += coin.pubkeys[pubkey].balance;
             //coin.totalUsdBalance += coin.pubkeys[pubkey].USD_value;
         }
@@ -57,11 +54,11 @@
 
 <div>
     <h3>Price Information</h3>
-    <div>Market Cap: {coin.market_info.market_cap}</div>
-    <div>Price: {coin.market_info.price}</div>
-    <div>Volume: {coin.market_info.volume}</div>
-    <div>Circulating Supply: {coin.market_info.circ_supply}</div>
-    <div>Change (24h): {coin.market_info.price_change_24h}</div>
+    <div>Market Cap: 0</div>
+    <div>Price: 0</div>
+    <div>Volume: 0</div>
+    <div>Circulating Supply: 0</div>
+    <div>Change (24h): 0</div>
 </div>
 
 {#if openModal}

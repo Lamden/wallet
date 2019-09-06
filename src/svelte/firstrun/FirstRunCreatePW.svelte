@@ -1,12 +1,12 @@
 <script>
+    import { getContext } from 'svelte';
+    
     //Stores
     import { Hash } from '../../js/stores.js';
 
     //Utils
     import { createPassword } from '../../js/utils.js';
 
-    //Props
-    export let switchPage;
     
     let form = {};
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
@@ -21,7 +21,6 @@
 
     function savePassword(form){
         if (form.checkValidity()){
-            alert('yes')
             try{
                 createPassword(password, Hash);
                 password = undefined;
@@ -30,8 +29,6 @@
             } catch (e) {
                 console.log(e)
             }
-        } else {
-            alert('no')
         }
     }
 

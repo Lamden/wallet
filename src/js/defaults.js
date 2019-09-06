@@ -14,11 +14,10 @@ export const coin = {
     name:'', 
     symbol: '',
     pubkeys : {},
-    market_info : {},
 }
 
 export const pubkey = {
-    label : '',
+    nickname : '',
     balance: 0,
     USD_value : 0,
     vk : '',

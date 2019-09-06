@@ -1,6 +1,9 @@
 <script>
+    import { getContext } from 'svelte';
+
+    const { switchPage } = getContext('switchPage');
+
     let password;
-    let switchPage;
 
     function handleSubmit(){
         null;

@@ -23,7 +23,7 @@
 <div>
     <select id='ddPubkeys' bind:value={selected}>
         {#each coin.pubkeysList as key}
-            <option value={key}>{key.label}</option>
+            <option value={key}>{key.nickname}</option>
         {/each}
     </select>
 </div>

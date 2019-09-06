@@ -1,14 +1,17 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, getContext } from 'svelte';
+
+    //Stores
     import { SettingsStore } from '../../js/stores.js';
-    
+
     // Props
         export let coin;
-    //
 
     onMount(() => {
         createTotals();
     });
+
+    const { switchPage } = getContext('switchPage');
 
     let totalBalance = 0; 
     let totalUsdBalance = 0;
@@ -21,14 +24,6 @@
         }
         USD_valueStr = "$" + totalUsdBalance.toFixed(2);
     }
-    
-	function switchPage(page, data) {
-		data = data || {}
-		let newStore = $SettingsStore;
-		newStore.currentPage.name = page;
-        newStore.currentPage.data = data;
-		SettingsStore.set(newStore);
-	}
 
 </script>
 

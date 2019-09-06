@@ -15,14 +15,14 @@
     const dispatch = createEventDispatcher();    
     let supportedCoins = getSupportedCoins();
     let coinList = [];
-    let selected = undefined;
+    let selected;
     let customERC20 = {name:'ERC20 Token', symbol:'Custom', testnet:false, network: 'ethereum'}
     let lamden = {name:'Lamden', symbol:'TAU', testnet:true, network: 'lamden'}
-    let showKeyBox = false;
+    let showKeyBox;
     let privateKey = '';
     let password = '';
     let publicKey = '';
-    let label = '';
+    let nickname = '';
     let balance;
     let error = '';
     
@@ -44,113 +44,57 @@
         return [...coinList, customERC20, lamden];
     }
 
-    function checkForm(){
+    function handleSubmit(form){
         if (!selected){
             error = 'no coin selected';
             return
         }
-        if (label === ''){
-            error = 'please provile a label for your new wallet';
-            return
+        if (form.checkValidity()){
+            saveCoin();
         }
-        if (!checkPassword(password, $Hash)){
-            error = 'Incorrect Password';
-            new Error(e)
-            return
+    }
+
+    function validatePassword(obj){
+        if (!checkPassword(password, $Hash)) {
+            obj.setCustomValidity("Incorrect Password");
+        } else {
+            obj.setCustomValidity('');
         }
+    }
+
+    function validateTextarea(obj){
         try{
             publicKey = pub_from_priv(selected.network, selected.symbol, privateKey);
         } catch (e) {
-            error = e;
-            new Error(e)
+            obj.setCustomValidity(e);
             return
         }
-        saveCoin();
+        obj.setCustomValidity('');
     }
 
     function saveCoin(){
-        let newStore = $CoinStore
         // Instantiate a new Coin if one doesn't exist for the network
-
-        if (!newStore[selected.network][selected.symbol]) {
+        if (!$CoinStore[selected.network][selected.symbol]) {
             let newCoin = JSON.parse(JSON.stringify($defaultOjects.coin))
             newCoin.name = selected.name;
             newCoin.symbol = selected.symbol;
-            newStore[selected.network][selected.symbol] = newCoin;
+            $CoinStore[selected.network][selected.symbol] = newCoin;
         }
+
         //Check if the pubkey already exists in the coin
-        if (newStore[selected.network][selected.symbol]['pubkeys'][publicKey]) {
+        if ($CoinStore[selected.network][selected.symbol]['pubkeys'][publicKey]) {
             error = `This wallet address already exists for ${name}`
         }else{
             //if not then add it
             let newPubkey = JSON.parse(JSON.stringify($defaultOjects.pubkey))
-            newPubkey.label = label;
+            newPubkey.nickname = nickname;
             newPubkey.vk = publicKey;
             newPubkey.sk = encryptStrHash(password, privateKey);
-            newStore[selected.network][selected.symbol]['pubkeys'][publicKey] = newPubkey;
-            
-            //Set new CoinStore
-            try{
-                CoinStore.set(newStore);
-                closeModal();
-            } catch (e) {
-                error = e;
-                new Error(e)
-            }
-            
+            $CoinStore[selected.network][selected.symbol]['pubkeys'][publicKey] = newPubkey;
+            closeModal();
         }
     }
-
-
 </script>
-<p style="color: red;">{error}</p>
-<h1>Add Coins</h1>
-<p>This will add a cryptocurrency coin to your wallet.</p>
-<div>
-    Select a Coin
-    {#await supportedCoins}
-        <select id='ddCoins' bind:value={selected}>
-            <option value={'temp'}>...fetching supported coins...</option>
-        </select>
-        
-    {:then data}
-        <div>
-            <select id='ddCoins' bind:value={selected}>
-                {#each createCoinList(data) as coin}
-                    <option value={coin}>{ '(' + coin.symbol + ') ' + coin.name }</option>
-                {/each}
-            </select>
-        </div>
-        <div>
-            Do you already have a private key for this cryptocurrency?
-            <button on:click={() => showKeyBox = true}>Yes</button>
-            <button on:click={() => showKeyBox = false}>No</button>
-        </div>
-        
-        {#if showKeyBox}
-            <div>
-                <textarea bind:value={privateKey}
-                          placeholder={`Enter ${selected.name} Private Key`}
-                          wrap="hard"
-                          rows="3"  />
-            </div>
-        {/if}
-        <div>
-            Label
-            <input bind:value={label} />
-        </div>
-        <div>
-            Password
-            <input bind:value={password} />
-        </div>
-        <div>
-            <button on:click={() => checkForm()}>Save</button>
-        </div>
-    {:catch error}
-	    <p style="color: red">API server unavailable</p>
-    {/await}
-
-</div>
 
 <style>
   input:required:invalid, input:focus:invalid {
@@ -166,3 +110,53 @@
     background-repeat: no-repeat;
   }
 </style>
+
+<p style="color: red;">{error}</p>
+<h1>Add Coins</h1>
+<p>This will add a cryptocurrency coin to your wallet.</p>
+<div>
+    Select a Coin
+    {#await supportedCoins}
+        <select id='ddCoins' bind:value={selected}>
+            <option value={'temp'}>...fetching supported coins...</option>
+        </select>
+        
+    {:then data}
+        <div>
+            <form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
+                <div>
+                    <select id='ddCoins' bind:value={selected} required>
+                        <option /> 
+                        {#each createCoinList(data) as coin}
+                            <option value={coin}>{ '(' + coin.symbol + ') ' + coin.name }</option>
+                        {/each}
+                    </select>
+                    <input type="checkbox" bind:checked={showKeyBox} /> I have a private key
+                </div>
+                {#if showKeyBox}
+                    <textarea bind:value={privateKey}
+                            placeholder={"Enter Private Key"}
+                            on:change={() => validateTextarea(this)}
+                            wrap="hard"
+                            rows="3"
+                            required  />
+                {/if}
+                <div>
+                    <label>Key Nickname</label><br>
+                    <input bind:value={nickname} required  />
+                </div>
+                <div>
+                    <label>Wallet Password</label><br>
+                    <input bind:value={password}
+                            on:change={() => validatePassword(this)}
+                            type="password"
+                            required  />
+                </div>
+                <input type="submit" value="Save Keys">
+            </form>
+        </div>
+    {:catch error}
+	    <p style="color: red">API server unavailable</p>
+    {/await}
+
+</div>

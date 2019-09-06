@@ -24,6 +24,7 @@ var options = {
   mode: env.NODE_ENV,
   entry: {
     popup: path.join(__dirname, "src", "js", "popup.js"),
+    app: path.join(__dirname, "src", "js", "app.js"),
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js")
   },
@@ -86,6 +87,11 @@ var options = {
       template: path.join(__dirname, "src", "popup.html"),
       filename: "popup.html",
       chunks: ["popup"]
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src", "app.html"),
+      filename: "app.html",
+      chunks: ["app"]
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "options.html"),

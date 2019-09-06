@@ -6,11 +6,8 @@
     export let switchPage;
 
     function accept(){
-        newStore = $SettingsStore;
-        newStore.firstRun = false;
-        newStore.currentPage = 'CoinsMain';
-        SettingsStore.set(newStore);
-        $loggedIn = true;
+        $SettingsStore.firstRun = false;
+        loggedIn.set(true);
     }
 
     function startOver(){

@@ -1,4 +1,4 @@
-import App from '../svelte/Popup.svelte';
+import App from '../svelte/App.svelte';
 
 import '../css/global.css'
 

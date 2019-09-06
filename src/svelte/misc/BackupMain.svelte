@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { CoinStore, coinList, Hash } from '../../js/stores.js';
+    import { CoinStore, coinList, Hash, CURRENT_KS_VERSION } from '../../js/stores.js';
 
     //Utils
     import { copyToClipboard, checkPassword, decryptStrHash, encryptObject, decryptFile } from '../../js/utils.js'
@@ -33,7 +33,7 @@
     function download() {
         let currDateTime = new Date().toLocaleString();
         let filename = "Lamden_Vault_" + currDateTime + ".keystore";
-        let file = encryptObject(password, keyList);
+        let file = encryptObject(password, {'version' : $CURRENT_KS_VERSION, keyList});
 
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(file));
@@ -45,17 +45,24 @@
     }
 
     function createKeyList(){
-        keys = "KEEP THIS INFORMATION SECRET!\n\n"
-        for (const coin in $coinList){
-            keys = `${keys}\n\n${$coinList[coin].name.toUpperCase()} (${$coinList[coin].symbol})`
-            for (const pubkey in $coinList[coin].pubkeys){
-                let coinInfo = {};
-                coinInfo.label = $coinList[coin].pubkeys[pubkey].label
-                coinInfo.vk = $coinList[coin].pubkeys[pubkey].vk
-                coinInfo.sk = decryptStrHash(password, $coinList[coin].pubkeys[pubkey].sk)
-                keyList.push(coinInfo)
-                keys = `${keys}\n${coinInfo.label}\npublic:\n${coinInfo.vk}\nprivate:\n${coinInfo.sk}`
-            }
+        for (const [netKey, network] of Object.entries($CoinStore) ){
+            let networkName = netKey.toUpperCase();
+            let startString = `!! KEEP THIS INFORMATION SECRET !!\n`
+            let addString = `\n${keys}\n**${networkName} NETWORK **\n`
+            keys === "" ? keys = startString + addString  : keys = addString;
+			for (const [coinKey, coin] of Object.entries(network)){
+				for (const [vkKey, keypair] of Object.entries(coin.pubkeys)){
+                    let coinInfo = {};
+                    coinInfo.network = netKey;
+                    coinInfo.name = coin.name;
+                    coinInfo.symbol = coinKey;
+                    coinInfo.nickname = keypair.nickname;
+                    coinInfo.vk = keypair.vk;
+                    coinInfo.sk = decryptStrHash(password, keypair.sk);
+                    keyList.push(coinInfo);
+                    keys = `${keys}\n${coinInfo.nickname.toUpperCase()}\nPUBLIC KEY:\n${coinInfo.vk}\nPRIVATE KEY:\n${coinInfo.sk}\n`;
+				}
+			}
         }
         if(keyList.length === 0) "You don't have any keys in storage" 
     }
@@ -79,12 +86,12 @@
     <p>Backup your wallet incase anything would ever happen. Please remember not to share this information.</p>
 
     <lable>Your Private Keys</lable><br>
-    <textarea bind:value={keys} rows="8" wrap="hard"/>
+    <textarea bind:value={keys} readonly rows="20" wrap="hard"/>
 
     {#if keys !== 'You have no keys'}
         <span>
             <a href="javascript:void(0)" on:click={() => copyToClipboard(keys)}>copy to clipboard</a>
-            <button on:click={() => download()}>Download File</button>
+            <button on:click={() => download()}>Download Encrypted Backup</button>
         </span>
     {/if}
 

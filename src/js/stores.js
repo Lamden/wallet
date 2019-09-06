@@ -1,6 +1,9 @@
 import { readable, writable, derived } from 'svelte/store';
 import { defaultSettings, defaultCoinStore, coin, pubkey } from './defaults.js'
 
+//Environment constents
+export const CURRENT_KS_VERSION = writable("1.0");
+
 const createLocalStore = (key, startValue) => {
     const { subscribe, set, update } = writable(startValue);
     
@@ -28,7 +31,7 @@ const createLocalStore = (key, startValue) => {
 
 
 //MISC Stores
-export const loggedIn = writable(false);
+export const loggedIn = writable(true);
 
 export const Hash = createLocalStore('Hash', { 'encode' : undefined });
 Hash.useLocalStorage();
@@ -123,7 +126,7 @@ Token Stores - All the information about the tokens currently added to the walle
                 'symbol': 'LTC',
                 'pubkeys': {
                     pubkey_address_1:{
-                        'label': 'First LTC wallet',
+                        'nickname': 'First LTC wallet',
                         'address': pubkey_address,
                         'balance': 0.33,
                         'USD_value' : 10,
@@ -131,7 +134,7 @@ Token Stores - All the information about the tokens currently added to the walle
 
                     },
                     pubkey_address_2:{
-                        'label': 'Second LTC wallet',
+                        'nickname': 'Second LTC wallet',
                         'address': pubkey_address,
                         'balance': 0.57,
                         'USD_value' : 50,
@@ -218,7 +221,7 @@ const testNetworks = {
             'symbol': 'LTC',
             'pubkeys': {
                 'pubkey_address_1':{
-                    'label': 'First LTC wallet',
+                    'nickname': 'First LTC wallet',
                     'address': 'pubkey_address',
                     'balance': 0.1,
                     'USD_value' : 10,
@@ -226,7 +229,7 @@ const testNetworks = {
 
                 },
                 'pubkey_address_2':{
-                    'label': 'Second LTC wallet',
+                    'nickname': 'Second LTC wallet',
                     'address': 'pubkey_address',
                     'balance': 0.5,
                     'USD_value' : 50,
@@ -249,7 +252,7 @@ const testNetworks = {
             'symbol': 'BTC',
             'pubkeys': {
                 'pubkey_address_1':{
-                    'label': 'First BTC wallet',
+                    'nickname': 'First BTC wallet',
                     'address': 'pubkey_address',
                     'balance': 0.1,
                     'USD_value' : 10,
@@ -257,7 +260,7 @@ const testNetworks = {
 
                 },
                 'pubkey_address_2':{
-                    'label': 'Second BTC wallet',
+                    'nickname': 'Second BTC wallet',
                     'address': 'pubkey_address',
                     'balance': 0.5,
                     'USD_value' : 50,
@@ -282,7 +285,7 @@ const testNetworks = {
             'symbol': 'ETH',
             'pubkeys': {
                 'pubkey_address_1':{
-                    'label': 'First ETH wallet',
+                    'nickname': 'First ETH wallet',
                     'address': 'pubkey_address',
                     'balance': 0.1,
                     'USD_value' : 10,
@@ -290,7 +293,7 @@ const testNetworks = {
 
                 },
                 'pubkey_address_2':{
-                    'label': 'Second ETH wallet',
+                    'nickname': 'Second ETH wallet',
                     'address': 'pubkey_address',
                     'balance': 0.5,
                     'USD_value' : 50,
@@ -313,7 +316,7 @@ const testNetworks = {
             'symbol': 'TAU',
             'pubkeys': {
                 'pubkey_address_1':{
-                    'label': 'First TAU wallet',
+                    'nickname': 'First TAU wallet',
                     'address': 'pubkey_address',
                     'balance': 0.1,
                     'USD_value' : 10,
@@ -321,7 +324,7 @@ const testNetworks = {
 
                 },
                 'pubkey_address_2':{
-                    'label': 'Second TAU wallet',
+                    'nickname': 'Second TAU wallet',
                     'address': 'pubkey_address',
                     'balance': 0.5,
                     'USD_value' : 50,

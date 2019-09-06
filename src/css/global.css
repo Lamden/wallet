@@ -11,7 +11,23 @@ body{
 
 ul {
     list-style-type: none;
-  }
+}
+
+textarea{
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    width: 100%;
+}
+
+button {
+    font-size: 10px;
+    margin: 2px;
+    padding: 3px;
+}
+
+.error {
+    color: red;
+}
 
 @media only screen and (max-width: 350px){
     html{
@@ -42,8 +58,3 @@ ul {
     
 }
 
-button {
-    font-size: 10px;
-    margin: 2px;
-    padding: 3px;
-}
