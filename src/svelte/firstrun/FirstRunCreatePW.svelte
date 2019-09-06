@@ -7,7 +7,7 @@
     //Utils
     import { createPassword } from '../../js/utils.js';
 
-    
+    const { switchPage } = getContext('switchPage');
     let form = {};
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
     let password = '';
