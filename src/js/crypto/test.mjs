@@ -19,5 +19,4 @@ const privKey = ""
 const keyPair = bitcoin.ECPair.fromWIF('', btc_testnet)
 const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: btc_testnet })
 
-console.log(address)
 

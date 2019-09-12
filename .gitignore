@@ -1,3 +1,4 @@
 node_modules
 build
 secrets.*.js
+src/js/crypto/test.mjs

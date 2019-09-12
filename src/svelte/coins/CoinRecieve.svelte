@@ -6,8 +6,6 @@
     export let coin;
 
     let selected;
-
-    console.log(coin)
     
 </script>
 
