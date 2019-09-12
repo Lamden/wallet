@@ -1,19 +1,22 @@
 <script>
+	import { onMount } from 'svelte';
 	//Stores
-	import { CoinStore, coinList, coinTotals, testCoins } from '../../js/stores.js';
+	import { coinList, CoinStore, allTotals } from '../../js/stores.js';
 
 	//Components
 	import { Coin, Modal, Modals }  from '../../js/router.js'
 
 	//Utils
 	import { API } from '../../js/api.js';
+	import { updateBalances, toCurrencyFormat } from '../../js/utils.js';
+	
 
 	//Props
 	export let name
 
 	let openModal = false;
 	let currentModal = '';
-	let apiResult = ''
+	let apiResult = '';
 
 	function checkAPI() {
 		API('GET', 'status').then(result => {apiResult = result})
@@ -40,12 +43,12 @@
 <style>
 </style>
 
-<h1>You have {$coinTotals.coins} coins!</h1>
-{$coinTotals.wallets} wallet addresses
-<h2> Total USD Value: {$coinTotals.USD_value}</h2>
+<h1>{`You have ${$allTotals.majorTotals.coins} coins!`}</h1>
+{$allTotals.majorTotals.wallets} wallet addresses
+<h2> {`Total USD Value: ${toCurrencyFormat($allTotals.majorTotals.USD_value)}`} </h2>
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 {#each $coinList as coin, id}
-	<Coin coin={coin} />
+	<Coin coin={$CoinStore[coin.network][coin.symbol]} />
 {/each}
 
 {#if openModal}
@@ -53,4 +56,3 @@
         <svelte:component this={ Modals[currentModal]} {closeModal} {openModal}/>
 	</Modal>
 {/if}
-

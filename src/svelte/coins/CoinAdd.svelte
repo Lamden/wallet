@@ -1,19 +1,17 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
 	//Stores
     import { CoinStore, Hash, defaultOjects } from '../../js/stores.js';
     
 	//Utils
     import { API } from '../../js/api.js';
-    import { pub_from_priv } from '../../js/crypto/wallets.js';
+    import { pubFromPriv, keysFromNew } from '../../js/crypto/wallets.js';
     import { checkPassword, encryptStrHash, decryptStrHash } from '../../js/utils.js';
 
     //Props
     export let closeModal;
-
-    const dispatch = createEventDispatcher();    
+   
     let supportedCoins = getSupportedCoins();
+    let supportedTokens = getSupportedTokens();
     let coinList = [];
     let selected;
     let customERC20 = {name:'ERC20 Token', symbol:'Custom', testnet:false, network: 'ethereum'}
@@ -30,27 +28,32 @@
         return API('GET', 'networks-list')
     }
 
-    function getBalance(){
-        API('GET', 'get-balance', `${selected.symbol}/${publicKey}`)
-            .then(data => balance = `${data.value} ${selected.symbol}`)
-            .catch(e => console.log(e))
+    function getSupportedTokens(){
+        return API('GET', 'networks-list', 'ETH/tokens')
     }
 
     function createCoinList(data){
-        coinList = []
-        for (const networks in data){
-            coinList = [...coinList,...data[networks]]
-        }
-        return [...coinList, customERC20, lamden];
+        let coins = data[0];
+        let tokens = data[1].tokens;
+        coinList = [{name:'Lamden Network', title: true}, lamden];
+        coinList = [...coinList, {name:'Bitcoin Network', title: true}, ...coins['bitcoin_networks']];
+        coinList = [...coinList, {name:'Ethereum Network', title: true}, ...coins['ethereum_networks']];
+        tokens.map(function(token){
+            token.network = 'ethereum';
+            return token;
+        });
+        coinList = [...coinList, {name:'Ethereum Network ERC20', title: true}, customERC20, ...tokens]
+        return coinList;
     }
 
     function handleSubmit(form){
-        if (!selected){
+        error = '';
+        if (!selected.symbol){
             error = 'no coin selected';
             return
         }
         if (form.checkValidity()){
-            saveCoin();
+            showKeyBox ? saveKeys() : createAndSaveKeys();
         }
     }
 
@@ -64,7 +67,7 @@
 
     function validateTextarea(obj){
         try{
-            publicKey = pub_from_priv(selected.network, selected.symbol, privateKey);
+            publicKey = pubFromPriv(selected.network, selected.symbol, privateKey);
         } catch (e) {
             obj.setCustomValidity(e);
             return
@@ -72,7 +75,7 @@
         obj.setCustomValidity('');
     }
 
-    function saveCoin(){
+    function saveKeys(){
         // Instantiate a new Coin if one doesn't exist for the network
         if (!$CoinStore[selected.network][selected.symbol]) {
             let newCoin = JSON.parse(JSON.stringify($defaultOjects.coin))
@@ -91,24 +94,32 @@
             newPubkey.vk = publicKey;
             newPubkey.sk = encryptStrHash(password, privateKey);
             $CoinStore[selected.network][selected.symbol]['pubkeys'][publicKey] = newPubkey;
+            CoinStore.updateBalances($CoinStore);
             closeModal();
+        }
+    }
+
+    function createAndSaveKeys(){
+        let keyPair = {};
+        try {
+            keyPair = keysFromNew(selected.network, selected.symbol);
+            publicKey = keyPair.vk;
+            privateKey = keyPair.sk;
+            saveKeys();
+        } catch (e){
+            console.log(e)
+            error = e;
         }
     }
 </script>
 
 <style>
-  input:required:invalid, input:focus:invalid {
-    background-image: url(/img/validators/error.svg);
-    fill: red;
-    background-position: right top;
-    background-repeat: no-repeat;
-  }
-  input:required:valid {
-    background-image: url(/img/validators/check.svg);
-    fill: green;
-    background-position: right top;
-    background-repeat: no-repeat;
-  }
+    .dropdownTitle{
+        font-weight: bold;
+        font-size: 15px;
+        color: purple;
+    }
+
 </style>
 
 <p style="color: red;">{error}</p>
@@ -116,31 +127,41 @@
 <p>This will add a cryptocurrency coin to your wallet.</p>
 <div>
     Select a Coin
-    {#await supportedCoins}
+    {#await Promise.all([supportedCoins, supportedTokens])}
         <select id='ddCoins' bind:value={selected}>
             <option value={'temp'}>...fetching supported coins...</option>
         </select>
         
     {:then data}
         <div>
+        
             <form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
                 <div>
                     <select id='ddCoins' bind:value={selected} required>
-                        <option /> 
                         {#each createCoinList(data) as coin}
-                            <option value={coin}>{ '(' + coin.symbol + ') ' + coin.name }</option>
+                            {#if !coin.title}
+                                <option value={coin} class="dropdownItem">{`(${coin.symbol}) ${coin.name}`}</option>
+                            {:else}
+                                {#if coin.name !== "Lamden Network"}
+                                     <option />
+                                {/if}
+                                <option disabled value={coin} class="dropdownTitle"><b>{coin.name}</b></option>
+                            {/if}
+                            
                         {/each}
                     </select>
-                    <input type="checkbox" bind:checked={showKeyBox} /> I have a private key
                 </div>
-                {#if showKeyBox}
-                    <textarea bind:value={privateKey}
-                            placeholder={"Enter Private Key"}
-                            on:change={() => validateTextarea(this)}
-                            wrap="hard"
-                            rows="3"
-                            required  />
-                {/if}
+                <div>
+                    <input type="checkbox" bind:checked={showKeyBox} /> I have a private key
+                    {#if showKeyBox}
+                        <textarea bind:value={privateKey}
+                                placeholder={"Enter Private Key"}
+                                on:change={() => validateTextarea(this)}
+                                wrap="hard"
+                                rows="3"
+                                required  />
+                    {/if}
+                </div>
                 <div>
                     <label>Key Nickname</label><br>
                     <input bind:value={nickname} required  />

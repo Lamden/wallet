@@ -3,7 +3,7 @@
     import { CoinStore, coinList, Hash, CURRENT_KS_VERSION } from '../../js/stores.js';
 
     //Utils
-    import { copyToClipboard, checkPassword, decryptStrHash, encryptObject, decryptFile } from '../../js/utils.js'
+    import { copyToClipboard, checkPassword, decryptStrHash, encryptObject, decryptFile } from '../../js/utils.js';
 
     //Components
     import { BackupPW, BackupDownload }  from '../../js/router.js'
@@ -24,7 +24,7 @@
 
     function validatePassword(obj){
         if (!checkPassword(password, $Hash)) {
-            obj.setCustomValidity("Incorrect Password");
+            obj.setCustomValidity("Incorrect Wallet Password");
         } else {
             obj.setCustomValidity('');
         }
@@ -46,23 +46,27 @@
 
     function createKeyList(){
         for (const [netKey, network] of Object.entries($CoinStore) ){
-            let networkName = netKey.toUpperCase();
-            let startString = `!! KEEP THIS INFORMATION SECRET !!\n`
-            let addString = `\n${keys}\n**${networkName} NETWORK **\n`
-            keys === "" ? keys = startString + addString  : keys = addString;
-			for (const [coinKey, coin] of Object.entries(network)){
-				for (const [vkKey, keypair] of Object.entries(coin.pubkeys)){
-                    let coinInfo = {};
-                    coinInfo.network = netKey;
-                    coinInfo.name = coin.name;
-                    coinInfo.symbol = coinKey;
-                    coinInfo.nickname = keypair.nickname;
-                    coinInfo.vk = keypair.vk;
-                    coinInfo.sk = decryptStrHash(password, keypair.sk);
-                    keyList.push(coinInfo);
-                    keys = `${keys}\n${coinInfo.nickname.toUpperCase()}\nPUBLIC KEY:\n${coinInfo.vk}\nPRIVATE KEY:\n${coinInfo.sk}\n`;
-				}
-			}
+            if (Object.entries(network).length > 0){
+                let networkName = netKey.toUpperCase();
+                let startString = `!! KEEP THIS INFORMATION SECRET !!\n`
+                let addString = `\n${keys}\n**${networkName} NETWORK **\n`
+                keys === "" ? keys = startString + addString  : keys = addString;
+
+                for (const [coinKey, coin] of Object.entries(network)){
+                    keys = `${keys}\n${coin.name} (${coinKey})\n`;
+                    for (const [vkKey, keypair] of Object.entries(coin.pubkeys)){
+                        let coinInfo = {};
+                        coinInfo.network = netKey;
+                        coinInfo.name = coin.name;
+                        coinInfo.symbol = coinKey;
+                        coinInfo.nickname = keypair.nickname;
+                        coinInfo.vk = keypair.vk;
+                        coinInfo.sk = decryptStrHash(password, keypair.sk);
+                        keyList.push(coinInfo);
+                        keys = `${keys}\n${coinInfo.nickname.toUpperCase()}\nPUBLIC KEY:\n${coinInfo.vk}\nPRIVATE KEY:\n${coinInfo.sk}\n`;
+                    }
+                }
+            }
         }
         if(keyList.length === 0) "You don't have any keys in storage" 
     }

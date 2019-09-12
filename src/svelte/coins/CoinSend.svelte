@@ -1,10 +1,18 @@
 <script>
+    //Stores
+    import { allTotals } from '../../js/stores.js';
+
+    //Utils
     import { copyToClipboard } from '../../js/utils.js'
+
 
     export let coin;
     let selected;
     let tx_value = 0;
     let reciever_address = '';
+
+    $: totalBalance = $allTotals.coinTotals[coin.network][coin.symbol].balance || 0;
+    $: totalUSDValue = $allTotals.coinTotals[coin.network][coin.symbol].USD_value || 0;
 
 </script>
 
@@ -17,17 +25,17 @@
 <h2> Send {coin.name} </h2>
 <div>
     <span>Public Key</span>
-    <span><small>{coin.name} {coin.totalBalance} {coin.symbol}</small></span>
-    <span><small>${coin.totalUsdBalance.toFixed(2)}</small></span>
+    <span><small>{coin.name} {totalBalance} {coin.symbol}</small></span>
+    <span><small>${totalUSDValue}</small></span>
 </div>
 <div>
     <select id='ddPubkeys' bind:value={selected}>
-        {#each coin.pubkeysList as key}
-            <option value={key}>{key.nickname}</option>
+        {#each  Object.keys(coin.pubkeys) as pubKey}
+            <option value={coin.pubkeys[pubKey]}>{coin.pubkeys[pubKey].nickname}</option>
         {/each}
     </select>
 </div>
-<a href="javascript:void(0)" on:click={() => copyToClipboard(selected.address, () => { alert('copied!') } )}>copy to clipboard</a>
+<button on:click={() => copyToClipboard(selected.vk)}>copy to clipboard</button>
 
 <div>
     Amount

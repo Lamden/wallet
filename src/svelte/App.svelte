@@ -3,14 +3,16 @@
 	import { themes } from '../js/themes.js'
 	
 	//Stores
-	import { CoinStore, SettingsStore, currentPage, themeStyle, loggedIn, firstRun} from '../js/stores.js';
+	import { CoinStore, SettingsStore, Hash, currentPage, themeStyle, loggedIn, firstRun} from '../js/stores.js';
 
 	//Components
 	import { Pages, FirstRun }  from '../js/router.js'	
 
 	onMount(() => {
 		CoinStore.useLocalStorage();
+		CoinStore.updateBalances($CoinStore);
 		SettingsStore.useLocalStorage();
+		Hash.useLocalStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;
 	});
@@ -55,8 +57,8 @@
 				</div>
 				<div class='controls soflexy'>
 					<button on:click={ () => toggleTheme() }> Toggle Theme </button>
-					<button on:click={ CoinStore.reset }> Reset Coins </button>
-				</div>		
+					<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
+				</div>
 			</nav>
 
 			<section class="invisible-scrollbar content">

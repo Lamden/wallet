@@ -1,3 +1,5 @@
+import { API } from './api.js';
+
 import nodeCryptoJs from 'node-cryptojs-aes';
 const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 
@@ -13,7 +15,7 @@ export function copyToClipboard(textTOcopy='', callback=undefined){
             document.body.removeChild(dummy);
             
         } catch (e) {
-            new Error('unable to copy')
+            throw new Error('unable to copy')
         }
         if (callback){callback()}
     }
@@ -62,3 +64,30 @@ export function decryptFile(password, file){
     return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
 };
 
+export function makeBalancesPost(CoinStore) {
+    let postObj = {"address_list":[]};
+    for (const [netKey, network] of Object.entries(CoinStore) ){
+        if (Object.entries(network).length > 0){
+            for (const [coinKey, coin] of Object.entries(network)){
+                for (const [publicKey, pubInfo] of Object.entries(coin.pubkeys)){
+                    postObj.address_list.push({
+                        "network_symbol" : coin.symbol,
+                        "wallet_address" : publicKey,
+                        "network" : netKey,
+                    })
+                }
+            }
+        }
+    }
+    return postObj.address_list.length > 0 ? postObj : false;
+}
+
+export function toCurrencyFormat(value, currency, local){
+    value = value || '0'
+    currency = currency || 'USD'
+    local = local || undefined
+    return value.toLocaleString(local, {
+        style: 'currency',
+        currency,
+    });
+}

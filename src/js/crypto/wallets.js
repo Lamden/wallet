@@ -1,10 +1,11 @@
 const bitcoin = require('bitcoinjs-lib');
 const ethUtil = require('ethereumjs-util');
-const EthereumTx = require('ethereumjs-tx');
+const ethTx = require('ethereumjs-tx');
+const ethWallet = require('ethereumjs-wallet');
 import { networks } from './networks';
 
 
-export function pub_from_priv(network, symbol, privateKey) {
+export function pubFromPriv(network, symbol, privateKey) {
   let pubkey = undefined;
   let key;
   
@@ -32,6 +33,50 @@ export function pub_from_priv(network, symbol, privateKey) {
   }
   
   return pubkey;
+};
+
+export function keysFromNew(network, symbol) {
+  let keyPair = {};
+  if (network === 'ethereum') {
+    let myWallet;
+    try{
+      myWallet = ethWallet.generate();
+      keyPair.vk = myWallet.getAddressString()
+      keyPair.sk = myWallet.getPrivateKeyString()
+    } catch(e) {
+      console.log(e);
+      throw new Error(`Error creating ethereum network wallet for ${symbol}: ${e}`);
+    }
+
+  }
+  
+  if (network === 'bitcoin') {
+    const BTCnetwork = networks[network][symbol];
+    if (!BTCnetwork){
+      throw new Error(`${symbol} is not a supported symbol on the bitcoin network`);
+    }
+    try{
+      const ecPair = bitcoin.ECPair.makeRandom({compressed: false, network: BTCnetwork});
+      const { address } = bitcoin.payments.p2pkh({ pubkey: ecPair.publicKey, network: BTCnetwork })
+      keyPair.vk = address;
+      keyPair.sk =  ecPair.toWIF();      
+    } catch(e) {
+      console.log(e);
+      throw new Error(`Error creating bitcoin network wallet for ${symbol}: ${e}`);
+    }
+  }
+
+  if (network === 'lamden') { 
+    pubkey = lamdenWallet.get_vk(privateKey);
+  }
+
+  if (!keyPair.vk || !keyPair.sk){
+    throw new Error(`${network} is not a supported network `);
+  }
+
+  keyPair.network = network;
+  keyPair.symbol = symbol;
+  return keyPair;
 };
 
 export function signTx(rawTransaction = '', privateKey = '', network, networkSymbol = '', ) {

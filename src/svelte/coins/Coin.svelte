@@ -1,29 +1,24 @@
 <script>
-    import { onMount, getContext } from 'svelte';
+    import { onMount, getContext, setContext} from 'svelte';
 
     //Stores
-    import { SettingsStore } from '../../js/stores.js';
+    import { SettingsStore, allTotals } from '../../js/stores.js';
+
+    //Utils
+    import { toCurrencyFormat } from '../../js/utils.js';
+    import { logos } from '../../js/crypto/logos.js';
 
     // Props
-        export let coin;
-
-    onMount(() => {
-        createTotals();
-    });
-
+    export let coin;
+    
     const { switchPage } = getContext('switchPage');
 
-    let totalBalance = 0; 
-    let totalUsdBalance = 0;
-    let USD_valueStr = '';
+    console.log($allTotals.coinTotals[coin.network][coin.symbol])
 
-    function createTotals(){
-        for (let pubkey in coin.pubkeys){
-            totalBalance += coin.pubkeys[pubkey].balance
-            totalUsdBalance += coin.pubkeys[pubkey].USD_value
-        }
-        USD_valueStr = "$" + totalUsdBalance.toFixed(2);
-    }
+    $: totalBalance = $allTotals.coinTotals[coin.network][coin.symbol].balance || 0;
+    $: totalUSDValue = $allTotals.coinTotals[coin.network][coin.symbol].USD_value || 0;
+
+    $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
 
 </script>
 
@@ -32,13 +27,19 @@
         display: grid;
         grid-auto-flow: column;
     }
+
+    .logo {
+        width: 64px;
+        height: 64px;
+    }
 </style>
 
 <div class="container">
+    <img class="logo" src={logo} alt={`${coin.name} logo`} />
     <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">{coin.name}</h2>
     <ul>
-        <li># of addresses {Object.keys(coin.pubkeys).length}</li>
-        <li>balance {totalBalance} {coin.symbol}</li>
-        <li>( {USD_valueStr} )</li>
+        <li>{`# of addresses ${Object.keys(coin.pubkeys).length}`}</li>
+        <li>{`balance ${ totalBalance } ${ coin.symbol }`}</li>
+        <li>{`USD Value (${ toCurrencyFormat(totalUSDValue) })`}</li>
     </ul>
 </div>
