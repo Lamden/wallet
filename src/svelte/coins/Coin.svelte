@@ -2,21 +2,18 @@
     import { onMount, getContext, setContext} from 'svelte';
 
     //Stores
-    import { SettingsStore, allTotals } from '../../js/stores.js';
+    import { SettingsStore } from '../../js/stores.js';
 
     //Utils
     import { toCurrencyFormat } from '../../js/utils.js';
+    import { fromWEI } from '../../js/crypto/wallets.js';
     import { logos } from '../../js/crypto/logos.js';
 
     // Props
     export let coin;
-    
+
     const { switchPage } = getContext('switchPage');
-
-    console.log($allTotals.coinTotals[coin.network][coin.symbol])
-
-    $: totalBalance = $allTotals.coinTotals[coin.network][coin.symbol].balance || 0;
-    $: totalUSDValue = $allTotals.coinTotals[coin.network][coin.symbol].USD_value || 0;
+    $: watching = coin.sk === 'watchOnly';
 
     $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
 
@@ -35,11 +32,30 @@
 </style>
 
 <div class="container">
-    <img class="logo" src={logo} alt={`${coin.name} logo`} />
-    <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">{coin.name}</h2>
-    <ul>
-        <li>{`# of addresses ${Object.keys(coin.pubkeys).length}`}</li>
-        <li>{`balance ${ totalBalance } ${ coin.symbol }`}</li>
-        <li>{`USD Value (${ toCurrencyFormat(totalUSDValue) })`}</li>
-    </ul>
+    {#if !coin.token}
+        <img class="logo" src={logo} alt={`${coin.name} logo`} />
+        <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
+            {#if watching }👀{/if}{` ${coin.name} - ${coin.nickname}`} 
+        </h2>
+        <ul>
+            <li>{`balance ${ coin.balance } ${ coin.symbol }`}</li>
+            <li>{`USD Value (${ toCurrencyFormat(coin.USD_value) })`}</li>
+            {#if watching}
+                <li>Watching Coin</li>
+            {/if}
+        </ul>
+    {/if}
+    {#if coin.token}
+        <img class="logo" src={logo} alt={`${coin.name} logo`} />
+        <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
+            {#if watching }👀{/if}{` ${coin.name} - ${coin.tokenDetails.symbol}`} 
+        </h2>
+        <ul>
+            <li>{`balance ${ coin.tokenDetails.balance } ${ coin.tokenDetails.symbol }`}</li>
+            <li>{`USD Value (${ toCurrencyFormat(coin.tokenDetails.USD_value) })`}</li>
+            {#if watching}
+                <li>Watching Coin</li>
+            {/if}
+        </ul>
+    {/if}
 </div>

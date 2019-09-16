@@ -1,6 +1,5 @@
 import { readable, writable, derived } from 'svelte/store';
-import { API } from './api.js';
-import { makeBalancesPost } from './utils.js';
+import { API, makeBalancesPost } from './api.js';
 import { defaultSettings, defaultCoinStore, coin, pubkey } from './defaults.js'
 
 //Environment constents
@@ -41,7 +40,13 @@ const createCoinStore = (key, startValue) => {
                             if (currentStore[coin.network]){
                                 if (currentStore[coin.network][coin.network_symbol]){
                                     if (currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address]){
-                                        currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].balance = parseFloat(coin.balance);
+                                        if (coin.token_address){
+                                            if (currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].tokens[coin.token_symbol]){
+                                                currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].tokens[coin.token_symbol].balance = parseFloat(coin.balance);
+                                            }
+                                        }else{
+                                            currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].balance = parseFloat(coin.balance);
+                                        }
                                     }
                                 }
                             }
@@ -98,10 +103,32 @@ export const coinList = derived(
         let coinList = [];
         for (const [netKey, network] of Object.entries($CoinStore) ){
             for (const [coinKey, coin] of Object.entries(network)){
-                coin.network = netKey;
-                coinList.push(coin);
+                for (const [pubKey, pubKeyInfo] of Object.entries(coin.pubkeys)){
+                    let coinInfo = {
+                        network: netKey,
+                        name: coin.name,
+                        symbol: coin.symbol,
+                        nickname: pubKeyInfo.nickname,
+                        vk : pubKeyInfo.vk,
+                        sk : pubKeyInfo.sk,
+                        balance : pubKeyInfo.balance,
+                        USD_value : pubKeyInfo.USD_value,
+                    }
+                    coinList.push(coinInfo);
+                    if (pubKeyInfo.tokens){
+                        let tokenInfo = JSON.parse(JSON.stringify(coinInfo))
+                        for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
+                            tokenInfo.token = true,
+                            tokenInfo.tokenDetails = tokenValue,
+                            tokenInfo.balance = tokenValue.balance || 0;
+                            tokenInfo.USD_value = tokenValue.USD_value || 0;
+                        }
+                        coinList.push(tokenInfo);
+                    }
+                }
             }
         }
+        console.log(coinList)
         return coinList;
     }
 );
@@ -112,38 +139,27 @@ export const numberOfCoins = derived(
 );
 
 export const allTotals = derived(
-    coinList,
-    ($coinList) => {
-        let majorTotals = {'wallets':0,'USD_value':0,'coins':$coinList.length};
+    CoinStore,
+    ($CoinStore) => {
+        let majorTotals = {'wallets':0,'USD_value':0,'coins':0};
         let coinTotals = {};
-        for (let coin in $coinList){
-            const coinInfo = $coinList[coin];
-            coinTotals[coinInfo.network] = coinTotals[coinInfo.network] || {};
-            coinTotals[coinInfo.network][coinInfo.symbol] = coinTotals[coinInfo.network][coinInfo.symbol] || {};
-            let totalTracker = {balance: 0, USD_value: 0, numOfWallets: 0}
-            for (const [pubKey, pubValue] of Object.entries(coinInfo.pubkeys)){
-                totalTracker.balance += pubValue.balance;
-                totalTracker.USD_value += pubValue.USD_value;
-                totalTracker.numOfWallets += 1;
-                majorTotals.wallets += 1;
-                majorTotals.USD_value += pubValue.USD_value;
+        for (const [netKey, network] of Object.entries($CoinStore) ){
+            for (const [coinKey, coin] of Object.entries(network)){
+                let totalTracker = {};
+                majorTotals.coins += 1;
+                coinTotals[coin.network] = coinTotals[coin.network] || {};
+                coinTotals[coin.network][coin.symbol] = coinTotals[coin.network][coin.symbol] || {};
+                for (const [pubKey, pubKeyInfo] of Object.entries(coin.pubkeys)){
+                    totalTracker.balance += pubKeyInfo.balance;
+                    totalTracker.USD_value += pubKeyInfo.USD_value;
+                    totalTracker.numOfWallets += 1;
+                    majorTotals.wallets += 1;
+                    majorTotals.USD_value += pubKeyInfo.USD_value;
+                }
+                coinTotals[coin.network][coin.symbol] = totalTracker;
             }
-            coinTotals[coinInfo.network][coinInfo.symbol] = totalTracker;
         }
         return {majorTotals, coinTotals};
-    }
-);
-
-export const totalUsdBal = derived(
-    coinList,
-    ($coinList) => {
-        let total = 0;
-        for (let coin in $coinList){
-            for (let pubkey in $coinList[coin][1].pubkeys){
-                total += $coinList[coin][1].pubkeys[pubkey].USD_value
-            }
-        }
-        return total;
     }
 );
 
@@ -347,6 +363,7 @@ const testNetworks = {
                     'balance': 0.1,
                     'USD_value' : 10,
                     'privkey' : 'encrypted',
+                    'tokens' :
 
                 },
                 'pubkey_address_2':{

@@ -115,7 +115,7 @@
                     let newPubkey = JSON.parse(JSON.stringify($defaultOjects.pubkey))
                     newPubkey.nickname = keyPair.nickname;
                     newPubkey.vk = keyPair.vk;
-                    newPubkey.sk = encryptStrHash(password, keyPair.sk);
+                    newPubkey.sk = keyPair.sk !== 'watchOnly' ? encryptStrHash(password, keyPair.sk) : keyPair.sk;
                     $CoinStore[keyPair.network][keyPair.symbol]['pubkeys'][keyPair.vk] = newPubkey;
                 }
             }

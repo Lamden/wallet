@@ -44,11 +44,15 @@
 </style>
 
 <h1>{`You have ${$allTotals.majorTotals.coins} coins!`}</h1>
+
 {$allTotals.majorTotals.wallets} wallet addresses
+
 <h2> {`Total USD Value: ${toCurrencyFormat($allTotals.majorTotals.USD_value)}`} </h2>
+
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
+
 {#each $coinList as coin, id}
-	<Coin coin={$CoinStore[coin.network][coin.symbol]} />
+	<Coin coin={coin} />
 {/each}
 
 {#if openModal}

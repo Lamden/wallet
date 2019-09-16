@@ -10,24 +10,33 @@ export function pubFromPriv(network, symbol, privateKey) {
   let key;
   
   if (network === 'ethereum') {
-    key = getHexBuffer(privateKey);
-    if (key.length === 0) {
-      throw new Error('Invalid private key');
-    }
-    pubkey = ethUtil.privateToAddress(key).toString('hex');
+    try {
+      key = getHexBuffer(privateKey);
+      if (key.length === 0) {
+        throw new Error(`Not a valid ${network} private key`);
+      }
+      pubkey = ethUtil.privateToAddress(key).toString('hex');
+    } catch {
+      console.log('pubkey error ')
+      throw new Error(`Not a valid ${network} private key`);
+    }    
   } 
   
   if (network === 'bitcoin') {
-    const BTCnetwork = networks[network][symbol];
-    key = bitcoin.ECPair.fromWIF(privateKey, BTCnetwork);
-    const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey, network: BTCnetwork });
-    pubkey = address;
+    try {
+      const BTCnetwork = networks[network][symbol];
+      key = bitcoin.ECPair.fromWIF(privateKey, BTCnetwork);
+      const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey, network: BTCnetwork });
+      pubkey = address;
+    } catch {
+      throw new Error(`Not a valid ${network} private key`);
+    }
   }
-
+/*
   if (network === 'lamden') { 
     pubkey = lamdenWallet.get_vk(privateKey);
   }
-
+*/
   if (!pubkey){
     throw new Error(`${network} is not a supported network `);
   }
@@ -79,6 +88,29 @@ export function keysFromNew(network, symbol) {
   return keyPair;
 };
 
+export function validateAddress(network, wallet_address){
+  
+  if (network === 'bitcoin'){
+    try{
+      bitcoin.address.fromBase58Check(wallet_address)
+      return
+    } catch (e) {
+      console.log(e)
+      throw new Error(`Not a valid ${network} public key`);
+    }
+  }
+
+  if (network === 'ethereum'){
+    try{
+      ethUtil.isValidChecksumAddress(ethUtil.toChecksumAddress(wallet_address))
+      return
+    } catch (e) {
+      throw new Error(`Not a valid ${network} public key`);
+    }
+  }
+  throw new Error(`${network} is not a supported network `);
+}
+
 export function signTx(rawTransaction = '', privateKey = '', network, networkSymbol = '', ) {
   if (network === 'ethereum') {
     return signEthereumTx(rawTransaction, privateKey);
@@ -90,8 +122,6 @@ export function signTx(rawTransaction = '', privateKey = '', network, networkSym
 
   throw new Error(`${networkSymbol} network is not supported`);
 };
-
-
 
 function stripHexPrefix(hexString) {
   return hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;

@@ -2,7 +2,7 @@
     import { getContext} from 'svelte';
 
     //Stores
-    import { SettingsStore, allTotals, previousPage } from '../../js/stores.js';
+    import { SettingsStore, previousPage } from '../../js/stores.js';
 
     //Components
     import { Modal, Modals }  from '../../js/router.js'
@@ -17,12 +17,6 @@
     let selected;
 
     let coin = $SettingsStore.currentPage.data
-
-    let totalBalance = 0;
-    let totalUSDValue = 0;
-
-    $: if ($allTotals.coinTotals[coin.network]) totalBalance = $allTotals.coinTotals[coin.network][coin.symbol].balance || 0;
-    $: if ($allTotals.coinTotals[coin.network]) totalUSDValue = $allTotals.coinTotals[coin.network][coin.symbol].USD_value || 0;
 
     function showModal(modal){
         currentModal = modal;
@@ -40,12 +34,12 @@
 <h2 on:click={ () => switchPage('CoinsMain')} style="cursor: pointer;"> {"<- Back"} </h2>
 <div>
     <h2>{coin.name}</h2>
-    <div> {`balance ${totalBalance} ${coin.symbol}`}</div>
-    <div> {`(${totalUSDValue})`} </div> 
-    <div>Combined value of your ({Object.keys(coin.pubkeys).length}) addresses</div>   
+    <div> {`balance ${coin.balance} ${coin.symbol}`}</div>
+    <div> {`(${coin.USD_value})`} </div>   
 </div>
-
-<button on:click={ () => showModal('CoinSend') }> Send </button>
+{#if coin.sk !== 'watchOnly'}
+    <button on:click={ () => showModal('CoinSend') }> Send </button>
+{/if}
 <button on:click={ () => showModal('CoinRecieve') }> Recieve </button>
 
 <div>

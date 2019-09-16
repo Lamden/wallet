@@ -31,3 +31,28 @@ export function API (method, endpoint, path, data){
     });   
 }
 
+export function makeBalancesPost(CoinStore) {
+    let postObj = {"address_list":[]};
+    for (const [netKey, network] of Object.entries(CoinStore) ){
+        if (Object.entries(network).length > 0){
+            for (const [coinKey, coin] of Object.entries(network)){
+                for (const [publicKey, pubKeyInfo] of Object.entries(coin.pubkeys)){
+                    let coinInfo = {
+                        "network_symbol" : coin.symbol,
+                        "wallet_address" : publicKey,
+                        "network" : netKey,
+                    }
+                    postObj.address_list.push(coinInfo);
+                    for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
+                        let tokenInfo = JSON.parse(JSON.stringify(coinInfo));
+                        tokenInfo.token_address = tokenValue.token_address;
+                        tokenInfo.token_symbol = tokenValue.symbol;
+                        postObj.address_list.push(tokenInfo);
+                    }
+                    
+                }
+            }
+        }
+    }
+    return postObj.address_list.length > 0 ? postObj : false;
+}
