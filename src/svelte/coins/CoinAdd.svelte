@@ -127,7 +127,7 @@
         }else{
             //if not then add it
             let newPubkey = JSON.parse(JSON.stringify($defaultOjects.pubkey))
-            newPubkey.nickname = keyAttributes.nickname;
+            !customToken.view ? newPubkey.nickname = keyAttributes.nickname : newPubkey.nickname = "";
             newPubkey.vk = keyAttributes.publicKey;
             newPubkey.sk = addType === 3 ? 'watchOnly' : encryptStrHash(password, keyInputs.privateKeyInput);
             $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey] = newPubkey;
@@ -136,6 +136,7 @@
                     $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens = {};
                 }
                 $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens[customToken.details.symbol] = customToken.details;
+                $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens[customToken.details.symbol].nickname = keyAttributes.nickname;
             }
             CoinStore.updateBalances($CoinStore);
             closeModal();

@@ -42,14 +42,15 @@ export function makeBalancesPost(CoinStore) {
                         "wallet_address" : publicKey,
                         "network" : netKey,
                     }
-                    postObj.address_list.push(coinInfo);
-                    for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
-                        let tokenInfo = JSON.parse(JSON.stringify(coinInfo));
-                        tokenInfo.token_address = tokenValue.token_address;
-                        tokenInfo.token_symbol = tokenValue.symbol;
-                        postObj.address_list.push(tokenInfo);
+                    if (pubKeyInfo.nickname !== "") postObj.address_list.push(coinInfo);
+                    if (pubKeyInfo.tokens){
+                        for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
+                            let tokenInfo = JSON.parse(JSON.stringify(coinInfo));
+                            tokenInfo.token_address = tokenValue.token_address;
+                            tokenInfo.token_symbol = tokenValue.symbol;
+                            postObj.address_list.push(tokenInfo);
+                        }
                     }
-                    
                 }
             }
         }

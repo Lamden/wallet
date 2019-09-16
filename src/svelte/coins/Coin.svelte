@@ -48,7 +48,7 @@
     {#if coin.token}
         <img class="logo" src={logo} alt={`${coin.name} logo`} />
         <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
-            {#if watching }👀{/if}{` ${coin.name} - ${coin.tokenDetails.symbol}`} 
+            {#if watching }👀{/if}{`${coin.tokenDetails.nickname}`} 
         </h2>
         <ul>
             <li>{`balance ${ coin.tokenDetails.balance } ${ coin.tokenDetails.symbol }`}</li>

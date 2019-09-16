@@ -114,7 +114,8 @@ export const coinList = derived(
                         balance : pubKeyInfo.balance,
                         USD_value : pubKeyInfo.USD_value,
                     }
-                    coinList.push(coinInfo);
+                    if (pubKeyInfo.nickname !== "") coinList.push(coinInfo);
+                    
                     if (pubKeyInfo.tokens){
                         let tokenInfo = JSON.parse(JSON.stringify(coinInfo))
                         for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
