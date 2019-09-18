@@ -1,6 +1,6 @@
 import { readable, writable, derived } from 'svelte/store';
 import { API, makeBalancesPost } from './api.js';
-import { defaultSettings, defaultCoinStore, coin, pubkey } from './defaults.js'
+import { defaultSettings, defaultCoinStore, coin, pubkey, token } from './defaults.js'
 
 //Environment constents
 export const CURRENT_KS_VERSION = writable("1.0");
@@ -30,28 +30,21 @@ const createCoinStore = (key, startValue) => {
         updateBalances: (storeValue) => {
             console.log('!! REFRESHING BALANCES !!')
             const postObj = makeBalancesPost(storeValue);
-
+            console.log(postObj);
             if (postObj){
                 return API('POST', 'get-balances', "", postObj)
-                .then(data => {
-                    update (currentStore => {
-                        for (const index in data.value){
-                            const coin = data.value[index];
-                            if (currentStore[coin.network]){
-                                if (currentStore[coin.network][coin.network_symbol]){
-                                    if (currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address]){
-                                        if (coin.token_address){
-                                            if (currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].tokens[coin.token_symbol]){
-                                                currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].tokens[coin.token_symbol].balance = parseFloat(coin.balance);
-                                            }
-                                        }else{
-                                            currentStore[coin.network][coin.network_symbol].pubkeys[coin.wallet_address].balance = parseFloat(coin.balance);
-                                        }
-                                    }
-                                }
+                .then(balances => {
+                    console.log(balances)
+                    update (coinstore => {
+                        for (const item of balances.value){
+                            let coin = coinstore.find(f=> f.network==item.network && f.token_address === item.token_address);
+                            if(coin){
+                                coin.balance=item.balance;
+                                console.log(coin);
                             }
                         }
-                        return currentStore
+                        console.log(coinstore)
+                        return coinstore;
                     });
                 })
                 .catch(e => console.log(e))
@@ -90,77 +83,26 @@ export const loggedIn = writable(true);
 
 export const Hash = createLocalStore('Hash', { 'encode' : undefined });
 
-export const defaultOjects = readable({coin, pubkey});
+export const defaultOjects = readable({coin, pubkey, token});
 
 //export const totalUsdBal = writable(0);
 
 // Coin Stores
-export const CoinStore = createCoinStore('networks', defaultCoinStore);
-
-export const coinList = derived(
-	CoinStore,
-    ($CoinStore) => {
-        let coinList = [];
-        for (const [netKey, network] of Object.entries($CoinStore) ){
-            for (const [coinKey, coin] of Object.entries(network)){
-                for (const [pubKey, pubKeyInfo] of Object.entries(coin.pubkeys)){
-                    let coinInfo = {
-                        network: netKey,
-                        name: coin.name,
-                        symbol: coin.symbol,
-                        nickname: pubKeyInfo.nickname,
-                        vk : pubKeyInfo.vk,
-                        sk : pubKeyInfo.sk,
-                        balance : pubKeyInfo.balance,
-                        USD_value : pubKeyInfo.USD_value,
-                    }
-                    if (pubKeyInfo.nickname !== "") coinList.push(coinInfo);
-                    
-                    if (pubKeyInfo.tokens){
-                        let tokenInfo = JSON.parse(JSON.stringify(coinInfo))
-                        for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
-                            tokenInfo.token = true,
-                            tokenInfo.tokenDetails = tokenValue,
-                            tokenInfo.balance = tokenValue.balance || 0;
-                            tokenInfo.USD_value = tokenValue.USD_value || 0;
-                        }
-                        coinList.push(tokenInfo);
-                    }
-                }
-            }
-        }
-        console.log(coinList)
-        return coinList;
-    }
-);
+export const CoinStore = createCoinStore('coins', []);
 
 export const numberOfCoins = derived(
-    coinList,
-    $coinList => $coinList.length
+    CoinStore,
+    $CoinStore => $CoinStore.length
 );
 
 export const allTotals = derived(
     CoinStore,
     ($CoinStore) => {
-        let majorTotals = {'wallets':0,'USD_value':0,'coins':0};
-        let coinTotals = {};
-        for (const [netKey, network] of Object.entries($CoinStore) ){
-            for (const [coinKey, coin] of Object.entries(network)){
-                let totalTracker = {};
-                majorTotals.coins += 1;
-                coinTotals[coin.network] = coinTotals[coin.network] || {};
-                coinTotals[coin.network][coin.symbol] = coinTotals[coin.network][coin.symbol] || {};
-                for (const [pubKey, pubKeyInfo] of Object.entries(coin.pubkeys)){
-                    totalTracker.balance += pubKeyInfo.balance;
-                    totalTracker.USD_value += pubKeyInfo.USD_value;
-                    totalTracker.numOfWallets += 1;
-                    majorTotals.wallets += 1;
-                    majorTotals.USD_value += pubKeyInfo.USD_value;
-                }
-                coinTotals[coin.network][coin.symbol] = totalTracker;
-            }
-        }
-        return {majorTotals, coinTotals};
+        let majorTotals = {'USD_value':0, 'coins':$CoinStore.length};
+        $CoinStore.map(coin =>{
+            majorTotals.USD_value += coin.USD_value;
+        })
+        return majorTotals;
     }
 );
 

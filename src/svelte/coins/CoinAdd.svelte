@@ -1,6 +1,6 @@
 <script>
 	//Stores
-    import { CoinStore, Hash, defaultOjects } from '../../js/stores.js';
+    import { CoinStore, Hash } from '../../js/stores.js';
     
 	//Utils
     import { API } from '../../js/api.js';
@@ -14,15 +14,16 @@
     let supportedTokens = getSupportedTokens();
     let coinList = [];
     let selected;
-    let tokenNetworks = [{ name: 'Ethereum', network: 'ethereum', symbol: "ETH" }, { name: 'Ethereum TestNet (kovan)', network: 'ethereum', symbol: "ETH-TESTNET" }]
-    let customERC20 = {name:'ERC20 Token', symbol:'Custom', testnet:false, network: 'ethereum'};
-    let lamden = {name:'Lamden', symbol:'TAU', testnet:true, network: 'lamden'};
+    let tokenNetworks = [{ name: 'Ethereum', network: 'ethereum', network_symbol: "ETH", token: true, }, { name: 'Ethereum TestNet (kovan)', network: 'ethereum', network_symbol: "ETH-TESTNET", token: true, }]
+    let customERC20 = {name:'ERC20 Token', symbol:'Custom', testnet: false, network: 'ethereum'};
+    let lamden = {name:'Lamden', symbol:'TAU', testnet: true, network: 'lamden'};
     let keyInputs = { privateKeyInput: '', publicKeyInput: ''};
-    let keyAttributes = {publicKey: '', nickname: '' };
+    let keyAttributes = {publicKey: '', privateKey: '', nickname: '' };
     let password = '';
     let error = '';
     let addType = 1;
-    let customToken = { view: false, name: "", contractAddress: "", details: {}};
+    let customToken = { view: false, contractAddress: "", details: {}};
+
     
     function getSupportedCoins(){
         return API('GET', 'networks-list');
@@ -33,15 +34,17 @@
     }
 
     function getTokenDetails(obj){
-        
-        return API('GET', 'token-details', `${selected.symbol}/${customToken.contractAddress}`)
+        obj = obj || null;
+        let address = customToken.view ? customToken.contractAddress : selected.address;
+        return API('GET', 'token-details', `${selected.network_symbol}/${address}`)
                 .then(result => {
                     error = "";
-                    if (result.message) {error = result.message; obj.setCustomValidity(result.message); return }
-                    customToken.details = result;
-                    if (customToken.name !== ""){
-                        customToken.details.name = customToken.name;
+                    if (result.message){
+                        if (customToken.view) obj.setCustomValidity(result.message);
+                        error = result.message;
+                        return;
                     }
+                    customToken.details = result;
                 })
                 .catch(e => error = e);
     }
@@ -49,31 +52,36 @@
     function createCoinList(data){
         let coins = data[0];
         let tokens = data[1].tokens;
-        coinList = [{name:'Lamden Network', title: true}, lamden];
-        coinList = [...coinList, {name:'Bitcoin Network', title: true}, ...coins['bitcoin_networks']];
-        coinList = [...coinList, {name:'Ethereum Network', title: true}, ...coins['ethereum_networks']];
         tokens.map(function(token){
+            token.token = true;
             token.network = 'ethereum';
+            token.network_symbol = 'ETH'
             return token;
         });
         coinList.map(function(token){
             if (token.name === 'test-ethereum') token.name ='Ethereum TestNet (kovan)';
             return token;
         });
-        coinList = [...coinList, {name:'Ethereum Network ERC20', title: true}, customERC20, ...tokens]
+        coinList = [...coinList, customERC20, ...tokens]
+        coinList = coinList.sort((a, b) => (a.name > b.name) ? 1 : -1)
         return coinList;
     }
 
-    function handleSubmit(form){
+    async function handleSubmit(form){
         error = '';
         if (selected === 'temp'){
             customToken.view ? error = 'no network selected' : error = 'no coin selected';
         }else{
             if (form.checkValidity()){
+                if (selected.token && !customToken.view) {await getTokenDetails()};
                 if (addType === 1) {
                     createAndSaveKeys();
                 } else {
                     saveKeys();
+                }
+                if (error.length === 0){
+                    CoinStore.updateBalances($CoinStore);
+                    closeModal();
                 }
             }
         }
@@ -100,10 +108,12 @@
         if (selected !== 'temp'){
             obj.setCustomValidity('');
             try{
-                if (addType === 2) keyAttributes.publicKey = pubFromPriv(selected.network, selected.symbol, keyInputs.privateKeyInput);
+                if (addType === 2) {
+                    keyAttributes.publicKey = pubFromPriv(selected.network, selected.symbol, keyInputs.privateKeyInput);
+                    keyAttributes.privateKey = keyInputs.privateKeyInput;
+                }
                 if (addType === 3) {
-                    validateAddress(selected.network, keyInputs.publicKeyInput);
-                    keyAttributes.publicKey = keyInputs.publicKeyInput;
+                    keyAttributes.publicKey = validateAddress(selected.network, keyInputs.publicKeyInput);
                 }
             } catch (e) {
                 console.log(e)
@@ -113,34 +123,27 @@
     }
 
     function saveKeys(){
-        // Instantiate a new Coin if one doesn't exist for the network
-        if (!$CoinStore[selected.network][selected.symbol]) {
-            let newCoin = JSON.parse(JSON.stringify($defaultOjects.coin))
-            newCoin.name = selected.name;
-            newCoin.symbol = selected.symbol;
-            $CoinStore[selected.network][selected.symbol] = newCoin;
-        }
-
-        //Check if the pubkey already exists in the coin
-        if ($CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey]) {
-            if (!customToken.view) error = `This wallet address already exists for ${name}`;
-        }else{
-            //if not then add it
-            let newPubkey = JSON.parse(JSON.stringify($defaultOjects.pubkey))
-            !customToken.view ? newPubkey.nickname = keyAttributes.nickname : newPubkey.nickname = "";
-            newPubkey.vk = keyAttributes.publicKey;
-            newPubkey.sk = addType === 3 ? 'watchOnly' : encryptStrHash(password, keyInputs.privateKeyInput);
-            $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey] = newPubkey;
-            if (customToken.view){
-                if (!$CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens){
-                    $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens = {};
-                }
-                $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens[customToken.details.symbol] = customToken.details;
-                $CoinStore[selected.network][selected.symbol].pubkeys[keyAttributes.publicKey].tokens[customToken.details.symbol].nickname = keyAttributes.nickname;
+        CoinStore.update(coinstore => {
+            let coinInfo = {
+                'network': selected.network,
+                'name': selected.name,
+                'nickname' : keyAttributes.nickname,
+                'symbol': selected.symbol,
+                'vk': keyAttributes.publicKey,
+                'sk': addType === 3 ? 'watchOnly' : encryptStrHash(password, keyAttributes.privateKey),
             }
-            CoinStore.updateBalances($CoinStore);
-            closeModal();
-        }
+            console.log(customToken.details)
+            if (selected.token){
+                coinInfo.is_token = true;
+                coinInfo.symbol = customToken.details.symbol;
+                coinInfo.network_symbol = selected.network_symbol;
+                coinInfo.name = customToken.details.name;
+                coinInfo.decimals = customToken.details.decimals;
+                coinInfo.token_address = customToken.details.token_address;
+            }
+            coinstore.push(coinInfo);
+            return coinstore;
+        });
     }
 
     function createAndSaveKeys(){
@@ -148,7 +151,7 @@
         try {
             keyPair = keysFromNew(selected.network, selected.symbol);
             keyAttributes.publicKey = keyPair.vk;
-            keyInputs.privateKeyInput = keyPair.sk;
+            keyAttributes.privateKey = keyPair.sk;
             saveKeys();
         } catch (e){
             console.log(e)
@@ -232,10 +235,6 @@
                             required
                             on:change={() => validateTokenContract(this)}
                             />
-                </div>
-                <div>
-                    <label>Token Name (optional)</label><br>
-                    <input bind:value={ customToken.name } />
                 </div>
             {/if}
         </div>

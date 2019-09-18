@@ -5,8 +5,6 @@
     //Props
     export let coin;
 
-    let selected;
-    
 </script>
 
 <h2> Receive {coin.name} </h2>
@@ -14,14 +12,8 @@
     <span>
         Public Key
         <small>{coin.name}  {coin.symbol}</small>
-        <!-- <small>${coin.totalUsdBalance.toFixed(2)}</small> -->
+        <small>${coin.balance}</small>
     </span>
 </div>
-<div>
-    <select id='ddPubkeys' bind:value={selected}>
-        {#each Object.keys(coin.pubkeys) as pubKey}
-            <option value={coin.pubkeys[pubKey]}>{coin.pubkeys[pubKey].nickname}</option>
-        {/each}
-    </select>
-</div>
-<button on:click={() => copyToClipboard(selected.vk)}>copy to clipboard</button>
+<a href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
+<small>click to copy public key to clipboard</small>

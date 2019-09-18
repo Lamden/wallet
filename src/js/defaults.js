@@ -18,6 +18,7 @@ export const coin = {
 
 export const pubkey = {
     nickname : '',
+    active: false,
     balance: 0,
     USD_value : 0,
     vk : '',
@@ -25,8 +26,10 @@ export const pubkey = {
 }
 
 export const token = {
+    name: '',
+    nickname: '',
     symbol : '',
-    contract_address : '',
+    token_address : '',
     decimals : 18,
     balance: 0,
     USD_value: 0,

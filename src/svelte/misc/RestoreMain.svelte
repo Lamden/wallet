@@ -53,29 +53,30 @@
             let keystoreObj = {};
             
             try{
-                keystoreObj = JSON.parse(output);
+                keystoreObj = JSON.parse(JSON.parse(output).data);
             } catch (e) {
-                error = "not a valid keystore"
+                error = "not a valid keystore1"
                 return
             }
+            console.log(keystoreObj)
             if (!keystoreObj.ct || !keystoreObj.iv || !keystoreObj.s){
-                error = "not a valid keystore"
+                error = "not a valid keystore2"
                 return
             }
-            fileContent = output;
+            fileContent = JSON.parse(output);
         };
         reader.readAsText(file);
     }
 
     function handleKeyStoreSubmit(form){
         if (form.checkValidity()){
-            keyStore = decryptFile(keyStorePassword, fileContent);
+            keyStore = decryptFile(keyStorePassword, fileContent.data);
         }
     }
 
     function validateKeyStorePassword(obj){
         try{
-            decryptFile(keyStorePassword, fileContent);
+            decryptFile(keyStorePassword, fileContent.data);
             obj.setCustomValidity('');
         } catch (e) {
             obj.setCustomValidity("Incorrect Password");
@@ -97,30 +98,11 @@
     }
 
     function addKeys(){
-        for (const keyPair of keyStore.keyList){
-            if (keyPair.checked){
-                //Create network object if it doesn't already exist
-                !$CoinStore[keyPair.network] ? $CoinStore[keyPair.network] = {} : null;
-
-                // Create a new Coin if one doesn't exist for the network
-                if (!$CoinStore[keyPair.network][keyPair.symbol]) {
-                    let newCoin = JSON.parse(JSON.stringify($defaultOjects.coin))
-                    newCoin.name = keyPair.name;
-                    newCoin.symbol = keyPair.symbol;
-                    $CoinStore[keyPair.network][keyPair.symbol] = newCoin;
-                }
-
-                //Add key if the pubkey doesn't already exists in the coin's pubkeys store
-                if (!$CoinStore[keyPair.network][keyPair.symbol]['pubkeys'][keyPair.vk]) {
-                    let newPubkey = JSON.parse(JSON.stringify($defaultOjects.pubkey))
-                    newPubkey.nickname = keyPair.nickname;
-                    newPubkey.vk = keyPair.vk;
-                    newPubkey.sk = keyPair.sk !== 'watchOnly' ? encryptStrHash(password, keyPair.sk) : keyPair.sk;
-                    $CoinStore[keyPair.network][keyPair.symbol]['pubkeys'][keyPair.vk] = newPubkey;
-                }
+        for (const keypair of keyStore.keyList){
+            if (keypair.checked){
+                CoinStore.update(coinstore => { coinstore.push(keypair); return coinstore; })
             }
         }
-        alert('restore completed')
         switchPage('CoinsMain')
 
     }
@@ -177,6 +159,11 @@
                         type="password"
                         required  />
             </div>
+            {#if fileContent.w}
+                <div>
+                    {`Saved Password Hint: ${fileContent.w}`}
+                </div>
+            {/if}
             <input type="submit" value="Restore Keys">
         </form>
     {/if}

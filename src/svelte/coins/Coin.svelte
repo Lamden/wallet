@@ -32,30 +32,15 @@
 </style>
 
 <div class="container">
-    {#if !coin.token}
-        <img class="logo" src={logo} alt={`${coin.name} logo`} />
-        <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
-            {#if watching }👀{/if}{` ${coin.name} - ${coin.nickname}`} 
-        </h2>
-        <ul>
-            <li>{`balance ${ coin.balance } ${ coin.symbol }`}</li>
-            <li>{`USD Value (${ toCurrencyFormat(coin.USD_value) })`}</li>
-            {#if watching}
-                <li>Watching Coin</li>
-            {/if}
-        </ul>
-    {/if}
-    {#if coin.token}
-        <img class="logo" src={logo} alt={`${coin.name} logo`} />
-        <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
-            {#if watching }👀{/if}{`${coin.tokenDetails.nickname}`} 
-        </h2>
-        <ul>
-            <li>{`balance ${ coin.tokenDetails.balance } ${ coin.tokenDetails.symbol }`}</li>
-            <li>{`USD Value (${ toCurrencyFormat(coin.tokenDetails.USD_value) })`}</li>
-            {#if watching}
-                <li>Watching Coin</li>
-            {/if}
-        </ul>
-    {/if}
+    <img class="logo" src={logo} alt={`${coin.name} logo`} />
+    <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
+        {#if watching }👀{/if}{` ${coin.name} - ${coin.nickname}`} 
+    </h2>
+    <ul>
+        <li>{`balance ${ coin.balance } ${ coin.symbol }`}</li>
+        <li>{`USD Value (${ toCurrencyFormat(coin.USD_value) })`}</li>
+        {#if watching}
+            <li>Watching Coin</li>
+        {/if}
+    </ul>
 </div>

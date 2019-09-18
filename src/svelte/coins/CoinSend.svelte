@@ -7,12 +7,8 @@
 
 
     export let coin;
-    let selected;
     let tx_value = 0;
     let reciever_address = '';
-
-    $: totalBalance = $allTotals.coinTotals[coin.network][coin.symbol].balance || 0;
-    $: totalUSDValue = $allTotals.coinTotals[coin.network][coin.symbol].USD_value || 0;
 
 </script>
 
@@ -25,17 +21,11 @@
 <h2> Send {coin.name} </h2>
 <div>
     <span>Public Key</span>
-    <span><small>{coin.name} {totalBalance} {coin.symbol}</small></span>
-    <span><small>${totalUSDValue}</small></span>
+    <span><small>{`${coin.name} - ${coin.nickname}`}</small></span>
+    <span><small>{`${coin.balance} (${coin.symbol})`}</small></span>
 </div>
-<div>
-    <select id='ddPubkeys' bind:value={selected}>
-        {#each  Object.keys(coin.pubkeys) as pubKey}
-            <option value={coin.pubkeys[pubKey]}>{coin.pubkeys[pubKey].nickname}</option>
-        {/each}
-    </select>
-</div>
-<button on:click={() => copyToClipboard(selected.vk)}>copy to clipboard</button>
+<a href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
+<small>click to copy public key to clipboard</small>
 
 <div>
     Amount

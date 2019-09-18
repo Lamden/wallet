@@ -16,6 +16,7 @@ export function pubFromPriv(network, symbol, privateKey) {
         throw new Error(`Not a valid ${network} private key`);
       }
       pubkey = ethUtil.privateToAddress(key).toString('hex');
+      pubkey = ethUtil.toChecksumAddress(pubkey);
     } catch {
       console.log('pubkey error ')
       throw new Error(`Not a valid ${network} private key`);
@@ -49,8 +50,8 @@ export function keysFromNew(network, symbol) {
   if (network === 'ethereum') {
     let myWallet;
     try{
-      myWallet = ethWallet.generate();
-      keyPair.vk = myWallet.getAddressString()
+      myWallet = ethWallet.generate(); 
+      keyPair.vk = ethUtil.toChecksumAddress(myWallet.getAddressString());
       keyPair.sk = myWallet.getPrivateKeyString()
     } catch(e) {
       console.log(e);
@@ -93,7 +94,7 @@ export function validateAddress(network, wallet_address){
   if (network === 'bitcoin'){
     try{
       bitcoin.address.fromBase58Check(wallet_address)
-      return
+      return wallet_address;
     } catch (e) {
       console.log(e)
       throw new Error(`Not a valid ${network} public key`);
@@ -102,8 +103,11 @@ export function validateAddress(network, wallet_address){
 
   if (network === 'ethereum'){
     try{
-      ethUtil.isValidChecksumAddress(ethUtil.toChecksumAddress(wallet_address))
-      return
+      console.log(wallet_address);
+      let checkSumAddress = ethUtil.toChecksumAddress(wallet_address);
+      console.log(checkSumAddress);
+      ethUtil.isValidChecksumAddress(checkSumAddress);
+      return checkSumAddress;
     } catch (e) {
       throw new Error(`Not a valid ${network} public key`);
     }

@@ -35,7 +35,7 @@
 <div>
     <h2>{coin.name}</h2>
     <div> {`balance ${coin.balance} ${coin.symbol}`}</div>
-    <div> {`(${coin.USD_value})`} </div>   
+    <!-- <div> {`(${coin.USD_value})`} </div> -->
 </div>
 {#if coin.sk !== 'watchOnly'}
     <button on:click={ () => showModal('CoinSend') }> Send </button>

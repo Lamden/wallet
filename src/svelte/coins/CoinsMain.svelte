@@ -18,6 +18,10 @@
 	let currentModal = '';
 	let apiResult = '';
 
+	onMount(() => {
+		CoinStore.updateBalances($CoinStore);
+	});
+
 	function checkAPI() {
 		API('GET', 'status').then(result => {apiResult = result})
 	}
@@ -43,15 +47,13 @@
 <style>
 </style>
 
-<h1>{`You have ${$allTotals.majorTotals.coins} coins!`}</h1>
+<h1>{`You have ${$allTotals.coins} coins!`}</h1>
 
-{$allTotals.majorTotals.wallets} wallet addresses
-
-<h2> {`Total USD Value: ${toCurrencyFormat($allTotals.majorTotals.USD_value)}`} </h2>
+<h2> {`Total USD Value: ${toCurrencyFormat($allTotals.USD_value)}`} </h2>
 
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 
-{#each $coinList as coin, id}
+{#each $CoinStore as coin, id}
 	<Coin coin={coin} />
 {/each}
 

@@ -33,27 +33,17 @@ export function API (method, endpoint, path, data){
 
 export function makeBalancesPost(CoinStore) {
     let postObj = {"address_list":[]};
-    for (const [netKey, network] of Object.entries(CoinStore) ){
-        if (Object.entries(network).length > 0){
-            for (const [coinKey, coin] of Object.entries(network)){
-                for (const [publicKey, pubKeyInfo] of Object.entries(coin.pubkeys)){
-                    let coinInfo = {
-                        "network_symbol" : coin.symbol,
-                        "wallet_address" : publicKey,
-                        "network" : netKey,
-                    }
-                    if (pubKeyInfo.nickname !== "") postObj.address_list.push(coinInfo);
-                    if (pubKeyInfo.tokens){
-                        for (const [token, tokenValue] of Object.entries(pubKeyInfo.tokens)){
-                            let tokenInfo = JSON.parse(JSON.stringify(coinInfo));
-                            tokenInfo.token_address = tokenValue.token_address;
-                            tokenInfo.token_symbol = tokenValue.symbol;
-                            postObj.address_list.push(tokenInfo);
-                        }
-                    }
-                }
-            }
+    for (const coin of CoinStore){
+        let coinInfo = {
+            "network_symbol" : coin.symbol,
+            "wallet_address" : coin.vk,
+            "network" : coin.network,
         }
+        if (coin.is_token) {
+            coinInfo.token_address = coin.token_address
+            coinInfo.network_symbol = coin.network_symbol;
+        }
+        postObj.address_list.push(coinInfo);
     }
     return postObj.address_list.length > 0 ? postObj : false;
 }

@@ -11,7 +11,9 @@
     let password;
     let passwordOkay;
     let keyList = [];
-    let keys = "";
+    let passwordHint = ""
+
+    let keys = ""
 
     function handleSubmit(form){
         if (form.checkValidity()){
@@ -33,7 +35,10 @@
     function download() {
         let currDateTime = new Date().toLocaleString();
         let filename = "Lamden_Vault_" + currDateTime + ".keystore";
-        let file = encryptObject(password, {'version' : $CURRENT_KS_VERSION, keyList});
+        let file = JSON.stringify({
+            data: encryptObject(password, {'version' : $CURRENT_KS_VERSION, keyList}),
+            w: passwordHint,
+        });
 
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(file));
@@ -45,30 +50,15 @@
     }
 
     function createKeyList(){
-        for (const [netKey, network] of Object.entries($CoinStore) ){
-            if (Object.entries(network).length > 0){
-                let networkName = netKey.toUpperCase();
-                let startString = `!! KEEP THIS INFORMATION SECRET !!\n`
-                let addString = `\n${keys}\n**${networkName} NETWORK **\n`
-                keys === "" ? keys = startString + addString  : keys = addString;
-
-                for (const [coinKey, coin] of Object.entries(network)){
-                    keys = `${keys}\n${coin.name} (${coinKey})\n`;
-                    for (const [vkKey, keypair] of Object.entries(coin.pubkeys)){
-                        let coinInfo = {};
-                        coinInfo.network = netKey;
-                        coinInfo.name = coin.name;
-                        coinInfo.symbol = coinKey;
-                        coinInfo.nickname = keypair.nickname;
-                        coinInfo.vk = keypair.vk;
-                        coinInfo.sk = decryptStrHash(password, keypair.sk);
-                        keyList.push(coinInfo);
-                        keys = `${keys}\n${coinInfo.nickname.toUpperCase()}\nPUBLIC KEY:\n${coinInfo.vk}\nPRIVATE KEY:\n${coinInfo.sk}\n`;
-                    }
-                }
-            }
-        }
-        if(keyList.length === 0) "You don't have any keys in storage" 
+        keyList = JSON.parse(JSON.stringify($CoinStore));
+        keys = `!! KEEP THIS INFORMATION SECRET !!\n`
+        keyList.map(function(keypair){
+            if (keypair.sk !== 'watchOnly')  keypair.sk = decryptStrHash(password, keypair.sk);
+            keys = `${keys}\n${keypair.name}(${keypair.symbol}) - ${keypair.nickname}`;
+            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${keypair.sk}\n`;
+            return keypair;
+        });
+        if(keyList.length === 0) keys = "Key Storage Empty";
     }
 </script>
 
@@ -97,6 +87,10 @@
             <a href="javascript:void(0)" on:click={() => copyToClipboard(keys)}>copy to clipboard</a>
             <button on:click={() => download()}>Download Encrypted Backup</button>
         </span>
+        <div>
+            <label>Password Hint</label><br>
+            <input type="text" bind:value={passwordHint} />
+        </div>
     {/if}
 
     <p>We recommend you write down these private keys on paper as well as save them to a flash drive.</p>
