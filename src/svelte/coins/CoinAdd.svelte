@@ -15,7 +15,6 @@
     let coinList = [];
     let selected;
     let tokenNetworks = [{ name: 'Ethereum', network: 'ethereum', network_symbol: "ETH", token: true, }, { name: 'Ethereum TestNet (kovan)', network: 'ethereum', network_symbol: "ETH-TESTNET", token: true, }]
-    let customERC20 = {name:'ERC20 Token', symbol:'Custom', testnet: false, network: 'ethereum'};
     let lamden = {name:'Lamden', symbol:'TAU', testnet: true, network: 'lamden'};
     let keyInputs = { privateKeyInput: '', publicKeyInput: ''};
     let keyAttributes = {publicKey: '', privateKey: '', nickname: '' };
@@ -58,12 +57,12 @@
             token.network_symbol = 'ETH'
             return token;
         });
+        coinList = [...coins['bitcoin_networks'], ...coins['ethereum_networks'], ...tokens];
         coinList.map(function(token){
             if (token.name === 'test-ethereum') token.name ='Ethereum TestNet (kovan)';
             return token;
         });
-        coinList = [...coinList, customERC20, ...tokens]
-        coinList = coinList.sort((a, b) => (a.name > b.name) ? 1 : -1)
+        coinList = coinList.sort((a, b) => (a.symbol > b.symbol) ? 1 : -1)
         return coinList;
     }
 
