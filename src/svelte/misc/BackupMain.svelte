@@ -53,9 +53,8 @@
         keyList = JSON.parse(JSON.stringify($CoinStore));
         keys = `!! KEEP THIS INFORMATION SECRET !!\n`
         keyList.map(function(keypair){
-            if (keypair.sk !== 'watchOnly')  keypair.sk = decryptStrHash(password, keypair.sk);
             keys = `${keys}\n${keypair.name}(${keypair.symbol}) - ${keypair.nickname}`;
-            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${keypair.sk}\n`;
+            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${decryptStrHash(password, keypair.sk)}\n`;
             return keypair;
         });
         if(keyList.length === 0) keys = "Key Storage Empty";

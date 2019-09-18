@@ -7,12 +7,20 @@ export const CURRENT_KS_VERSION = writable("1.0");
 
 const createCoinStore = (key, startValue) => {
     const { subscribe, set, update } = writable(startValue);
+
+    const getCoin = (coin, coinstore) => {
+        if (coin.is_token){
+            return coinstore.find(f=> f.network === coin.network && f.token_address === coin.token_address && f.vk === coin.vk);
+        }
+        return  coinstore.find(f=> f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk);
+    }
     
     return {
         startValue,
         subscribe,
         set,
         update,
+        getCoin,
         useLocalStorage: () => {  
             const json = localStorage.getItem(key);
             if (json) {
@@ -30,26 +38,33 @@ const createCoinStore = (key, startValue) => {
         updateBalances: (storeValue) => {
             console.log('!! REFRESHING BALANCES !!')
             const postObj = makeBalancesPost(storeValue);
-            console.log(postObj);
+
             if (postObj){
                 return API('POST', 'get-balances', "", postObj)
                 .then(balances => {
-                    console.log(balances)
                     update (coinstore => {
                         for (const item of balances.value){
-                            let coin = coinstore.find(f=> f.network==item.network && f.token_address === item.token_address);
-                            if(coin){
-                                coin.balance=item.balance;
-                                console.log(coin);
+                            let coin;
+                            if (item.token_address){
+                                coin = coinstore.find(f=> f.network === item.network && f.token_address === item.token_address && f.vk === item.wallet_address);
+                            }else{
+                                coin = coinstore.find(f=> f.network === item.network && f.network_symbol === item.symbol && f.vk === item.wallet_address);
                             }
+                            if(coin) coin.balance=item.balance;
                         }
-                        console.log(coinstore)
                         return coinstore;
                     });
                 })
                 .catch(e => console.log(e))
             }
-		},
+        },
+        updateCoinTransaction: (coinToUpdate, tx_info) => {
+            update(coinstore => {
+                let coin = getCoin(coinToUpdate, coinstore)
+                coin.txList = !coin.txList ? [tx_info] : [...coin.txList, tx_info];
+                return coinstore;
+            })
+        }
     };
 }
 

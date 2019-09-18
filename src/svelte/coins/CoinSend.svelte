@@ -1,38 +1,150 @@
 <script>
-    //Stores
-    import { allTotals } from '../../js/stores.js';
+    import { getContext} from 'svelte';
 
+	//Stores
+    import { Hash, CoinStore } from '../../js/stores.js';
+    
     //Utils
-    import { copyToClipboard } from '../../js/utils.js'
+	import { API } from '../../js/api.js';
+    import { checkPassword, copyToClipboard, decryptStrHash } from '../../js/utils.js';
+    import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
+    const { closeModal } = getContext('closeModal');
 
     export let coin;
-    let tx_value = 0;
-    let reciever_address = '';
+    const tx_info_items = ['sender_address', 'recipient_address', 'gasprice', 'gas_limit', 'nonce', 'value_text', 'unsigned_raw_tx'];
 
+    let error = '';
+    let value = 0;
+    let reciever_address = '';
+    let info_valid = false;
+    let signed_transaction = '';
+    let password = '';
+    let tx_data;
+
+    function handleSubmit(form){
+        error = '';
+        if (form.checkValidity()){
+            if (!info_valid) {info_valid = true; return}
+            if (info_valid) {publish(); return}
+        }
+    }
+
+    function createTransaction() {
+        const network_symbol = coin.is_token ? coin.network_symbol : coin.symbol;
+        let path = `${network_symbol}/${coin.vk}/${reciever_address}`
+        if (coin.is_token) path = `${path}/${coin.token_address}`
+		const data = {value}
+        return API('POST', 'p2p-transaction', path, data)
+            .then(result => {
+                if (result.type === 'error') { info_valid = false; error = "Amount exeeds balance" }
+                else {tx_data = result; return result}
+            })
+    }
+
+    function publish(){
+        const network_symbol = coin.is_token ? coin.network_symbol : coin.symbol;
+        signed_transaction = signTx(tx_data.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, network_symbol);
+        const data = {'raw_transaction': signed_transaction}
+        API('POST', 'publish-transaction', network_symbol, data)
+            .then(result => finishTransaction(result) )
+    }
+
+    function finishTransaction(result){
+            result.value = tx_data.value;
+            result.to = tx_data.recipient_address;
+            result.gasprice = tx_data.gasprice;
+            result.gas_limit = tx_data.gas_limit;
+            result.nonce = tx_data.nonce;
+            result.dateTime = new Date();
+            result.status = 'sent';
+            CoinStore.updateCoinTransaction(coin, result);
+            closeModal();
+    }
+
+    function addressValidation(obj){
+        obj.setCustomValidity("");
+        try{
+            reciever_address = validateAddress(coin.network, reciever_address);
+        } catch (e) {
+            console.log(e);
+            obj.setCustomValidity(e);
+        }
+    }
+
+    function validatePassword(obj){
+        obj.setCustomValidity('');
+        if (!checkPassword(password, $Hash)) {
+            obj.setCustomValidity("Incorrect Password");
+        }
+    }
 </script>
 
 <style>
     div{
         display: grid;
     }
+    
 </style>
 
+<p class="error">{error}</p>
 <h2> Send {coin.name} </h2>
 <div>
-    <span>Public Key</span>
+    <h3>Public Key</h3>
     <span><small>{`${coin.name} - ${coin.nickname}`}</small></span>
     <span><small>{`${coin.balance} (${coin.symbol})`}</small></span>
 </div>
-<a href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
+<a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
 <small>click to copy public key to clipboard</small>
+<form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
+    {#if !info_valid}
+        <div>
+            <lable>Amount</lable>
+            <input type="text" bind:value={value} required/>
+            <!-- <small>USD Value 0.0001</small> -->
+        </div>
+        <div>
+            <lable>To Address</lable>
+            <input type="text" bind:value={reciever_address} required on:change={() => addressValidation(this)}/>
+        </div>
+        <div>
+            <input type="submit" value="Get Transaction Information" required>
+        </div>
+    {/if}
 
-<div>
-    Amount
-    <input type="text" bind:value={tx_value} />
-    <small>USD Value 0.0001</small>
-</div>
-<div>
-    To Address
-    <input type="text" bind:value={reciever_address} />
-</div>
+    {#if info_valid}
+        {#await createTransaction()}
+            ... Getting Transaction Information from Server ...
+        {:then tx_info}
+            <div>
+                <lable>from</lable>
+                <input readonly value={tx_info['sender_address']} />
+                <lable>to</lable>
+                <input readonly value={tx_info['recipient_address']} />
+                <lable>amount</lable>
+                <input readonly value={tx_info['value_text']} />
+                {#if coin.network === 'ethereum'}
+                    <lable>gas price</lable>
+                    <input readonly value={tx_info['gasprice']} />
+                    <lable>gas limit</lable>
+                    <input readonly value={tx_info['gas_limit']} />
+                    <lable>nonce</lable>
+                    <input readonly value={tx_info['nonce']} />
+                {/if}
+                <lable>raw transaction</lable>
+                <textarea readonly row='3' value={tx_info['unsigned_raw_tx']} />
+            </div>
+            <div>
+                <label>Wallet Password</label><br>
+                <input bind:value={password}
+                        on:change={() => validatePassword(this)}
+                        type="password"
+                        required  />
+                <input type="submit" value="Publish Transaction" required>
+            </div>
+        {:catch error}
+            {error}
+        {/await}
+    {/if}
+</form> 
+

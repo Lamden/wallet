@@ -58,7 +58,6 @@
                 error = "not a valid keystore1"
                 return
             }
-            console.log(keystoreObj)
             if (!keystoreObj.ct || !keystoreObj.iv || !keystoreObj.s){
                 error = "not a valid keystore2"
                 return

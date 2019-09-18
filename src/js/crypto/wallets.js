@@ -1,9 +1,8 @@
 const bitcoin = require('bitcoinjs-lib');
 const ethUtil = require('ethereumjs-util');
-const ethTx = require('ethereumjs-tx');
+const ethTx = require('ethereumjs-tx').Transaction;
 const ethWallet = require('ethereumjs-wallet');
 import { networks } from './networks';
-
 
 export function pubFromPriv(network, symbol, privateKey) {
   let pubkey = undefined;
@@ -103,9 +102,7 @@ export function validateAddress(network, wallet_address){
 
   if (network === 'ethereum'){
     try{
-      console.log(wallet_address);
       let checkSumAddress = ethUtil.toChecksumAddress(wallet_address);
-      console.log(checkSumAddress);
       ethUtil.isValidChecksumAddress(checkSumAddress);
       return checkSumAddress;
     } catch (e) {
@@ -115,48 +112,25 @@ export function validateAddress(network, wallet_address){
   throw new Error(`${network} is not a supported network `);
 }
 
-export function signTx(rawTransaction = '', privateKey = '', network, networkSymbol = '', ) {
-  if (network === 'ethereum') {
-    return signEthereumTx(rawTransaction, privateKey);
+export function signTx(rawTransaction, privateKey, network, networkSymbol) {
+  if (network === 'ethereum' ) {
+    return signEthereumTx(rawTransaction, privateKey, networkSymbol);
   }
 
   if (network === 'bitcoin') {
     return signBitcoinTx(rawTransaction, privateKey, networks[network][networkSymbol]);
   }
 
-  throw new Error(`${networkSymbol} network is not supported`);
+  throw new Error(`${network} network is not supported`);
 };
 
-function stripHexPrefix(hexString) {
-  return hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
-};
-
-function getHexBuffer(hexstring) {
-  return Buffer.from(stripHexPrefix(hexstring), 'hex');
-} 
-
-function getEthereumTx (rawTransaction){
-  const rawTx = getHexBuffer(rawTransaction);
-
-  if (rawTx.length === 0) {
-    throw new Error('Invalid transaction');
-  }
-
-  try {
-    return new EthereumTx(rawTx);
-  } catch (e) {
-    throw new Error('Invalid transaction');
-  }
-};
-
-function signEthereumTx(rawTransaction = '', privateKey = '') {
+function signEthereumTx(rawTransaction, privateKey, networkSymbol) {
   const key = getHexBuffer(privateKey);
-
   if (key.length === 0) {
     throw new Error('Missing or invalid private key');
   }
 
-  const ethTransaction = getEthereumTx(rawTransaction);
+  const ethTransaction = getEthereumTx(rawTransaction, networkSymbol);
 
   try {
     ethTransaction.sign(key);
@@ -168,6 +142,33 @@ function signEthereumTx(rawTransaction = '', privateKey = '') {
     }
   }
   return ethTransaction.serialize().toString('hex');
+};
+
+function getEthereumTx (rawTransaction, networkSymbol){
+  const rawTx = getHexBuffer(rawTransaction);
+  let chain = networkSymbol === 'ETH-TESTNET' ? {'chain':42} : {};
+
+  if (rawTx.length === 0) {
+    throw new Error('Invalid transaction');
+  }
+
+  try {
+    return new ethTx(rawTx, chain);
+  } catch (e) {
+    console.log(e)
+    throw new Error('Invalid transaction');
+  }
+};
+
+function getHexBuffer(hexstring) {
+  let striphex = stripHexPrefix(hexstring)
+  let buff = Buffer.from(striphex, 'hex')
+  return buff;
+}
+
+function stripHexPrefix(hexString) {
+  let hexstr = hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
+  return hexstr;
 };
 
 function getBitcoinTx(rawTransaction) {

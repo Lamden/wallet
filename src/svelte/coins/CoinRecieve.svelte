@@ -15,5 +15,5 @@
         <small>${coin.balance}</small>
     </span>
 </div>
-<a href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
+<a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
 <small>click to copy public key to clipboard</small>

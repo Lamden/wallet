@@ -19,19 +19,13 @@
 	let apiResult = '';
 
 	onMount(() => {
-		CoinStore.updateBalances($CoinStore);
+		//CoinStore.updateBalances($CoinStore);
 	});
 
 	function checkAPI() {
 		API('GET', 'status').then(result => {apiResult = result})
 	}
 
-	function createTransaction() {
-		const path = 'ETH-TESTNET/0xFa29E36A7eb4dBaE9ed93D803e5Bf95ae9772A27/0xFa29E36A7eb4dBaE9ed93D803e5Bf95ae9772A27'
-		const data = {value : 0.002}
-		API('POST', 'p2p-transaction', path, data)
-			.then(result => {console.log(result)})
-	}
 
 	function showModal(modal){
         currentModal = modal;

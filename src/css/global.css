@@ -29,6 +29,20 @@ button {
     color: red;
 }
 
+.copy-link {
+    color: var(--font-color);
+    text-decoration: none;
+}
+
+.copy-link :hover {
+    color: var(--font-color);
+}
+
+.copy-link :visited {
+    outline: none;
+}
+
+
 @media only screen and (max-width: 350px){
     html{
         width: 300px;

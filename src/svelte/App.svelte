@@ -10,7 +10,7 @@
 
 	onMount(() => {
 		CoinStore.useLocalStorage();
-		CoinStore.updateBalances($CoinStore);
+		//CoinStore.updateBalances($CoinStore);
 		SettingsStore.useLocalStorage();
 		Hash.useLocalStorage();
 		document.querySelector("html").style = themes[$themeStyle];
@@ -58,6 +58,7 @@
 				<div class='controls soflexy'>
 					<button on:click={ () => toggleTheme() }> Toggle Theme </button>
 					<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
+					<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
 				</div>
 			</nav>
 
