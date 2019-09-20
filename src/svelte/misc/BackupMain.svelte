@@ -8,6 +8,10 @@
     //Components
     import { BackupPW, BackupDownload }  from '../../js/router.js'
 
+    //DOM NODES
+    let passwordField;
+    let formObj;
+
     let password;
     let passwordOkay;
     let keyList = [];
@@ -64,11 +68,12 @@
 <h1>Backup Wallet</h1>
 
 {#if !passwordOkay}
-<form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
+<form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
     <div>
         <label>Password</label><br>
         <input bind:value={password}
-                on:change={() => validatePassword(this)}
+               bind:this={passwordField}
+                on:change={() => validatePassword(passwordField)}
                 type="password"
                 required  />
     </div>

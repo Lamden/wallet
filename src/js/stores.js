@@ -52,6 +52,7 @@ const createCoinStore = (key, startValue) => {
                             }
                             if(coin) coin.balance=item.balance;
                         }
+                        console.log('!! REFRESHED !!')
                         return coinstore;
                     });
                 })

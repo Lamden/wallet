@@ -7,6 +7,12 @@
     //Utils
     import { decryptFile, encryptStrHash, checkPassword } from '../../js/utils.js';
 
+    //DOM NODES
+    let passwordField;
+    let keystoreField;
+    let formObj1;
+    let formObj2;
+
     const { switchPage } = getContext('switchPage');
     let file;
     let fileContent = "";
@@ -150,11 +156,12 @@
     {/if}
 
     {#if fileContent !== "" && !keyStore }
-        <form on:submit|preventDefault={() => handleKeyStoreSubmit(this) } target="_self">
+        <form on:submit|preventDefault={() => handleKeyStoreSubmit(formObj1) } bind:this={formObj1} target="_self">
             <div>
                 <label>Keystore Password</label><br>
                 <input bind:value={keyStorePassword}
-                        on:change={() => validateKeyStorePassword(this)}
+                       bind:this={keystoreField}
+                        on:change={() => validateKeyStorePassword(keystoreField)}
                         type="password"
                         required  />
             </div>
@@ -169,12 +176,8 @@
     
     {#if keyStore}
         <strong>keystore version:</strong> {keyStore.version}<br>
-        
-        <form on:submit|preventDefault={() => addKeys() } target="_self">
 
-        </form>
-
-        <form on:submit|preventDefault={() => handleKeysSubmit(this) } target="_self">
+        <form on:submit|preventDefault={() => handleKeysSubmit(formObj2)} bind:this={formObj2} target="_self">
             <span>
                 <label>Choose keys to restore</label>
                 <input type="checkbox" bind:checked={selectAll} on:change={(ev) => selectAllKeys(ev)}>
@@ -190,7 +193,8 @@
             {#if !checkPassword(keyStorePassword, $Hash)}
                 <label>Wallet Password</label><br>
                 <input bind:value={password}
-                        on:change={() => validateWalletPassword(this)}
+                       bind:this={passwordField}
+                        on:change={() => validateWalletPassword(passwordField)}
                         type="password"
                         required  />
             {/if}

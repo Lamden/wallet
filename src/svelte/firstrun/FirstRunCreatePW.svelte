@@ -6,7 +6,13 @@
 
     //Utils
     import { createPassword } from '../../js/utils.js';
+    
+    //DOM NODES
+    let passwordField;
+    let confirmPasswordField;
+    let formField;
 
+    //Context
     const { switchPage } = getContext('switchPage');
     let form = {};
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
@@ -61,11 +67,12 @@ Password Requirements
     <li>1 special character</li>
 </ol>
 
-<form on:submit|preventDefault={() => savePassword(this) } target="_self">
+<form on:submit|preventDefault={() => savePassword(formField) } bind:this={formField} target="_self">
     <div>
         <label>Password</label><br>
         <input bind:value={password}
-               on:change={() => validatePassword1(this) }
+               bind:this={passwordField}
+               on:change={() => validatePassword1(passwordField) }
                class="input:required:invalid input:focus:invalid"
                type="password"
                {pattern} 
@@ -74,7 +81,8 @@ Password Requirements
     <div>
         <label>Confirm Password</label><br>
         <input bind:value={confirm}
-               on:change={() => validatePassword2(this)}
+               bind:this={confirmPasswordField}
+               on:change={() => validatePassword2(confirmPasswordField)}
                class="input:required:valid"
                type="password"
                required />

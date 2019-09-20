@@ -9,22 +9,30 @@
     import { checkPassword, copyToClipboard, decryptStrHash } from '../../js/utils.js';
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
+    //Props
+    export let coin;
+
+    //DOM NODES
+    let passwordField;
+    let addressField;
+    let formObj;
+
+    //Context
     const { closeModal } = getContext('closeModal');
 
-    export let coin;
     const tx_info_items = ['sender_address', 'recipient_address', 'gasprice', 'gas_limit', 'nonce', 'value_text', 'unsigned_raw_tx'];
 
     let error = '';
-    let value = 0;
-    let reciever_address = '';
+    let value = 0.001;
+    let reciever_address = 'mqkaog8wXk9juy7XcyjGhBwHX13ECyaz38';
     let info_valid = false;
     let signed_transaction = '';
-    let password = '';
+    let password = 'Summer0!0101';
     let tx_data;
 
-    function handleSubmit(form){
+    function handleSubmit(obj){
         error = '';
-        if (form.checkValidity()){
+        if (obj.checkValidity()){
             if (!info_valid) {info_valid = true; return}
             if (info_valid) {publish(); return}
         }
@@ -44,7 +52,12 @@
 
     function publish(){
         const network_symbol = coin.is_token ? coin.network_symbol : coin.symbol;
-        signed_transaction = signTx(tx_data.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, network_symbol);
+        try{
+            signed_transaction = signTx(tx_data.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, network_symbol);
+        }catch (e) {
+            console.log(e)
+            error = e;
+        }
         const data = {'raw_transaction': signed_transaction}
         API('POST', 'publish-transaction', network_symbol, data)
             .then(result => finishTransaction(result) )
@@ -69,6 +82,9 @@
         } catch (e) {
             console.log(e);
             obj.setCustomValidity(e);
+        }
+        if (coin.vk === reciever_address){
+            obj.setCustomValidity('cannot send to yourself');
         }
     }
 
@@ -96,7 +112,7 @@
 </div>
 <a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
 <small>click to copy public key to clipboard</small>
-<form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
+<form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
     {#if !info_valid}
         <div>
             <lable>Amount</lable>
@@ -105,7 +121,11 @@
         </div>
         <div>
             <lable>To Address</lable>
-            <input type="text" bind:value={reciever_address} required on:change={() => addressValidation(this)}/>
+            <input type="text" 
+                bind:value={reciever_address}
+                bind:this={addressField}
+                required 
+                on:change={() => addressValidation(addressField)}/>
         </div>
         <div>
             <input type="submit" value="Get Transaction Information" required>
@@ -132,12 +152,13 @@
                     <input readonly value={tx_info['nonce']} />
                 {/if}
                 <lable>raw transaction</lable>
-                <textarea readonly row='3' value={tx_info['unsigned_raw_tx']} />
+                <textarea readonly row='5' value={tx_info['unsigned_raw_tx']} />
             </div>
             <div>
-                <label>Wallet Password</label><br>
+                <label>Wallet Password</label>
                 <input bind:value={password}
-                        on:change={() => validatePassword(this)}
+                        bind:this={passwordField}
+                        on:change={() => validatePassword(passwordField)}
                         type="password"
                         required  />
                 <input type="submit" value="Publish Transaction" required>

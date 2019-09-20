@@ -57,30 +57,22 @@
 {/if}
 <button on:click={ () => showModal('CoinRecieve') }> Recieve </button>
 
-<h2>Transactions</h2>
-{#if coin.txList}
-    <ul>
-        {#each coin.txList as tx}
-            <li>
-                <a href={tx.transaction_link} rel="noopener noreferrer" target="_blank">
-                    {`Sent ${tx.value} (${coin.symbol}) on ${tx.dateTime}  Status: ${tx.status}`}
-                </a>
-            </li>
-        {/each}
-    </ul>
-{:else}
-None
-{/if}
-
 <div>
-    <h3>Price Information</h3>
-    <div>Market Cap: 0</div>
-    <div>Price: 0</div>
-    <div>Volume: 0</div>
-    <div>Circulating Supply: 0</div>
-    <div>Change (24h): 0</div>
+    <h2>Transactions</h2>
+    {#if coin.txList}
+        <ul>
+            {#each coin.txList as tx}
+                <li>
+                    <a href={tx.transaction_link} rel="noopener noreferrer" target="_blank">
+                        {`Sent ${tx.value} (${coin.symbol}) on ${tx.dateTime}  Status: ${tx.status}`}
+                    </a>
+                </li>
+            {/each}
+        </ul>
+    {:else}
+    None
+    {/if}
 </div>
-
 <div>
     <button on:click={() => deleteCoin()}>delete</button>
 </div>

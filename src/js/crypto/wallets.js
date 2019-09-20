@@ -1,4 +1,5 @@
-const bitcoin = require('bitcoinjs-lib');
+const bitcoinLegacy = require('bitcoinjs-lib-332');
+const bitcoin = require('bitcoinjs-lib-latest');
 const ethUtil = require('ethereumjs-util');
 const ethTx = require('ethereumjs-tx').Transaction;
 const ethWallet = require('ethereumjs-wallet');
@@ -17,16 +18,15 @@ export function pubFromPriv(network, symbol, privateKey) {
       pubkey = ethUtil.privateToAddress(key).toString('hex');
       pubkey = ethUtil.toChecksumAddress(pubkey);
     } catch {
-      console.log('pubkey error ')
       throw new Error(`Not a valid ${network} private key`);
     }    
   } 
   
   if (network === 'bitcoin') {
     try {
-      const BTCnetwork = networks[network][symbol];
-      key = bitcoin.ECPair.fromWIF(privateKey, BTCnetwork);
-      const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey, network: BTCnetwork });
+      const networkObj = networks[network][symbol];
+      key = bitcoin.ECPair.fromWIF(privateKey, networkObj);
+      const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey, network: networkObj });
       pubkey = address;
     } catch {
       throw new Error(`Not a valid ${network} private key`);
@@ -173,7 +173,7 @@ function stripHexPrefix(hexString) {
 
 function getBitcoinTx(rawTransaction) {
   try {
-    return bitcoin.Transaction.fromHex(rawTransaction);
+    return bitcoinLegacy.Transaction.fromHex(rawTransaction);
   } catch (e) {
     throw new Error('Invalid transaction');
   }
@@ -181,7 +181,7 @@ function getBitcoinTx(rawTransaction) {
 
 function getBitcoinKey(privateKey, network) {
   try {
-    return bitcoin.ECPair.fromWIF(privateKey, network);
+    return bitcoinLegacy.ECPair.fromWIF(privateKey, network);
   } catch (e) {
     if (e.message === 'Invalid checksum' || e.message === 'Non-base58 character') {
       throw new Error('Invalid private key');
@@ -190,33 +190,31 @@ function getBitcoinKey(privateKey, network) {
   }
 };
 
-function signBitcoinTx(rawTransaction = '', privateKey = '', network) {
+function signBitcoinTx(rawTransaction, privateKey, networkObj, ) {
   const tx = getBitcoinTx(rawTransaction);
-
-  const txb = bitcoin.TransactionBuilder.fromTransaction(tx, network);
-
-  const key = getBitcoinKey(privateKey, network);
+  const txb = bitcoinLegacy.TransactionBuilder.fromTransaction(tx, networkObj);
+  const key = getBitcoinKey(privateKey, networkObj);
 
   if (txb.inputs[0].prevOutType === 'nonstandard') {
-    const contract = bitcoin.script.decompile(tx.ins[0].script).pop();
+    const contract = bitcoinLegacy.script.decompile(tx.ins[0].script).pop();
     txb.inputs[0].prevOutScript =
-      bitcoin.script.scriptHash.output.encode(bitcoin.crypto.hash160(contract));
-    txb.inputs[0].prevOutType = bitcoin.script.types.P2SH;
+    bitcoinLegacy.script.scriptHash.output.encode(bitcoinLegacy.crypto.hash160(contract));
+    txb.inputs[0].prevOutType = bitcoinLegacy.script.types.P2SH;
     txb.inputs[0].signScript = contract;
-    txb.inputs[0].signType = bitcoin.script.types.P2SH;
+    txb.inputs[0].signType = bitcoinLegacy.script.types.P2SH;
 
     txb.inputs[0].pubKeys = [key.getPublicKeyBuffer()];
     txb.inputs[0].signatures = [undefined];
 
     txb.sign(0, key, contract);
 
-    const sig = bitcoin.script.scriptHash.input.encodeStack(
+    const sig = bitcoinLegacy.script.scriptHash.input.encodeStack(
       txb.inputs[0].signatures[0],
       txb.inputs[0].pubKeys[0],
     );
 
-    sig.push(...bitcoin.script.decompile(tx.ins[0].script));
-    txb.tx.setInputScript(0, bitcoin.script.compile(sig));
+    sig.push(...bitcoinLegacy.script.decompile(tx.ins[0].script));
+    txb.tx.setInputScript(0, bitcoinLegacy.script.compile(sig));
     return txb.tx.toHex();
   }
 

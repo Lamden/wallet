@@ -9,6 +9,13 @@
 
     //Props
     export let closeModal;
+
+    //DOM NODES
+    let passwordField;
+    let tokenContractField;
+    let publicKeyField;
+    let privateKeyField;
+    let form; 
    
     let supportedCoins = getSupportedCoins();
     let supportedTokens = getSupportedTokens();
@@ -32,14 +39,14 @@
         return API('GET', 'networks-list', 'ETH/tokens');
     }
 
-    function getTokenDetails(obj){
-        obj = obj || null;
+    function getTokenDetails(node){
+        node = node || null;
         let address = customToken.view ? customToken.contractAddress : selected.address;
         return API('GET', 'token-details', `${selected.network_symbol}/${address}`)
             .then(result => {
                 error = "";
                 if (result.message){
-                    if (customToken.view) obj.setCustomValidity(result.message);
+                    if (customToken.view) node.setCustomValidity(result.message);
                     error = result.message;
                     return;
                 }
@@ -66,7 +73,7 @@
         return coinList;
     }
 
-    async function handleSubmit(form){
+    async function handleSubmit(){
         error = '';
         if (selected === 'temp'){
             customToken.view ? error = 'no network selected' : error = 'no coin selected';
@@ -86,26 +93,26 @@
         }
     }
 
-    function validatePassword(obj){
-        obj.setCustomValidity('');
+    function validatePassword(){
+        passwordField.setCustomValidity('');
         if (!checkPassword(password, $Hash)) {
-            obj.setCustomValidity("Incorrect Password");
+            passwordField.setCustomValidity("Incorrect Password");
         }
     }
 
-    async function validateTokenContract(obj){
-        obj.setCustomValidity('');
-        await getTokenDetails(obj);
+    async function validateTokenContract(){
+        tokenContractField.setCustomValidity('');
+        await getTokenDetails(tokenContractField);
     }
 
-    function reValidateTextarea(obj){
+    function reValidateTextarea(){
         keyInputs.privateKeyInput = "";
         keyInputs.publicKeyInput = ""
     }
 
-    function validateTextarea(obj){
+    function validateTextarea(node){
         if (selected !== 'temp'){
-            obj.setCustomValidity('');
+            node.setCustomValidity('');
             try{
                 if (addType === 2) {
                     keyAttributes.publicKey = pubFromPriv(selected.network, selected.symbol, keyInputs.privateKeyInput);
@@ -116,7 +123,7 @@
                 }
             } catch (e) {
                 console.log(e)
-                obj.setCustomValidity(e);
+                node.setCustomValidity(e);
             }
         }
     }
@@ -199,7 +206,7 @@
 </style>
 
 <p style="color: red;">{error}</p>
- <form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
+ <form on:submit|preventDefault={() => handleSubmit(this) } target="_self" bind:this={form}>
     {#if !customToken.view}
         <div>
             <h1>Add Coins</h1>
@@ -252,8 +259,9 @@
                 <div>
                     <label> Token Contract</label><br>
                     <input  bind:value={ customToken.contractAddress }
+                            bind:this={tokenContractField}
                             required
-                            on:change={() => validateTokenContract(this)}
+                            on:change={() => validateTokenContract()}
                             />
                 </div>
             {/if}
@@ -284,8 +292,9 @@
             <textarea bind:value={keyInputs.privateKeyInput} 
                     id="privateKeyInput"
                     placeholder={"Enter Private Key"}
-                    on:change={ () => validateTextarea(this) }
-                    on:show={ reValidateTextarea(this) }
+                    bind:this={privateKeyField}
+                    on:change={ () => validateTextarea(privateKeyField) }
+                    on:show={ reValidateTextarea() }
                     rows="2"
                     required  />
         </div>
@@ -296,8 +305,9 @@
             <textarea bind:value={keyInputs.publicKeyInput}
                     id="publicKeyInput"
                     placeholder={"Enter Public Key"}
-                    on:change={ () => validateTextarea(this) }
-                    on:show={ reValidateTextarea(this) }
+                    bind:this={publicKeyField}
+                    on:change={ () => validateTextarea(publicKeyField) }
+                    on:show={ reValidateTextarea() }
                     rows="2"
                     required  />
         </div>
@@ -311,8 +321,9 @@
     {#if addType !== 3}
         <div>
             <label>Wallet Password</label><br>
-            <input bind:value={password}
-                    on:change={() => validatePassword(this)}
+            <input  bind:value={password}
+                    bind:this={passwordField}
+                    on:change={() => validatePassword()}
                     type="password"
                     required  />
         </div>
