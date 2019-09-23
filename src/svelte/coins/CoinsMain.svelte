@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	//Stores
-	import { coinList, CoinStore, allTotals } from '../../js/stores.js';
+	import { calcRemainingStorage, coinList, CoinStore, allTotals } from '../../js/stores.js';
 
 	//Components
 	import { Coin, Modal, Modals }  from '../../js/router.js'
@@ -20,6 +20,7 @@
 
 	onMount(() => {
 		//CoinStore.updateBalances($CoinStore);
+		calcRemainingStorage();
 	});
 
 	function checkAPI() {

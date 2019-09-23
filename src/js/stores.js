@@ -5,6 +5,14 @@ import { defaultSettings, defaultCoinStore, coin, pubkey, token } from './defaul
 //Environment constents
 export const CURRENT_KS_VERSION = writable("1.0");
 
+export function calcRemainingStorage(){
+    SettingsStore.update(settings => {
+        settings.storage.used = new Blob(Object.values(localStorage)).size;
+        settings.storage.remaining = settings.storage.max - settings.storage.used;
+        return settings;
+    })
+}
+
 const createCoinStore = (key, startValue) => {
     const { subscribe, set, update } = writable(startValue);
 
@@ -71,7 +79,7 @@ const createCoinStore = (key, startValue) => {
 
 const createLocalStore = (key, startValue) => {
     const { subscribe, set, update } = writable(startValue);
-    
+
     return {
         startValue,
         subscribe,
@@ -90,7 +98,7 @@ const createLocalStore = (key, startValue) => {
         },
         reset: () => {
             set(startValue)
-        }
+        },
     };
 }
 
@@ -105,6 +113,14 @@ export const defaultOjects = readable({coin, pubkey, token});
 
 // Coin Stores
 export const CoinStore = createCoinStore('coins', []);
+
+export function getCoinReference(coin, coinstore){
+    console.log('called')
+    if (coin.is_token){
+        return coinstore.find(f=> f.network === coin.network && f.token_address === coin.token_address && f.vk === coin.vk);
+    }
+    return  coinstore.find(f=> f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk);
+}
 
 export const numberOfCoins = derived(
     CoinStore,
@@ -140,6 +156,8 @@ export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => $SettingsStore.themeStyle
 );
+
+
 
 /*
 

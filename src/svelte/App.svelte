@@ -3,7 +3,7 @@
 	import { themes } from '../js/themes.js'
 	
 	//Stores
-	import { CoinStore, SettingsStore, Hash, currentPage, themeStyle, loggedIn, firstRun} from '../js/stores.js';
+	import { CoinStore, SettingsStore, Hash, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores.js';
 
 	//Components
 	import { Pages, FirstRun }  from '../js/router.js'	
@@ -13,6 +13,7 @@
 		//CoinStore.updateBalances($CoinStore);
 		SettingsStore.useLocalStorage();
 		Hash.useLocalStorage();
+		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;
 	});
@@ -34,6 +35,10 @@
 	function logout() {
         loggedIn.set(false);
 	}
+	function getUsedLocalStorageSpace() {
+  		return Object.keys(window.localStorage).map(function(key) { return localStorage[key].length;}).reduce(function(a,b) { return a+b;});
+	};
+
 </script>
 
 <div class="container">
@@ -67,6 +72,7 @@
 			</section>
 		{/if}
 	{/if}
+	{`Storage Remaining: ${($SettingsStore.storage.remaining/1000000).toFixed(2)}MB`}
 </div>
 
 <style>

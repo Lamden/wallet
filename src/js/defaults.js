@@ -8,6 +8,7 @@ export const defaultSettings = {
     'firstRun': true,
     'themeStyle':'dark',
     'version':'v0_0_2',
+    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
 }
 
 export const coin = {

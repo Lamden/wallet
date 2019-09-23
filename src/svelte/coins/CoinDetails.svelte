@@ -2,7 +2,7 @@
     import { setContext, getContext} from 'svelte';
 
     //Stores
-    import { CoinStore, SettingsStore, previousPage } from '../../js/stores.js';
+    import { CoinStore, SettingsStore, previousPage, getCoinReference } from '../../js/stores.js';
 
     //Components
     import { Modal, Modals }  from '../../js/router.js'
@@ -20,7 +20,7 @@
     let currentModal = '';
     let selected;
 
-    let coin = $SettingsStore.currentPage.data
+    $: coin = getCoinReference($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
 
     function showModal(modal){
         currentModal = modal;
