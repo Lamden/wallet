@@ -85,14 +85,13 @@
                         bind:value={sending.myVk}
                         bind:this={sendingWalletField1}
                         required />
-                    <lable> {`My ${sending.coin.symbol} Wallet Address`} </lable>
+                    <lable> {`Their ${sending.coin.symbol} Wallet Address`} </lable>
                     <input type="text" 
                         bind:value={sending.theirVk}
                         bind:this={sendingWalletField2}
                         required />
                 </div>
             {/if}
-
         </div>
         <div>
             <lable>I want</lable>
@@ -108,7 +107,7 @@
 
             {#if sending.coin.symbol !== undefined}
                 <div>
-                    <lable> {`Their ${receiving.coin.symbol} Wallet Address`} </lable>
+                    <lable> {`My ${receiving.coin.symbol} Wallet Address`} </lable>
                     <input type="text" 
                         bind:value={receiving.myVk}
                         bind:this={receivingWalletField}
