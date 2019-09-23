@@ -1,8 +1,3 @@
-export const defaultCoinStore = {
-    'bitcoin': {},
-    'ethereum': {},
-}
-
 export const defaultSettings = {
     'currentPage' : {'name': 'CoinsMain', 'data' : {}},
     'firstRun': true,
@@ -15,6 +10,8 @@ export const coin = {
     name:'', 
     symbol: '',
     pubkeys : {},
+    txList : [],
+    swapList : [],
 }
 
 export const pubkey = {

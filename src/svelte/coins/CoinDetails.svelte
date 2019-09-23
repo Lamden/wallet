@@ -64,7 +64,7 @@
             {#each coin.txList as tx}
                 <li>
                     <a href={tx.transaction_link} rel="noopener noreferrer" target="_blank">
-                        {`Sent ${tx.value} (${coin.symbol}) on ${tx.dateTime}  Status: ${tx.status}`}
+                        {`Sent ${tx.value} (${coin.symbol}) on ${new Date(tx.dateTime)}  Status: ${tx.status}`}
                     </a>
                 </li>
             {/each}

@@ -12,7 +12,9 @@
     // Props
     export let coin;
 
+    //Context
     const { switchPage } = getContext('switchPage');
+    
     $: watching = coin.sk === 'watchOnly';
 
     $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;

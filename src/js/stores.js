@@ -1,6 +1,6 @@
 import { readable, writable, derived } from 'svelte/store';
 import { API, makeBalancesPost } from './api.js';
-import { defaultSettings, defaultCoinStore, coin, pubkey, token } from './defaults.js'
+import { defaultSettings, coin, pubkey, token } from './defaults.js'
 
 //Environment constents
 export const CURRENT_KS_VERSION = writable("1.0");
@@ -73,6 +73,14 @@ const createCoinStore = (key, startValue) => {
                 coin.txList = !coin.txList ? [tx_info] : [...coin.txList, tx_info];
                 return coinstore;
             })
+        },
+        storeInitalSwap: (coinToUpdate, swap_info) => {
+            update(coinstore => {
+                let coin = getCoin(coinToUpdate, coinstore);
+                if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.')
+                coin.swapList = !coin.swapList ? [swap_info] : [...coin.swapList, swap_info];
+                return coinstore;
+            })
         }
     };
 }
@@ -115,7 +123,6 @@ export const defaultOjects = readable({coin, pubkey, token});
 export const CoinStore = createCoinStore('coins', []);
 
 export function getCoinReference(coin, coinstore){
-    console.log('called')
     if (coin.is_token){
         return coinstore.find(f=> f.network === coin.network && f.token_address === coin.token_address && f.vk === coin.vk);
     }
@@ -125,6 +132,17 @@ export function getCoinReference(coin, coinstore){
 export const numberOfCoins = derived(
     CoinStore,
     $CoinStore => $CoinStore.length
+);
+
+export const allSwaps = derived(
+    CoinStore,
+    $CoinStore => {
+        let swapList = [];
+        $CoinStore.map(coin => {
+            if (coin.swapList) swapList = [...swapList, ...coin.swapList];
+        })
+        return swapList;
+    }
 );
 
 export const allTotals = derived(
