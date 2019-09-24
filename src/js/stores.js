@@ -14,7 +14,7 @@ export function calcRemainingStorage(){
 }
 
 const createCoinStore = (key, startValue) => {
-    const { subscribe, set, update } = writable(startValue);
+    const { subscribe, set, get, update } = writable(startValue);
 
     const getCoin = (coin, coinstore) => {
         if (coin.is_token){
@@ -27,6 +27,7 @@ const createCoinStore = (key, startValue) => {
         startValue,
         subscribe,
         set,
+        get,
         update,
         getCoin,
         useLocalStorage: () => {  
@@ -41,7 +42,16 @@ const createCoinStore = (key, startValue) => {
             });
         },
         reset: () => {
+            const json = localStorage.getItem(key);
+            if (json) {
+                let returnstr = JSON.parse(json)
+                set(returnstr);
+            }
             set(startValue)
+        },
+        returnCoin: (coinToGet) => {
+            console.log(get())
+            return getCoin(coinToGet, get());
         },
         updateBalances: (storeValue) => {
             console.log('!! REFRESHING BALANCES !!')
@@ -74,14 +84,23 @@ const createCoinStore = (key, startValue) => {
                 return coinstore;
             })
         },
-        storeInitalSwap: (coinToUpdate, swap_info) => {
+        storeSwapInfo: (coinToUpdate, swap_info, keyName) => {
+            let newSwapObj = {};
+            newSwapObj[keyName] = swap_info;
             update(coinstore => {
                 let coin = getCoin(coinToUpdate, coinstore);
                 if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.')
-                coin.swapList = !coin.swapList ? [swap_info] : [...coin.swapList, swap_info];
+                console.log(newSwapObj)
+                !coin.swapList ? coin.swapList = [newSwapObj] : coin.swapList.push(newSwapObj);
+                console.log(coin.swapList)
                 return coinstore;
             })
-        }
+        },
+        storeParticipateSwap: (coinToUpdate, swap_info) => {
+            console.log(coinToUpdate)
+            console.log(swap_info)
+        },
+
     };
 }
 
@@ -140,6 +159,35 @@ export const allSwaps = derived(
         let swapList = [];
         $CoinStore.map(coin => {
             if (coin.swapList) swapList = [...swapList, ...coin.swapList];
+        })
+        return swapList;
+    }
+);
+
+export const initialSwaps = derived(
+    CoinStore,
+    $CoinStore => {
+        let swapList = [];
+        $CoinStore.map(coin => {
+            if (coin.swapList) {
+                let swaps = coin.swapList.filter(f => f.hasOwnProperty('initial'))
+                
+                if (swaps.length > 0) swapList = [...swapList, ...swaps];
+            }
+        })
+        return swapList;
+    }
+);
+
+export const participateSwaps = derived(
+    CoinStore,
+    $CoinStore => {
+        let swapList = [];
+        $CoinStore.map(coin => {
+            if (coin.swapList) {
+                let swaps = coin.swapList.filter(f => f.hasOwnProperty('participate'))
+                if (swaps.length > 0) swapList = [...swapList, ...swaps];
+            }
         })
         return swapList;
     }

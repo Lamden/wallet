@@ -41,8 +41,6 @@
         }
 
         function dispatchSelected() {
-            console.log('dispatching')
-            console.log(selected)
             dispatch('selected', {
                 selected,
             });

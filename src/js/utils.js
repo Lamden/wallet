@@ -73,3 +73,11 @@ export function toCurrencyFormat(value, currency, local){
         currency,
     });
 }
+
+export function stripCoinRef(coin){
+    let newCoin = JSON.parse(JSON.stringify(coin));
+    if (newCoin.swapList) delete newCoin.swapList;
+    if (newCoin.txList) delete newCoin.txList;
+    if (newCoin.balance) delete newCoin.balance;
+    return newCoin;
+}
