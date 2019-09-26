@@ -96,6 +96,15 @@ const createCoinStore = (key, startValue) => {
                 return coinstore;
             })
         },
+        deleteSwap: (coinToUpdate, secretHash, keyName) => {
+            update(coinstore => {
+                let coin = getCoin(coinToUpdate, coinstore);
+                if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.');
+                if (!coin.swapList) throw new Error('Coin has no Swap data');
+                coin.swapList = coin.swapList.filter(f => f[keyName].swapContract.secret_hash !== secretHash);
+                return coinstore;
+            })
+        },
         storeParticipateSwap: (coinToUpdate, swap_info) => {
             console.log(coinToUpdate)
             console.log(swap_info)

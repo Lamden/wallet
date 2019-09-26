@@ -6,6 +6,7 @@
 
     export let id;
     export let required = false;
+    export let filter = undefined;
 
     const dispatch = createEventDispatcher();
 
@@ -15,7 +16,14 @@
             dispatch('selected', {
                 selected,
             });
+    }
+
+    function coinList(){
+        if (filter){
+            return $CoinStore.filter(f => f.symbol === filter)
         }
+        return $CoinStore;
+    }
         
 </script>
 
@@ -24,9 +32,14 @@
         bind:value={selected}
         on:change={dispatchSelected}
         required>
-    <option value='temp'>Choose coin in your wallet..</option>
-    {#each $CoinStore as coin}
-        <option value={coin} class="dropdownItem">{`(${coin.symbol}) ${coin.name} - ${coin.nickname}`}</option>
+    {#if filter}
+        <option value={undefined}>{`Select ${filter}`} wallet..</option>
+    {:else}
+        <option value={undefined}>Choose wallet..</option>
+    {/if}
+    
+    {#each coinList() as coin}
+        <option value={coin} class="dropdownItem">{`${coin.name} - ${coin.nickname} (${coin.balance} ${coin.symbol})`}</option>
     {/each}
 </select>
 

@@ -17,6 +17,7 @@ import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 //Swaps
 import SwapsMain from '../svelte/swaps/SwapsMain.svelte';
 import SwapsInitial from '../svelte/swaps/SwapsInitial.svelte';
+import SwapsParticipate from '../svelte/swaps/SwapsParticipate.svelte';
 
 //Misc
 import BackupMain from '../svelte/misc/BackupMain.svelte';
@@ -28,7 +29,7 @@ import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
 
 const FirstRun = { FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const SwapPages = { SwapsMain, SwapsInitial }
+const SwapPages = { SwapsMain, SwapsInitial, SwapsParticipate }
 
 const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...FirstRun, ...SwapPages };
 
@@ -48,6 +49,7 @@ export {
     RestoreMain,
     SwapsMain,
     SwapsInitial,
+    SwapsParticipate,
     LockScreen,
     Modal,
     SupportedCoinsDropDown,
