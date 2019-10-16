@@ -5,7 +5,7 @@
     import { Hash, CoinStore } from '../../js/stores.js';
     
     //Utils
-	import { API } from '../../js/api.js';
+	import { API, waitUntilTransactionExists } from '../../js/api.js';
     import { checkPassword, copyToClipboard, decryptStrHash } from '../../js/utils.js';
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
@@ -13,64 +13,107 @@
     export let coin;
 
     //DOM NODES
-    let passwordField;
-    let addressField;
-    let formObj;
+    let formObj1, formObj2, passwordField, addressField;
 
     //Context
     const { closeModal } = getContext('closeModal');
 
-    const tx_info_items = ['sender_address', 'recipient_address', 'gasprice', 'gas_limit', 'nonce', 'value_text', 'unsigned_raw_tx'];
-
-    let error = '';
+    let error, status = "";
     let value = 0;
     let reciever_address = '';
     let info_valid = false;
-    let signed_transaction = '';
     let password = '';
-    let tx_data;
+    let txData = {};
 
-    function handleSubmit(obj){
+    function displayError(e){
+        console.log(e); 
+        error = e;
+    }
+
+    async function handleSubmit1(){
         error = '';
-        if (obj.checkValidity()){
-            if (!info_valid) {info_valid = true; return}
-            if (info_valid) {publish(); return}
+        if (formObj1.checkValidity()){
+            await createTransaction();
+        }
+    }
+
+    async function handleSubmit2(){
+        error = '';
+        if (formObj2.checkValidity()){
+            if ( await createSignedTx() ){
+                await sendTx();
+                
+                //Check to make sure the transaction was published (does not mean confirmed)
+                if ( await checkPublish() ) {
+                    status = 'Redeem Transaction Sent!';
+                    txData.txResult.sent = new Date();
+                    finishTransaction();
+                }
+            }
         }
     }
 
     function createTransaction() {
-        const network_symbol = coin.is_token ? coin.network_symbol : coin.symbol;
-        let path = `${network_symbol}/${coin.vk}/${reciever_address}`
+        status = "Getting Transaction Details";
+        let path = `${coin.network_symbol}/${coin.vk}/${reciever_address}`
         if (coin.is_token) path = `${path}/${coin.token_address}`
 		const data = {value}
         return API('POST', 'p2p-transaction', path, data)
             .then(result => {
-                if (result.type === 'error') { info_valid = false; error = "Amount exeeds balance" }
-                else {tx_data = result; return result}
+                if ( !result || result.hasOwnProperty('message') ) {
+                    info_valid = false; 
+                    displayError("Amount exeeds balance"); 
+                    return; 
+                }
+                txData.txInfo = result;
+                status = "Received Transaction Details!";
+                info_valid = true;
             })
+            .catch(e => displayError(e))
     }
 
-    function publish(){
+    function createSignedTx(){
+        status = "Signing Transaction";
         try{
-            signed_transaction = signTx(tx_data.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, coin.network_symbol);
+            txData.txInfo.signed_transaction = signTx(txData.txInfo.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, coin.network_symbol);
+            status = "Transaction Signed!";
+            return true;
         }catch (e) {
-            console.log(e)
-            error = e;
+            displayError(e);
+            return false;
         }
-        const data = {'raw_transaction': signed_transaction}
-        API('POST', 'publish-transaction', network_symbol, data)
-            .then(result => finishTransaction(result) )
     }
 
-    function finishTransaction(result){
-            result.value = tx_data.value;
-            result.to = tx_data.recipient_address;
-            result.gasprice = tx_data.gasprice;
-            result.gas_limit = tx_data.gas_limit;
-            result.nonce = tx_data.nonce;
-            result.dateTime = new Date();
-            result.status = 'sent';
-            CoinStore.updateCoinTransaction(coin, result);
+    function sendTx(){
+        status = "Publishing Transaction"
+        const data = {'raw_transaction': txData.txInfo.signed_transaction}
+        return API('POST', 'publish-transaction', coin.network_symbol, data)
+                .then(result => {
+                    if (!result || result.hasOwnProperty('message')) { displayError(e); return; }
+                    txData.txResult = result
+                    status = "Transaction Published!"  
+                })
+                .catch(e => displayError(e))
+    }
+
+    function checkPublish() {
+        let transaction = txData.txResult.transaction_address || txData.txResult.transaction;
+        status = `Checking for Transaction on the Blockchain`;
+        return waitUntilTransactionExists(coin.network_symbol, transaction)
+            .then(result => {
+                if (!result || result.hasOwnProperty('message')) {
+                    displayError(e);
+                    status = "Could not find transaction in block";
+                    return false;
+                }
+                status = "Transaction Exists!"; 
+                return true;
+            })
+            .catch(e => displayError(e));
+    }
+
+    function finishTransaction(){
+            CoinStore.updateCoinTransaction(coin, txData);
             closeModal();
     }
 
@@ -79,7 +122,7 @@
         try{
             reciever_address = validateAddress(coin.network, reciever_address);
         } catch (e) {
-            console.log(e);
+            displayError(e);
             obj.setCustomValidity(e);
         }
         if (coin.vk === reciever_address){
@@ -102,17 +145,19 @@
     
 </style>
 
-<p class="error">{error}</p>
+{#if error}{error}{:else}{status}{/if}
+
 <h2> Send {coin.name} </h2>
-<div>
-    <h3>Public Key</h3>
-    <span><small>{`${coin.name} - ${coin.nickname}`}</small></span>
-    <span><small>{`${coin.balance} (${coin.symbol})`}</small></span>
-</div>
-<a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
-<small>click to copy public key to clipboard</small>
-<form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
-    {#if !info_valid}
+{#if !info_valid}
+    <form on:submit|preventDefault={() => handleSubmit1() } bind:this={formObj1} target="_self">
+        <h3>Public Key</h3>
+        <div>
+            <span><small>{`${coin.name} - ${coin.nickname}`}</small></span>
+            <span><small>{`${coin.balance} (${coin.symbol})`}</small></span>
+        </div>
+        <a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
+        <small>click to copy public key to clipboard</small>
+
         <div>
             <lable>Amount</lable>
             <input type="text" bind:value={value} required/>
@@ -129,42 +174,41 @@
         <div>
             <input type="submit" value="Get Transaction Information" required>
         </div>
-    {/if}
+    </form>
+{/if}
 
-    {#if info_valid}
-        {#await createTransaction()}
-            ... Getting Transaction Information from Server ...
-        {:then tx_info}
+{#if info_valid}
+    <form on:submit|preventDefault={() => handleSubmit2() } bind:this={formObj2} target="_self">
+        {#if coin.network === 'ethereum'}
             <div>
                 <lable>from</lable>
-                <input readonly value={tx_info['sender_address']} />
+                <input readonly value={txData.txInfo['sender_address']} />
                 <lable>to</lable>
-                <input readonly value={tx_info['recipient_address']} />
+                <input readonly value={txData.txInfo['recipient_address']} />
                 <lable>amount</lable>
-                <input readonly value={tx_info['value_text']} />
+                <input readonly value={txData.txInfo['value_text']} />
                 {#if coin.network === 'ethereum'}
                     <lable>gas price</lable>
-                    <input readonly value={tx_info['gasprice']} />
+                    <input readonly value={txData.txInfo['gasprice']} />
                     <lable>gas limit</lable>
-                    <input readonly value={tx_info['gas_limit']} />
+                    <input readonly value={txData.txInfo['gas_limit']} />
                     <lable>nonce</lable>
-                    <input readonly value={tx_info['nonce']} />
+                    <input readonly value={txData.txInfo['nonce']} />
                 {/if}
                 <lable>raw transaction</lable>
-                <textarea readonly row='5' value={tx_info['unsigned_raw_tx']} />
+                <textarea readonly row='5' value={txData.txInfo['unsigned_raw_tx']} />
             </div>
-            <div>
-                <label>Wallet Password</label>
-                <input bind:value={password}
-                        bind:this={passwordField}
-                        on:change={() => validatePassword(passwordField)}
-                        type="password"
-                        required  />
-                <input type="submit" value="Publish Transaction" required>
-            </div>
-        {:catch error}
-            {error}
-        {/await}
-    {/if}
-</form> 
+        {/if}
+        <div>
+            <label>Wallet Password</label>
+            <input bind:value={password}
+                    bind:this={passwordField}
+                    on:change={() => validatePassword(passwordField)}
+                    type="password"
+                    required  />
+            <input type="submit" value="Publish Transaction" required>
+        </div>
+    </form>
+{/if}
+
 

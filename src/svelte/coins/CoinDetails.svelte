@@ -5,7 +5,7 @@
     import { CoinStore, SettingsStore, previousPage, getCoinReference } from '../../js/stores.js';
 
     //Components
-    import { Modal, Modals }  from '../../js/router.js'
+    import { Modal, Modals, Transaction }  from '../../js/router.js'
 
     //Utils
     import { toCurrencyFormat }  from '../../js/utils.js'
@@ -66,23 +66,15 @@
 <button on:click={ () => showModal('CoinRecieve') }> Recieve </button>
 
 <div>
-    <h2>Transactions</h2>
     {#if coin.txList}
-        <ul>
-            {#each coin.txList as tx}
-                <li>
-                    <a href={tx.transaction_link} rel="noopener noreferrer" target="_blank">
-                        {`Sent ${tx.value} (${ symbol }) on ${new Date(tx.dateTime)}  Status: ${tx.status}`}
-                    </a>
-                </li>
-            {/each}
-        </ul>
-    {:else}
-    None
+        <h2>Transactions</h2>
+        {#each coin.txList as txInfo}
+            <Transaction {txInfo} {coin} />
+        {/each}
     {/if}
 </div>
 <div>
-    <button on:click={() => deleteCoin()}>delete</button>
+    <button on:click={() => deleteCoin()}>DELETE COIN</button>
 </div>
 
 {#if openModal}
