@@ -57,5 +57,3 @@
         <svelte:component this={ Modals[currentModal]} {closeModal} {openModal}/>
 	</Modal>
 {/if}
-
-<a href="web+lamden://something">test link</a>

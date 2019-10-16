@@ -122,6 +122,7 @@
 
         CoinStore.update(coinstore => {
             let coinInfo = {
+                'is_token': false,
                 'network': selected.network,
                 'network_symbol': selected.network_symbol,
                 'name': selected.name,

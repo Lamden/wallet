@@ -11,7 +11,7 @@
 
     // Props
     export let coin;
-    console.log(coin)
+    console.log(coin);
 
     //Context
     const { switchPage } = getContext('switchPage');
@@ -19,6 +19,9 @@
     $: watching = coin.sk === 'watchOnly';
 
     $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
+    $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
+    $: balance = coin.balance ? coin.balance : 0;
+    $: USD_value = coin.USD_value ? coin.USD_value : 0;
 
 </script>
 
@@ -40,8 +43,8 @@
         {#if watching }👀{/if}{` ${coin.name} - ${coin.nickname}`} 
     </h2>
     <ul>
-        <li>{`balance ${ coin.balance } ${ coin.symbol }`}</li>
-        <li>{`USD Value (${ toCurrencyFormat(coin.USD_value) })`}</li>
+        <li>{`balance ${ balance } ${ symbol }`}</li>
+        <li>{`USD Value (${ toCurrencyFormat( USD_value ) })`}</li>
         {#if watching}
             <li>Watching Coin</li>
         {/if}
