@@ -42,6 +42,20 @@ button {
     outline: none;
 }
 
+.tx-link {
+    color: var(--font-color);
+    
+}
+
+.tx-link :hover {
+    color: var(--font-color);
+    text-decoration: underline;
+}
+
+.tx-link :visited {
+    outline: none;
+}
+
 
 @media only screen and (max-width: 350px){
     html{

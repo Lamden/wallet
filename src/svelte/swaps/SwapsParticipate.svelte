@@ -1,14 +1,14 @@
 <script>
-    import { getContext} from 'svelte';
+    import { getContext, onMount } from 'svelte';
 
 	//Stores
-    import { CoinStore, Hash, getCoinReference } from '../../js/stores.js';
+    import { CoinStore, Hash, getCoinReference, SettingsStore } from '../../js/stores.js';
 
     //Components
     import { MyCoinsDropDown, Modal, Modals }  from '../../js/router.js'
 
     // Utils
-    import { API, waitUntilTransactionExists } from '../../js/api.js';
+    import { API, waitUntilTransactionExists, getSwapInfo, getTokenInfo, getApproveTokenTxDetails, sendSignedTx } from '../../js/api.js';
     import { checkPassword, decryptStrHash, encryptStrHash, stripCoinRef } from '../../js/utils.js';
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
@@ -19,25 +19,43 @@
     let formObj1, formObj2 ,passwordField, participateField;
 
     let error = '';
+    let continueSwap = false;
     let status = '';
-    let password = '';
+    let password = 'Summer0!0101';
     let CheckTx;
     let openModal = false;
     let currentModal = '';
 
     let participateString = '';
-    $: participateInfo = JSON.parse(participateString);
-    let contractInfo;
+    $: participateInfo = participateString === '' ? {} : JSON.parse(participateString);
+   
     let participateCoin;
-    let participateStore = {};
+    let sendingTokenInfo;
+    $: participateStore = {};
     let txOkay = false;
 
     let publishTxSuccess = false;
 
+	onMount(() => {
+        if ($SettingsStore.currentPage.data.type === 'participate'){
+            continueSwap = true;
+            participateStore = $SettingsStore.currentPage.data;
+            $SettingsStore.currentPage.data = {};
+        }else{
+            participateStore = {};
+        }
+    });
+
+    function filterSelection(){
+        return sendingTokenInfo.token_symbol ? [sendingTokenInfo.symbol, sendingTokenInfo.token_symbol] : [sendingTokenInfo.symbol];
+    }
+    
     function handleSelection(evt, type){
         if (type === 'participateWallet') {
-            participateCoin = undefined;
-            if (evt.detail.selected) participateCoin = stripCoinRef(evt.detail.selected);
+            participateStore.sending = undefined;
+            if (evt.detail.selected) {
+                participateStore.sending = { ...stripCoinRef(evt.detail.selected), ...sendingTokenInfo };
+            }
         }
     }
 
@@ -54,42 +72,98 @@
         error = '';
         if (obj.checkValidity()){
             status = 'Retriving Swap Details...';
-            let swapInfo = await getSwapInfo();
+            let swapInfo = await getSwapInfo(participateInfo.initialCurrency, participateInfo.contract, participateInfo.transactionAddress)
+                                   .catch (e => { console.log(e); error = e; });
             if (!swapInfo) return;
             if (swapInfo.message) {error = swapInfo.message; return;}
-            contractInfo = swapInfo;
+            participateStore.initialContractInfo = swapInfo;
             status = 'Swap Contract Recieved!';
-        }
-    }
 
-    function getSwapInfo(){
-        let data = {'contract': participateInfo.contract, 'transaction_address': participateInfo.transactionAddress}
-        let path = `${participateInfo.initialCurrency}`
-        return API('GET', 'audit-contract', path, data)
-            .catch (e => { console.log(e); error = e; })
+            if (participateStore.initialContractInfo.token_address){
+                status = 'Retriving "Reciving Token" Details...';
+                let receivingTokenInfo = await getTokenInfo(participateInfo.initialCurrency, participateStore.initialContractInfo.token_address)
+                                                 .catch (e => { console.log(e); error = e; });
+                if (!receivingTokenInfo) return;
+                if (receivingTokenInfo.message) {error = receivingTokenInfo.message; return;}
+                receivingTokenInfo.token_symbol = receivingTokenInfo.symbol;
+                delete receivingTokenInfo.symbol;
+                participateStore.receiving = receivingTokenInfo;
+                status = 'Token Details Recieved!';
+            }
+
+            if (participateInfo.participateTokenAddress){
+                status = 'Retriving "Sending Token" Details...';
+                sendingTokenInfo = await getTokenInfo(participateInfo.participateCurrency, participateInfo.participateTokenAddress)
+                                               .catch (e => { console.log(e); error = e; });
+                if (!sendingTokenInfo) return;
+                if (sendingTokenInfo.message) {error = sendingTokenInfo.message; return;}
+                sendingTokenInfo.token_symbol = sendingTokenInfo.symbol;
+                delete sendingTokenInfo.symbol;
+                status = 'Token Details Recieved!';
+            }
+            continueSwap = true;
+        }
     }
 
     async function handleSubmit2(obj){
          error = '';
         if (obj.checkValidity()){
-            //Get Details of the atomic swap transaction
-            status = 'Retriving Transaction Details...';
-            let txInfo = await getParticipateTxDetails();
-            console.log(txInfo);
-            if (!txInfo) return;
-            if (txInfo.message) {error = txInfo.message; return;};
+            if (!participateStore.txInfo){
+                if (participateStore.sending.is_token){
+                    status = 'Getting Approve Token Details...';
+                    let approveTxInfo = await getApproveTokenTxDetails(participateStore.sending.network_symbol, participateInfo.participateValue, participateStore.sending.vk, participateStore.sending.token_address)
+                                                .catch (e => { console.log(e); error = e });
+                    if (!approveTxInfo) return;
+                    if (approveTxInfo.message) {error = approveTxInfo.message; return;}
+                    participateStore.approveTxInfo = approveTxInfo;
+                    status = 'Approve Token Details Recieved!';
 
-            //Sign the Tx and send coins to the swap contract
-            status = `Sending ${participateInfo.participateValue} ${participateInfo.participateCurrency} to Lamden Swap Contract`;
-            let publishResult = await sendParticipateTx(txInfo);
-            console.log(publishResult);
-            if (!publishResult) return;
-            if (publishResult.message) {error = publishResult.message; return;};
+                    status = 'Sending Approve Token Transaction...';
+                    let approveTxResult = await sendSignedTx( signedTx(approveTxInfo) )            
+                                                    .catch (e => { console.log(e); error = e; });
+                    if (!approveTxResult) return;
+                    if (approveTxResult.message) {error = approveTxResult.message; return;}
+                    participateStore.approveTxResult = approveTxResult;
+                    status = 'Approve Token Transaction Sent!';
+
+                    //Check to make sure the transaction was published (does not mean confirmed)
+                    let approveTxOkay = await checkPublish(approveTxResult.transaction_address);
+                    if (!approveTxOkay) return;
+                    participateStore.approveTxResult.sent = new Date();
+                }
+                
+                status = 'Getting Swap Participate Transaction Details...';
+                let txInfo = await getParticipateTxDetails();
+                if (!txInfo) return;
+                if (txInfo.message) {error = txInfo.message; return;}
+                participateStore.txInfo = txInfo;
+                status = 'Swap Participate Transaction Details Recieved!';
+                storeParticipateInfo();
+
+            }
+            
+            status = 'Sending Swap Participate Transaction...';
+            let txResult = await sendSignedTx( signedTx(participateStore.txInfo) )            
+                                        .catch (e => { console.log(e); error = e; });
+            if (!txResult) return;
+            if (txResult.message) {error = txResult.message; return;}
+            console.log(txResult)
 
             //Check to make sure the transaction was published (does not mean confirmed)
-            await checkPublish(publishResult.transaction_address);
-
-            if (txOkay) storeParticipateInfo(publishResult, txInfo);
+            let txOkay = await checkPublish(txResult.transaction_address);
+            if (txOkay) {
+                status = 'Swap Participate Transaction Sent!';
+                participateStore.txResult = txResult;
+                participateStore.txResult.sent = new Date();
+                try{
+                    CoinStore.updateSwapInfo(participateStore.sending, participateStore.txInfo.secret_hash, 'txResult', participateStore.txResult);
+                } catch (e){
+                    console.log(e)
+                    error = e;
+                    return;
+                }
+                finishParticipateSwap();
+            }
         }
     }
 
@@ -100,52 +174,69 @@
         }
     }
 
+    function signedTx(txInfo){
+        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
+        const unsigned_transaction =  participateStore.sending.network === 'ethereum'  ?  txInfo.transaction : txInfo.contract_transaction;
+        let signed_transaction = "";
+        try{
+            signed_transaction = signTx(unsigned_transaction, decryptStrHash(password, participateStore.sending.sk), participateStore.sending.network, network_symbol);
+        }catch (e) {
+            console.log(e)
+            error = e;
+        }
+        console.log(signed_transaction)
+        return {signed_transaction, network_symbol};
+    }
+
     function getParticipateTxDetails(){
-        let data = {'value': participateInfo.participateValue, 'secret_hash': contractInfo.secret_hash }
-        let path = `${participateInfo.participateCurrency}/${participateCoin.vk}/${participateInfo.participateAliceAddress}`
+        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
+        let data = {'value': participateInfo.participateValue, 'secret_hash': participateStore.initialContractInfo.secret_hash }
+        let path = `${network_symbol}/${participateStore.sending.vk}/${participateInfo.participateAliceAddress}`
+        if (participateStore.sending.is_token) path = `${path}/${participateStore.sending.token_address}`;
         return API('POST', 'participate', path, data)
             .then(result => { return result; })
             .catch (e => { console.log(e); error = e; })
     }
 
-    function sendParticipateTx(txInfo){
-        const network_symbol = participateCoin.is_token ? participateCoin.network_symbol : participateCoin.symbol;
-        const raw_transaction =  participateCoin.network === 'ethereum'  ?  txInfo.transaction : txInfo.contract_transaction;
-        let signed_transaction = "";
-        try{
-            signed_transaction = signTx(raw_transaction, decryptStrHash(password, participateCoin.sk), participateCoin.network, network_symbol);
-        }catch (e) {
-            console.log(e)
-            error = e;
-        }
-        const data = {'raw_transaction': signed_transaction}
-        return API('POST', 'publish-transaction', network_symbol, data)
-            .then(result => { return result; })
+    function storeParticipateInfo(){
+        participateStore.type = 'participate';
+        participateStore.participateInfo = participateInfo;
+        participateStore.created = new Date();
+        CoinStore.storeSwapInfo(participateStore.sending, participateStore);
+        continueSwap = true;
     }
 
-    function storeParticipateInfo(publishResult, txInfo){
-        participateStore.swapContract = txInfo;
-        participateStore.swapContract.txResult = publishResult;
-        participateStore.sending = participateCoin;
-        participateStore.created = new Date();
-        participateStore.initialContractInfo = contractInfo;
-        participateStore.participateInfo = participateInfo;
-        participateStore.initalRedeemLink = JSON.stringify({transactionAddress: txInfo.transaction_address});
-        console.log(participateStore);
-        CoinStore.storeSwapInfo(participateCoin, participateStore, 'participate');
-        switchPage('SwapsMain');
+    function finishParticipateSwap(){
+        try{
+            CoinStore.updateSwapInfo(participateStore.sending, participateStore.txInfo.secret_hash, 'initialRedeemInfo', createInitalRedeemInfo());
+        } catch (e){
+            console.log(e)
+            error = e;
+            return;
+        }
+        switchPage('SwapsMain');     
+    }
+
+    function createInitalRedeemInfo(){
+        const participateContract =  participateStore.txInfo.contract_address || participateStore.txInfo.contract;
+        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
+        return JSON.stringify({
+            transactionAddress: participateStore.txResult.transaction_address, 
+            participateContract,
+            network_symbol,
+        });
     }
 
     function checkPublish(transaction) {
-            status = `Waiting for Tx to Publish`;
-            //waitUntilTransactionExists(publishResult.transaction_address);
-            const network_symbol = participateCoin.is_token ? participateCoin.network_symbol : participateCoin.symbol;
-            return waitUntilTransactionExists(network_symbol, transaction)
-                .then(result => {
-                    if (result) {status = "Transaction Published"; txOkay = true};
-                    if (!result) status = "Could not find transaction in block";
-                })
-                .catch(e => error = e);
+        status = `Waiting for Tx to Publish`;
+        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
+        return waitUntilTransactionExists(network_symbol, transaction)
+            .then(result => {
+                if (result) {status = "Transaction Published"; return true};
+                if (!result) status = "Could not find transaction in block";
+                return false;
+            })
+            .catch(e => error = e);
     }
 
 </script>
@@ -153,7 +244,7 @@
 
 <h1> Participate in a Swap</h1>
 
-{#if !contractInfo}
+{#if !continueSwap}
 <form on:submit|preventDefault={() => handleSubmit1(formObj1) } bind:this={formObj1} target="_self">
     <div>
         <label>Enter Swap String</label>
@@ -166,14 +257,14 @@
 </form>
 {/if}
 
-{#if contractInfo}
+{#if continueSwap}
     <form on:submit|preventDefault={() => handleSubmit2(formObj2) } bind:this={formObj2} target="_self">
         <div>
-            {`Recieving ${participateInfo.initialValue} (${participateInfo.initialCurrency}) for ${participateInfo.participateValue} (${participateInfo.participateCurrency}) `}
-            Swap Initiated by: {contractInfo.refund_address} <br>
-            Swap exipiry date: {new Date(contractInfo.locktime)}<br>
-            <a href={contractInfo.transaction_link} target="_blank" rel="noopener noreferrer">
-                {`${contractInfo.value_text} was sent to swap contract (${contractInfo.confirmations} confirmations)`}
+            {`Recieving ${participateStore.initialContractInfo.value_text} for ${participateInfo.participateValue} (${participateInfo.participateCurrency}) `}<br>
+            Swap Initiated by: {participateStore.initialContractInfo.refund_address} <br>
+            Swap exipiry date: {new Date(participateStore.initialContractInfo.locktime)}<br>
+            <a href={participateStore.initialContractInfo.transaction_link} target="_blank" rel="noopener noreferrer">
+                {`${participateStore.initialContractInfo.value_text} was sent to swap contract (${participateStore.initialContractInfo.confirmations} confirmations)`}
             </a>
         </div>
         <div>
@@ -182,7 +273,7 @@
                 <MyCoinsDropDown 
                         id="participateWalletDD" 
                         on:selected={(evt) => handleSelection(evt, 'participateWallet')}
-                        required={true} filter={participateInfo.participateCurrency} />
+                        required={true} filter={filterSelection()} />
             {:else}
                 {`You cannot participate in this swap until you add a ${participateInfo.participateCurrency} keypair to the wallet`}<br>
                 <button on:click={() => switchPage('SwapsMain')}> Back </button>
@@ -202,7 +293,10 @@
                     type="password"
                     required  />
         </div>
-        <input type="submit" value="Participate in Swap" required disabled={!participateCoin}>
+        <input type="submit" value="Participate in Swap" required disabled={!participateStore.sending}>
     </form>
     
+    
 {/if}
+
+{ console.log(participateInfo)}

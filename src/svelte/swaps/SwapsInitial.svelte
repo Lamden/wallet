@@ -8,7 +8,7 @@
     import { SupportedCoinsDropDown, MyCoinsDropDown }  from '../../js/router.js'
 
     // Utils
-    import { API } from '../../js/api.js';
+    import { API, waitUntilTransactionExists, getSwapInfo, getTokenInfo, getApproveTokenTxDetails, sendSignedTx } from '../../js/api.js';
     import { checkPassword, encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
@@ -24,36 +24,32 @@
     let error = '';
     let password = 'Summer0!0101';
     let ApiResponse;
-    let status = {current: '', pending: ''};
+    let status = '';
 
-    let coinETH = {"name": "Ethereum TestNet (kovan)", "network": "ethereum" , "symbol" : "ETH-TESTNET", "testnet" : true, 'is_token': false};
-    let sending = { coin: {}, 
-                    value:0.0001, 
-                    theirVk: "mqkaog8wXk9juy7XcyjGhBwHX13ECyaz38",};
-    let receiving = { coin: coinETH, 
-                      value:0.002, 
-                      myVk: "0x5b85bF11009e02267dD78B4502ffF3c2FE88EB31",};
-    $: coinsSelected = typeof sending.coin.network !== "undefined" && typeof receiving.coin.network !== "undefined";
+    let sending = { 
+                    value:0.0021, 
+                    theirVk: "0xcf3710B87358c68bF7cDabf4f40b91d2960F3a98",
+                  };
+    
+    let receiving = { 
+                    value:1, 
+                    myVk: "0x5b85bF11009e02267dD78B4502ffF3c2FE88EB31",
+                    };
 
-    let initialStore = {};
+    let sendingCoin = {};
+    let receivingCoin = {};
+
+    $: coinsSelected = typeof sendingCoin.network !== "undefined" && typeof receivingCoin.network !== "undefined";
+
+    let swapInfo = {};
     let publishTxSuccess = false;
     let checkerInterval = 10;
     let checkerTimeout = checkerInterval * 60;
 
     function handleSelection(evt, type){
-        if (type === 'send') {sending.coin = stripCoinRef(evt.detail.selected); console.log(sending)}
-        if (type === 'receive') receiving.coin = stripCoinRef(evt.detail.selected);
-    }
-
-    function handleSubmit(obj){
-         error = '';
-        if (obj.checkValidity()){
-            if (sending.coin.is_token){
-                getApproveTokenTxDetails();
-            }else{
-                getInitalTxDetails();
-            }
-        }
+        console.log(evt.detail.selected)
+        if (type === 'send') sendingCoin = stripCoinRef(evt.detail.selected);
+        if (type === 'receive') receivingCoin = stripCoinRef(evt.detail.selected);
     }
 
     function validatePassword(){
@@ -63,138 +59,178 @@
         }
     }
 
-    function getApproveTokenTxDetails(){
-        status.pending = 'Retriving TX details to Approve Token Transfer';
-        status.current = 'Recieved Token Approval TX Details!';
-        let data = {'value': sending.value}
-        let path = `${sending.coin.network_symbol}/${sending.coin.vk}/${sending.coin.token_address}`
-        ApiResponse =  API('POST', 'approve-token', path, data)
-            .then(result => { console.log(result); return result; })
-            .then(result => { sendApproveTokenTx(result);; return result; })
-            .catch (e => { console.log(e); error = e; })
+    async function handleSubmit(obj){
+         error = '';
+        if (obj.checkValidity()){
+            if (sendingCoin.is_token){
+                await approveTokenTxDetails()
+                if (swapInfo.hasOwnProperty('approveTxInfo')){
+                    await sign('approveTxInfo');
+                    await sendApproveTx();
+                }
+                if (swapInfo.hasOwnProperty('approveTxResult')) await checkApproveTx();
+            }
+
+            if (error === ""){
+                await initialTxDetails();
+
+                if (swapInfo.hasOwnProperty('txInfo')){
+                    await storeInitialInfo();
+                    await sign('txInfo');
+                    await sendTx('txInfo', swapInfo.sending.network_symbol );
+                }
+
+                if (swapInfo.hasOwnProperty('txResult')) checkTx();
+            }
+        }
     }
 
-    function sendApproveTokenTx(approveTxInfo){
+    async function approveTokenTxDetails(){
+        status = 'Getting Approve Token Details...';
+        let approveTxInfo = await getApproveTokenTxDetails(sendingCoin.network_symbol, sending.value, sendingCoin.vk, sendingCoin.token_address)
+                                    .catch (e => { console.log(e); error = e; });
+        if (!approveTxInfo) return;
         if (approveTxInfo.message) {error = approveTxInfo.message; return;}
-        status.current = 'Signing Approve Transaction';
+        swapInfo.approveTxInfo = approveTxInfo;
+        status = 'Approve Token Details Recieved!';
+    }
+
+    async function sendApproveTx(){
+        status = 'Sending Approve Token Transaction...';
+        let approveTxResult = await sendSignedTx( await signedTx(approveTxInfo) )            
+                                        .catch (e => { console.log(e); error = e; });
+        if (!approveTxResult) return;
+        if (approveTxResult.message) {error = approveTxResult.message; return;}
+        swapInfo.approveTxResult = approveTxResult;
+        status = 'Approve Token Transaction Sent!';
+    }
+
+    async function checkApproveTx(){
+        //Check to make sure the transaction was published (does not mean confirmed)
+        let approveTxOkay = await checkPublish(approveTxResult.transaction_address);
+        if (!approveTxOkay) return;
+        swapInfo.approveTxResult.sent = new Date();
+    }
+
+    async function initialTxDetails(){
+        status = 'Getting Intial Swap Transaction Details...';
+        let txInfo = await getInitalTxDetails()
+                            .catch (e => { console.log(e); error = e; });;
+        if (!txInfo) return;
+        if (txInfo.message) {error = txInfo.message; return;}
+        swapInfo.txInfo = txInfo;
+        status = 'Intial Swap Transaction Details Recieved!';
+    }
+
+    async function sendTx(txName){
+        status = 'Sending Intial Swap Transaction...';
+        let txResult = await sendSignedTx( swapInfo[txName].signed_transaction, swapInfo.sending.network_symbol )            
+                            .catch (e => { console.log(e); error = e; });
+        if (!txResult) return;
+        if (txResult.message) {error = txResult.message; return;}
+    }
+
+    async function checkTx(){
+        //Check to make sure the transaction was published (does not mean confirmed)
+        let txOkay = await checkPublish(txResult.transaction_address);
+        if (txOkay) {
+            status = 'Intial Swap Transaction Sent!';
+            swapInfo.txResult = txResult;
+            swapInfo.txResult.sent = new Date();
+            try{
+                CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'txResult', swapInfo.txResult);
+            } catch (e){
+                console.log(e)
+                error = e;
+                return;
+            }
+            finishInitialSwap();
+        }
+    }
+
+
+    function sign(txName){
+        status = 'Signing Transaction';
+        let txInfo = swapInfo[txName]
+        const network_symbol = sendingCoin.is_token ? sendingCoin.network_symbol : sendingCoin.symbol;
+        const unsigned_transaction =  sendingCoin.network === 'ethereum'  ?  txInfo.transaction : txInfo.contract_transaction;
         let signed_transaction = "";
         try{
-            signed_transaction = signTx(approveTxInfo.transaction, decryptStrHash(password, sending.coin.sk), sending.coin.network, sending.coin.network_symbol);
-            status.current = 'Transaction Signed!';
+            signed_transaction = signTx(unsigned_transaction, decryptStrHash(password, sendingCoin.sk), sendingCoin.network, network_symbol);
         }catch (e) {
             console.log(e)
             error = e;
         }
-        status.pending = `Sending Transaction to Approve Token Transfer of ${sending.value} ${sending.coin.symbol}`;
-        status.current = 'Approve Token Transaction Sent!';
-        var data = {'raw_transaction': signed_transaction}
-        publishTxSuccess = false;
-        API('POST', 'publish-transaction', sending.coin.network_symbol, data)
-            .then(result => { 
-                console.log(result);
-                if (result.message) {error = result.message; return;}
-                initialStore.approveToken = approveTxInfo;
-                initialStore.approveToken.txResult = result;
-                waitUntilTransactionExists(result.transaction_address, getInitalTxDetails());
-            })
+        swapInfo[txName].signed_transaction = signed_transaction;
+        status = 'Transaction Signed!';
     }
 
     function getInitalTxDetails(){
-        status.pending = 'Retriving Swap Details from API';
-        status.current = 'Recieved Swap Details!';
-        let data = {'value': sending.value}
-        let path = `${sending.coin.symbol}/${sending.coin.vk}/${sending.theirVk}`
-        ApiResponse =  API('POST', 'atomic-swap', path, data)
-            .then(result => { console.log(result); return result; })
-            .then(result => { sendInitialTx(result);; return result; })
+        const data = {'value': sending.value}
+        const network_symbol = sendingCoin.is_token ? sendingCoin.network_symbol : sendingCoin.symbol;
+        let path = `${network_symbol}/${sendingCoin.vk}/${sending.theirVk}`
+        if (sendingCoin.is_token) path = `${path}/${sendingCoin.token_address}`;
+        return API('POST', 'atomic-swap', path, data)
             .catch (e => { console.log(e); error = e; })
     }
 
-    function sendInitialTx(txInfo){
-        if (txInfo.message) {error = txInfo.message; return;}
-        status.pending = `Sending ${sending.value} ${sending.coin.symbol} to Lamden Swap Contract`;
-        status.current = 'Tranasction Sent!';
-        const network_symbol = sending.coin.is_token ? sending.coin.network_symbol : sending.coin.symbol;
-        const raw_transaction =  sending.coin.network === 'ethereum'  ?  txInfo.transaction : txInfo.contract_transaction;
-
-        let signed_transaction = "";
-        try{
-            signed_transaction = signTx(raw_transaction, decryptStrHash(password, sending.coin.sk), sending.coin.network, network_symbol);
-        }catch (e) {
-            console.log(e)
-            error = e;
-        }
-
-        const data = {'raw_transaction': signed_transaction}
-        API('POST', 'publish-transaction', network_symbol, data)
-            .then(result => { 
-                console.log(result); 
-                waitUntilTransactionExists(result.transaction_address, finishInitial(result, txInfo));
-            })
+    function storeInitialInfo(){
+        swapInfo.type = 'initial';
+        swapInfo.txInfo.secret = encryptStrHash(password, swapInfo.txInfo.secret);
+        swapInfo.sending = {...sending, ...sendingCoin };
+        if (swapInfo.sending.address) delete swapInfo.sending.address;
+        swapInfo.receiving = {...receiving, ...receivingCoin };
+        if (swapInfo.receiving.address) delete swapInfo.receiving.address;
+        swapInfo.created = new Date();
+        CoinStore.storeSwapInfo(swapInfo.sending, swapInfo);
     }
 
-    function finishInitial(publishResult, txInfo){
-        initialStore.swapContract = txInfo;
-        initialStore.swapContract.txResult = publishResult;
-        initialStore.swapContract.secret = encryptStrHash(password, txInfo.secret)
-        initialStore.sending = sending;
-        initialStore.receiving = receiving;
-        initialStore.created = new Date();
-        initialStore.participateLink = participateLink();
-        initialStore.participateInfo = participateInfo();
-        console.log(participateLink);
-        CoinStore.storeSwapInfo(sending.coin, initialStore, 'initial');
-        switchPage('SwapsMain');
+    function finishInitialSwap(){
+        try{
+            CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'participateLink', participateLink());
+            CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'participateInfo', participateInfo());
+            switchPage('SwapsMain');
+        } catch (e){
+            console.log(e)
+            error = e;
+            return;
+        }        
     }
 
     function participateInfo() {
-      const linkContent = {
-        transactionAddress: initialStore.swapContract.txResult.transaction_address,
-        participateAliceAddress: initialStore.receiving.myVk,
-        initialCurrency: initialStore.sending.coin.symbol,
-        initialValue: initialStore.sending.value,
-        participateCurrency: initialStore.receiving.coin.symbol,
-        participateNetwork: initialStore.receiving.coin.network,
-        participateValue: initialStore.receiving.value,
-        contract: initialStore.swapContract.contract,
-      };
-      return JSON.stringify(linkContent);
+        const linkContent = {
+            contract: swapInfo.txInfo.contract_address || swapInfo.txInfo.contract,
+            transactionAddress: swapInfo.txResult.transaction_address,
+            initialCurrency: swapInfo.sending.symbol,
+            participateAliceAddress: swapInfo.receiving.myVk,
+            participateCurrency: swapInfo.receiving.symbol,
+            participateValue: swapInfo.receiving.value,
+        };
+        if (sendingCoin.is_token){
+            linkContent.initialCurrency = swapInfo.sending.network_symbol;
+        };
+        if (receivingCoin.is_token){
+            linkContent.participateTokenAddress = swapInfo.receiving.token_address;
+            linkContent.participateCurrency = swapInfo.receiving.network_symbol;
+        };
+        console.log(linkContent);
+        return JSON.stringify(linkContent);
     }
-
 
     function participateLink() {
       return `${CLOVE_URL}/#/participate/wallet-addresses/${btoa(participateInfo())}`;
     }
 
-    function waitUntilTransactionExists(transaction, callback) {
-        callback = callback || undefined;
-        const checker = setInterval(
-            (() => {
-            if (publishTxSuccess) {
-                clearInterval(checker);
-                //callback();
-                return;
-            }
-            checkTransaction(transaction);
-            }), checkerInterval * 1000);
-
-            setTimeout(() => {
-                clearInterval(checker);
-                if (!publishTxSuccess) {
-                    error = 'Unable to find transaction in block.';
-                }
-            }, checkerTimeout * 1000);
-    }
-
-    function checkTransaction(transaction) {
-        const network_symbol = sending.coin.is_token ? sending.coin.network_symbol : sending.coin.symbol;
-        const path = `${network_symbol}/${transaction}`
-        ApiResponse =  API('GET', 'check-transaction', path)
-            .then((result) => {
-                console.log(result);
-                if (result.txid) {
-                    publishTxSuccess = true;
-            }})
+    function checkPublish(transaction) {
+            status = `Waiting for Tx to Publish`;
+            const network_symbol = sendingCoin.is_token ? sendingCoin.network_symbol : sendingCoin.symbol;
+            return waitUntilTransactionExists(network_symbol, transaction)
+                .then(result => {
+                    if (result) {status = "Transaction Published"; return true};
+                    if (!result) status = "Could not find transaction in block";
+                    return false;
+                })
+                .catch(e => error = e);
     }
 
 </script>
@@ -210,8 +246,8 @@ div{
 </style>
 
 
-    <div>
-    {error}
+<div>
+    {#if error}<p class="error">{error}</p>{:else}{status}{/if}
     <h1> Create a Lamden Swap</h1>
 
     <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
@@ -227,16 +263,16 @@ div{
                     bind:this={sendingValueField}
                     required />
 
-                {#if sending.coin.symbol !== undefined}
+                {#if sendingCoin.symbol !== undefined}
                     <div>
-                        <lable> {`My ${sending.coin.symbol} Wallet Address`} </lable>
+                        <lable> {`My ${sendingCoin.symbol} Wallet Address`} </lable>
                         <input type="text" 
-                            bind:value={sending.coin.vk}
+                            bind:value={sendingCoin.vk}
                             bind:this={sendingWalletField1}
                             disabled
                             required />
                         <br>
-                        <lable> {`Their ${sending.coin.symbol} Wallet Address`} </lable>
+                        <lable> {`Their ${sendingCoin.symbol} Wallet Address`} </lable>
                         <input type="text" 
                             bind:value={sending.theirVk}
                             bind:this={sendingWalletField2}
@@ -246,7 +282,7 @@ div{
             </div>
             <div>
                 <lable>I want</lable>
-                <SupportedCoinsDropDown id="receiveDD" 
+                <MyCoinsDropDown id="receiveDD" 
                             on:selected={(evt) => handleSelection(evt, 'receive')} 
                             required={true} />
 
@@ -256,9 +292,9 @@ div{
                     bind:this={receivingValueField}
                     required />
 
-                {#if receiving.coin.symbol !== undefined}
+                {#if receivingCoin.symbol !== undefined}
                     <div>
-                        <lable> {`My ${receiving.coin.symbol} Wallet Address`} </lable>
+                        <lable> {`My ${receivingCoin.symbol} Wallet Address`} </lable>
                         <input type="text" 
                             bind:value={receiving.myVk}
                             bind:this={receivingWalletField}
@@ -276,14 +312,4 @@ div{
             </div>
             <input type="submit" value="Create Swap" required disabled={!coinsSelected}>
     </form>
-
-    {#if ApiResponse }
-        {#await ApiResponse}
-            <h3>{status.pending}</h3>
-        {:then data}
-            <h3>{status.current}</h3>
-        {:catch}
-            {error}
-        {/await}
-    {/if}
 </div>

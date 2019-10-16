@@ -14,6 +14,19 @@
     let supportedCoins = getSupportedCoins();
     let supportedTokens = getSupportedTokens();
 
+    let lamden = {name:'Lamden', symbol:'TAU', network_symbol: "TAU", testnet: true, network: 'lamden', token: false};
+    let testTokens = [
+            {decimals: 18,
+            is_token: true,
+            testnet: true,
+            name: "TEST Polymath",
+            network: "ethereum",
+            network_symbol: "ETH-TESTNET",
+            symbol: "POLY",
+            token_address: "0xb347b9f5b56b431b2cf4e1d90a5995f7519ca792",
+            token_symbol: "POLY"},
+        ];
+
     function getSupportedCoins(){
         return API('GET', 'networks-list');
     }
@@ -23,15 +36,25 @@
     }
 
     function createCoinList(data){
+
             let coins = data[0];
+            coins = [ ...coins['bitcoin_networks'], ...coins['ethereum_networks'] ]
+            coins.map(function(coin){
+                coin.is_token = false;
+                coin.network_symbol = coin.symbol;
+                return coin;
+            });
             let tokens = data[1].tokens;
             tokens.map(function(token){
-                token.token = true;
+                token.is_token = true;
+                token.testnet = false;
                 token.network = 'ethereum';
-                token.network_symbol = 'ETH'
+                token.network_symbol = 'ETH';
+                token.token_symbol = token.symbol;
+                token.token_address = token.address;
                 return token;
             });
-            coinList = [...coins['bitcoin_networks'], ...coins['ethereum_networks'], ...tokens];
+            coinList = [...coins, ...tokens, ...testTokens];
             coinList.map(function(token){
                 if (token.name === 'test-ethereum') token.name ='Ethereum TestNet (kovan)';
                 return token;

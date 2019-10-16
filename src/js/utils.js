@@ -1,5 +1,3 @@
-import { API } from './api.js';
-
 import nodeCryptoJs from 'node-cryptojs-aes';
 const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 

@@ -17,7 +17,10 @@ import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 //Swaps
 import SwapsMain from '../svelte/swaps/SwapsMain.svelte';
 import SwapsInitial from '../svelte/swaps/SwapsInitial.svelte';
+import SwapsInitialRedeem from '../svelte/swaps/SwapsInitialRedeem.svelte';
 import SwapsParticipate from '../svelte/swaps/SwapsParticipate.svelte';
+import SwapsParticipateRedeem from '../svelte/swaps/SwapsParticipateRedeem.svelte';
+import SwapsRefund from '../svelte/swaps/SwapsRefund.svelte';
 
 //Misc
 import BackupMain from '../svelte/misc/BackupMain.svelte';
@@ -29,7 +32,7 @@ import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
 
 const FirstRun = { FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const SwapPages = { SwapsMain, SwapsInitial, SwapsParticipate }
+const SwapPages = { SwapsMain, SwapsInitial, SwapsParticipate, SwapsParticipateRedeem, SwapsInitialRedeem, SwapsRefund }
 
 const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...FirstRun, ...SwapPages };
 
@@ -49,7 +52,10 @@ export {
     RestoreMain,
     SwapsMain,
     SwapsInitial,
+    SwapsInitialRedeem,
     SwapsParticipate,
+    SwapsParticipateRedeem,
+    SwapsRefund,
     LockScreen,
     Modal,
     SupportedCoinsDropDown,

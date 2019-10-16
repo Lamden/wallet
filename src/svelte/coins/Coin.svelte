@@ -11,6 +11,7 @@
 
     // Props
     export let coin;
+    console.log(coin)
 
     //Context
     const { switchPage } = getContext('switchPage');

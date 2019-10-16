@@ -49,10 +49,6 @@ const createCoinStore = (key, startValue) => {
             }
             set(startValue)
         },
-        returnCoin: (coinToGet) => {
-            console.log(get())
-            return getCoin(coinToGet, get());
-        },
         updateBalances: (storeValue) => {
             console.log('!! REFRESHING BALANCES !!')
             const postObj = makeBalancesPost(storeValue);
@@ -84,32 +80,41 @@ const createCoinStore = (key, startValue) => {
                 return coinstore;
             })
         },
-        storeSwapInfo: (coinToUpdate, swap_info, keyName) => {
-            let newSwapObj = {};
-            newSwapObj[keyName] = swap_info;
+        storeSwapInfo: (coinToUpdate, swap_info) => {
             update(coinstore => {
                 let coin = getCoin(coinToUpdate, coinstore);
                 if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.')
-                console.log(newSwapObj)
-                !coin.swapList ? coin.swapList = [newSwapObj] : coin.swapList.push(newSwapObj);
-                console.log(coin.swapList)
+                !coin.swapList ? coin.swapList = [swap_info] : coin.swapList.push(swap_info);
                 return coinstore;
             })
         },
-        deleteSwap: (coinToUpdate, secretHash, keyName) => {
+        updateSwapInfo: (coinToUpdate, secret_hash, keyName, swap_info) => {
+            update(coinstore => {
+                let coin = getCoin(coinToUpdate, coinstore);
+                if (!coin) throw new Error(`Error Storing Swap Information: Coin not found in wallet storage.`)
+                if (!coin.swapList) throw new Error(`Error Storing Swap Information: This coin has no stored swaps`)
+                console.log(coin)
+                let swap = coin.swapList.find(f => f.txInfo.secret_hash === secret_hash);
+                swap[keyName] = swap_info;
+                console.log(swap)
+                return coinstore;
+            })
+        },
+        deleteSwap: (coinToUpdate, secret_hash) => {
             update(coinstore => {
                 let coin = getCoin(coinToUpdate, coinstore);
                 if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.');
                 if (!coin.swapList) throw new Error('Coin has no Swap data');
-                coin.swapList = coin.swapList.filter(f => f[keyName].swapContract.secret_hash !== secretHash);
+                coin.swapList = coin.swapList.filter(f => f.txInfo.secret_hash !== secret_hash);
                 return coinstore;
             })
         },
-        storeParticipateSwap: (coinToUpdate, swap_info) => {
-            console.log(coinToUpdate)
-            console.log(swap_info)
-        },
-
+        deleteAllSwaps: () => {
+            update(coinstore => {
+                coinstore.map(coin => coin.swapList ? delete coin.swapList : null);
+                return coinstore;
+            })
+        }
     };
 }
 
@@ -179,7 +184,7 @@ export const initialSwaps = derived(
         let swapList = [];
         $CoinStore.map(coin => {
             if (coin.swapList) {
-                let swaps = coin.swapList.filter(f => f.hasOwnProperty('initial'))
+                let swaps = coin.swapList.filter(f => f.type === 'initial')
                 
                 if (swaps.length > 0) swapList = [...swapList, ...swaps];
             }
@@ -194,7 +199,7 @@ export const participateSwaps = derived(
         let swapList = [];
         $CoinStore.map(coin => {
             if (coin.swapList) {
-                let swaps = coin.swapList.filter(f => f.hasOwnProperty('participate'))
+                let swaps = coin.swapList.filter(f => f.type === 'participate')
                 if (swaps.length > 0) swapList = [...swapList, ...swaps];
             }
         })
@@ -231,8 +236,6 @@ export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => $SettingsStore.themeStyle
 );
-
-
 
 /*
 
