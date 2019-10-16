@@ -9,6 +9,7 @@
 
     //Utils
     import { toCurrencyFormat }  from '../../js/utils.js'
+    import { logos } from '../../js/crypto/logos.js';
 
     setContext('closeModal', {
 		closeModal: () => closeModal(),
@@ -18,9 +19,13 @@
 
     let openModal = false;
     let currentModal = '';
-    let selected;
 
     $: coin = getCoinReference($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
+    $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
+    $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
+    $: balance = coin.balance ? coin.balance : 0;
+    $: USD_value = coin.USD_value ? coin.USD_value : 0;
+
 
     function showModal(modal){
         currentModal = modal;
@@ -48,8 +53,11 @@
 
 <h2 on:click={ () => switchPage('CoinsMain')} style="cursor: pointer;"> {"<- Back"} </h2>
 <div>
+    <img class="logo" src={logo} alt={`${coin.name} logo`} />
+</div>
+<div>
     <h2>{coin.name}</h2>
-    <div> {`balance ${coin.balance} ${coin.symbol}`}</div>
+    <div> {`balance ${ balance } ${ symbol }`}</div>
     <!-- <div> {`(${coin.USD_value})`} </div> -->
 </div>
 {#if coin.sk !== 'watchOnly'}
@@ -64,7 +72,7 @@
             {#each coin.txList as tx}
                 <li>
                     <a href={tx.transaction_link} rel="noopener noreferrer" target="_blank">
-                        {`Sent ${tx.value} (${coin.symbol}) on ${new Date(tx.dateTime)}  Status: ${tx.status}`}
+                        {`Sent ${tx.value} (${ symbol }) on ${new Date(tx.dateTime)}  Status: ${tx.status}`}
                     </a>
                 </li>
             {/each}

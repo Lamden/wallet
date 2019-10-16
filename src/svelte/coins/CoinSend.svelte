@@ -23,11 +23,11 @@
     const tx_info_items = ['sender_address', 'recipient_address', 'gasprice', 'gas_limit', 'nonce', 'value_text', 'unsigned_raw_tx'];
 
     let error = '';
-    let value = 0.001;
-    let reciever_address = 'mqkaog8wXk9juy7XcyjGhBwHX13ECyaz38';
+    let value = 0;
+    let reciever_address = '';
     let info_valid = false;
     let signed_transaction = '';
-    let password = 'Summer0!0101';
+    let password = '';
     let tx_data;
 
     function handleSubmit(obj){
@@ -51,9 +51,8 @@
     }
 
     function publish(){
-        const network_symbol = coin.is_token ? coin.network_symbol : coin.symbol;
         try{
-            signed_transaction = signTx(tx_data.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, network_symbol);
+            signed_transaction = signTx(tx_data.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, coin.network_symbol);
         }catch (e) {
             console.log(e)
             error = e;

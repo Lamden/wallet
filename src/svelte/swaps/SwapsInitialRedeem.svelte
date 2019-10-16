@@ -21,7 +21,11 @@
     console.log("MOCKED DATA FOR TESTING")
 
     let error, status = "";
+<<<<<<< HEAD
     let password = "Summer0!0101";
+=======
+    let password = "";
+>>>>>>> refractoring
     let contractInfo;
     let swapInfo;
     let initialRedeemString = '{"transactionAddress":"0xae29f38c86f21fb4fddbbf8c4b5092387e4c90fab8d2cef27b56a75f35928c32","participateContract":"0xce07aB9477BC20790B88B398A2A9e0F626c7D263","network_symbol":"ETH-TESTNET"}';

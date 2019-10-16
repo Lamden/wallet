@@ -64,7 +64,11 @@
 }
 
 </style>
+<<<<<<< HEAD
 
+=======
+<h2 on:click={ () => switchPage('CoinsMain')} style="cursor: pointer;"> {"<- Back"} </h2>
+>>>>>>> refractoring
 <h1>Swaps Page</h1>
 
 <button on:click={() => initialSwap() }> Initiate a Swap </button>
