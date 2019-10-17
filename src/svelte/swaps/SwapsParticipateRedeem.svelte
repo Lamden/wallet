@@ -8,7 +8,7 @@
     import { SupportedCoinsDropDown, MyCoinsDropDown }  from '../../js/router.js'
 
     // Utils
-    import { API, waitUntilTransactionExists, getSwapInfo, sendSignedTx, getRedeemTxDetails, getRefundTxDetails } from '../../js/api.js';
+    import { API, waitUntilTransactionExists, getSecret, sendSignedTx, getRedeemTxDetails, getRefundTxDetails } from '../../js/api.js';
     import { checkPassword, encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
@@ -20,23 +20,21 @@
 
     console.log("MOCKED DATA FOR TESTING")
 
-    let error, status = "";
+    let error, status, secret = "";
+    let vk, network_symbol;
     let password = "";
     let contractInfo;
     let swapInfo;
-    let initialRedeemString = '{"transactionAddress":"0xae29f38c86f21fb4fddbbf8c4b5092387e4c90fab8d2cef27b56a75f35928c32","participateContract":"0xce07aB9477BC20790B88B398A2A9e0F626c7D263","network_symbol":"ETH-TESTNET"}';
-    $: initialRedeemInfo = initialRedeemString === '' ? {} : JSON.parse(initialRedeemString);
-    let receivingCoin;
 
 	onMount(() => {
-        if ($SettingsStore.currentPage.data.type === 'initial'){
+        if ($SettingsStore.currentPage.data.type === 'participate'){
             swapInfo = $SettingsStore.currentPage.data;
             $SettingsStore.currentPage.data = {};
-        }else{
-            swapInfo = {};
+            
+            vk = swapInfo.initialContractInfo.recipient_address;
+            network_symbol = swapInfo.participateInfo.initialCurrency;
         }
     });
-    
         
     function validatePassword(){
         passwordField.setCustomValidity('');
@@ -45,60 +43,59 @@
         }
     }
 
-    async function handleSubmit(obj){
+    function handleSubmit(obj){
          error = '';
         if (obj.checkValidity()){
-            swapInfo.initialRedeemInfo = initialRedeemInfo;
-             receivingCoin = getCoinFromWallet();
+            extractSecret();
+            console.log(swapInfo);
+
+             const receivingCoin = getCoinFromWallet();
              console.log(receivingCoin)
+
             if (receivingCoin){
-                status = `${swapInfo.receiving.myVk} found in you wallet, redeeming...`
+                status = `${vk} found in you wallet, redeeming...`
+                CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'receiving', receivingCoin);
+                swapInfo.receiving = receivingCoin;
                 
-                await participateSwapDetails();
+                redeemTxDetials();
                 console.log(swapInfo);
-
-                await redeemTxDetials();
+                
+                if (swapInfo.hasOwnProperty('redeemTxInfo')) sendTx( signedTx() );
                 console.log(swapInfo);
-
-                await sendTx( signedTx() );
-                console.log(swapInfo);
+                
             }else{
-                error = `Please add ${swapInfo.receiving.myVk} to your wallet.`;
+                error = `Please add ${vk} to your wallet.`;
             }
+            
         }
+    }
+
+    async function extractSecret(){
+        status = 'Checking if other party has redeemed thier tokens...';
+        let secretTx = await getSecret(network_symbol, swapInfo.txResult.transaction_address)
+                            .catch (e => { console.log(e); error = e; });
+        if (!secretTx) return;
+        if (secretTx.message) {error = secretTx.message; return;}
+        swapInfo.initialContractInfo.secret = secretTx.secret;
+        CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'secret', secretTx.secret);
+        status = 'Redeem Transaction Details Recieved!';
     }
 
     function getCoinFromWallet(){
-        if (swapInfo.receiving.is_token){
-            return  $CoinStore.find(f => { return (
-                        f.vk === validateAddress(swapInfo.receiving.network, swapInfo.receiving.myVk) && 
-                        f.token_address === validateAddress(swapInfo.receiving.network,swapInfo.receiving.token_address)
-                    )})
+        if (swapInfo.participateInfo.initialTokenAddress){
+            return  $CoinStore.find(f => f.vk === vk && f.token_address === swapInfo.participateInfo.initialTokenAddress)
         }else{
-            return  $CoinStore.find(f => { return (
-                f.vk === validateAddress(swapInfo.receiving.network, swapInfo.receiving.myVk) && 
-                f.symbol === swapInfo.receiving.symbol
-            )})
+            return  $CoinStore.find(f => f.vk === vk && f.symbol === network_symbol)
         }
-    }
-
-    async function participateSwapDetails(){
-        status = 'Retriving Swap Details...';
-        let swapInfo = await getSwapInfo(initialRedeemInfo.network_symbol, initialRedeemInfo.participateContract, initialRedeemInfo.transactionAddress)
-                                .catch (e => { console.log(e); error = e; });
-        if (!swapInfo) return;
-        if (swapInfo.message) {error = swapInfo.message; return;}
-        swapInfo.participateContractInfo = swapInfo;
-        status = 'Swap Contract Recieved!';
     }
 
     async function redeemTxDetials(){
         status = 'Getting Redeem Transaction Details...';
         let txInfo = await getRedeemTxDetails(
-                                swapInfo.initialRedeemInfo.network_symbol,
-                                swapInfo.initialRedeemInfo.participateContract,
-                                swapInfo.initialRedeemInfo.transactionAddress,
-                                decryptStrHash(password, swapInfo.txInfo.secret),
+                                network_symbol,
+                                swapInfo.initialContractInfo.contract_address,
+                                swapInfo.initialContractInfo.transaction_address,
+                                swapInfo.initialContractInfo.secret,
                            ).catch (e => { console.log(e); error = e; });
         if (!txInfo) return;
         if (txInfo.message) {error = txInfo.message; return;}
@@ -107,13 +104,13 @@
     }
 
     function signedTx(){
-        const network_symbol = swapInfo.initialRedeemInfo.network_symbol;
-        const unsigned_transaction =  swapInfo.receiving.network === 'ethereum'  ?  swapInfo.redeemTxInfo.transaction : swapInfo.redeemTxInfo.contract_transaction;
+        const network = swapInfo.receiving.network;
+        const unsigned_transaction =  network === 'ethereum'  ?  swapInfo.redeemTxInfo.transaction : swapInfo.redeemTxInfo.contract_transaction;
         let signed_transaction = "";
         try{
             signed_transaction = signTx(unsigned_transaction, 
-                                        decryptStrHash(password, receivingCoin.sk), 
-                                        swapInfo.receiving.network, 
+                                        decryptStrHash(password, swapInfo.receiving.sk), 
+                                        network, 
                                         network_symbol);
         }catch (e) {
             console.log(e)
@@ -124,6 +121,7 @@
 
     async function sendTx(signedTxInfo){
         status = 'Sending Redeem Transaction...';
+        console.log(signedTxInfo)
         let txResult = await sendSignedTx( signedTxInfo  )
                                 .catch (e => { console.log(e); error = e; });
         if (!txResult) return;
@@ -135,13 +133,13 @@
             status = 'Redeem Transaction Sent!';
             swapInfo.redeemTxResult = txResult;
             swapInfo.redeemTxResult.sent = new Date();
-            finishInitialRedeem();
+            finishParticipateRedeem();
         }
     }
 
     function checkPublish(transaction) {
         status = `Waiting for Tx to Publish`;
-        return waitUntilTransactionExists(swapInfo.initialRedeemInfo.network_symbol, transaction)
+        return waitUntilTransactionExists(network_symbol, transaction)
             .then(result => {
                 if (result) {status = "Transaction Published"; return true};
                 if (!result) status = "Could not find transaction in block";
@@ -150,7 +148,7 @@
             .catch(e => error = e);
     }
 
-    function finishInitialRedeem(){
+    function finishParticipateRedeem(){
         try{
             CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'redeemTxInfo', swapInfo.redeemTxInfo);
             CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'redeemTxResult', swapInfo.redeemTxResult);
@@ -164,22 +162,11 @@
 
 </script>
 
-<style>
-
-</style>
-
 {#if error}{error}{:else}{status}{/if}
 {#if swapInfo}
-    <h1> {`Redeem ${swapInfo.receiving.symbol}`} </h1>
+    <h1> {`Redeem ${swapInfo.participateInfo.initialCurrency}`} </h1>
     <div>
         <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
-            <div>
-                <label>Enter Swap String</label><br>
-                <small>This is the string provided to you by the other participant after they joined your swap</small><br>
-                <input type="text" required
-                    bind:value={initialRedeemString}
-                    bind:this={initialRedeemField} />
-            </div>
             <div>
                 <label>Wallet Password</label><br>
                 <input  bind:value={password}
@@ -188,7 +175,7 @@
                         type="password"
                         required  />
             </div>
-                <input type="submit" value={`Redeem ${swapInfo.receiving.symbol}`} required disabled={initialRedeemString === ""}>
+                <input type="submit" value={`Redeem ${swapInfo.participateInfo.initialCurrency}`} required >
         </form>
     </div>
 {/if}
