@@ -12,6 +12,9 @@
     //Props
     export let coin;
 
+    $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
+    $: balance = coin.balance ? coin.balance : 0;
+
     //DOM NODES
     let formObj1, formObj2, passwordField, addressField;
 
@@ -153,7 +156,7 @@
         <h3>Public Key</h3>
         <div>
             <span><small>{`${coin.name} - ${coin.nickname}`}</small></span>
-            <span><small>{`${coin.balance} (${coin.symbol})`}</small></span>
+            <span><small>{`${balance} (${symbol})`}</small></span>
         </div>
         <a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
         <small>click to copy public key to clipboard</small>

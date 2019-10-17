@@ -49,7 +49,7 @@
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 
 {#each $CoinStore as coin, id}
-	<Coin coin={coin} />
+	<Coin {coin} />
 {/each}
 
 {#if openModal}
