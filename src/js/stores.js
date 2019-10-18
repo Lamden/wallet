@@ -1,5 +1,5 @@
-import { readable, writable, derived } from 'svelte/store';
-import { API, makeBalancesPost } from './api.js';
+import { readable, writable, derived, get } from 'svelte/store';
+import { API, makeBalancesPost, waitUntilTransactionExists } from './api.js';
 import { defaultSettings, coin, pubkey, token } from './defaults.js'
 
 //Environment constents
@@ -56,17 +56,15 @@ const createCoinStore = (key, startValue) => {
             if (postObj){
                 return API('POST', 'get-balances', "", postObj)
                 .then(balances => {
+                    console.log(balances)
                     update (coinstore => {
-                        for (const item of balances.value){
-                            let coin;
-                            if (item.token_address){
-                                coin = coinstore.find(f=> f.network === item.network && f.token_address === item.token_address && f.vk === item.wallet_address);
-                            }else{
-                                coin = coinstore.find(f=> f.network === item.network && f.network_symbol === item.symbol && f.vk === item.wallet_address);
-                            }
-                            if(coin) coin.balance=item.balance;
-                        }
-                        console.log('!! REFRESHED !!')
+                        balances.value.map(b => {
+                            let coin = coinstore.find(f =>  f.network_symbol === b.network_symbol &&
+                                                            f.symbol === b.symbol &&  
+                                                            f.vk === b.wallet_address)
+                            if(coin) coin.balance = b.balance;
+                        })
+                        console.log('!! BALANCES REFRESHED !!')
                         return coinstore;
                     });
                 })
@@ -77,41 +75,6 @@ const createCoinStore = (key, startValue) => {
             update(coinstore => {
                 let coin = getCoin(coinToUpdate, coinstore)
                 coin.txList = !coin.txList ? [tx_info] : [...coin.txList, tx_info];
-                return coinstore;
-            })
-        },
-        storeSwapInfo: (coinToUpdate, swap_info) => {
-            update(coinstore => {
-                let coin = getCoin(coinToUpdate, coinstore);
-                if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.')
-                !coin.swapList ? coin.swapList = [swap_info] : coin.swapList.push(swap_info);
-                return coinstore;
-            })
-        },
-        updateSwapInfo: (coinToUpdate, secret_hash, keyName, swap_info) => {
-            update(coinstore => {
-                let coin = getCoin(coinToUpdate, coinstore);
-                if (!coin) throw new Error(`Error Storing Swap Information: Coin not found in wallet storage.`)
-                if (!coin.swapList) throw new Error(`Error Storing Swap Information: This coin has no stored swaps`)
-                console.log(coin)
-                let swap = coin.swapList.find(f => f.txInfo.secret_hash === secret_hash);
-                swap[keyName] = swap_info;
-                console.log(swap)
-                return coinstore;
-            })
-        },
-        deleteSwap: (coinToUpdate, secret_hash) => {
-            update(coinstore => {
-                let coin = getCoin(coinToUpdate, coinstore);
-                if (!coin) throw new Error(`Error Storing Swap Information: ` + coinToUpdate.vk + ' not found in wallet.');
-                if (!coin.swapList) throw new Error('Coin has no Swap data');
-                coin.swapList = coin.swapList.filter(f => f.txInfo.secret_hash !== secret_hash);
-                return coinstore;
-            })
-        },
-        deleteAllSwaps: () => {
-            update(coinstore => {
-                coinstore.map(coin => coin.swapList ? delete coin.swapList : null);
                 return coinstore;
             })
         }
@@ -178,35 +141,6 @@ export const allSwaps = derived(
     }
 );
 
-export const initialSwaps = derived(
-    CoinStore,
-    $CoinStore => {
-        let swapList = [];
-        $CoinStore.map(coin => {
-            if (coin.swapList) {
-                let swaps = coin.swapList.filter(f => f.type === 'initial')
-                
-                if (swaps.length > 0) swapList = [...swapList, ...swaps];
-            }
-        })
-        return swapList;
-    }
-);
-
-export const participateSwaps = derived(
-    CoinStore,
-    $CoinStore => {
-        let swapList = [];
-        $CoinStore.map(coin => {
-            if (coin.swapList) {
-                let swaps = coin.swapList.filter(f => f.type === 'participate')
-                if (swaps.length > 0) swapList = [...swapList, ...swaps];
-            }
-        })
-        return swapList;
-    }
-);
-
 export const allTotals = derived(
     CoinStore,
     ($CoinStore) => {
@@ -215,6 +149,126 @@ export const allTotals = derived(
             majorTotals.USD_value += coin.USD_value;
         })
         return majorTotals;
+    }
+);
+
+function createSwapStore(key, startValue) {
+    const swapstore = writable(startValue);
+    let subscribe = swapstore.subscribe;
+    let update = swapstore.update;
+    let set = swapstore.set;
+
+    return {
+        startValue,
+        subscribe,
+        update,
+        set,
+        useLocalStorage: () => {  
+            const json = localStorage.getItem(key);
+            if (json) {
+                let returnstr = JSON.parse(json)
+                set(returnstr);
+            }
+            
+            subscribe(current => {
+                localStorage.setItem(key, JSON.stringify(current));
+            });
+        },
+        reset: () => {
+            update(current => {current = startValue; return current;})
+        },
+        setSwap: (swap) => {
+            console.log(swap)
+            return update(current => {current.push(swap); return current;})
+        },
+        getSwap: (secret_hash) => {
+            return get(swapstore).find( f => f.secret_hash === secret_hash);
+        },
+        updateSwapKey: (secret_hash, key, data) => {
+            update(current => {
+                let swap = current.find( f => f.secret_hash === secret_hash );
+                swap[key] = data;
+                return current;
+            })
+        },
+        updateSwapStore: (swapInfo) => {
+            update(current => {
+                let swap = current.find( f => f.secret_hash === swapInfo.secret_hash );
+                if(swap) swap = swapInfo;
+                return current;
+            })
+        },
+        confirmTx: (swapInfo, txName) => {
+            update(current => {
+                let swap = current.find( f => f.secret_hash === swapInfo.secret_hash );
+                if(swap) {
+                    swap[txName].sent = new Date();
+                }
+                return current;
+            })
+        },
+        deleteSwap: (secret_hash) => {
+            console.log(secret_hash)
+            update(current => {
+                return current.filter(f => {
+                    console.log(f.secret_hash)
+                    return f.secret_hash !== secret_hash;
+                })
+            })
+        }
+    };
+}
+
+export const SwapStore = createSwapStore('swaps', []);
+export const swapCount = derived(
+	SwapStore,
+	$SwapStore => $SwapStore.length
+);
+
+function determineSwapState(swap, swapstore){
+    if (swap.hasOwnProperty('redeemTxResult')) return {text:'Completed', num:7};
+    if (swap.hasOwnProperty('refundTxResult')) return {text:'Refunded', num:6};
+    if (swap.hasOwnProperty('sendCoinsTxResult')){
+        if (swap.sendCoinsTxResult.sent) return {text:'Sent Coins to Contract: Tx Confirmed!', num:5};
+        confirmSwapTransaction(swap, 'sendCoinsTxResult', swap.sending, swapstore)
+        return {text:'Sent Coins to Contract: Tx Unconfirmed', num:4};
+    }
+    if (swap.hasOwnProperty('approveTxResult')){
+        if (swap.approveTxResult.sent) return {text:'Approval Transaction Sent: Tx Confirmed!', num:3};
+        confirmSwapTransaction(swap, 'approveTxResult', swap.sending, swapstore)
+        return {text:'Approval Transaction Sent: Tx Unconfirmed', num:2};
+    }
+    return {text:'Started', num:1};
+}
+
+function confirmSwapTransaction(swap, txName, coin, swapstore){
+    waitUntilTransactionExists(coin.network_symbol, swap[txName].transaction_address)
+        .then(result => {
+            console.log(result)
+            swapstore.confirmTx(swap, txName)
+        })
+        .catch(e => console.log(e));
+}
+
+export const initialSwaps = derived(
+    SwapStore,
+    $SwapStore => {
+        let swaps = $SwapStore.filter(f => f.type === 'initial' )
+        swaps.map(swap => {
+            swap.swapState = determineSwapState(swap, SwapStore);
+        })
+        return swaps;
+    }
+);
+
+export const participateSwaps = derived(
+    SwapStore,
+    $SwapStore => {
+        let swaps = $SwapStore.filter(f => f.type === 'participate' )
+        swaps.map(swap => {
+            swap.swapState = determineSwapState(swap);
+        })
+        return swaps;
     }
 );
 
