@@ -3,13 +3,14 @@
 	import { themes } from '../js/themes.js'
 	
 	//Stores
-	import { CoinStore, SettingsStore, Hash, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores.js';
+	import { CoinStore, SwapStore, SettingsStore, Hash, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores.js';
 
 	//Components
 	import { Pages, FirstRun }  from '../js/router.js'	
 
 	onMount(() => {
 		CoinStore.useLocalStorage();
+		SwapStore.useLocalStorage();
 		//CoinStore.updateBalances($CoinStore);
 		SettingsStore.useLocalStorage();
 		Hash.useLocalStorage();

@@ -33,7 +33,7 @@
     function getTokenDetails(node){
         node = node || null;
         let address = customToken.view ? customToken.contractAddress : selected.token_address;
-        return API('GET', 'token-details', `${selected.network_symbol}/${address}`)
+        return API('GET', 'token-details', `${selected.network_symbol}/${address}`, {})
             .then(result => {
                 error = "";
                 if (result.message){
@@ -105,22 +105,24 @@
     }
 
     function saveKeys(){
-        if (selected.is_token &&
-            $CoinStore.filter(f =>  f.network === selected.network &&
-                                    f.token_address === customToken.details.token_address &&
-                                    f.vk === keyAttributes.publicKey).length > 0){
-            error = "Coin already exists in wallet"
-            return;
+        if (selected.is_token){
+            if( $CoinStore.filter(f => f.network === selected.network &&
+                                        f.token_address === selected.token_address &&
+                                        f.vk === keyAttributes.publicKey).length > 0){
+                error = "Coin already exists in wallet"
+                return;
+            }
+        } else {
+            if ($CoinStore.filter(f =>  f.network === selected.network &&
+                                        f.symbol === selected.symbol &&
+                                        f.vk === keyAttributes.publicKey).length > 0){
+                error = "Coin already exists in wallet"
+                return;
+            }
         } 
 
-        if ($CoinStore.filter(f =>  f.network === selected.network &&
-                                    f.symbol === selected.symbol &&
-                                    f.vk === keyAttributes.publicKey).length > 0){
-            error = "Coin already exists in wallet"
-            return;
-        }
-
         CoinStore.update(coinstore => {
+            selected = {...selected, ...customToken.details}
             let coinInfo = {
                 'is_token': false,
                 'network': selected.network,
@@ -131,13 +133,14 @@
                 'vk': keyAttributes.publicKey,
                 'sk': addType === 3 ? 'watchOnly' : encryptStrHash(password, keyAttributes.privateKey),
             }
-            if (customToken.view){
+            coinInfo.is_token = selected.is_token;
+            if (coinInfo.is_token){
                 coinInfo.is_token = true;
-                coinInfo.symbol = customToken.details.symbol;
-                coinInfo.name = customToken.details.name;
-                coinInfo.decimals = customToken.details.decimals;
-                coinInfo.token_symbol = customToken.details.symbol;
-                coinInfo.token_address = customToken.details.token_address;
+                coinInfo.symbol = selected.symbol;
+                coinInfo.name = selected.name;
+                coinInfo.decimals = selected.decimals;
+                coinInfo.token_symbol = selected.symbol;
+                coinInfo.token_address = selected.token_address;
             }
 
             if (coinInfo.vk === "") {

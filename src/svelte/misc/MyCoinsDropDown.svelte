@@ -36,7 +36,7 @@
         <option value={undefined}>Choose wallet..</option>
     
     {#each coinList() as coin}
-        <option value={coin} class="dropdownItem">{`${coin.name} - ${coin.nickname} (${coin.balance} ${coin.symbol})`}</option>
+        <option value={coin} class="dropdownItem">{`${coin.name} - ${coin.nickname} (${coin.balance || 0 } ${coin.symbol})`}</option>
     {/each}
 </select>
 

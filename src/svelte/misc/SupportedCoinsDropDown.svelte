@@ -28,11 +28,11 @@
         ];
 
     function getSupportedCoins(){
-        return API('GET', 'networks-list');
+        return API('GET', 'networks-list', "", {});
     }
 
     function getSupportedTokens(){
-        return API('GET', 'networks-list', 'ETH/tokens');
+        return API('GET', 'networks-list', 'ETH/tokens', {});
     }
 
     function createCoinList(data){

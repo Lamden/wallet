@@ -7,7 +7,7 @@
 	import { Coin, Modal, Modals }  from '../../js/router.js'
 
 	//Utils
-	import { API } from '../../js/api.js';
+	import { API, myFunc } from '../../js/api.js';
 	import { updateBalances, toCurrencyFormat } from '../../js/utils.js';
 	
 

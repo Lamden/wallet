@@ -2,7 +2,7 @@
     import { getContext, setContext} from 'svelte';
 
 	//Stores
-    import { CoinStore, initialSwaps, participateSwaps } from '../../js/stores.js';
+    import { SwapStore, initialSwaps, participateSwaps } from '../../js/stores.js';
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js';
@@ -16,8 +16,8 @@
         console.log( decodeLink(testLink) )
     }
 
-    function initialSwap(){
-        switchPage('SwapsInitial');
+    function initialSwap(swap){
+        switchPage('SwapsInitial', swap);
     }
 
     function participateSwap(swap){
@@ -39,21 +39,33 @@
     }
 
     function deleteSwapInfo(swapInfo){
-        CoinStore.deleteSwap(swapInfo.sending, swapInfo.txInfo.secret_hash)
-    }
-
-    function determineSwapState(swap){
-        if (swap.hasOwnProperty('redeemTxResult')) return {text:'Completed', num:4};
-        if (swap.hasOwnProperty('refundTxResult')) return {text:'Refunded', num:3};
-        if (swap.hasOwnProperty('txResult')) return {text:'Sent to Contract', num:2};
-        if (swap.hasOwnProperty('txInfo')) return {text:'Started', num:0};
-        return {text:'Not started', num:0};
+        console.log(swapInfo)
+        SwapStore.deleteSwap(swapInfo.secret_hash)
     }
 
     function swapExpired(swap){
-        return new Date(swap.txInfo.locktime) < new Date();
+        return new Date(swap.sendCoinsTx.locktime) < new Date();
     }
 
+    function participateString(swap) {
+        const linkContent = {
+            contract: swap.sendCoinsTx.contract_address || swap.sendCoinsTx.contract,
+            transactionAddress: swap.sendCoinsTxResult.transaction_address,
+            initialCurrency: swap.sending.symbol,
+            participateAliceAddress: swap.receiving.vk,
+            participateCurrency: swap.receiving.symbol,
+            participateValue: swap.receiving.value,
+        };
+        if (swap.sending.is_token){
+            linkContent.initialCurrency = swap.sending.network_symbol;
+        };
+        if (swap.sending.is_token){
+            linkContent.participateTokenAddress = swap.receiving.token_address;
+            linkContent.participateCurrency = swap.receiving.network_symbol;
+        };
+        console.log(linkContent);
+        return JSON.stringify(linkContent);
+    }
 </script>
 
 <style>
@@ -74,36 +86,42 @@
 {#if $initialSwaps.length > 0 }
     {#each $initialSwaps as swap}
         <div class="swap-box">
-            <h3>{`Swap Status: ${determineSwapState(swap).text}`}</h3>
+            <h3>{`Swap Status: ${swap.swapState.text}`}</h3>
             <div>
                 {`From: ${swap.sending.value} ${swap.sending.symbol}`}<br>
                 {`To: ${swap.receiving.value} ${swap.receiving.symbol}`}<br>
             </div>
             <div>
-                {#if determineSwapState(swap).num < 3}
+                {#if swap.swapState.num < 3}
                     {#if swapExpired(swap) }
-                        {`Expired On: ${new Date(swap.txInfo.locktime)}`}
-                        {#if determineSwapState(swap).num === 2 }
+                        {`Expired On: ${new Date(swap.sendCoinsTx.locktime)}`}
+                        {#if swap.swapState.num === 2 }
                             <button on:click={() => refundTx(swap)}> Refund </button>
                         {/if}
-                        {#if determineSwapState(swap).num === 3}
-                            {`Refunded On: ${new Date(swap.refundTxResult.sent)}`}
+                        {#if swap.swapState.num === 3}
+                            {`Refunded On: ${new Date(swap.refundTx.sent)}`}
                         {/if}
                     {:else}
-                        {`Expires: ${new Date(swap.txInfo.locktime)}`}
+                        {`Expires: ${new Date(swap.sendCoinsTx.locktime)}`}
                     {/if}
                 {/if}
             </div>
             <div>
-                {#if determineSwapState(swap).num === 2}
-                    <a class="tx-link" href={swap.txResult.transaction_link} rel="noopener noreferrer" target="_blank">
-                            {`Sent ${swap.txInfo.value} (${swap.sending.symbol}) to contract`}
+                {#if swap.swapState.num === 1 && swap.sending.is_token}
+                        <button on:click={ () => switchPage('SwapsInitial', swap) }> Send 'Approve Token' Transaction  </button>
+                {/if}
+                {#if (swap.swapState.num === 1 && !swap.sending.is_token) || (swap.swapState.num === 3) }
+                        <button on:click={ () => switchPage('SwapsInitial', swap) }> Send Coins to Contract  </button>
+                {/if}
+                {#if swap.swapState.num === 5}
+                    <a class="tx-link" href={swap.sendCoinsTxResult.transaction_link} rel="noopener noreferrer" target="_blank">
+                            {`Sent ${swap.sendCoinsTx.value} (${swap.sending.symbol}) to contract`}
                     </a>
-                    <button on:click={() => copyToClipboard(swap.participateInfo)}> copy participate info </button>
+                    <button on:click={() => copyToClipboard( participateString(swap) )}> copy participate info </button>
                     <button on:click={ () => switchPage('SwapsInitialRedeem', swap) }> Redeem  </button>
                 {/if}
-                {#if determineSwapState(swap).num === 4}
-                    <a class="tx-link" href={swap.redeemTxResult.transaction_link} rel="noopener noreferrer" target="_blank">
+                {#if swap.swapState.num === 7}
+                    <a class="tx-link" href={swap.redeemTx.transaction_link} rel="noopener noreferrer" target="_blank">
                             {`Received ${swap.redeemTxInfo.value} (${swap.receiving.symbol}) from contract`}
                     </a>
                 {/if}
@@ -120,36 +138,36 @@
     {#each $participateSwaps as swap}
         <div class="swap-box">
             <div>
-                <h3>{`Swap Status: ${determineSwapState(swap).text}`}</h3>
+                <h3>{`Swap Status: ${swap.swapState.text}`}</h3>
                 {`From: ${swap.participateInfo.participateValue} ${swap.sending.symbol}`}<br>
                 {`To: ${swap.initialContractInfo.value} ${swap.participateInfo.initialCurrency}`}<br>
             </div>
             <div>
-                {#if determineSwapState(swap).num < 3}
+                {#if swap.swapState.num < 3}
                     {#if swapExpired(swap) }
-                        {`Expired On: ${new Date(swap.txInfo.locktime)}`}
-                        {#if determineSwapState(swap).num === 2 }
+                        {`Expired On: ${new Date(swap.sendCoinsTx.locktime)}`}
+                        {#if swap.swapState.num === 2 }
                             <button on:click={() => refundTx(swap)}> Refund </button>
                         {/if}
-                        {#if determineSwapState(swap).num === 3}
+                        {#if swap.swapState.num === 3}
                             {`Refunded On: ${new Date(swap.refundTxResult.sent)}`}
                         {/if}
                     {:else}
-                        {`Expires: ${new Date(swap.txInfo.locktime)}`}
+                        {`Expires: ${new Date(swap.sendCoinsTx.locktime)}`}
                     {/if}
                 {/if}
             </div>
             <div>
-                {#if determineSwapState(swap).num === 2}
+                {#if swap.swapState.num === 2}
                     <a class="tx-link" href={swap.txResult.transaction_link} rel="noopener noreferrer" target="_blank">
-                            {`Sent ${swap.txInfo.value} (${swap.sending.symbol}) to contract`}
+                            {`Sent ${swap.sendCoinsTx.value} (${swap.sending.symbol}) to contract`}
                     </a>
                     <button on:click={() => copyToClipboard(swap.initialRedeemInfo)}> copy redeem info </button>
                     <button on:click={ () => switchPage('SwapsParticipateRedeem', swap) }> Redeem  </button>
                 {/if}
-                {#if determineSwapState(swap).num === 4}
+                {#if swap.swapState.num === 4}
                     <a class="tx-link" href={swap.redeemTxResult.transaction_link} rel="noopener noreferrer" target="_blank">
-                            {`Received ${swap.redeemTxInfo.value} (${swap.receiving.symbol}) from contract`}
+                            {`Received ${swap.redeemsendCoinsTx.value} (${swap.receiving.symbol}) from contract`}
                     </a>
                 {/if}
                 <br><button on:click={() => deleteSwapInfo(swap)}> delete </button>
