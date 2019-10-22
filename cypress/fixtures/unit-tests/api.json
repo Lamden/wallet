@@ -19,7 +19,7 @@
     },
     "getTokenInfo": {
         "data":{
-            "network_symbol": "ETH-Testnet",
+            "network_symbol": "ETH-TESTNET",
             "token_address": "0xb347b9f5b56b431b2cf4e1d90a5995f7519ca792"
         },
         "result":{
@@ -28,5 +28,85 @@
             "name": "Polymath Network",
             "decimals": 18
         }
+    },
+    "getApproveTokenTxDetails": {
+        "data":{
+            "network_symbol": "ETH-TESTNET",
+            "value": 0.0002,
+            "senderVk": "0xE6425e2FB0Bc4AEb08b9c0358e4EaddB88Ea80Ad",
+            "token_address": "0xb347b9f5b56b431b2cf4e1d90a5995f7519ca792"
+        },
+        "result": ["nonce","gasprice","value","data","v","r","s","sender","transaction_address","gas_limit","transaction","value_text","token_address","sender_address"]
+    },
+    "getSecret": {
+        "data":{
+            "network_symbol": "ETH-TESTNET",
+            "contract_address": "0xad103b73ddc8e752db993835e9a5be6b74bd6c3c38871d226d48e7f183cfb702"
+        },
+        "result":{
+            "secret": "f03749a62c8cf7fee4f676d02aa7174ac4ddf0b7b9a37758b88555573e6d1b5d"
+        }
+    },
+    "makeBalancesPost":{
+        "data":[
+            {
+                "balance": "0.00000000",
+                "checked": true,
+                "is_token": false,
+                "name": "test-bitcoin",
+                "network": "bitcoin",
+                "network_symbol": "BTC-TESTNET",
+                "nickname": "#1",
+                "sk": "U2FsdGVkX19A+YBvrHg+KOAU4ZNbhWg7VmyhBGsVRFQEvgJ9QVoqUHcc/NzscXtkI6dgI1h3XBA+70gdOGz7Kr3Drk9CsyTiNYewOfRqLsM=",
+                "symbol": "BTC-TESTNET",
+                "vk": "mkgHEXp1ru4rU1oTXgdgsgMCizqSVwJgZw"
+            },
+            {
+                "balance": "4.3637091313",
+                "checked": true,
+                "is_token": false,
+                "name": "Ethereum TestNet (kovan)",
+                "network": "ethereum",
+                "network_symbol": "ETH-TESTNET",
+                "nickname": "#1",
+                "sk": "U2FsdGVkX1/C0O3T4JL1/pn2FItqswxoMl5CZ0VRVXXFOY62iDlieSTe66d1wf7sloI3JS8pC0zlFqDuiSJ+tW1QpRAJr/mEfr3Q85ovdqvappndAYvwQKsQKgj1josz",
+                "symbol": "ETH-TESTNET",
+                "vk": "0x5b85bF11009e02267dD78B4502ffF3c2FE88EB31"
+            },
+            {
+                "balance": "12.75",
+                "checked": true,
+                "decimals": 18,
+                "is_token": true,
+                "name": "Polymath Network",
+                "network": "ethereum",
+                "network_symbol": "ETH-TESTNET",
+                "nickname": "#1",
+                "sk": "U2FsdGVkX1+ODZ9VOTAlCQc6tUD51P+KwmFWju1dHwbvsGWyY2BX/Y2XkkNBb+k/rC/mz0ePQTjj5Q97DvGo22zTuntKoGEo2gXwviidweu/Qo/qrtMxjx5NPZYi8VOU",
+                "symbol": "POLY",
+                "token_address": "0xB347b9f5B56b431B2CF4e1d90a5995f7519ca792",
+                "token_symbol": "POLY",
+                "vk": "0x5b85bF11009e02267dD78B4502ffF3c2FE88EB31"
+            }
+        ],
+        "result": {
+            "address_list" : [
+            {
+                "network_symbol" : "BTC-TESTNET",
+                "symbol" : "BTC-TESTNET",
+                "wallet_address" : "mkgHEXp1ru4rU1oTXgdgsgMCizqSVwJgZw"
+            },
+            {
+                "network_symbol" : "ETH-TESTNET",
+                "symbol" : "ETH-TESTNET",
+                "wallet_address" :"0x5b85bF11009e02267dD78B4502ffF3c2FE88EB31"
+            },
+            {
+                "network_symbol" : "ETH-TESTNET",
+                "symbol" : "POLY",
+                "token_address": "0xB347b9f5B56b431B2CF4e1d90a5995f7519ca792",
+                "wallet_address" : "0x5b85bF11009e02267dD78B4502ffF3c2FE88EB31"
+            }
+        ]}  
     }
 }

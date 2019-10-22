@@ -3,3 +3,4 @@ build
 secrets.*.js
 src/js/crypto/test.mjs
 cypress/videos
+npm-debug.log

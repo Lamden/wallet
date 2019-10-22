@@ -72,6 +72,7 @@ export let makeBalancesPost = typedFunction( [ Object ],  (CoinStore)=>{
         }
         postObj.address_list.push(coinInfo);
     }
+    console.log(postObj)
     return postObj.address_list.length > 0 ? postObj : false;
 });
 
