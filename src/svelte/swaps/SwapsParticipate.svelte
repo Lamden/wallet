@@ -18,45 +18,50 @@
     //DOM Nodes
     let formObj1, formObj2 ,passwordField, participateField;
 
-    let error = '';
-    let continueSwap = false;
-    let status = '';
+    let error, status = '';
     let password = '';
-    let CheckTx;
     let openModal = false;
     let currentModal = '';
+    let showContractInfo = false;
 
-    let participateString = '';
-    $: participateInfo = participateString === '' ? {} : JSON.parse(participateString);
-   
+    let participateString = '';   
     let participateCoin;
     let sendingTokenInfo;
-    $: participateStore = {};
-    let txOkay = false;
-
-    let publishTxSuccess = false;
+    let receivingTokenInfo;
+    let sendingCoinSymbol;
+    $: swapInfo = {};
 
 	onMount(() => {
         if ($SettingsStore.currentPage.data.type === 'participate'){
-            continueSwap = true;
-            participateStore = $SettingsStore.currentPage.data;
+            swapInfo = $SettingsStore.currentPage.data;
             $SettingsStore.currentPage.data = {};
         }else{
-            participateStore = {};
+            swapInfo = {};
         }
     });
 
+    function displayError(e){
+        console.log(e); 
+        error = e;
+        throw new Error(e);
+    }
+
     function filterSelection(){
-        return sendingTokenInfo.token_symbol ? [sendingTokenInfo.symbol, sendingTokenInfo.token_symbol] : [sendingTokenInfo.symbol];
+        return swapInfo.sending.symbol;
     }
     
-    function handleSelection(evt, type){
-        if (type === 'participateWallet') {
-            participateStore.sending = undefined;
-            if (evt.detail.selected) {
-                participateStore.sending = { ...stripCoinRef(evt.detail.selected), ...sendingTokenInfo };
-            }
-        }
+    function handleCoinSelection(evt, type){
+        if (!evt.detail.selected) return;
+        if (type === 'sending' ) swapInfo.sending = { ...stripCoinRef(evt.detail.selected), ...sendingTokenInfo };
+        if (type === 'receiving' ) swapInfo.receiving = stripCoinRef(evt.detail.selected);
+        console.log(swapInfo)
+    }
+
+    function getMyCoinInfo(){
+        return  { network_symbol: swapInfo.participateInfo.participateCurrency,
+                  symbol: swapInfo.sending.symbol,
+                  vk: swapInfo.initialContractInfo.recipient_address,
+                }
     }
 
     function showModal(modal){
@@ -68,105 +73,6 @@
         openModal = false;
     }
 
-    async function handleSubmit1(obj){
-        error = '';
-        if (obj.checkValidity()){
-            status = 'Retriving Swap Details...';
-            let swapInfo = await getSwapInfo(participateInfo.initialCurrency, participateInfo.contract, participateInfo.transactionAddress)
-                                   .catch (e => { console.log(e); error = e; });
-            if (!swapInfo) return;
-            if (swapInfo.message) {error = swapInfo.message; return;}
-            participateStore.initialContractInfo = swapInfo;
-            status = 'Swap Contract Recieved!';
-
-            if (participateStore.initialContractInfo.token_address){
-                status = 'Retriving "Reciving Token" Details...';
-                let receivingTokenInfo = await getTokenInfo(participateInfo.initialCurrency, participateStore.initialContractInfo.token_address)
-                                                 .catch (e => { console.log(e); error = e; });
-                if (!receivingTokenInfo) return;
-                if (receivingTokenInfo.message) {error = receivingTokenInfo.message; return;}
-                receivingTokenInfo.token_symbol = receivingTokenInfo.symbol;
-                delete receivingTokenInfo.symbol;
-                participateStore.receiving = receivingTokenInfo;
-                status = 'Token Details Recieved!';
-            }
-
-            if (participateInfo.participateTokenAddress){
-                status = 'Retriving "Sending Token" Details...';
-                sendingTokenInfo = await getTokenInfo(participateInfo.participateCurrency, participateInfo.participateTokenAddress)
-                                               .catch (e => { console.log(e); error = e; });
-                if (!sendingTokenInfo) return;
-                if (sendingTokenInfo.message) {error = sendingTokenInfo.message; return;}
-                sendingTokenInfo.token_symbol = sendingTokenInfo.symbol;
-                delete sendingTokenInfo.symbol;
-                status = 'Token Details Recieved!';
-            }
-            continueSwap = true;
-        }
-    }
-
-    async function handleSubmit2(obj){
-         error = '';
-        if (obj.checkValidity()){
-            if (!participateStore.txInfo){
-                if (participateStore.sending.is_token){
-                    status = 'Getting Approve Token Details...';
-                    let approveTxInfo = await getApproveTokenTxDetails(participateStore.sending.network_symbol, participateInfo.participateValue, participateStore.sending.vk, participateStore.sending.token_address)
-                                                .catch (e => { console.log(e); error = e });
-                    if (!approveTxInfo) return;
-                    if (approveTxInfo.message) {error = approveTxInfo.message; return;}
-                    participateStore.approveTxInfo = approveTxInfo;
-                    status = 'Approve Token Details Recieved!';
-
-                    status = 'Sending Approve Token Transaction...';
-                    let approveTxResult = await sendSignedTx( signedTx(approveTxInfo) )            
-                                                    .catch (e => { console.log(e); error = e; });
-                    if (!approveTxResult) return;
-                    if (approveTxResult.message) {error = approveTxResult.message; return;}
-                    participateStore.approveTxResult = approveTxResult;
-                    status = 'Approve Token Transaction Sent!';
-
-                    //Check to make sure the transaction was published (does not mean confirmed)
-                    let approveTxOkay = await checkPublish(approveTxResult.transaction_address);
-                    if (!approveTxOkay) return;
-                    participateStore.approveTxResult.sent = new Date();
-                }
-                
-                status = 'Getting Swap Participate Transaction Details...';
-                let txInfo = await getParticipateTxDetails();
-                if (!txInfo) return;
-                if (txInfo.message) {error = txInfo.message; return;}
-                participateStore.txInfo = txInfo;
-                status = 'Swap Participate Transaction Details Recieved!';
-                storeParticipateInfo();
-
-            }
-            
-            status = 'Sending Swap Participate Transaction...';
-            let txResult = await sendSignedTx( signedTx(participateStore.txInfo) )            
-                                        .catch (e => { console.log(e); error = e; });
-            if (!txResult) return;
-            if (txResult.message) {error = txResult.message; return;}
-            console.log(txResult)
-
-            //Check to make sure the transaction was published (does not mean confirmed)
-            let txOkay = await checkPublish(txResult.transaction_address);
-            if (txOkay) {
-                status = 'Swap Participate Transaction Sent!';
-                participateStore.txResult = txResult;
-                participateStore.txResult.sent = new Date();
-                try{
-                    CoinStore.updateSwapInfo(participateStore.sending, participateStore.txInfo.secret_hash, 'txResult', participateStore.txResult);
-                } catch (e){
-                    console.log(e)
-                    error = e;
-                    return;
-                }
-                finishParticipateSwap();
-            }
-        }
-    }
-
     function validatePassword(){
         passwordField.setCustomValidity('');
         if (!checkPassword(password, $Hash)) {
@@ -174,41 +80,171 @@
         }
     }
 
-    function signedTx(txInfo){
-        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
-        const unsigned_transaction =  participateStore.sending.network === 'ethereum'  ?  txInfo.transaction : txInfo.contract_transaction;
-        let signed_transaction = "";
-        try{
-            signed_transaction = signTx(unsigned_transaction, decryptStrHash(password, participateStore.sending.sk), participateStore.sending.network, network_symbol);
-        }catch (e) {
-            console.log(e)
-            error = e;
+    async function handleSwapDeatils(){
+        error = '';
+        if (formObj1.checkValidity()){
+            console.log(sendingTokenInfo);
+            console.log(receivingTokenInfo);
+            status = 'Getting Deatils from Participant String...';
+            storeParticipateInfo();
+
+            status = 'Getting Swap Details from Blockchain Contract...';
+            swapInfo.initialContractInfo = await swapContractInfo(swapInfo.participateInfo.initialCurrency,
+                                                                  swapInfo.participateInfo.contract,
+                                                                  swapInfo.participateInfo.transactionAddress);
+
+            swapInfo.secret_hash = swapInfo.initialContractInfo.secret_hash;
+
+            if (swapInfo.participateInfo.participateTokenAddress){
+                status = 'Getting "Sending Token" Details...';
+                sendingTokenInfo = await tokenInfo( swapInfo.participateInfo.participateCurrency, 
+                                                    swapInfo.participateInfo.participateTokenAddress)
+                sendingTokenInfo.token_symbol = sendingTokenInfo.symbol;
+            }
+
+            swapInfo.sending = {}
+            swapInfo.sending.symbol = sendingTokenInfo.symbol ? sendingTokenInfo.symbol : swapInfo.participateInfo.participateCurrency;
+            showContractInfo = true;
+
+            console.log(swapInfo)
         }
-        console.log(signed_transaction)
-        return {signed_transaction, network_symbol};
+    }
+
+    async function handleSubmit2(){
+         error = '';
+        if (formObj2.checkValidity()){
+            if (swapInfo.sending.is_token){
+                if (!swapInfo.hasOwnProperty('approveTxResult')){
+                    swapInfo.approveTx = await approveTokenTxDetails( swapInfo.sending );
+
+                    status = 'Signing Approve Token Transaction';
+                    swapInfo.approveTx.signed_transaction = await sign( swapInfo.approveTx, swapInfo.sending );
+
+                    status = 'Publishing Approve Token Transaction...';
+                    swapInfo.approveTxResult = await sendTx( swapInfo.sending.network_symbol, swapInfo.approveTx.signed_transaction );
+
+                    status = 'Checking for Confirmation of Approve Token Transaction...';
+                    if ( await confirmSwapTransaction(swapInfo.approveTxResult, swapInfo.sending) ) {
+                        status = 'Approve Token Transaction Confirmed!';
+                        swapInfo.approveTxResult.sent = new Date();
+                    }else{
+                        displayError('Error: Cannot Approve Token Transaction.')
+                        switchPage('SwapsMain');
+                    }
+                }
+            }
+            
+            status = 'Getting Swap Participate Transaction Details...';
+            let txInfo = await getParticipateTxDetails();
+            if (!txInfo) return;
+            if (txInfo.message) {error = txInfo.message; return;}
+            swapInfo.txInfo = txInfo;
+            status = 'Swap Participate Transaction Details Recieved!';
+        }
+        
+        status = 'Sending Swap Participate Transaction...';
+        let txResult = await sendSignedTx( signedTx(swapInfo.txInfo) )            
+                                    .catch (e => { console.log(e); error = e; });
+        if (!txResult) return;
+        if (txResult.message) {error = txResult.message; return;}
+        console.log(txResult)
+
+        //Check to make sure the transaction was published (does not mean confirmed)
+        let txOkay = await checkPublish(txResult.transaction_address);
+        if (txOkay) {
+            status = 'Swap Participate Transaction Sent!';
+            swapInfo.txResult = txResult;
+            swapInfo.txResult.sent = new Date();
+            try{
+                CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'txResult', swapInfo.txResult);
+            } catch (e){
+                displayError(e);
+            }
+            finishParticipateSwap();
+        }
+
+    }
+
+    function parseParticipateString(string){
+        if (string.length > 0){
+            try{
+                swapInfo.participateInfo = JSON.parse(string);
+            } catch (e) {
+                displayError (`Participant String is malformed. PLease contact the swap initiator and get a complete string.`);
+            }
+            return 
+        }
+    }
+
+    function storeParticipateInfo(){
+            swapInfo.type = 'participate';
+            swapInfo.created = new Date();
+    }
+
+    function swapContractInfo(network_symbol, contract, transaction_address){
+        return getSwapInfo(network_symbol, contract, transaction_address)
+                    .then(result => {
+                        if (result.message) { displayError(result.message); return; }
+                        status = 'Swap Contract Recieved!';
+                        return result;
+                    })
+                    .catch (e => displayError(e) );
+    }
+
+    function tokenInfo(network_symbol, token_address){
+        return getTokenInfo(network_symbol, token_address)
+                    .then(result => {
+                        if (result.message) { displayError(result.message); return; }
+                        status = 'Token Details Recieved!';
+                        return result;
+                    })
+                    .catch (e => displayError(e) );        
+    }
+
+    function approveTokenTxDetails(coin){
+        status = 'Getting Approve Token Details...';
+        return getApproveTokenTxDetails(coin.network_symbol, coin.value, coin.vk, coin.token_address)
+                        .then(result => {
+                            if (result.message) {displayError(result.message); return;}
+                            status = 'Approve Token Details Recieved!';
+                            return result;
+                        })
+                        .catch ( e => displayError(e) );
+    }
+
+    function sign(txInfo, coin){
+        const unsigned_transaction =  coin.network === 'ethereum'  ?  txInfo.transaction : txInfo.contract_transaction;
+        try{
+            let signed_transaction = signTx(unsigned_transaction, decryptStrHash(password, coin.sk), coin.network, coin.network_symbol);
+            status = 'Transaction Signed!';
+            return signed_transaction;
+        }catch (e) {
+            displayError(e);
+        }
+    }
+
+    function sendTx(network_symbol, signed_transaction){
+        return sendSignedTx( signed_transaction, network_symbol )
+                    .then(result => {
+                        if (!result || result.message) displayError('Error Publishing Transaction');
+                        return result;
+                    })            
+                    .catch ( e => displayError(e) );
     }
 
     function getParticipateTxDetails(){
-        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
-        let data = {'value': participateInfo.participateValue, 'secret_hash': participateStore.initialContractInfo.secret_hash }
-        let path = `${network_symbol}/${participateStore.sending.vk}/${participateInfo.participateAliceAddress}`
-        if (participateStore.sending.is_token) path = `${path}/${participateStore.sending.token_address}`;
+        const network_symbol = swapInfo.sending.is_token ? swapInfo.sending.network_symbol : swapInfo.sending.symbol;
+        let data = {'value':swapInfo.participateInfo.participateValue, 'secret_hash': swapInfo.initialContractInfo.secret_hash }
+        let path = `${network_symbol}/${swapInfo.sending.vk}/${ swapInfo.participateInfo.participateAliceAddress}`
+        if (swapInfo.sending.is_token) path = `${path}/${swapInfo.sending.token_address}`;
         return API('POST', 'participate', path, data)
             .then(result => { return result; })
             .catch (e => { console.log(e); error = e; })
     }
 
-    function storeParticipateInfo(){
-        participateStore.type = 'participate';
-        participateStore.participateInfo = participateInfo;
-        participateStore.created = new Date();
-        CoinStore.storeSwapInfo(participateStore.sending, participateStore);
-        continueSwap = true;
-    }
-
     function finishParticipateSwap(){
         try{
-            CoinStore.updateSwapInfo(participateStore.sending, participateStore.txInfo.secret_hash, 'initialRedeemInfo', createInitalRedeemInfo());
+            CoinStore.updateSwapInfo(swapInfo.sending, swapInfo.txInfo.secret_hash, 'initialRedeemInfo', createInitalRedeemInfo());
         } catch (e){
             console.log(e)
             error = e;
@@ -218,10 +254,10 @@
     }
 
     function createInitalRedeemInfo(){
-        const participateContract =  participateStore.txInfo.contract_address || participateStore.txInfo.contract;
-        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
+        const participateContract =  swapInfo.txInfo.contract_address || swapInfo.txInfo.contract;
+        const network_symbol = swapInfo.sending.is_token ? swapInfo.sending.network_symbol : swapInfo.sending.symbol;
         return JSON.stringify({
-            transactionAddress: participateStore.txResult.transaction_address, 
+            transactionAddress: swapInfo.txResult.transaction_address, 
             participateContract,
             network_symbol,
         });
@@ -229,7 +265,7 @@
 
     function checkPublish(transaction) {
         status = `Waiting for Tx to Publish`;
-        const network_symbol = participateStore.sending.is_token ? participateStore.sending.network_symbol : participateStore.sending.symbol;
+        const network_symbol = swapInfo.sending.is_token ? swapInfo.sending.network_symbol : swapInfo.sending.symbol;
         return waitUntilTransactionExists(network_symbol, transaction)
             .then(result => {
                 if (result) {status = "Transaction Published"; return true};
@@ -242,40 +278,61 @@
 </script>
 {#if error}{error}{:else}{status}{/if}
 
-<h1> Participate in a Swap</h1>
+{#if !swapInfo.hasOwnProperty('initialContractInfo')}
+    <h1> Participate in a Swap</h1>
 
-{#if !continueSwap}
-<form on:submit|preventDefault={() => handleSubmit1(formObj1) } bind:this={formObj1} target="_self">
-    <div>
-        <label>Enter Swap String</label>
-        <small>This is a string of characters provided to you from the party that created the swap.</small>
-        <input type="text" required
-               bind:value={participateString}
-               bind:this={participateField} />
-    </div>
-    <input type="submit" value="Get Swap Info" required disabled={participateString === ""}>
-</form>
+    <form on:submit|preventDefault={() => handleSwapDeatils() } bind:this={formObj1} target="_self">
+        <div>
+
+            {#if swapInfo.participateInfo}
+                <h3>{`This is the information passed to you from the Initiator:`}</h3>
+                <ul>
+                    {#each [...Object.keys(swapInfo.participateInfo)] as item}
+                        <li> <strong>{`${item}: `}</strong>{swapInfo.participateInfo[item]} </li>
+                    {/each}
+                </ul>
+            {:else}
+                <label>Enter Swap String</label><br>
+                <small>This is a string of characters provided to you from the party that created the swap.</small><br>
+                <input  type="text" required
+                        bind:value={participateString}
+                        bind:this={participateField} 
+                        on:change={() => parseParticipateString(participateString)}/>
+            {/if}
+
+        </div>
+        <input type="submit" value="Get Contract details from BC" required disabled={!swapInfo.hasOwnProperty('participateInfo')}>
+    </form>
 {/if}
 
-{#if continueSwap}
+{#if showContractInfo}
     <form on:submit|preventDefault={() => handleSubmit2(formObj2) } bind:this={formObj2} target="_self">
         <div>
-            {`Recieving ${participateStore.initialContractInfo.value_text} for ${participateInfo.participateValue} (${participateInfo.participateCurrency}) `}<br>
-            Swap Initiated by: {participateStore.initialContractInfo.refund_address} <br>
-            Swap exipiry date: {new Date(participateStore.initialContractInfo.locktime)}<br>
-            <a href={participateStore.initialContractInfo.transaction_link} target="_blank" rel="noopener noreferrer">
-                {`${participateStore.initialContractInfo.value_text} was sent to swap contract (${participateStore.initialContractInfo.confirmations} confirmations)`}
+            <h3>{`These are the deails of the contract created by the Initator:`}</h3>
+            <ul>
+                {#each [...Object.keys(swapInfo.initialContractInfo)] as item}
+                    <li> <strong>{`${item}: `}</strong>{swapInfo.initialContractInfo[item]} </li>
+                {/each}
+            </ul>
+        <div>
+            {`Recieving ${swapInfo.initialContractInfo.value_text} for ${ swapInfo.participateInfo.participateValue} ${ swapInfo.sending.symbol}`}<br>
+            Swap Initiated by: {swapInfo.initialContractInfo.refund_address} <br>
+            Swap exipiry date: {new Date(swapInfo.initialContractInfo.locktime)}<br>
+            <a href={swapInfo.initialContractInfo.transaction_link} target="_blank" rel="noopener noreferrer">
+                {`${swapInfo.initialContractInfo.value_text} was sent to swap contract (${swapInfo.initialContractInfo.confirmations} confirmations)`}
             </a>
         </div>
         <div>
-            {#if $CoinStore.filter(f => f.symbol === participateInfo.participateCurrency ).length > 0}
-                <label>{`Select ${participateInfo.participateCurrency} Wallet to Participate in Swap`}</label>
-                <MyCoinsDropDown 
-                        id="participateWalletDD" 
-                        on:selected={(evt) => handleSelection(evt, 'participateWallet')}
-                        required={true} filter={filterSelection()} />
+            {#if $CoinStore.filter(f => f.symbol === swapInfo.sending.symbol ).length > 0}
+                <div>
+                    <label>{`Select ${ swapInfo.sending.symbol } Wallet to Participate in Swap`}</label>
+                    <MyCoinsDropDown 
+                            id="sendingCoinDD" 
+                            on:selected={(evt) => handleCoinSelection(evt, 'sending')}
+                            required={true} filter={ [swapInfo.sending.symbol] } />
+                </div>
             {:else}
-                {`You cannot participate in this swap until you add a ${participateInfo.participateCurrency} keypair to the wallet`}<br>
+                {`You cannot participate in this swap until you add a ${ swapInfo.sending.symbol} keypair to the wallet`}<br>
                 <button on:click={() => switchPage('SwapsMain')}> Back </button>
                 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
                 {#if openModal}
@@ -286,6 +343,25 @@
             {/if}
         </div>
         <div>
+            {#if $CoinStore.filter(f => f.symbol === swapInfo.participateInfo.participateCurrency ).length > 0}
+                <div>
+                    <label>{`Select ${ swapInfo.participateInfo.participateCurrency } Wallet to Participate in Swap`}</label>
+                    <MyCoinsDropDown 
+                            id="receivingCoinDD" 
+                            on:selected={(evt) => handleCoinSelection(evt, 'receiving')}
+                            required={true} set={ getMyCoinInfo() }  />    
+                </div>
+            {:else}
+                {`You cannot participate in this swap until you add a ${ swapInfo.participateInfo.participateCurrency } keypair to the wallet`}<br>
+                <button on:click={() => switchPage('SwapsMain')}> Back </button>
+                <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
+                {#if openModal}
+                    <Modal on:close="{() => closeModal()}">
+                        <svelte:component this={ Modals[currentModal]} {closeModal} {openModal}/>
+                    </Modal>
+                {/if}
+            {/if}
+        </div>          
             <label>Wallet Password</label><br>
             <input  bind:value={password}
                     bind:this={passwordField}
@@ -293,8 +369,7 @@
                     type="password"
                     required  />
         </div>
-        <input type="submit" value="Participate in Swap" required disabled={!participateStore.sending}>
+        <input type="submit" value="Participate in Swap" required disabled={!swapInfo.sending}>
     </form>
-    
-    
 {/if}
+

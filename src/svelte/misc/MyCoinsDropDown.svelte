@@ -7,6 +7,7 @@
     export let id;
     export let required = false;
     export let filter = [];
+    export let set;
 
     const dispatch = createEventDispatcher();
 
@@ -18,7 +19,22 @@
             });
     }
 
+    function dispatchSet(coin) {
+            dispatch('selected', {
+                coin,
+            });
+    }
+
     function coinList(){
+        
+        if (set !== undefined) {
+            console.log(set)
+            return [ $CoinStore.find(f => {
+                console.log(f)
+                console.log(f.network_symbol === set.network_symbol && f.symbol === set.symbol && f.vk === set.vk)
+                return (f.network_symbol === set.network_symbol && f.symbol === set.symbol && f.vk === set.vk)
+            }) ];
+        }
         if (filter.length > 0){
             return $CoinStore.filter(f => filter.includes(f.symbol))
         }
@@ -33,8 +49,10 @@
         on:change={dispatchSelected}
         required>
 
+    {#if !set}
         <option value={undefined}>Choose wallet..</option>
-    
+    {/if}
+        
     {#each coinList() as coin}
         <option value={coin} class="dropdownItem">{`${coin.name} - ${coin.nickname} (${coin.balance || 0 } ${coin.symbol})`}</option>
     {/each}

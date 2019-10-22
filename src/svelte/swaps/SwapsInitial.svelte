@@ -87,6 +87,7 @@
             }
 
             swapInfo.sendCoinsTx = await initialTxDetails( swapInfo.sending );
+            
             await storeSwap(swapInfo, password);
             switchPage('SwapsMain');
         }

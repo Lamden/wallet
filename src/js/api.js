@@ -82,7 +82,7 @@ export let getSwapInfo = typedFunction( [ String, String, String ],  (network_sy
 */
 export let getTokenInfo = typedFunction( [ String, String ],  (network_symbol, token_address)=>{
     let path = `${network_symbol}/${token_address}`;
-    return API('GET', 'token-details', path)
+    return API('GET', 'token-details', path, {})
 });
 
 /*
@@ -127,7 +127,7 @@ export let getRefundTxDetails = typedFunction( [ String, String, String ],  (net
 */
 export let getSecret = typedFunction( [ String, String ],  (network_symbol, contract_address)=>{
     let path = `${network_symbol}/${contract_address}`;
-    return API('GET', 'secret', path)
+    return API('GET', 'secret', path, {})
 });
 
 

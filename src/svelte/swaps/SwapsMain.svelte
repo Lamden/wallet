@@ -49,7 +49,7 @@
 
     function participateString(swap) {
         const linkContent = {
-            contract: swap.sendCoinsTx.contract_address || swap.sendCoinsTx.contract,
+            contract: swap.sending.network === 'ethereum' ? swap.sendCoinsTx.contract_address : swap.sendCoinsTx.contract,
             transactionAddress: swap.sendCoinsTxResult.transaction_address,
             initialCurrency: swap.sending.symbol,
             participateAliceAddress: swap.receiving.vk,
@@ -59,7 +59,7 @@
         if (swap.sending.is_token){
             linkContent.initialCurrency = swap.sending.network_symbol;
         };
-        if (swap.sending.is_token){
+        if (swap.receiving.is_token){
             linkContent.participateTokenAddress = swap.receiving.token_address;
             linkContent.participateCurrency = swap.receiving.network_symbol;
         };
