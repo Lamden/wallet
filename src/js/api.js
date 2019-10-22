@@ -50,6 +50,13 @@ export let API = typedFunction( [ String, String, String, Object ],  (method, en
 });
 
 /*
+    Check if API server is live
+*/
+export let checkAPI = typedFunction([], ()=>{
+    return API('GET', 'status', '', {}).then(result => {return result})
+});
+
+/*
     Forms an array of coinInfo objects to send to the API to retrieve balances
 */
 export let makeBalancesPost = typedFunction( [ Object ],  (CoinStore)=>{
