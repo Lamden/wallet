@@ -25,8 +25,8 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
-    "bitcoinjs-lib-332": "bitcoinjs-lib@3.3.2",
-    "bitcoinjs-lib-latest": "bitcoinjs-lib@^5.1.6",
+    "bitcoinjs-lib-332": "npm:bitcoinjs-lib@3.3.2",
+    "bitcoinjs-lib-latest": "npm:bitcoinjs-lib@^5.1.6",
     "cypress-svelte-unit-test": "^1.5.0",
     "ethereumjs-tx": "^2.1.1",
     "ethereumjs-util": "^6.1.0",
