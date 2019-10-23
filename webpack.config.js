@@ -10,8 +10,6 @@ var webpack = require("webpack"),
 // load the secrets
 var alias = {};
 
-
-
 var secretsPath = path.join(__dirname, ("secrets." + env.NODE_ENV + ".js"));
 
 var fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
@@ -21,6 +19,7 @@ if (fileSystem.existsSync(secretsPath)) {
 }
 
 var options = {
+  //optimization: {minimize: false},
   mode: env.NODE_ENV,
   entry: {
     popup: path.join(__dirname, "src", "js", "popup.js"),
@@ -68,7 +67,7 @@ var options = {
   },
   plugins: [
     // clean the build folder
-    new CleanWebpackPlugin(["build"]),
+    //new CleanWebpackPlugin(["build"]),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)

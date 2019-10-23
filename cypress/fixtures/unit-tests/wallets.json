@@ -1,0 +1,12 @@
+{
+    "pubFromPriv_eth": {
+        "data":{
+            "network": "ethereum",
+            "symbol":"ETH",
+            "sk": "0x4bd94a7f98fafa71c48df5053b61c47282de59d014be5dacc0018740a8f801e3"
+        },
+        "result":{
+                "vk": "0x6C8E17b9D2A08ee084254Fb20201fe02e406DF8D"
+        }
+    }
+}
