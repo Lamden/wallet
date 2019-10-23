@@ -143,6 +143,7 @@
                 coinInfo.token_address = selected.token_address;
             }
 
+
             if (coinInfo.vk === "") {
                 error = "vk blank"
             }else{

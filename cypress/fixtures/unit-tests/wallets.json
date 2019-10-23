@@ -8,5 +8,58 @@
         "result":{
                 "vk": "0x6C8E17b9D2A08ee084254Fb20201fe02e406DF8D"
         }
+    },
+    "pubFromPriv_ethTestnet": {
+        "data":{
+            "network": "ethereum",
+            "symbol":"ETH-TESTNET",
+            "sk": "0xb22fa057acac91c00338f728fdaca1b91eef10dc302f1b2edf0f983f803ab606"
+        },
+        "result":{
+                "vk": "0xC44285415aeb995723E5491cF46b5C174f943295"
+        }
+    },
+    "pubFromPriv_egem": {
+        "data":{
+            "network": "ethereum",
+            "symbol":"EGEM",
+            "sk": "0x5c0d6eafe8bfd3ba43b083cc320d9815eff632d70c0fce9069b5773fe56e80d3"
+        },
+        "result":{
+                "vk": "0x76b0af4e1A082edC2DA2239f721FC8a1eda096e9"
+        }
+    },
+    "pubFromPriv_btc": {
+        "data":{
+            "network": "bitcoin",
+            "symbol":"BTC",
+            "sk": "5JG2Ss5gRKxDfuL5XDeS6Pj1XCVHKonm4qohCYkMz8wBAnqJJvL"
+        },
+        "result":{
+                "vk": "16Pvyb5cuvDM5KJpYAe8gqoT69UzGqz1MM"
+        }
+    },
+    "pubFromPriv_btcTestnet": {
+        "data":{
+            "network": "bitcoin",
+            "symbol":"BTC-TESTNET",
+            "sk": "91vh1qAXczCtCa9WkbCnqSpiLubcaBqagEfY1yXmuqN4fgZKnFR"
+        },
+        "result":{
+                "vk": "n35zGL7EjAMsKC3KEvQEhNwgCWd2yz8Et2"
+        }
+    },
+    "pubFromPriv_dash": {
+        "data":{
+            "network": "bitcoin",
+            "symbol":"DASH",
+            "sk": "7ryF7mDUFSbVW4CjoKCttmvVGStrLgGGNo5LMP8pSXQ1zrLjBHL"
+        },
+        "result":{
+                "vk": "XgkLki52DYWEFDtPyvS47MtH7H4QCrqqrZ"
+        }
+    },
+    "keysFromNew_keypairProps": {
+        "result": ["sk", "vk", "network", "symbol"]
     }
 }

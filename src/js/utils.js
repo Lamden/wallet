@@ -24,7 +24,7 @@ export function checkPassword(password, HashStore){
         const decrypted = CryptoJS.AES.decrypt(HashStore.encode, password, { format: JsonFormatter });
         JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
         return true;
-    } catch {
+    } catch (e) {
         return false;
     }
 };

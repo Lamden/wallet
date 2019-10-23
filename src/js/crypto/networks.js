@@ -1,8 +1,7 @@
 const ethereum = {
-    ETH : undefined,
-    'ETH-TESTNET' : undefined,
-    EGEM : undefined,
-    MUSIC : undefined,
+    ETH : { chainID: 1 },
+    'ETH-TESTNET' : { chainID: 42 },
+    EGEM : { chainID: 1987 },
 }
 
 const bitcoin = {

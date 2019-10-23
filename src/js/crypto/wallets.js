@@ -4,31 +4,35 @@ const ethUtil = require('ethereumjs-util');
 const ethTx = require('ethereumjs-tx').Transaction;
 const ethWallet = require('ethereumjs-wallet');
 import { networks } from './networks';
+import { typedFunction } from '../typechecker';
 
-export function pubFromPriv(network, symbol, privateKey) {
+export let pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbol, privateKey )=>{
   let pubkey = undefined;
   let key;
   
   if (network === 'ethereum') {
     try {
-      key = getHexBuffer(privateKey);
+      key = getHexBuffer( privateKey );
       if (key.length === 0) {
         throw new Error(`Not a valid ${network} private key`);
       }
       pubkey = ethUtil.privateToAddress(key).toString('hex');
       pubkey = ethUtil.toChecksumAddress(pubkey);
-    } catch {
+    } catch (e) {
       throw new Error(`Not a valid ${network} private key`);
     }    
   } 
   
   if (network === 'bitcoin') {
+    const networkObj = networks[network][symbol];
+    if (!networkObj){
+      throw new Error(`Not a valid ${network} network`);
+    }
     try {
-      const networkObj = networks[network][symbol];
       key = bitcoin.ECPair.fromWIF(privateKey, networkObj);
       const { address } = bitcoin.payments.p2pkh({ pubkey: key.publicKey, network: networkObj });
       pubkey = address;
-    } catch {
+    } catch (e) {
       throw new Error(`Not a valid ${network} private key`);
     }
   }
@@ -42,10 +46,11 @@ export function pubFromPriv(network, symbol, privateKey) {
   }
   
   return pubkey;
-};
+});
 
-export function keysFromNew(network, symbol) {
+export let keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
   let keyPair = {};
+
   if (network === 'ethereum') {
     let myWallet;
     try{
@@ -80,13 +85,13 @@ export function keysFromNew(network, symbol) {
   }
 
   if (!keyPair.vk || !keyPair.sk){
-    throw new Error(`${network} is not a supported network `);
+    throw new Error(`${network} is not a supported network`);
   }
 
   keyPair.network = network;
   keyPair.symbol = symbol;
   return keyPair;
-};
+});
 
 export function validateAddress(network, wallet_address){
   
@@ -144,32 +149,31 @@ function signEthereumTx(rawTransaction, privateKey, networkSymbol) {
   return ethTransaction.serialize().toString('hex');
 };
 
-function getEthereumTx (rawTransaction, networkSymbol){
+function getEthereumTx (rawTransaction, chainID){
   const rawTx = getHexBuffer(rawTransaction);
-  let chain = networkSymbol === 'ETH-TESTNET' ? {'chain':42} : {};
 
   if (rawTx.length === 0) {
     throw new Error('Invalid transaction');
   }
 
   try {
-    return new ethTx(rawTx, chain);
+    return new ethTx(rawTx, chainID);
   } catch (e) {
     console.log(e)
     throw new Error('Invalid transaction');
   }
 };
 
-function getHexBuffer(hexstring) {
-  let striphex = stripHexPrefix(hexstring)
+export let getHexBuffer = typedFunction( [ String ],  ( hexString )=>{
+  let striphex = stripHexPrefix(hexString)
   let buff = Buffer.from(striphex, 'hex')
   return buff;
-}
+});
 
-function stripHexPrefix(hexString) {
+export let stripHexPrefix = typedFunction( [ String ],  ( hexString )=>{
   let hexstr = hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
   return hexstr;
-};
+});
 
 function getBitcoinTx(rawTransaction) {
   try {
