@@ -920,4 +920,7 @@ const bitcoin = {
     },
 };
 
-export const networks = {ethereum, bitcoin};
+module.exports = {
+    ethereum, 
+    bitcoin
+};

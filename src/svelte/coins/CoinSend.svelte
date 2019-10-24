@@ -63,9 +63,9 @@
 		const data = {value}
         return API('POST', 'p2p-transaction', path, data)
             .then(result => {
-                if ( !result || result.hasOwnProperty('message') ) {
+                if ( result.hasOwnProperty('message') ) {
                     info_valid = false; 
-                    displayError("Amount exeeds balance"); 
+                    displayError(result.message); 
                     return; 
                 }
                 txData.txInfo = result;

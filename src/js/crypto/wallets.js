@@ -3,10 +3,10 @@ const bitcoin = require('bitcoinjs-lib-latest');
 const ethUtil = require('ethereumjs-util');
 const ethTx = require('ethereumjs-tx').Transaction;
 const ethWallet = require('ethereumjs-wallet');
-import { networks } from './networks';
-import { typedFunction } from '../typechecker';
+const networks = require("./networks");
+const typedFunction = require("../typechecker");
 
-export let pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbol, privateKey )=>{
+const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbol, privateKey )=>{
   let pubkey = undefined;
   let key;
   
@@ -48,20 +48,18 @@ export let pubFromPriv = typedFunction( [ String, String, String ],  ( network, 
   return pubkey;
 });
 
-export let keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
+const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
   let keyPair = {};
 
   if (network === 'ethereum') {
-    let myWallet;
     try{
-      myWallet = ethWallet.generate(); 
+      let myWallet = ethWallet.generate(); 
       keyPair.vk = ethUtil.toChecksumAddress(myWallet.getAddressString());
       keyPair.sk = myWallet.getPrivateKeyString()
     } catch(e) {
       console.log(e);
       throw new Error(`Error creating ethereum network wallet for ${symbol}: ${e}`);
     }
-
   }
   
   if (network === 'bitcoin') {
@@ -93,8 +91,7 @@ export let keysFromNew = typedFunction( [ String, String ],  ( network, symbol )
   return keyPair;
 });
 
-export function validateAddress(network, wallet_address){
-  
+const validateAddress = typedFunction( [ String, String ],  ( network, wallet_address )=>{ 
   if (network === 'bitcoin'){
     try{
       bitcoin.address.fromBase58Check(wallet_address)
@@ -105,19 +102,31 @@ export function validateAddress(network, wallet_address){
     }
   }
 
-  if (network === 'ethereum'){
-    try{
-      let checkSumAddress = ethUtil.toChecksumAddress(wallet_address);
-      ethUtil.isValidChecksumAddress(checkSumAddress);
-      return checkSumAddress;
-    } catch (e) {
+  if (network === 'ethereum' ){
+    if (isEthAddress(wallet_address)){
+      return ethUtil.toChecksumAddress(wallet_address);
+    }else{
       throw new Error(`Not a valid ${network} public key`);
     }
   }
   throw new Error(`${network} is not a supported network `);
-}
+});
 
-export function signTx(rawTransaction, privateKey, network, networkSymbol) {
+const isEthAddress = typedFunction( [ String ],  ( wallet_address )=>{
+    // function isAddress(address) {
+        if (!/^(0x)?[0-9a-f]{40}$/i.test(wallet_address)) {
+        // check if it has the basic requirements of an address
+        return false;
+    } else if (/^(0x)?[0-9a-f]{40}$/.test(wallet_address) || /^(0x)?[0-9A-F]{40}$/.test(wallet_address)) {
+        // If it's all small caps or all all caps, return "true
+        return true;
+    } else {
+        // Otherwise check each case
+        return ethUtil.isValidChecksumAddress( ethUtil.toChecksumAddress(wallet_address) );
+    }
+});
+
+const signTx = typedFunction( [ String, String, String, String ],  ( rawTransaction, privateKey, network, networkSymbol )=>{
   if (network === 'ethereum' ) {
     return signEthereumTx(rawTransaction, privateKey, networkSymbol);
   }
@@ -127,9 +136,9 @@ export function signTx(rawTransaction, privateKey, network, networkSymbol) {
   }
 
   throw new Error(`${network} network is not supported`);
-};
+});
 
-function signEthereumTx(rawTransaction, privateKey, networkSymbol) {
+const signEthereumTx = typedFunction( [ String, String, String ],  ( rawTransaction, privateKey, networkSymbol )=>{
   const key = getHexBuffer(privateKey);
   if (key.length === 0) {
     throw new Error('Missing or invalid private key');
@@ -147,9 +156,9 @@ function signEthereumTx(rawTransaction, privateKey, networkSymbol) {
     }
   }
   return ethTransaction.serialize().toString('hex');
-};
+});
 
-function getEthereumTx (rawTransaction, chainID){
+const getEthereumTx = typedFunction( [ String, String ],  ( rawTransaction, chainID )=>{
   const rawTx = getHexBuffer(rawTransaction);
 
   if (rawTx.length === 0) {
@@ -162,39 +171,39 @@ function getEthereumTx (rawTransaction, chainID){
     console.log(e)
     throw new Error('Invalid transaction');
   }
-};
+});
 
-export let getHexBuffer = typedFunction( [ String ],  ( hexString )=>{
+const getHexBuffer = typedFunction( [ String ],  ( hexString )=>{
   let striphex = stripHexPrefix(hexString)
   let buff = Buffer.from(striphex, 'hex')
   return buff;
 });
 
-export let stripHexPrefix = typedFunction( [ String ],  ( hexString )=>{
+const stripHexPrefix = typedFunction( [ String ],  ( hexString )=>{
   let hexstr = hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
   return hexstr;
 });
 
-function getBitcoinTx(rawTransaction) {
+const getBitcoinTx = typedFunction( [ String ],  ( rawTransaction )=>{
   try {
     return bitcoinLegacy.Transaction.fromHex(rawTransaction);
   } catch (e) {
     throw new Error('Invalid transaction');
   }
-};
+});
 
-function getBitcoinKey(privateKey, network) {
+const getBitcoinKey = typedFunction( [ String, Object ],  ( privateKey, networkObj )=>{
   try {
-    return bitcoinLegacy.ECPair.fromWIF(privateKey, network);
+    return bitcoinLegacy.ECPair.fromWIF(privateKey, networkObj);
   } catch (e) {
     if (e.message === 'Invalid checksum' || e.message === 'Non-base58 character') {
       throw new Error('Invalid private key');
     }
     throw e;
   }
-};
+});
 
-function signBitcoinTx(rawTransaction, privateKey, networkObj, ) {
+const signBitcoinTx = typedFunction( [ String, String, Object ],  ( rawTransaction, privateKey, networkObj )=>{
   const tx = getBitcoinTx(rawTransaction);
   const txb = bitcoinLegacy.TransactionBuilder.fromTransaction(tx, networkObj);
   const key = getBitcoinKey(privateKey, networkObj);
@@ -228,4 +237,13 @@ function signBitcoinTx(rawTransaction, privateKey, networkObj, ) {
     }
   });
   return txb.build().toHex();
-};
+});
+
+module.exports = {
+  pubFromPriv,
+  signTx,
+  stripHexPrefix,
+  getHexBuffer,
+  validateAddress, 
+  keysFromNew
+}

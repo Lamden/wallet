@@ -31,7 +31,7 @@ function checkType(value,type, i){
  * to handle each function call, performing automatic 
  * arguments type checking
  */
-export function typedFunction( parameterTypes, func ){
+module.exports = function typedFunction( parameterTypes, func ){
   // types definitions and function parameters 
   // count must match
   if(parameterTypes.length !== func.length) throw new Error(`Function has ${func.length} arguments, but type definition has ${parameterTypes.length}`);

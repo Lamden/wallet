@@ -1,4 +1,4 @@
-import { typedFunction } from './typechecker';
+const typedFunction = require("./typechecker");
 
 /*
     Lamden Swaps API Server instance
@@ -16,7 +16,7 @@ const API_URL = API_SERVER_INFO.host + ":" + API_SERVER_INFO.port
 /*
     Wrapper for Lamden Swaps API calls
 */
-export let API = typedFunction( [ String, String, String, Object ],  (method, endpoint, path, data)=>{
+const API = typedFunction( [ String, String, String, Object ],  (method, endpoint, path, data)=>{
     data = data === {} ? undefined : data;
     path = path === "" ? undefined : path;
     const fullpath = path ? `${endpoint}/${path}` : endpoint;
@@ -52,14 +52,14 @@ export let API = typedFunction( [ String, String, String, Object ],  (method, en
 /*
     Check if API server is live
 */
-export let checkAPI = typedFunction([], ()=>{
+ const checkAPI = typedFunction([], ()=>{
     return API('GET', 'status', '', {}).then(result => {return result})
 });
 
 /*
     Forms an array of coinInfo objects to send to the API to retrieve balances
 */
-export let makeBalancesPost = typedFunction( [ Object ],  (CoinStore)=>{
+const makeBalancesPost = typedFunction( [ Object ],  (CoinStore)=>{
     let postObj = {"address_list":[]};
     for (const coin of CoinStore){
         let coinInfo = {
@@ -79,7 +79,7 @@ export let makeBalancesPost = typedFunction( [ Object ],  (CoinStore)=>{
 /*
     Get the swap information to intially create a Lamden Swap
 */
-export let getSwapInfo = typedFunction( [ String, String, String ],  (network_symbol, contract, transaction_address)=>{
+const getSwapInfo = typedFunction( [ String, String, String ],  (network_symbol, contract, transaction_address)=>{
     let data = {contract, transaction_address};
     let path = `${network_symbol}`;
     return API('GET', 'audit-contract', path, data)
@@ -88,7 +88,7 @@ export let getSwapInfo = typedFunction( [ String, String, String ],  (network_sy
 /*
     Get the specifics about an ERC20 token (name, decimals, symbol, etc)
 */
-export let getTokenInfo = typedFunction( [ String, String ],  (network_symbol, token_address)=>{
+const getTokenInfo = typedFunction( [ String, String ],  (network_symbol, token_address)=>{
     let path = `${network_symbol}/${token_address}`;
     return API('GET', 'token-details', path, {})
 });
@@ -96,7 +96,7 @@ export let getTokenInfo = typedFunction( [ String, String ],  (network_symbol, t
 /*
     Get the transaction details to approve the transfer of an ERC20 token
 */
-export let getApproveTokenTxDetails = typedFunction( [ String, Number, String, String ],  (network_symbol, value, senderVk, token_address)=>{
+const getApproveTokenTxDetails = typedFunction( [ String, Number, String, String ],  (network_symbol, value, senderVk, token_address)=>{
     let data = {value};
     let path = `${network_symbol}/${senderVk}/${token_address}`;
     return  API('POST', 'approve-token', path, data)
@@ -105,7 +105,7 @@ export let getApproveTokenTxDetails = typedFunction( [ String, Number, String, S
 /*
     Publish a signed transaction
 */
-export let sendSignedTx = typedFunction( [ String, String ],  (raw_transaction, network_symbol)=>{
+const sendSignedTx = typedFunction( [ String, String ],  (raw_transaction, network_symbol)=>{
     let data = { raw_transaction };
     let path = `${network_symbol}`;
     return API('POST', 'publish-transaction', path, data)
@@ -114,7 +114,7 @@ export let sendSignedTx = typedFunction( [ String, String ],  (raw_transaction, 
 /*
     Get the transaction details to sign a Lamden Swaps Redeem transaction
 */
-export let getRedeemTxDetails = typedFunction( [ String, String, String, String ],  (network_symbol, contract,  transaction_address, secret)=>{
+const getRedeemTxDetails = typedFunction( [ String, String, String, String ],  (network_symbol, contract,  transaction_address, secret)=>{
     let data = { contract, transaction_address, secret };
     let path = `${network_symbol}`;
     return API('POST', 'redeem-transaction', path, data)
@@ -123,7 +123,7 @@ export let getRedeemTxDetails = typedFunction( [ String, String, String, String 
 /*
     Get the transaction details to sign a Lamden Swaps Refund transaction
 */
-export let getRefundTxDetails = typedFunction( [ String, String, String ],  (network_symbol, contract, transaction_address)=>{
+const getRefundTxDetails = typedFunction( [ String, String, String ],  (network_symbol, contract, transaction_address)=>{
     let data = { contract, transaction_address };
     let path = `${network_symbol}`;
     return API('POST', 'refund-transaction', path, data)
@@ -133,7 +133,7 @@ export let getRefundTxDetails = typedFunction( [ String, String, String ],  (net
     Allows a Lamden Swap Participant to get the secret string from a transaction.
     This is called once the "Initiator" of an Lamden Swap has redeemed their tokens.
 */
-export let getSecret = typedFunction( [ String, String ],  (network_symbol, contract_address)=>{
+const getSecret = typedFunction( [ String, String ],  (network_symbol, contract_address)=>{
     let path = `${network_symbol}/${contract_address}`;
     return API('GET', 'secret', path, {})
 });
@@ -142,7 +142,7 @@ export let getSecret = typedFunction( [ String, String ],  (network_symbol, cont
 /*
     A Promiss wrapper to check that a recently published transaction ends up on the blockchain
 */
-export let waitUntilTransactionExists = typedFunction( [ String, String ],  (network_symbol, transaction)=>{
+const waitUntilTransactionExists = typedFunction( [ String, String ],  (network_symbol, transaction)=>{
     let checkThis = new Promise(
         function (resolve, reject) {
         let checkerInterval = 5;
@@ -176,7 +176,7 @@ export let waitUntilTransactionExists = typedFunction( [ String, String ],  (net
 /*
     Called by waitUntilTransactionExists to check if a transaction ends up on the blockchain
 */
-let checkTransaction = typedFunction( [ String, String ],  (network_symbol, transaction)=>{
+const checkTransaction = typedFunction( [ String, String ],  (network_symbol, transaction)=>{
     const path = `${network_symbol}/${transaction}`
     return API('GET', 'check-transaction', path, {})
         .then((result) => {
@@ -185,4 +185,18 @@ let checkTransaction = typedFunction( [ String, String ],  (network_symbol, tran
         })
         .catch(() => {throw new Error ("Cannnot Receivine Transaction Status")});
 });
+
+module.exports = {
+    API, 
+    checkAPI, 
+    makeBalancesPost, 
+    getSwapInfo, 
+    getTokenInfo, 
+    getApproveTokenTxDetails, 
+    sendSignedTx, 
+    getRedeemTxDetails, 
+    getRefundTxDetails, 
+    getSecret, 
+    waitUntilTransactionExists
+}
 
