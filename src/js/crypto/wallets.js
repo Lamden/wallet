@@ -162,14 +162,14 @@ const getEthereumTx = typedFunction( [ String, String ],  ( rawTransaction, chai
   const rawTx = getHexBuffer(rawTransaction);
 
   if (rawTx.length === 0) {
-    throw new Error('Invalid transaction');
+    throw new Error('Invalid transaction: Raw Transaction is Empty');
   }
 
   try {
     return new ethTx(rawTx, chainID);
   } catch (e) {
     console.log(e)
-    throw new Error('Invalid transaction');
+    throw new Error(`Invalid transaction: ${e}`);
   }
 });
 

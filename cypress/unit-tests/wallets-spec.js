@@ -310,6 +310,20 @@ describe('Unit Test Crypto Wallet functions', function () {
             })
         })
 
+        it('Rejects invaild Ethereum wallet address - Invalid raw transaction (Invalid length)', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.eth_p2p
+                expect(() => signTx('', fdata.sk, 'ethereum', 'ETH') ).to.throw(Error, 'Invalid transaction: Raw Transaction is Empty')
+            })
+        })
+
+        it('Rejects invaild Ethereum wallet address - Invalid raw transaction (bad tx string)', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.eth_invalid
+                expect(() => signTx(fdata.raw_tx, fdata.sk, 'ethereum', 'ETH') ).to.throw(Error, 'Invalid transaction')
+            })
+        })
+
         it('Rejects invaild Ethereum wallet address - Invalid private key length', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.signTx.data.eth_p2p
