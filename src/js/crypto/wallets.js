@@ -7,6 +7,10 @@ const networks = require("./networks");
 const typedFunction = require("../typechecker");
 
 const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbol, privateKey )=>{
+  network = vailidateString(network, 'Network')
+  symbol = vailidateString(symbol, 'Symbol')
+  privateKey = vailidateString(privateKey, 'Private Key')
+
   let pubkey = undefined;
   let key;
   
@@ -49,6 +53,9 @@ const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbo
 });
 
 const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
+  network = vailidateString(network, 'Network')
+  symbol = vailidateString(symbol, 'Symbol')
+
   let keyPair = {};
 
   if (network === 'ethereum') {
@@ -91,7 +98,10 @@ const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
   return keyPair;
 });
 
-const validateAddress = typedFunction( [ String, String ],  ( network, wallet_address )=>{ 
+const validateAddress = typedFunction( [ String, String ],  ( network, wallet_address )=>{
+  network = vailidateString(network, 'Network')
+  wallet_address = vailidateString(wallet_address, 'Wallet Address')
+
   if (network === 'bitcoin'){
     try{
       bitcoin.address.fromBase58Check(wallet_address)
@@ -127,6 +137,10 @@ const isEthAddress = typedFunction( [ String ],  ( wallet_address )=>{
 });
 
 const signTx = typedFunction( [ String, String, String, String ],  ( rawTransaction, privateKey, network, networkSymbol )=>{
+  privateKey = vailidateString(privateKey, 'Private Key')
+  rawTransaction = vailidateString(rawTransaction, 'Raw Transaction')
+  network = vailidateString(network, 'Network')
+
   if (network === 'ethereum' ) {
     return signEthereumTx(rawTransaction, privateKey, networkSymbol);
   }
@@ -141,7 +155,7 @@ const signTx = typedFunction( [ String, String, String, String ],  ( rawTransact
 const signEthereumTx = typedFunction( [ String, String, String ],  ( rawTransaction, privateKey, networkSymbol )=>{
   const key = getHexBuffer(privateKey);
   if (key.length === 0) {
-    throw new Error('Missing or invalid private key');
+    throw new Error('Missing or invalid Private Key');
   }
 
   const ethTransaction = getEthereumTx(rawTransaction, networkSymbol);
@@ -150,7 +164,7 @@ const signEthereumTx = typedFunction( [ String, String, String ],  ( rawTransact
     ethTransaction.sign(key);
   } catch (e) {
     if (e instanceof RangeError) {
-      throw new Error('Invalid private key length');
+      throw new Error('Invalid Private Key length');
     } else {
       throw new Error('Signing failed');
     }
@@ -159,17 +173,22 @@ const signEthereumTx = typedFunction( [ String, String, String ],  ( rawTransact
 });
 
 const getEthereumTx = typedFunction( [ String, String ],  ( rawTransaction, chainID )=>{
-  const rawTx = getHexBuffer(rawTransaction);
-
+  let rawTx;
+  try{
+    rawTx = getHexBuffer(rawTransaction);
+  } catch (e) {
+    throw new Error (`Invalid Raw Transaction: ${e}`)
+  }
+  
   if (rawTx.length === 0) {
-    throw new Error('Invalid transaction: Raw Transaction is Empty');
+    throw new Error('Invalid Raw Rransaction: String Empty');
   }
 
   try {
     return new ethTx(rawTx, chainID);
   } catch (e) {
     console.log(e)
-    throw new Error(`Invalid transaction: ${e}`);
+    throw new Error(`Invalid Raw Transaction: ${e}`);
   }
 });
 
@@ -188,7 +207,7 @@ const getBitcoinTx = typedFunction( [ String ],  ( rawTransaction )=>{
   try {
     return bitcoinLegacy.Transaction.fromHex(rawTransaction);
   } catch (e) {
-    throw new Error('Invalid transaction');
+    throw new Error(`Invalid Raw Transaction: ${e}`);
   }
 });
 
@@ -196,10 +215,7 @@ const getBitcoinKey = typedFunction( [ String, Object ],  ( privateKey, networkO
   try {
     return bitcoinLegacy.ECPair.fromWIF(privateKey, networkObj);
   } catch (e) {
-    if (e.message === 'Invalid checksum' || e.message === 'Non-base58 character') {
-      throw new Error('Invalid private key');
-    }
-    throw e;
+    throw new Error(`Invalid Private Key: ${e}`);
   }
 });
 
@@ -239,11 +255,20 @@ const signBitcoinTx = typedFunction( [ String, String, Object ],  ( rawTransacti
   return txb.build().toHex();
 });
 
+const vailidateString = typedFunction( [ String, String ],  (  string, propertyName )=>{
+  string = string.trim()
+  if (string.length === 0) {
+    throw new Error(`${propertyName} field cannot be empty`)
+  }
+  return string;
+});
+
 module.exports = {
   pubFromPriv,
   signTx,
   stripHexPrefix,
   getHexBuffer,
   validateAddress, 
-  keysFromNew
+  keysFromNew,
+  vailidateString
 }

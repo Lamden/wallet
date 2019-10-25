@@ -1,7 +1,8 @@
 import {  pubFromPriv, 
           keysFromNew,
           validateAddress,
-          signTx
+          signTx,
+          vailidateString
        } from '../../src/js/crypto/wallets.js';
 
 /* 
@@ -10,6 +11,18 @@ TO DO:
 */
 
 describe('Unit Test Crypto Wallet functions', function () {
+    context('vailidateString: Create public keys from private keys', function () {
+        it('Trims strings', function () {
+            const testTrim = `  This Is Trimmed  `
+            expect( vailidateString(testTrim, 'Testing Trim') ).to.eq( 'This Is Trimmed' )
+        })
+        
+        it('Rejects empty strings', function () {
+            const testTrim = ''
+            expect(() => vailidateString(testTrim, 'Testing Trim') ).to.throw(Error, 'Testing Trim field cannot be empty');
+        })
+    })
+
     context('pubFromPriv: Create public keys from private keys', function () {
         it('Creates ETH public keys', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
@@ -62,7 +75,10 @@ describe('Unit Test Crypto Wallet functions', function () {
 
     context('pubFromPriv: Creates appropriate errors - ', function () {
         it('Rejects unrecognized network ', function () {
-            expect(() => pubFromPriv('testing', '', '') ).to.throw(Error, 'testing is not a supported network');
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
+                const fdata = f_wallets.pubFromPriv_eth.data
+                expect(() => pubFromPriv('testing', 'ETH', fdata.sk) ).to.throw(Error, 'testing is not a supported network');
+            })
         })
 
         it('Rejects bad ETH private key ', function () {
@@ -74,7 +90,10 @@ describe('Unit Test Crypto Wallet functions', function () {
         })
 
         it('Rejects bad BTC network symbol ', function () {
-            expect(() => pubFromPriv('bitcoin', 'BAD-TESTING', '') ).to.throw(Error, 'Not a valid bitcoin network');
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
+                const fdata = f_wallets.pubFromPriv_btc.data
+                expect(() => pubFromPriv('bitcoin', 'BAD-TESTING', fdata.sk) ).to.throw(Error, 'Not a valid bitcoin network');
+            })
         })
     })
 
@@ -166,7 +185,7 @@ describe('Unit Test Crypto Wallet functions', function () {
 
     context('keysFromNew: Creates appropriate errors - ', function () {
         it('Rejects unrecognized network ', function () {
-            expect(() => keysFromNew('testing', '') ).to.throw(Error, 'testing is not a supported network');
+            expect(() => keysFromNew('testing', 'TESTING') ).to.throw(Error, 'testing is not a supported network');
         })
 
         it('Rejects due to invaild bitcoin symbol ', function () {
@@ -222,7 +241,7 @@ describe('Unit Test Crypto Wallet functions', function () {
         it('Rejects unrecognized network ', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.validateAddress.data
-                expect(() => validateAddress('testing', '') ).to.throw(Error, 'testing is not a supported network');
+                expect(() => validateAddress('testing', fdata.vaild_Eth) ).to.throw(Error, 'testing is not a supported network');
             })
         })
 
@@ -242,6 +261,22 @@ describe('Unit Test Crypto Wallet functions', function () {
     })
 
     context('signTx: Signes a raw transaction - ', function () {
+        it('Can remove whitespace from a private key string', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.eth_as
+                const fResult = f_wallets.signTx.result.eth_as
+                expect( signTx(fdata.raw_tx, `   ${fdata.sk}   `, 'ethereum', 'ETH') ).to.eq(fResult)
+            })
+        })
+
+        it('Can remove whitespace from a raw Tx string', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.eth_as
+                const fResult = f_wallets.signTx.result.eth_as
+                expect( signTx(`   ${fdata.raw_tx}   `, fdata.sk, 'ethereum', 'ETH') ).to.eq(fResult)
+            })
+        })
+
         it('Can sign an Ethereum Atomic Swap Tx', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.signTx.data.eth_as
@@ -293,13 +328,9 @@ describe('Unit Test Crypto Wallet functions', function () {
 
     context('signTx: Creates appropriate errors - ', function () {
         it('Rejects unsupprted network', function () {
-            expect(() => signTx('', '', 'testing', '') ).to.throw(Error, 'testing network is not supported')
-        })
-
-        it('Rejects invaild Ethereum wallet address - Invalid private key (Invalid hex string)', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.signTx.data.eth_p2p
-                expect(() => signTx(fdata.raw_tx, '0x4bd94a7f98fafa71c48df5053b61c47282de59d014be5dacc0018740a8f801e', 'ethereum', 'ETH') ).to.throw(Error, 'Invalid hex string')
+                expect(() => signTx(fdata.raw_tx, fdata.sk, 'testing', 'ETH') ).to.throw(Error, 'testing network is not supported')
             })
         })
 
@@ -310,32 +341,55 @@ describe('Unit Test Crypto Wallet functions', function () {
             })
         })
 
-        it('Rejects invaild Ethereum wallet address - Invalid raw transaction (Invalid length)', function () {
-            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
-                const fdata = f_wallets.signTx.data.eth_p2p
-                expect(() => signTx('', fdata.sk, 'ethereum', 'ETH') ).to.throw(Error, 'Invalid transaction: Raw Transaction is Empty')
-            })
-        })
-
         it('Rejects invaild Ethereum wallet address - Invalid raw transaction (bad tx string)', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.signTx.data.eth_invalid
-                expect(() => signTx(fdata.raw_tx, fdata.sk, 'ethereum', 'ETH') ).to.throw(Error, 'Invalid transaction')
+                expect(() => signTx(fdata.raw_tx, fdata.sk, 'ethereum', 'ETH') ).to.throw(Error, 'Invalid Raw Transaction')
             })
         })
 
         it('Rejects invaild Ethereum wallet address - Invalid private key length', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.signTx.data.eth_p2p
-                expect(() => signTx(fdata.raw_tx, 'badaddress', 'ethereum', '') ).to.throw(Error, 'Invalid private key length')
+                expect(() => signTx(fdata.raw_tx, 'badaddress', 'ethereum', 'ETH') ).to.throw(Error, 'Invalid Private Key length')
             })
         })
 
         it('Rejects invaild Ethereum raw transaction', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.signTx.data.btc_p2p
-                expect(() => signTx('badTransaction', 'badAddress', 'ethereum', '') ).to.throw(Error, 'Invalid transaction')
+                expect(() => signTx('badTransaction', fdata.sk, 'ethereum', 'ETH') ).to.throw(Error, 'Invalid hex string')
             })
         })
+
+        it('Rejects invaild Bitcoin wallet address - Invalid private key', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.btc_p2p
+                expect(() => signTx(fdata.raw_tx, 'badAddress', 'bitcoin', 'BTC') ).to.throw(Error, 'Invalid Private Key')
+            })
+        })
+
+        it('Rejects invaild Bitcoin wallet address - Invalid private key - Invalid Checksum', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const badAddress = '5JG2Ss5gRKxDfuL5XDeS6Pj1XCVHKonm4qohCYkMz8wBAnqJJwP'
+                const fdata = f_wallets.signTx.data.btc_p2p
+                expect(() => signTx(fdata.raw_tx, badAddress, 'bitcoin', 'BTC') ).to.throw(Error, 'Invalid Private Key')
+            })
+        })
+
+        it('Rejects invaild Bitcoin raw transaction - Invalid raw transaction', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.btc_p2p
+                expect(() => signTx('badTransaction', fdata.sk, 'bitcoin', 'BTC') ).to.throw(Error, 'Invalid Raw Transaction')
+            })
+        })
+
+        it('Rejects invaild Bitcoin raw transaction - Invalid hex string', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
+                const fdata = f_wallets.signTx.data.btc_invalid
+                expect(() => signTx(fdata.raw_tx, fdata.sk, 'bitcoin', 'BTC') ).to.throw(Error, 'Invalid Raw Transaction')
+            })
+        })
+
     })
 })
