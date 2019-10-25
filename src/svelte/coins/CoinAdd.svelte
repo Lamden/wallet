@@ -1,6 +1,6 @@
 <script>
 	//Stores
-    import { CoinStore, Hash } from '../../js/stores.js';
+    import { CoinStore, HashStore } from '../../js/stores.js';
 
     //Components
     import { SupportedCoinsDropDown }  from '../../js/router.js'
@@ -71,7 +71,7 @@
 
     function validatePassword(){
         passwordField.setCustomValidity('');
-        if (!checkPassword(password, $Hash)) {
+        if (!checkPassword(password, $HashStore.encode)) {
             passwordField.setCustomValidity("Incorrect Password");
         }
     }

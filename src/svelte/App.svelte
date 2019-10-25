@@ -3,7 +3,7 @@
 	import { themes } from '../js/themes.js'
 	
 	//Stores
-	import { CoinStore, SwapStore, SettingsStore, Hash, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores.js';
+	import { CoinStore, SwapStore, SettingsStore, HashStore, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores.js';
 
 	//Components
 	import { Pages, FirstRun }  from '../js/router.js'	
@@ -13,7 +13,7 @@
 		SwapStore.useLocalStorage();
 		//CoinStore.updateBalances($CoinStore);
 		SettingsStore.useLocalStorage();
-		Hash.useLocalStorage();
+		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;

@@ -2,10 +2,10 @@
     import { getContext } from 'svelte';
     
     //Stores
-    import { Hash } from '../../js/stores.js';
+    import { HashStore } from '../../js/stores.js';
 
     //Utils
-    import { createPassword } from '../../js/utils.js';
+    import { encryptObject } from '../../js/utils.js';
     
     //DOM NODES
     let passwordField;
@@ -28,7 +28,7 @@
     function savePassword(form){
         if (form.checkValidity()){
             try{
-                createPassword(password, Hash);
+                HashStore.setPassword(password);
                 password = undefined;
                 confirm = undefined;
                 switchPage('FirstRunTOS');

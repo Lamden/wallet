@@ -24,7 +24,7 @@
 	});
 
 	function checkAPI() {
-		API('GET', 'status').then(result => {apiResult = result})
+		API('GET', 'status', '', {}).then(result => {apiResult = result})
 	}
 
 
@@ -44,7 +44,7 @@
 
 <h1>{`You have ${$allTotals.coins} coins!`}</h1>
 
-<h2> {`Total USD Value: ${toCurrencyFormat($allTotals.USD_value)}`} </h2>
+<h2> {`Total USD Value: ${ toCurrencyFormat($allTotals.USD_value, '', '') }`} </h2>
 
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 

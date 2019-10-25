@@ -2,7 +2,7 @@
     import { onMount, getContext} from 'svelte';
 
 	//Stores
-    import { CoinStore, Hash, SettingsStore} from '../../js/stores.js';
+    import { CoinStore, HashStore, SettingsStore} from '../../js/stores.js';
     
     //Components
     import { SupportedCoinsDropDown, MyCoinsDropDown }  from '../../js/router.js'
@@ -38,7 +38,7 @@
         
     function validatePassword(){
         passwordField.setCustomValidity('');
-        if (!checkPassword(password, $Hash)) {
+        if (!checkPassword(password, $HashStore.encode)) {
             passwordField.setCustomValidity("Incorrect Password");
         }
     }

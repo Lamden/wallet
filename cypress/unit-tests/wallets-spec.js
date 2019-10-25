@@ -1,9 +1,7 @@
 import {  pubFromPriv, 
           keysFromNew,
           validateAddress,
-          signTx,
-          vailidateString
-       } from '../../src/js/crypto/wallets.js';
+          signTx } from '../../src/js/crypto/wallets.js';
 
 /* 
 TO DO:
@@ -11,18 +9,6 @@ TO DO:
 */
 
 describe('Unit Test Crypto Wallet functions', function () {
-    context('vailidateString: Create public keys from private keys', function () {
-        it('Trims strings', function () {
-            const testTrim = `  This Is Trimmed  `
-            expect( vailidateString(testTrim, 'Testing Trim') ).to.eq( 'This Is Trimmed' )
-        })
-        
-        it('Rejects empty strings', function () {
-            const testTrim = ''
-            expect(() => vailidateString(testTrim, 'Testing Trim') ).to.throw(Error, 'Testing Trim field cannot be empty');
-        })
-    })
-
     context('pubFromPriv: Create public keys from private keys', function () {
         it('Creates ETH public keys', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {

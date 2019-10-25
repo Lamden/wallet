@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { loggedIn, Hash, SettingsStore, currentPage } from '../../js/stores.js';
+    import { loggedIn, HashStore, SettingsStore, currentPage } from '../../js/stores.js';
 
     //Props
     export let switchPage;
@@ -11,7 +11,7 @@
     }
 
     function startOver(){
-        Hash.set({ 'encode' : undefined });
+        HashStore.set({ 'encode' : undefined });
         switchPage('FirstRunIntro');
     }
 

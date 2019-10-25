@@ -1,5 +1,5 @@
 <script>
-    import { loggedIn, Hash } from '../../js/stores.js';
+    import { loggedIn, HashStore } from '../../js/stores.js';
     import { checkPassword } from '../../js/utils.js';
 
     let password;
@@ -13,7 +13,7 @@
     }
 
     function validatePassword(obj){
-        if (!checkPassword(password, $Hash)) {
+        if (!checkPassword(password, $HashStore.encode)) {
             obj.setCustomValidity("Incorrect Password");
         } else {
             obj.setCustomValidity('');
@@ -24,7 +24,7 @@
 
 <div>
     <form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
-        {#if $Hash.encode}
+        {#if $HashStore.encode}
             <label>Unlock Wallet</label><br>
             <input bind:value={password}
                     on:change={() => validatePassword(this)}

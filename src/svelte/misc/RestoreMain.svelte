@@ -2,7 +2,7 @@
     import { beforeUpdate, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, Hash, defaultOjects } from '../../js/stores.js';
+    import { CoinStore, HashStore, defaultOjects } from '../../js/stores.js';
 
     //Utils
     import { decryptFile, encryptStrHash, checkPassword } from '../../js/utils.js';
@@ -95,7 +95,7 @@
     }
 
     function validateWalletPassword(obj){
-        if (!checkPassword(password, $Hash)) {
+        if (!checkPassword(password, $HashStore.encode)) {
             obj.setCustomValidity("Incorrect Password");
         } else {
             obj.setCustomValidity('');
@@ -190,7 +190,7 @@
                     {`${key.name}(${key.symbol})  ${key.vk.substring(1, 10)}... `}
                 </div>
             {/each}
-            {#if !checkPassword(keyStorePassword, $Hash)}
+            {#if !checkPassword(keyStorePassword, $HashStore.encode)}
                 <label>Wallet Password</label><br>
                 <input bind:value={password}
                        bind:this={passwordField}

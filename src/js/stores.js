@@ -1,6 +1,9 @@
 import { readable, writable, derived, get } from 'svelte/store';
 import { API, makeBalancesPost, waitUntilTransactionExists } from './api.js';
-import { defaultSettings, coin, pubkey, token } from './defaults.js'
+import { defaultSettings, coin, pubkey, token } from './defaults.js';
+
+export { HashStore } from './stores/hashStore.js';
+
 
 //Environment constents
 export const CURRENT_KS_VERSION = writable("1.0");
@@ -108,8 +111,6 @@ const createLocalStore = (key, startValue) => {
 
 //MISC Stores
 export const loggedIn = writable(true);
-
-export const Hash = createLocalStore('Hash', { 'encode' : undefined });
 
 export const defaultOjects = readable({coin, pubkey, token});
 

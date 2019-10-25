@@ -2,7 +2,7 @@
     import { getContext} from 'svelte';
 
 	//Stores
-    import { Hash, CoinStore } from '../../js/stores.js';
+    import { HashStore, CoinStore } from '../../js/stores.js';
     
     //Utils
 	import { API, waitUntilTransactionExists } from '../../js/api.js';
@@ -135,7 +135,7 @@
 
     function validatePassword(obj){
         obj.setCustomValidity('');
-        if (!checkPassword(password, $Hash)) {
+        if (!checkPassword(password, $HashStore.encode)) {
             obj.setCustomValidity("Incorrect Password");
         }
     }

@@ -1,7 +1,12 @@
-import nodeCryptoJs from 'node-cryptojs-aes';
+const typedFunction = require("./typechecker");
+const nodeCryptoJs = require("node-cryptojs-aes")
 const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 
-export function copyToClipboard(textTOcopy='', callback=undefined){
+/*
+    Creates a dummy DOM node to mount a string to and then copies to the clipboard
+    Return: Nothing
+*/
+function copyToClipboard ( textTOcopy='', callback=undefined ){
     if (typeof textTOcopy === "string"){
         try{
             var dummy = document.createElement("input");
@@ -17,52 +22,62 @@ export function copyToClipboard(textTOcopy='', callback=undefined){
         }
         if (callback){callback()}
     }
-}
-
-export function checkPassword(password, HashStore){
-    try{
-        const decrypted = CryptoJS.AES.decrypt(HashStore.encode, password, { format: JsonFormatter });
-        JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-        return true;
-    } catch (e) {
-        return false;
-    }
 };
 
-export function createPassword(password, HashObj){
-    if (!password || !HashObj ){
-        !password ? new TypeError('password is undefined') : new TypeError('Hash is undefined');
-    }else{
-        HashObj.set({'encode' : CryptoJS.AES.encrypt(JSON.stringify({'date':new Date()}), password, { format: JsonFormatter }).toString() });
-    }
-};
-
-export function encryptStrHash(password, string){
+/*
+    Encrypt a string using a password string 
+    Return: Encrypted String (str)
+*/
+const encryptStrHash = typedFunction( [ String, String ],  ( password, string )=>{
     const encrypt = CryptoJS.AES.encrypt(string, password).toString();
     return encrypt;
-};
+});
 
-export function decryptStrHash(password, hash){
+/*
+    Decrypt a string using a password string 
+    Return: Decrypted String (str)
+*/
+const decryptStrHash = typedFunction( [ String, String ],  ( password, hash )=>{
     const decrypted = CryptoJS.AES.decrypt(hash, password);
     return CryptoJS.enc.Utf8.stringify(decrypted);
-};
+});
 
-export function encryptObject(password, obj){
+/*
+    Encrypt an Object using a password string 
+    Return: Encrypted Object (obj)
+*/
+const encryptObject = typedFunction( [ String, Object ],  ( password, obj )=>{
     const encrypted = CryptoJS.AES.encrypt(JSON.stringify(obj), password, { format: JsonFormatter }).toString();
     return encrypted;
-};
+});
 
-export function decryptObject(password, obj){
-    const decrypted = CryptoJS.AES.decrypt(obj, password, { format: JsonFormatter });
-    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-};
+/*
+    Decrypt an Object using a password string 
+    Return: Decrypted Object (obj)
+*/
+const decryptObject = typedFunction( [ String, String ],  ( password, obj )=>{
+    try{
+        const decrypt = CryptoJS.AES.decrypt(obj, password, { format: JsonFormatter })
+        return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypt));
+    } catch (e){
+        return false;
+    }
+});
 
-export function decryptFile(password, file){
+/*
+    Decrypt a File using a password string 
+    Return: Decrypted File (obj)
+*/
+const decryptFile = typedFunction( [ String, Object ],  ( password, file )=>{
     const decrypted = CryptoJS.AES.decrypt(file, password, { format: JsonFormatter });
     return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-};
+});
 
-export function toCurrencyFormat(value, currency, local){
+/*
+    Creates a Currency String loacl to the user 
+    Return: Currency String (str)
+*/
+function toCurrencyFormat( value, currency, local ){
     value = value || '0'
     currency = currency || 'USD'
     local = local || undefined
@@ -70,12 +85,38 @@ export function toCurrencyFormat(value, currency, local){
         style: 'currency',
         currency,
     });
-}
+};
 
-export function stripCoinRef(coin){
+/*
+    Creates a copy of a Coin Object that strips all references.
+    Return: Coin Object (ojb)
+*/
+const stripCoinRef = typedFunction( [ Object ],  (coin )=>{
     let newCoin = JSON.parse(JSON.stringify(coin));
     if (newCoin.swapList) delete newCoin.swapList;
     if (newCoin.txList) delete newCoin.txList;
     if (newCoin.balance) delete newCoin.balance;
     return newCoin;
-}
+});
+
+/*
+    Validates a string proprty isn't empty, and also trims leading and trailing whitespace
+    Return: Trimmed String (str)
+*/
+const vailidateString = typedFunction( [ String, String ],  (  string, propertyName )=>{
+    string = string.trim()
+    if (string.length === 0) {
+      throw new Error(`${propertyName} field cannot be empty`)
+    }
+    return string;
+});
+
+module.exports = {
+    copyToClipboard,
+    encryptStrHash, decryptStrHash,
+    encryptObject, decryptObject,
+    decryptFile,
+    toCurrencyFormat,
+    stripCoinRef,
+    vailidateString
+  }

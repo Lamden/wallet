@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { CoinStore, coinList, Hash, CURRENT_KS_VERSION } from '../../js/stores.js';
+    import { CoinStore, coinList, HashStore, CURRENT_KS_VERSION } from '../../js/stores.js';
 
     //Utils
     import { copyToClipboard, checkPassword, decryptStrHash, encryptObject, decryptFile } from '../../js/utils.js';
@@ -29,7 +29,7 @@
     }
 
     function validatePassword(obj){
-        if (!checkPassword(password, $Hash)) {
+        if (!HashStore.validatePassword(password)) {
             obj.setCustomValidity("Incorrect Wallet Password");
         } else {
             obj.setCustomValidity('');

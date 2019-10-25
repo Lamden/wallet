@@ -3,9 +3,16 @@ const bitcoin = require('bitcoinjs-lib-latest');
 const ethUtil = require('ethereumjs-util');
 const ethTx = require('ethereumjs-tx').Transaction;
 const ethWallet = require('ethereumjs-wallet');
-const networks = require("./networks");
-const typedFunction = require("../typechecker");
+const networks = require('./networks');
+const typedFunction = require('../typechecker');
+const utils = require('../utils');
 
+const { vailidateString } = utils;
+
+/*
+    Gets the Public Address of a Coin from the Private Key
+    Return: Public Address (str)
+*/
 const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbol, privateKey )=>{
   network = vailidateString(network, 'Network')
   symbol = vailidateString(symbol, 'Symbol')
@@ -52,6 +59,10 @@ const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbo
   return pubkey;
 });
 
+/*
+    Create a new Public/Private keypair for a network/symbol combination
+    Return: Keypair Object (obj)
+*/
 const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
   network = vailidateString(network, 'Network')
   symbol = vailidateString(symbol, 'Symbol')
@@ -98,6 +109,11 @@ const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
   return keyPair;
 });
 
+
+/*
+    Validates an address if valid for a specific network/symbol
+    Return: Trimmed String (str)
+*/
 const validateAddress = typedFunction( [ String, String ],  ( network, wallet_address )=>{
   network = vailidateString(network, 'Network')
   wallet_address = vailidateString(wallet_address, 'Wallet Address')
@@ -122,6 +138,10 @@ const validateAddress = typedFunction( [ String, String ],  ( network, wallet_ad
   throw new Error(`${network} is not a supported network `);
 });
 
+/*
+    Validates a Pubick Address is valid for the Ethereum network
+    Returns: Is Ethereum Address (Bool)
+*/
 const isEthAddress = typedFunction( [ String ],  ( wallet_address )=>{
     // function isAddress(address) {
         if (!/^(0x)?[0-9a-f]{40}$/i.test(wallet_address)) {
@@ -136,6 +156,10 @@ const isEthAddress = typedFunction( [ String ],  ( wallet_address )=>{
     }
 });
 
+/*
+    Signed a Raw transaction for Bitcoin and Ethereum networks
+    Returns: Signed Transactions (str)
+*/
 const signTx = typedFunction( [ String, String, String, String ],  ( rawTransaction, privateKey, network, networkSymbol )=>{
   privateKey = vailidateString(privateKey, 'Private Key')
   rawTransaction = vailidateString(rawTransaction, 'Raw Transaction')
@@ -152,6 +176,10 @@ const signTx = typedFunction( [ String, String, String, String ],  ( rawTransact
   throw new Error(`${network} network is not supported`);
 });
 
+/*
+    Signs an Ethereum Rew Transaction string
+    Returns: Signed Transactions (str)
+*/
 const signEthereumTx = typedFunction( [ String, String, String ],  ( rawTransaction, privateKey, networkSymbol )=>{
   const key = getHexBuffer(privateKey);
   if (key.length === 0) {
@@ -172,6 +200,10 @@ const signEthereumTx = typedFunction( [ String, String, String ],  ( rawTransact
   return ethTransaction.serialize().toString('hex');
 });
 
+/*
+    Creates an Ethereum Transcation Object used in the signing of an Ethereum Raw Transactions
+    Returns: Ethereum Transaction (Obj)
+*/
 const getEthereumTx = typedFunction( [ String, String ],  ( rawTransaction, chainID )=>{
   let rawTx;
   try{
@@ -192,17 +224,28 @@ const getEthereumTx = typedFunction( [ String, String ],  ( rawTransaction, chai
   }
 });
 
+/*
+    Returns: Hex Buffer (Str)
+*/
 const getHexBuffer = typedFunction( [ String ],  ( hexString )=>{
   let striphex = stripHexPrefix(hexString)
   let buff = Buffer.from(striphex, 'hex')
   return buff;
 });
 
+/*
+    Strips the "0x" from the from of a hex string
+    Returns: (Str)
+*/
 const stripHexPrefix = typedFunction( [ String ],  ( hexString )=>{
   let hexstr = hexString.slice(0, 2) === '0x' ? hexString.slice(2) : hexString;
   return hexstr;
 });
 
+/*
+    Creates a Bitcoin Transcation Object used in the signing of a Bitcoin Raw Transactions
+    Returns: Bitcoin Transaction (Obj)
+*/
 const getBitcoinTx = typedFunction( [ String ],  ( rawTransaction )=>{
   try {
     return bitcoinLegacy.Transaction.fromHex(rawTransaction);
@@ -211,6 +254,10 @@ const getBitcoinTx = typedFunction( [ String ],  ( rawTransaction )=>{
   }
 });
 
+/*
+    Gets the Public Address from a Bitcoin Private Key
+    Returns: Bitcoin Public Address (Str)
+*/
 const getBitcoinKey = typedFunction( [ String, Object ],  ( privateKey, networkObj )=>{
   try {
     return bitcoinLegacy.ECPair.fromWIF(privateKey, networkObj);
@@ -219,6 +266,10 @@ const getBitcoinKey = typedFunction( [ String, Object ],  ( privateKey, networkO
   }
 });
 
+/*
+    Signs a Bitcoin Rew Transaction string
+    Returns: Signed Transactions (str)
+*/
 const signBitcoinTx = typedFunction( [ String, String, Object ],  ( rawTransaction, privateKey, networkObj )=>{
   const tx = getBitcoinTx(rawTransaction);
   const txb = bitcoinLegacy.TransactionBuilder.fromTransaction(tx, networkObj);
@@ -255,13 +306,7 @@ const signBitcoinTx = typedFunction( [ String, String, Object ],  ( rawTransacti
   return txb.build().toHex();
 });
 
-const vailidateString = typedFunction( [ String, String ],  (  string, propertyName )=>{
-  string = string.trim()
-  if (string.length === 0) {
-    throw new Error(`${propertyName} field cannot be empty`)
-  }
-  return string;
-});
+
 
 module.exports = {
   pubFromPriv,
