@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
 	//Stores
-    import { SettingsStore, CoinStore, SwapStore, HashStore, getCoinReference } from '../../js/stores.js';
+    import { SettingsStore, CoinStore, SwapStore, HashStore } from '../../js/stores/stores.js';
     
     //Components
     import { SupportedCoinsDropDown, MyCoinsDropDown }  from '../../js/router.js'

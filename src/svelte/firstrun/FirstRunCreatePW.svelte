@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
     
     //Stores
-    import { HashStore } from '../../js/stores.js';
+    import { HashStore } from '../../js/stores/stores.js';
 
     //Utils
     import { encryptObject } from '../../js/utils.js';

@@ -2,7 +2,7 @@
     import { getContext} from 'svelte';
 
 	//Stores
-    import { HashStore, CoinStore } from '../../js/stores.js';
+    import { HashStore, CoinStore } from '../../js/stores/stores.js';
     
     //Utils
 	import { API, waitUntilTransactionExists } from '../../js/api.js';

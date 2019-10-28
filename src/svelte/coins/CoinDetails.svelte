@@ -2,7 +2,7 @@
     import { setContext, getContext} from 'svelte';
 
     //Stores
-    import { CoinStore, SettingsStore, previousPage, getCoinReference } from '../../js/stores.js';
+    import { CoinStore, SettingsStore, previousPage, getCoinReference } from '../../js/stores/stores.js';
 
     //Components
     import { Modal, Modals, Transaction }  from '../../js/router.js'
@@ -20,7 +20,7 @@
     let openModal = false;
     let currentModal = '';
 
-    $: coin = getCoinReference($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
+    $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
     $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;

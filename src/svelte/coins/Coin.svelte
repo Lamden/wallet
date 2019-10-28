@@ -2,7 +2,7 @@
     import { onMount, getContext, setContext} from 'svelte';
 
     //Stores
-    import { SettingsStore } from '../../js/stores.js';
+    import { SettingsStore } from '../../js/stores/stores.js';
 
     //Utils
     import { toCurrencyFormat } from '../../js/utils.js';

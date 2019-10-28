@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte';
 
     //Stores
-    import { CoinStore } from '../../js/stores.js';
+    import { CoinStore } from '../../js/stores/stores.js';
 
     export let id;
     export let required = false;

@@ -2,7 +2,7 @@
     import { onMount, getContext} from 'svelte';
 
 	//Stores
-    import { CoinStore, HashStore, SettingsStore} from '../../js/stores.js';
+    import { CoinStore, HashStore, SettingsStore} from '../../js/stores/stores.js';
 
     // Utils
     import { API, waitUntilTransactionExists, sendSignedTx, getRefundTxDetails } from '../../js/api.js';

@@ -2,7 +2,7 @@
     import { getContext, setContext} from 'svelte';
 
 	//Stores
-    import { SwapStore, initialSwaps, participateSwaps } from '../../js/stores.js';
+    import { SwapStore, initialSwaps, participateSwaps } from '../../js/stores/stores.js';
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js';

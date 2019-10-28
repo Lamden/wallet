@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { HashStore } from '../../js/stores.js';
+    import { HashStore } from '../../js/stores/stores.js';
 
     //Utils
     import {copyToClipboard,

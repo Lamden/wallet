@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { loggedIn, HashStore, SettingsStore, currentPage } from '../../js/stores.js';
+    import { loggedIn, HashStore, SettingsStore, currentPage } from '../../js/stores/stores.js';
 
     //Props
     export let switchPage;

@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { CoinStore, coinList, HashStore, CURRENT_KS_VERSION } from '../../js/stores.js';
+    import { CoinStore, coinList, HashStore, CURRENT_KS_VERSION } from '../../js/stores/stores.js';
 
     //Utils
     import { copyToClipboard, checkPassword, decryptStrHash, encryptObject, decryptFile } from '../../js/utils.js';

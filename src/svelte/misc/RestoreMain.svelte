@@ -2,7 +2,7 @@
     import { beforeUpdate, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, HashStore, defaultOjects } from '../../js/stores.js';
+    import { CoinStore, HashStore, defaultOjects } from '../../js/stores/stores.js';
 
     //Utils
     import { decryptFile, encryptStrHash, checkPassword } from '../../js/utils.js';

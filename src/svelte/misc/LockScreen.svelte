@@ -1,5 +1,5 @@
 <script>
-    import { loggedIn, HashStore } from '../../js/stores.js';
+    import { loggedIn, HashStore } from '../../js/stores/stores.js';
     import { checkPassword } from '../../js/utils.js';
 
     let password;

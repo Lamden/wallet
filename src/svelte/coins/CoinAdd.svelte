@@ -1,6 +1,6 @@
 <script>
 	//Stores
-    import { CoinStore, HashStore } from '../../js/stores.js';
+    import { CoinStore, HashStore } from '../../js/stores/stores.js';
 
     //Components
     import { SupportedCoinsDropDown }  from '../../js/router.js'
