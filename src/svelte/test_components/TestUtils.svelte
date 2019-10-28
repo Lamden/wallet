@@ -7,7 +7,6 @@
             checkPassword,
             encryptStrHash, decryptStrHash,
             encryptObject, decryptObject,
-            decryptFile,
             toCurrencyFormat,
             stripCoinRef,
             vailidateString } from '../../js/utils.js';

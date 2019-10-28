@@ -14,9 +14,9 @@ const { vailidateString } = utils;
     Return: Public Address (str)
 */
 const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbol, privateKey )=>{
-  network = vailidateString(network, 'Network')
-  symbol = vailidateString(symbol, 'Symbol')
-  privateKey = vailidateString(privateKey, 'Private Key')
+  network = vailidateString(network, 'Network', true)
+  symbol = vailidateString(symbol, 'Symbol', true)
+  privateKey = vailidateString(privateKey, 'Private Key', true)
 
   let pubkey = undefined;
   let key;
@@ -64,8 +64,8 @@ const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbo
     Return: Keypair Object (obj)
 */
 const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
-  network = vailidateString(network, 'Network')
-  symbol = vailidateString(symbol, 'Symbol')
+  network = vailidateString(network, 'Network', true)
+  symbol = vailidateString(symbol, 'Symbol', true)
 
   let keyPair = {};
 
@@ -115,8 +115,8 @@ const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
     Return: Trimmed String (str)
 */
 const validateAddress = typedFunction( [ String, String ],  ( network, wallet_address )=>{
-  network = vailidateString(network, 'Network')
-  wallet_address = vailidateString(wallet_address, 'Wallet Address')
+  network = vailidateString(network, 'Network', true)
+  wallet_address = vailidateString(wallet_address, 'Wallet Address', true)
 
   if (network === 'bitcoin'){
     try{
@@ -161,9 +161,9 @@ const isEthAddress = typedFunction( [ String ],  ( wallet_address )=>{
     Returns: Signed Transactions (str)
 */
 const signTx = typedFunction( [ String, String, String, String ],  ( rawTransaction, privateKey, network, networkSymbol )=>{
-  privateKey = vailidateString(privateKey, 'Private Key')
-  rawTransaction = vailidateString(rawTransaction, 'Raw Transaction')
-  network = vailidateString(network, 'Network')
+  privateKey = vailidateString(privateKey, 'Private Key', true)
+  rawTransaction = vailidateString(rawTransaction, 'Raw Transaction', true)
+  network = vailidateString(network, 'Network', true)
 
   if (network === 'ethereum' ) {
     return signEthereumTx(rawTransaction, privateKey, networkSymbol);

@@ -3,7 +3,7 @@
     import { CoinStore, coinList, HashStore, CURRENT_KS_VERSION } from '../../js/stores/stores.js';
 
     //Utils
-    import { copyToClipboard, checkPassword, decryptStrHash, encryptObject, decryptFile } from '../../js/utils.js';
+    import { copyToClipboard, checkPassword, decryptStrHash, encryptObject } from '../../js/utils.js';
 
     //Components
     import { BackupPW, BackupDownload }  from '../../js/router.js'
@@ -35,6 +35,9 @@
             obj.setCustomValidity('');
         }
     }
+    function decryptSk(password, sk){
+        return decryptStrHash(password, sk) ? decryptStrHash(password, sk) : 'Cannot decrypt Secret Key';
+    }
 
     function download() {
         let currDateTime = new Date().toLocaleString();
@@ -58,7 +61,7 @@
         keys = `!! KEEP THIS INFORMATION SECRET !!\n`
         keyList.map(function(keypair){
             keys = `${keys}\n${keypair.name}(${keypair.symbol}) - ${keypair.nickname}`;
-            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${decryptStrHash(password, keypair.sk)}\n`;
+            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${decryptSk(password, keypair.sk)}\n`;
             return keypair;
         });
         if(keyList.length === 0) keys = "Key Storage Empty";

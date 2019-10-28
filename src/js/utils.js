@@ -29,6 +29,8 @@ function copyToClipboard ( textTOcopy='', callback=undefined ){
     Return: Encrypted String (str)
 */
 const encryptStrHash = typedFunction( [ String, String ],  ( password, string )=>{
+    password = vailidateString(password, 'password', false)
+    string = vailidateString(string, 'string', false)
     const encrypt = CryptoJS.AES.encrypt(string, password).toString();
     return encrypt;
 });
@@ -37,9 +39,16 @@ const encryptStrHash = typedFunction( [ String, String ],  ( password, string )=
     Decrypt a string using a password string 
     Return: Decrypted String (str)
 */
-const decryptStrHash = typedFunction( [ String, String ],  ( password, hash )=>{
-    const decrypted = CryptoJS.AES.decrypt(hash, password);
-    return CryptoJS.enc.Utf8.stringify(decrypted);
+const decryptStrHash = typedFunction( [ String, String ],  ( password, encryptedString )=>{
+    password = vailidateString(password, 'password', false)
+    encryptedString = vailidateString(encryptedString, 'encryptedString', false)
+    
+    try{
+        const decrypted = CryptoJS.AES.decrypt(encryptedString, password);
+        return CryptoJS.enc.Utf8.stringify(decrypted) === '' ? false : CryptoJS.enc.Utf8.stringify(decrypted);
+    } catch (e) {
+        return false;
+    }
 });
 
 /*
@@ -47,6 +56,7 @@ const decryptStrHash = typedFunction( [ String, String ],  ( password, hash )=>{
     Return: Encrypted Object (obj)
 */
 const encryptObject = typedFunction( [ String, Object ],  ( password, obj )=>{
+    password = vailidateString(password, 'password', false)
     const encrypted = CryptoJS.AES.encrypt(JSON.stringify(obj), password, { format: JsonFormatter }).toString();
     return encrypted;
 });
@@ -55,9 +65,11 @@ const encryptObject = typedFunction( [ String, Object ],  ( password, obj )=>{
     Decrypt an Object using a password string 
     Return: Decrypted Object (obj)
 */
-const decryptObject = typedFunction( [ String, String ],  ( password, obj )=>{
+const decryptObject = typedFunction( [ String, String ],  ( password, objString )=>{
+    password = vailidateString(password, 'password', false)
+    objString = vailidateString(objString, 'objString', false)
     try{
-        const decrypt = CryptoJS.AES.decrypt(obj, password, { format: JsonFormatter })
+        const decrypt = CryptoJS.AES.decrypt(objString, password, { format: JsonFormatter })
         return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypt));
     } catch (e){
         return false;
@@ -65,27 +77,13 @@ const decryptObject = typedFunction( [ String, String ],  ( password, obj )=>{
 });
 
 /*
-    Decrypt a File using a password string 
-    Return: Decrypted File (obj)
-*/
-const decryptFile = typedFunction( [ String, Object ],  ( password, file )=>{
-    const decrypted = CryptoJS.AES.decrypt(file, password, { format: JsonFormatter });
-    return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypted));
-});
-
-/*
     Creates a Currency String loacl to the user 
     Return: Currency String (str)
 */
-function toCurrencyFormat( value, currency, local ){
-    value = value || '0'
-    currency = currency || 'USD'
-    local = local || undefined
-    return value.toLocaleString(local, {
-        style: 'currency',
-        currency,
-    });
-};
+const toCurrencyFormat = typedFunction( [ Number, String ],  ( value, currency )=>{
+    currency = vailidateString(currency, 'currency', false)
+    return value.toLocaleString(undefined, {style: 'currency', currency,});
+});
 
 /*
     Creates a copy of a Coin Object that strips all references.
@@ -103,8 +101,8 @@ const stripCoinRef = typedFunction( [ Object ],  (coin )=>{
     Validates a string proprty isn't empty, and also trims leading and trailing whitespace
     Return: Trimmed String (str)
 */
-const vailidateString = typedFunction( [ String, String ],  (  string, propertyName )=>{
-    string = string.trim()
+const vailidateString = typedFunction( [ String, String, Boolean ],  (  string, propertyName, trim )=>{
+    if (trim) string = string.trim()
     if (string.length === 0) {
       throw new Error(`${propertyName} field cannot be empty`)
     }
@@ -115,7 +113,6 @@ module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject,
-    decryptFile,
     toCurrencyFormat,
     stripCoinRef,
     vailidateString

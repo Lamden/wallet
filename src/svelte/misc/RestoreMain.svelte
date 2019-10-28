@@ -5,7 +5,7 @@
     import { CoinStore, HashStore, defaultOjects } from '../../js/stores/stores.js';
 
     //Utils
-    import { decryptFile, encryptStrHash, checkPassword } from '../../js/utils.js';
+    import { decryptObject, encryptStrHash, checkPassword } from '../../js/utils.js';
 
     //DOM NODES
     let passwordField;
@@ -75,13 +75,13 @@
 
     function handleKeyStoreSubmit(form){
         if (form.checkValidity()){
-            keyStore = decryptFile(keyStorePassword, fileContent.data);
+            keyStore = decryptObject(keyStorePassword, fileContent.data);
         }
     }
 
     function validateKeyStorePassword(obj){
         try{
-            decryptFile(keyStorePassword, fileContent.data);
+            decryptObject(keyStorePassword, fileContent.data);
             obj.setCustomValidity('');
         } catch (e) {
             obj.setCustomValidity("Incorrect Password");
