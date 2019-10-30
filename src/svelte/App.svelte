@@ -1,7 +1,10 @@
 <script>
 	import { onMount, setContext } from 'svelte';
 	import { themes } from '../js/themes.js'
-	
+
+	//Utils
+	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
+		
 	//Stores
 	import { CoinStore, SwapStore, SettingsStore, HashStore, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores/stores.js';
 
@@ -26,6 +29,11 @@
 	function switchPage(name, data) {
 		data = data || {};
 		$SettingsStore.currentPage = {name, data};
+	}
+
+	function showKeys(){
+		const key = pubFromPriv('lamden', 'TAU', ""
+		console.log(key)
 	}
 
 	function toggleTheme() {
@@ -66,6 +74,7 @@
 					<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
 					<button on:click={() =>  CoinStore.deleteAllSwaps() }> Delete All Swaps </button>
 					<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
+					<button on:click={() => showKeys() }> Lamden Keys </button>
 				</div>
 			</nav>
 

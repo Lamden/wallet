@@ -1,4 +1,14 @@
 {
+    "pubFromPriv_lamden": {
+        "data":{
+            "network": "lamden",
+            "symbol":"TAU",
+            "sk": "9c0638bd6bf3b7738eaf9b2b6b7a1ef64c7f3d2798b8bea5fef960f3f0c6fd07"
+        },
+        "result":{
+                "vk": "74c1eeee49dd3e355bd7fef97e4ee0f76ec8d508883b06dcf86ff30888337341"
+        }
+    },
     "pubFromPriv_eth": {
         "data":{
             "network": "ethereum",

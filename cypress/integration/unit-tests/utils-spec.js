@@ -4,7 +4,7 @@ import {encryptStrHash, decryptStrHash,
         decryptFile,
         toCurrencyFormat,
         stripCoinRef,
-        vailidateString} from '../../src/js/utils'
+        vailidateString} from '../../../src/js/utils'
     
 describe('Utils Testing Svelte Store Functions', function () {
     context('vailidateString: Create public keys from private keys', function () {

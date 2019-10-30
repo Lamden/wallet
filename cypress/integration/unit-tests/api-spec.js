@@ -5,7 +5,7 @@ import {  checkAPI,
           makeBalancesPost,
           getSecret,
 
-       } from '../../src/js/api.js';
+       } from '../../../src/js/api.js';
 
 describe('Unit Test API functions', function () {
     context('api.js', function () {

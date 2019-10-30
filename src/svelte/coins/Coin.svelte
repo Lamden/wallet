@@ -43,7 +43,7 @@
     </h2>
     <ul>
         <li>{`balance ${ balance } ${ symbol }`}</li>
-        <li>{`USD Value (${ toCurrencyFormat( USD_value ) })`}</li>
+        <li>{`USD Value (${ toCurrencyFormat( USD_value, 'USD' ) })`}</li>
         {#if watching}
             <li>Watching Coin</li>
         {/if}

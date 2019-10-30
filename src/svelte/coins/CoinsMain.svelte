@@ -44,7 +44,7 @@
 
 <h1>{`You have ${$allTotals.coins} coins!`}</h1>
 
-<h2> {`Total USD Value: ${ toCurrencyFormat($allTotals.USD_value, '', '') }`} </h2>
+<h2> {`Total USD Value: ${ toCurrencyFormat($allTotals.USD_value, 'USD') }`} </h2>
 
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 

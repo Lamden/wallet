@@ -8,7 +8,6 @@
     import { Modal, Modals, Transaction }  from '../../js/router.js'
 
     //Utils
-    import { toCurrencyFormat }  from '../../js/utils.js'
     import { logos } from '../../js/crypto/logos.js';
 
     setContext('closeModal', {

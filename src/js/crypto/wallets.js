@@ -6,6 +6,7 @@ const ethWallet = require('ethereumjs-wallet');
 const networks = require('./networks');
 const typedFunction = require('../typechecker');
 const utils = require('../utils');
+const lamdenWallet = require('../lamden/wallet.js');
 
 const { vailidateString } = utils;
 
@@ -20,6 +21,10 @@ const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbo
 
   let pubkey = undefined;
   let key;
+
+  if (network === 'lamden') { 
+    pubkey = lamdenWallet.get_vk(privateKey);
+  }
   
   if (network === 'ethereum') {
     try {
@@ -47,11 +52,7 @@ const pubFromPriv = typedFunction( [ String, String, String ],  ( network, symbo
       throw new Error(`Not a valid ${network} private key`);
     }
   }
-/*
-  if (network === 'lamden') { 
-    pubkey = lamdenWallet.get_vk(privateKey);
-  }
-*/
+
   if (!pubkey){
     throw new Error(`${network} is not a supported network `);
   }
@@ -68,6 +69,12 @@ const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
   symbol = vailidateString(symbol, 'Symbol', true)
 
   let keyPair = {};
+  console.log(network)
+  console.log(network === 'lamden')
+  if (network === 'lamden'){
+    keyPair = lamdenWallet.new_wallet();
+    if (!keyPair) throw new Error(`Error creating lamden network wallet`);
+  }
 
   if (network === 'ethereum') {
     try{
@@ -94,10 +101,6 @@ const keysFromNew = typedFunction( [ String, String ],  ( network, symbol )=>{
       console.log(e);
       throw new Error(`Error creating bitcoin network wallet for ${symbol}: ${e}`);
     }
-  }
-
-  if (network === 'lamden') { 
-    pubkey = lamdenWallet.get_vk(privateKey);
   }
 
   if (!keyPair.vk || !keyPair.sk){

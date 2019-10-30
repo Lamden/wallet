@@ -1,7 +1,7 @@
 import {  pubFromPriv, 
           keysFromNew,
           validateAddress,
-          signTx } from '../../src/js/crypto/wallets.js';
+          signTx } from '../../../src/js/crypto/wallets.js';
 
 /* 
 TO DO:
@@ -10,6 +10,14 @@ TO DO:
 
 describe('Unit Test Crypto Wallet functions', function () {
     context('pubFromPriv: Create public keys from private keys', function () {
+        it('Creates Lamden public keys', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
+                const fdata = f_wallets.pubFromPriv_lamden.data
+                const fresult = f_wallets.pubFromPriv_lamden.result
+                expect( pubFromPriv(fdata.network, fdata.symbol, fdata.sk) ).to.eq( fresult.vk )
+            })
+        })
+
         it('Creates ETH public keys', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
                 const fdata = f_wallets.pubFromPriv_eth.data
@@ -67,6 +75,10 @@ describe('Unit Test Crypto Wallet functions', function () {
             })
         })
 
+        it('Rejects bad Lamden private key ', function () {
+            expect(() => pubFromPriv('lamden', 'TAU', 'thisisBAD') ).to.throw(Error, 'bad seed size');
+        })
+
         it('Rejects bad ETH private key ', function () {
             expect(() => pubFromPriv('ethereum', 'ETH', 'thisisBAD') ).to.throw(Error, 'Not a valid ethereum private key');
         })
@@ -84,6 +96,20 @@ describe('Unit Test Crypto Wallet functions', function () {
     })
 
     context('keysFromNew: Generates keypairs - ', function () {
+        it('Returns Lamden keypair ', function () {
+            cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
+                const fResult = f_wallets.keysFromNew_keypairProps.result
+                cy.wrap( keysFromNew('lamden', 'TAU') )
+                    .then(( result ) => {
+                        Object.keys( result ).map(function( key ) {
+                            cy.wrap(fResult).should('contain', key)
+                        });
+                        expect( result.symbol ).to.eq( 'TAU' )
+                        expect( result.network ).to.eq( 'lamden' )
+                    })
+            })
+        })
+
         it('Returns BTC keypair ', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
                 const fResult = f_wallets.keysFromNew_keypairProps.result
