@@ -43,7 +43,6 @@ const createSettingsStore = (key, startValue) => {
             set(startValue)
         },
         setCurrency(currency){
-            console.log(currency)
             update(settingsstore => {
                 settingsstore.currency.current = currency;
                 return settingsstore
@@ -76,9 +75,7 @@ export const themeStyle = derived(
 export const currencies = derived(
 	SettingsStore,
 	$SettingsStore => {
-        console.log($SettingsStore.currency.list)
         returnList = $SettingsStore.currency.list.filter(currency => currency !== $SettingsStore.currency.current )
-        console.log(returnList)
         return returnList
     }
 );

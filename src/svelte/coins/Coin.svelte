@@ -42,6 +42,32 @@
         width: 64px;
         height: 64px;
     }
+
+    .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    }
+
+    .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+    }
+
+    .tooltip:hover .tooltiptext {
+    visibility: visible;
+    }
 </style>
 
 <div class="container">
@@ -52,7 +78,9 @@
     <ul>
         <li>{`balance ${ balance } ${ symbol }`}</li>
         {#if !testnet}
-            <li>{`USD Value (${ toCurrencyFormat( fiat_value(), $SettingsStore.currency.current.code ) })`}</li>
+            <li class="tooltip">{`USD Value (${ toCurrencyFormat( fiat_value(), $SettingsStore.currency.current.code ) })`}
+                <span class="tooltiptext"> {fiat_value()} </span>
+            </li>
         {/if}
         {#if watching}
             <li>Watching Coin</li>

@@ -27,8 +27,7 @@
 		SettingsStore.useLocalStorage();
 		HashStore.useLocalStorage();
 		MarketInfoStore.useLocalStorage();
-		MarketInfoStore.refresh_marketInfo($symbolList);
-		console.log($SettingsStore.currency.list)
+		//MarketInfoStore.refresh_marketInfo($symbolList);
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;

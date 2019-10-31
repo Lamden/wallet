@@ -39,7 +39,6 @@ const createMarketInfoStore = (key, startValue) => {
             if ( symbols.length > 0 ){
                 return API('POST', 'get-prices', "", {"symbol_list": symbols, "currency_symbol" : get(currencyCode) })
                 .then(info => {
-                    console.log(info)
                     set (info.value.data);
                 })
                 .catch(e => console.log(e))
