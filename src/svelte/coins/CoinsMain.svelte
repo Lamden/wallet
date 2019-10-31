@@ -1,7 +1,13 @@
 <script>
 	import { onMount } from 'svelte';
 	//Stores
-	import { calcRemainingStorage, coinList, CoinStore, currencyCode, allTotals } from '../../js/stores/stores.js';
+	import {calcRemainingStorage, 
+			coinList, 
+			CoinStore, 
+			numberOfCoins, 
+			currencyCode, 
+			fiatWalletTotal, 
+			MarketInfoStore } from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, Modal, Modals, CurrencyDropDown }  from '../../js/router.js'
@@ -43,9 +49,9 @@
 </style>
 
 <CurrencyDropDown />
-<h1>{`You have ${$allTotals.coins} coins!`}</h1>
+<h1>{`You have ${$numberOfCoins} coins!`}</h1>
 
-<h2> {`Total ${$currencyCode} Value: ${ toCurrencyFormat($allTotals.fiat_value, 'USD') }`} </h2>
+<h2> {`Total Wallet Value: ${ toCurrencyFormat( $fiatWalletTotal, $currencyCode ) }`} </h2>
 
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 

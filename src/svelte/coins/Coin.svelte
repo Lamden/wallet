@@ -78,7 +78,7 @@
     <ul>
         <li>{`balance ${ balance } ${ symbol }`}</li>
         {#if !testnet}
-            <li class="tooltip">{`USD Value (${ toCurrencyFormat( fiat_value(), $SettingsStore.currency.current.code ) })`}
+            <li class="tooltip">{`USD Value (${ toCurrencyFormat( fiat_value(), $currencyCode ) })`}
                 <span class="tooltiptext"> {fiat_value()} </span>
             </li>
         {/if}

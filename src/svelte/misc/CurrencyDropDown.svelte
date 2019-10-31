@@ -1,11 +1,15 @@
 <script>
 //Stores
-import { SettingsStore, currencies } from '../../js/stores/stores.js';
+import { SettingsStore, currencies, currencyCode } from '../../js/stores/stores.js';
 
 let selected;
 
 function saveCurrency(currency){
     SettingsStore.setCurrency(currency);
+}
+
+function isSelected(value){
+    return $currencyCode === value.code;
 }
 
 </script>
@@ -16,7 +20,7 @@ function saveCurrency(currency){
         <select bind:value={selected}
                 on:change={() => saveCurrency(selected)}>
             {#each $SettingsStore.currency.list as currency }
-                <option value={currency}>{`${currency.code} - ${currency.name}`}</option>
+                <option value={currency} selected={isSelected(currency)}>{`${currency.code} - ${currency.name}`}</option>
             {/each}
         </select>
     </div>

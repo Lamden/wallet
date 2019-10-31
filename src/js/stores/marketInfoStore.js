@@ -1,6 +1,6 @@
-import { writable, get } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import { API } from '../api.js';
-import { symbolList, currencyCode } from './stores.js';
+import { symbolList, currencyCode, CoinStore } from './stores.js';
 
 const createMarketInfoStore = (key, startValue) => {
     const MarketInfo = writable(startValue);
@@ -49,3 +49,25 @@ const createMarketInfoStore = (key, startValue) => {
 
 //Settings Stores
 export const MarketInfoStore = createMarketInfoStore('marketInfo', {});
+
+export const fiatWalletTotal = derived(
+    MarketInfoStore,
+    $MarketInfoStore => {
+        let fiatTotal = 0;
+        let coinstore = get(CoinStore)
+        let code = get(currencyCode)
+        coinstore.map(coin =>{
+            if (!coin.network_symbol.includes('TESTNET')){
+                if (coin.balance && coin.balance !== undefined){
+                    try{
+                        let coin_value = $MarketInfoStore[coin.symbol].quote[code].price;
+                        fiatTotal += (coin_value * coin.balance);
+                    } catch (e){
+                        null
+                    }
+                }
+            }
+        })
+        return fiatTotal;
+    }
+);

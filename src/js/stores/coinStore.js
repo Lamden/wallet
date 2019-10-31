@@ -1,6 +1,5 @@
 import { writable, get, derived } from 'svelte/store';
 import { API, makeBalancesPost } from '../api.js';
-import { currencyCode, MarketInfoStore } from './stores.js';
 
 const createCoinStore = (key, startValue) => {
     const CoinStore = writable(startValue);
@@ -84,28 +83,6 @@ export const CoinStore = createCoinStore('coins', []);
 export const numberOfCoins = derived(
     CoinStore,
     $CoinStore => $CoinStore.length
-);
-
-export const allTotals = derived(
-    CoinStore,
-    $CoinStore => {
-        let majorTotals = {'fiat_value':0, 'coins':$CoinStore.length};
-        let marketInfo = get(MarketInfoStore)
-        let code = get(currencyCode)
-        $CoinStore.map(coin =>{
-            if (!coin.network_symbol.includes('TESTNET')){
-                if (coin.balance && coin.balance !== undefined){
-                    try{
-                        let coin_value = marketInfo[coin.symbol].quote[code].price;
-                        majorTotals.fiat_value += (coin_value * coin.balance);
-                    } catch (e){
-                        null
-                    }
-                }
-            }
-        })
-        return majorTotals;
-    }
 );
 
 export const symbolList = derived(
