@@ -83,7 +83,7 @@
             required>
         <option value='temp'>choose...</option>
         {#each createCoinList(data) as coin}
-            <option value={coin} class="dropdownItem">{`(${coin.symbol}) ${coin.name}`}</option>
+            <option value={coin} class="dropdownItem">{`${coin.symbol} - ${coin.name}`}</option>
         {/each}
     </select>
 {:catch error}

@@ -95,3 +95,14 @@ export const allTotals = derived(
         return majorTotals;
     }
 );
+
+export const symbolList = derived(
+    CoinStore,
+    ($CoinStore) => {
+        let symbols = [];
+        $CoinStore.map(coin =>{
+            if (!coin.symbol.includes('TESTNET')) symbols.push(coin.symbol);
+        })
+        return Array.from(new Set(symbols));
+    }
+);

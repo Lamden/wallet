@@ -20,7 +20,7 @@
     let currentModal = '';
 
     $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
-    $: logo = logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
+    $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
     $: USD_value = coin.USD_value ? coin.USD_value : 0;

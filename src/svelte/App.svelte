@@ -6,7 +6,17 @@
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import { CoinStore, SwapStore, SettingsStore, HashStore, currentPage, themeStyle, loggedIn, firstRun, calcRemainingStorage} from '../js/stores/stores.js';
+	import {CoinStore,
+			symbolList,
+			SwapStore, 
+			SettingsStore, 
+			HashStore,
+			MarketInfoStore,
+			currentPage, 
+			themeStyle, 
+			loggedIn, 
+			firstRun, 
+			calcRemainingStorage} from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun }  from '../js/router.js'	
@@ -16,7 +26,9 @@
 		SwapStore.useLocalStorage();
 		SettingsStore.useLocalStorage();
 		HashStore.useLocalStorage();
-		//CoinStore.updateBalances($CoinStore);
+		MarketInfoStore.useLocalStorage();
+		MarketInfoStore.refresh_marketInfo($symbolList);
+		console.log($SettingsStore.currency.list)
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;
@@ -32,7 +44,7 @@
 	}
 
 	function showKeys(){
-		const key = pubFromPriv('lamden', 'TAU', ""
+		const key = pubFromPriv('lamden', 'TAU', "")
 		console.log(key)
 	}
 

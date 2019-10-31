@@ -33,7 +33,8 @@ const API = typedFunction( [ String, String, String, Object ],  (method, endpoin
 
 	if (data && method === 'GET') {
         parms = `?${new URLSearchParams(data).toString()}`;
-    } 
+    }
+    console.log(opts)
     console.log(`${API_URL}/${fullpath}${parms}`)
     return fetch(`${API_URL}/${fullpath}${parms}`, opts)
     .then(r => {

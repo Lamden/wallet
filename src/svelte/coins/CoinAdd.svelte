@@ -35,6 +35,7 @@
         let address = customToken.view ? customToken.contractAddress : selected.token_address;
         return API('GET', 'token-details', `${selected.network_symbol}/${address}`, {})
             .then(result => {
+                console.log(result)
                 error = "";
                 if (result.message){
                     if (customToken.view) node.setCustomValidity(result.message);
@@ -55,7 +56,10 @@
             customToken.view ? error = 'no network selected' : error = 'no coin selected';
         }else{
             if (formObj.checkValidity()){
-                if (selected.token && !customToken.view) {await getTokenDetails()};
+                if (selected.is_token && !customToken.view) {
+                    console.log('getting details')
+                    await getTokenDetails()
+                };
                 if (addType === 1) {
                     createAndSaveKeys();
                 } else {
@@ -71,7 +75,7 @@
 
     function validatePassword(){
         passwordField.setCustomValidity('');
-        if (!checkPassword(password, $HashStore.encode)) {
+        if ( !HashStore.validatePassword(password) ) {
             passwordField.setCustomValidity("Incorrect Password");
         }
     }
@@ -135,6 +139,7 @@
             }
             coinInfo.is_token = selected.is_token;
             if (coinInfo.is_token){
+                coinInfo.logo = selected.logo_url;
                 coinInfo.is_token = true;
                 coinInfo.symbol = selected.symbol;
                 coinInfo.name = selected.name;

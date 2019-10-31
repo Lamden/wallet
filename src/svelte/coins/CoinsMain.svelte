@@ -4,7 +4,7 @@
 	import { calcRemainingStorage, coinList, CoinStore, allTotals } from '../../js/stores/stores.js';
 
 	//Components
-	import { Coin, Modal, Modals }  from '../../js/router.js'
+	import { Coin, Modal, Modals, CurrencyDropDown }  from '../../js/router.js'
 
 	//Utils
 	import { API, myFunc } from '../../js/api.js';
@@ -42,6 +42,7 @@
 <style>
 </style>
 
+<CurrencyDropDown />
 <h1>{`You have ${$allTotals.coins} coins!`}</h1>
 
 <h2> {`Total USD Value: ${ toCurrencyFormat($allTotals.USD_value, 'USD') }`} </h2>

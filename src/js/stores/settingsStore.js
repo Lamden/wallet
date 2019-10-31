@@ -1,5 +1,20 @@
 import { writable, derived } from 'svelte/store';
-import { defaultSettings} from './defaults.js';
+import { currencyList } from './defaults.js';
+
+const defualtSettingsStore = {
+    'currentPage' : {'name': 'CoinsMain', 'data' : {}},
+    'firstRun': true,
+    'themeStyle':'dark',
+    'version':'v0_0_2',
+    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
+    'currency': {
+        'current': {
+            'name' : 'United States Dollar ($)' ,
+             'code' : 'USD'
+            },
+            'list': currencyList
+            }
+}
 
 const createSettingsStore = (key, startValue) => {
     const SettingsStore = writable(startValue);
@@ -26,11 +41,19 @@ const createSettingsStore = (key, startValue) => {
         reset: () => {
             set(startValue)
         },
+        setCurrency(currency){
+            console.log(currency)
+            update(settingsstore => {
+                settingsstore.currency.current = currency;
+                return settingsstore
+            })
+
+        }
     };
 }
 
 //Settings Stores
-export const SettingsStore = createSettingsStore('settings', defaultSettings);
+export const SettingsStore = createSettingsStore('settings', defualtSettingsStore);
 
 export const loggedIn = writable(true);
 
@@ -47,6 +70,16 @@ export const firstRun = derived(
 export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => $SettingsStore.themeStyle
+);
+
+export const currencies = derived(
+	SettingsStore,
+	$SettingsStore => {
+        console.log($SettingsStore.currency.list)
+        returnList = $SettingsStore.currency.list.filter(currency => currency !== $SettingsStore.currency.current )
+        console.log(returnList)
+        return returnList
+    }
 );
 
 export function calcRemainingStorage(){

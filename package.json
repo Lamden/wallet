@@ -4,7 +4,7 @@
   "description": "A crypto currency swap wallet by Lamden",
   "scripts": {
     "build": "node utils/build.js",
-    "start": "node utils/webserver.js",
+    "dev": "node utils/webserver.js",
     "unit-test": "./node_modules/.bin/cypress run --config integrationFolder=cypress/unit-tests"
   },
   "devDependencies": {

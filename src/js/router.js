@@ -29,6 +29,7 @@ import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Modal from '../svelte/misc/Modal.svelte';
 import SupportedCoinsDropDown from '../svelte/misc/SupportedCoinsDropDown.svelte';
 import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
+import CurrencyDropDown from '../svelte/misc/CurrencyDropDown.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
 
 const FirstRun = { FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
@@ -61,6 +62,7 @@ export {
     Modal,
     SupportedCoinsDropDown,
     MyCoinsDropDown,
+    CurrencyDropDown,
     Transaction,
 };
 
