@@ -2,7 +2,7 @@
     import { onMount, getContext, setContext} from 'svelte';
 
     //Stores
-    import { SettingsStore, MarketInfoStore } from '../../js/stores/stores.js';
+    import { SettingsStore, MarketInfoStore, currencyCode } from '../../js/stores/stores.js';
 
     //Utils
     import { toCurrencyFormat } from '../../js/utils.js';
@@ -20,8 +20,15 @@
     $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
-    $: USD_value = $MarketInfoStore[coin.symbol] ? $MarketInfoStore[coin.symbol].quote.USD.price : 0;
+    $: fiat_value = () => {
+        try{
+            return $MarketInfoStore[coin.symbol] ? $MarketInfoStore[coin.symbol].quote[$currencyCode].price : 0;
+        } catch (e){
+            return 0;
+        }
+    }
     $: testnet = coin.network_symbol.includes('TESTNET') ? true : false;
+
 
 </script>
 
@@ -45,7 +52,7 @@
     <ul>
         <li>{`balance ${ balance } ${ symbol }`}</li>
         {#if !testnet}
-            <li>{`USD Value (${ toCurrencyFormat( USD_value, 'USD' ) })`}</li>
+            <li>{`USD Value (${ toCurrencyFormat( fiat_value(), $SettingsStore.currency.current.code ) })`}</li>
         {/if}
         {#if watching}
             <li>Watching Coin</li>

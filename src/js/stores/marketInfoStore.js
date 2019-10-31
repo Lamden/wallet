@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store';
 import { API } from '../api.js';
-import { symbolList } from './stores.js';
+import { symbolList, currencyCode } from './stores.js';
 
 const createMarketInfoStore = (key, startValue) => {
     const MarketInfo = writable(startValue);
@@ -37,7 +37,7 @@ const createMarketInfoStore = (key, startValue) => {
             console.log('!! REFRESHING MARKET INFO !!')
             let symbols = get(symbolList)
             if ( symbols.length > 0 ){
-                return API('POST', 'get-prices', "", {"symbol_list": symbols })
+                return API('POST', 'get-prices', "", {"symbol_list": symbols, "currency_symbol" : get(currencyCode) })
                 .then(info => {
                     console.log(info)
                     set (info.value.data);

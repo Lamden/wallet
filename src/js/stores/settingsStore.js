@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import { currencyList } from './defaults.js';
+import { MarketInfoStore } from './stores.js';
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'CoinsMain', 'data' : {}},
@@ -47,7 +48,7 @@ const createSettingsStore = (key, startValue) => {
                 settingsstore.currency.current = currency;
                 return settingsstore
             })
-
+            MarketInfoStore.refresh_marketInfo();
         }
     };
 }
@@ -80,6 +81,11 @@ export const currencies = derived(
         console.log(returnList)
         return returnList
     }
+);
+
+export const currencyCode = derived(
+	SettingsStore,
+	$SettingsStore => $SettingsStore.currency.current.code
 );
 
 export function calcRemainingStorage(){
