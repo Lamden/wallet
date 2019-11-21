@@ -8,10 +8,8 @@
 	//Stores
 	import {CoinStore,
 			symbolList,
-			SwapStore, 
 			SettingsStore, 
 			HashStore,
-			MarketInfoStore,
 			currentPage, 
 			themeStyle, 
 			loggedIn, 
@@ -23,11 +21,8 @@
 
 	onMount(() => {
 		CoinStore.useLocalStorage();
-		SwapStore.useLocalStorage();
 		SettingsStore.useLocalStorage();
 		HashStore.useLocalStorage();
-		MarketInfoStore.useLocalStorage();
-		//MarketInfoStore.refresh_marketInfo($symbolList);
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;
@@ -75,7 +70,6 @@
 			<nav>
 				<div class="soflexy">
 					<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
-					<button on:click={ () => switchPage('SwapsMain') }> SwapsMain </button>
 					<button on:click={ () => switchPage('BackupMain') }> Backup </button>
 					<button on:click={ () => switchPage('RestoreMain') }> Restore </button>
 					<button on:click={ () => logout() }> Log Out </button>
@@ -83,7 +77,6 @@
 				<div class='controls soflexy'>
 					<button on:click={ () => toggleTheme() }> Toggle Theme </button>
 					<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
-					<button on:click={() =>  CoinStore.deleteAllSwaps() }> Delete All Swaps </button>
 					<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
 					<button on:click={() => showKeys() }> Lamden Keys </button>
 				</div>

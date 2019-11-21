@@ -5,14 +5,13 @@
     import { HashStore, CoinStore } from '../../js/stores/stores.js';
     
     //Utils
-	import { API, waitUntilTransactionExists } from '../../js/api.js';
     import { checkPassword, copyToClipboard, decryptStrHash } from '../../js/utils.js';
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
     //Props
     export let coin;
 
-    $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
+    $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
 
     //DOM NODES
@@ -33,10 +32,10 @@
         error = e;
     }
 
-    async function handleSubmit1(){
+    function handleSubmit1(){
         error = '';
         if (formObj1.checkValidity()){
-            await createTransaction();
+            createTransaction();
         }
     }
 
@@ -58,27 +57,12 @@
 
     function createTransaction() {
         status = "Getting Transaction Details";
-        let path = `${coin.network_symbol}/${coin.vk}/${reciever_address}`
-        if (coin.is_token) path = `${path}/${coin.token_address}`
-		const data = {value}
-        return API('POST', 'p2p-transaction', path, data)
-            .then(result => {
-                if ( result.hasOwnProperty('message') ) {
-                    info_valid = false; 
-                    displayError(result.message); 
-                    return; 
-                }
-                txData.txInfo = result;
-                status = "Received Transaction Details!";
-                info_valid = true;
-            })
-            .catch(e => displayError(e))
     }
 
     function createSignedTx(){
         status = "Signing Transaction";
         try{
-            txData.txInfo.signed_transaction = signTx(txData.txInfo.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, coin.network_symbol);
+            txData.txInfo.signed_transaction = signTx(txData.txInfo.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, coin.symbol);
             status = "Transaction Signed!";
             return true;
         }catch (e) {
@@ -89,30 +73,11 @@
 
     function sendTx(){
         status = "Publishing Transaction"
-        const data = {'raw_transaction': txData.txInfo.signed_transaction}
-        return API('POST', 'publish-transaction', coin.network_symbol, data)
-                .then(result => {
-                    if (!result || result.hasOwnProperty('message')) { displayError(e); return; }
-                    txData.txResult = result
-                    status = "Transaction Published!"  
-                })
-                .catch(e => displayError(e))
     }
 
     function checkPublish() {
-        let transaction = txData.txResult.transaction_address || txData.txResult.transaction;
+        let transaction = txData.txResult.transaction;
         status = `Checking for Transaction on the Blockchain`;
-        return waitUntilTransactionExists(coin.network_symbol, transaction)
-            .then(result => {
-                if (!result || result.hasOwnProperty('message')) {
-                    displayError(e);
-                    status = "Could not find transaction in block";
-                    return false;
-                }
-                status = "Transaction Exists!"; 
-                return true;
-            })
-            .catch(e => displayError(e));
     }
 
     function finishTransaction(){
@@ -182,26 +147,6 @@
 
 {#if info_valid}
     <form on:submit|preventDefault={() => handleSubmit2() } bind:this={formObj2} target="_self">
-        {#if coin.network === 'ethereum'}
-            <div>
-                <lable>from</lable>
-                <input readonly value={txData.txInfo['sender_address']} />
-                <lable>to</lable>
-                <input readonly value={txData.txInfo['recipient_address']} />
-                <lable>amount</lable>
-                <input readonly value={txData.txInfo['value_text']} />
-                {#if coin.network === 'ethereum'}
-                    <lable>gas price</lable>
-                    <input readonly value={txData.txInfo['gasprice']} />
-                    <lable>gas limit</lable>
-                    <input readonly value={txData.txInfo['gas_limit']} />
-                    <lable>nonce</lable>
-                    <input readonly value={txData.txInfo['nonce']} />
-                {/if}
-                <lable>raw transaction</lable>
-                <textarea readonly row='5' value={txData.txInfo['unsigned_raw_tx']} />
-            </div>
-        {/if}
         <div>
             <label>Wallet Password</label>
             <input bind:value={password}

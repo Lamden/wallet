@@ -26,13 +26,9 @@
     }
 
     function coinList(){
-        
         if (set !== undefined) {
-            console.log(set)
             return [ $CoinStore.find(f => {
-                console.log(f)
-                console.log(f.network_symbol === set.network_symbol && f.symbol === set.symbol && f.vk === set.vk)
-                return (f.network_symbol === set.network_symbol && f.symbol === set.symbol && f.vk === set.vk)
+                return (f.network === set.network && f.symbol === set.symbol && f.vk === set.vk)
             }) ];
         }
         if (filter.length > 0){

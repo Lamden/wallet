@@ -2,7 +2,6 @@
 import {encryptStrHash, decryptStrHash,
         encryptObject, decryptObject,
         decryptFile,
-        toCurrencyFormat,
         stripCoinRef,
         vailidateString} from '../../../src/js/utils'
     
@@ -114,34 +113,4 @@ describe('Utils Testing Svelte Store Functions', function () {
             })
         })
     })
-
-    context('toCurrencyFormat: Formats a currency value', function () {
-        it('return a USD valued string', function () {
-            cy.fixture('unit-tests/utils.json').then(( f_wallets) => {
-                const fresult = f_wallets.toCurrencyFormat.result 
-                expect( toCurrencyFormat(100, 'USD') ).to.eq( fresult.USD )
-            })
-        })
-
-        it('return a CAD valued string', function () {
-            cy.fixture('unit-tests/utils.json').then(( f_wallets) => {
-                const fresult = f_wallets.toCurrencyFormat.result 
-                expect( toCurrencyFormat(100, 'CAD') ).to.eq( fresult.CAD )
-            })
-        })
-
-        it('return a EUR formatted string', function () {
-            cy.fixture('unit-tests/utils.json').then(( f_wallets) => {
-                const fresult = f_wallets.toCurrencyFormat.result 
-                expect( toCurrencyFormat(100, 'EUR') ).to.eq( fresult.EUR )
-            })
-        })
-
-        it('return a JPY formatted string', function () {
-            cy.fixture('unit-tests/utils.json').then(( f_wallets) => {
-                const fresult = f_wallets.toCurrencyFormat.result 
-                expect( toCurrencyFormat(100, 'JPY') ).to.eq( fresult.JPY )
-            })
-        })
-    }) 
 })

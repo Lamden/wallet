@@ -1,1 +1,1 @@
-# Lamden Vault New Wallet
+# Lamden New Wallet

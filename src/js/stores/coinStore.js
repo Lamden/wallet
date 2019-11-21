@@ -1,5 +1,4 @@
 import { writable, get, derived } from 'svelte/store';
-import { API, makeBalancesPost } from '../api.js';
 
 const createCoinStore = (key, startValue) => {
     const CoinStore = writable(startValue);
@@ -49,25 +48,6 @@ const createCoinStore = (key, startValue) => {
         },
         updateBalances: (storeValue) => {
             console.log('!! REFRESHING BALANCES !!')
-            const postObj = makeBalancesPost(storeValue);
-
-            if (postObj){
-                return API('POST', 'get-balances', "", postObj)
-                .then(balances => {
-                    console.log(balances)
-                    update (coinstore => {
-                        balances.value.map(b => {
-                            let coin = coinstore.find(f =>  f.network_symbol === b.network_symbol &&
-                                                            f.symbol === b.symbol &&  
-                                                            f.vk === b.wallet_address)
-                            if(coin) coin.balance = b.balance;
-                        })
-                        console.log('!! BALANCES REFRESHED !!')
-                        return coinstore;
-                    });
-                })
-                .catch(e => console.log(e))
-            }
         },
         updateCoinTransaction: (coinToUpdate, tx_info) => {
             update(coinstore => {

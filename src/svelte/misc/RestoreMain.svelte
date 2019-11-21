@@ -76,6 +76,7 @@
     function handleKeyStoreSubmit(form){
         if (form.checkValidity()){
             keyStore = decryptObject(keyStorePassword, fileContent.data);
+            console.log(keyStore);
         }
     }
 
@@ -190,7 +191,8 @@
                     {`${key.name}(${key.symbol})  ${key.vk.substring(1, 10)}... `}
                 </div>
             {/each}
-            {#if !checkPassword(keyStorePassword, $HashStore.encode)}
+
+            {#if !HashStore.validatePassword(keyStorePassword)}
                 <label>Wallet Password</label><br>
                 <input bind:value={password}
                        bind:this={passwordField}

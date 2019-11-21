@@ -21,11 +21,9 @@
 
     $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
     $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
-    $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
+    $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
-    $: USD_value = coin.USD_value ? coin.USD_value : 0;
-
-
+ 
     function showModal(modal){
         currentModal = modal;
         openModal = true;
@@ -57,7 +55,6 @@
 <div>
     <h2>{coin.name}</h2>
     <div> {`balance ${ balance } ${ symbol }`}</div>
-    <!-- <div> {`(${coin.USD_value})`} </div> -->
 </div>
 {#if coin.sk !== 'watchOnly'}
     <button on:click={ () => showModal('CoinSend') }> Send </button>

@@ -77,21 +77,11 @@ const decryptObject = typedFunction( [ String, String ],  ( password, objString 
 });
 
 /*
-    Creates a Currency String loacl to the user 
-    Return: Currency String (str)
-*/
-const toCurrencyFormat = typedFunction( [ Number, String ],  ( value, currency )=>{
-    currency = vailidateString(currency, 'currency', false)
-    return value.toLocaleString(undefined, {style: 'currency', currency,});
-});
-
-/*
     Creates a copy of a Coin Object that strips all references.
     Return: Coin Object (ojb)
 */
 const stripCoinRef = typedFunction( [ Object ],  (coin )=>{
     let newCoin = JSON.parse(JSON.stringify(coin));
-    if (newCoin.swapList) delete newCoin.swapList;
     if (newCoin.txList) delete newCoin.txList;
     if (newCoin.balance) delete newCoin.balance;
     return newCoin;
@@ -113,7 +103,6 @@ module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject,
-    toCurrencyFormat,
     stripCoinRef,
     vailidateString
   }

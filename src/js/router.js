@@ -14,29 +14,17 @@ import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 
-//Swaps
-import SwapsMain from '../svelte/swaps/SwapsMain.svelte';
-import SwapsInitial from '../svelte/swaps/SwapsInitial.svelte';
-import SwapsInitialRedeem from '../svelte/swaps/SwapsInitialRedeem.svelte';
-import SwapsParticipate from '../svelte/swaps/SwapsParticipate.svelte';
-import SwapsParticipateRedeem from '../svelte/swaps/SwapsParticipateRedeem.svelte';
-import SwapsRefund from '../svelte/swaps/SwapsRefund.svelte';
-
 //Misc
 import BackupMain from '../svelte/misc/BackupMain.svelte';
 import RestoreMain from '../svelte/misc/RestoreMain.svelte';
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Modal from '../svelte/misc/Modal.svelte';
-import SupportedCoinsDropDown from '../svelte/misc/SupportedCoinsDropDown.svelte';
 import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
-import CurrencyDropDown from '../svelte/misc/CurrencyDropDown.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
 
 const FirstRun = { FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const SwapPages = { SwapsMain, SwapsInitial, SwapsParticipate, SwapsParticipateRedeem, SwapsInitialRedeem, SwapsRefund }
-
-const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...FirstRun, ...SwapPages };
+const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...FirstRun };
 
 const Modals = { CoinSend, CoinRecieve, CoinAdd };
 
@@ -52,17 +40,9 @@ export {
     CoinAdd,
     BackupMain,
     RestoreMain,
-    SwapsMain,
-    SwapsInitial,
-    SwapsInitialRedeem,
-    SwapsParticipate,
-    SwapsParticipateRedeem,
-    SwapsRefund,
     LockScreen,
     Modal,
-    SupportedCoinsDropDown,
     MyCoinsDropDown,
-    CurrencyDropDown,
     Transaction,
 };
 

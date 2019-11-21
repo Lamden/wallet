@@ -6,7 +6,7 @@
     let password;
 
     function handleSubmit(){
-        null;
+        null
     }
 
 </script>

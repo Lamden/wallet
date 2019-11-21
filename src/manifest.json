@@ -1,6 +1,6 @@
 {
   "name": "Lamden Vault Chrome Extension",
-  "description": "A wallet made by Lamden",
+  "description": "A wallet made by Lamden.io",
   "options_page": "options.html",
   "background": {
     "page": "background.html"

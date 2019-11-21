@@ -1,6 +1,4 @@
 import { writable, derived } from 'svelte/store';
-import { currencyList } from './defaults.js';
-import { MarketInfoStore } from './stores.js';
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'CoinsMain', 'data' : {}},
@@ -8,13 +6,6 @@ const defualtSettingsStore = {
     'themeStyle':'dark',
     'version':'v0_0_2',
     'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
-    'currency': {
-        'current': {
-            'name' : 'United States Dollar ($)' ,
-             'code' : 'USD'
-            },
-            'list': currencyList
-            }
 }
 
 const createSettingsStore = (key, startValue) => {
@@ -41,13 +32,6 @@ const createSettingsStore = (key, startValue) => {
         },
         reset: () => {
             set(startValue)
-        },
-        setCurrency(currency){
-            update(settingsstore => {
-                settingsstore.currency.current = currency;
-                return settingsstore
-            })
-            MarketInfoStore.refresh_marketInfo();
         }
     };
 }
@@ -70,19 +54,6 @@ export const firstRun = derived(
 export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => $SettingsStore.themeStyle
-);
-
-export const currencies = derived(
-	SettingsStore,
-	$SettingsStore => {
-        returnList = $SettingsStore.currency.list.filter(currency => currency !== $SettingsStore.currency.current )
-        return returnList
-    }
-);
-
-export const currencyCode = derived(
-	SettingsStore,
-	$SettingsStore => $SettingsStore.currency.current.code
 );
 
 export function calcRemainingStorage(){

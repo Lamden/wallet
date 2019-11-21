@@ -1,11 +1,15 @@
 <script>
     import { loggedIn, HashStore } from '../../js/stores/stores.js';
     import { checkPassword } from '../../js/utils.js';
+    
+    //DOM nodes
+    let formObj;
 
     let password;
 
-    function handleSubmit(form){
-        if (form.checkValidity()){
+
+    function handleSubmit(){
+        if (formObj.checkValidity()){
             loggedIn.set(true);
         } else {
             alert('no')
@@ -23,7 +27,7 @@
 </script>
 
 <div>
-    <form on:submit|preventDefault={() => handleSubmit(this) } target="_self">
+    <form on:submit|preventDefault={() => handleSubmit(formObj) } target="_self" bind:this={formObj}>
         {#if $HashStore.encode}
             <label>Unlock Wallet</label><br>
             <input bind:value={password}
