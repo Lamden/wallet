@@ -1,7 +1,17 @@
 <script>
-    import { menuIcons } from '../../js/images.js';
+    import { getContext  } from 'svelte';
 
-    export let name;
+    //Stores
+    import { currentPage } from '../../js/stores/stores.js';
+    
+    //Misc
+    import { icons } from '../../js/images.js';
+
+    //Context
+    const { switchPage } = getContext('switchPage');
+
+    export let crumb;
+    export let index;
     export let last;
 </script>
 
@@ -18,7 +28,12 @@
     width: 100%;
 }
 
-.arrow {
+.words:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.chevron {
     width: 12px;
     min-height: 17px;
     margin-left: 18px;
@@ -30,8 +45,8 @@
 </style>
 
 <div class="box" class:last={last}>
-    {#if last}
-        <img class="arrow" src={menuIcons.arrowRight} alt="right arrow" />
+    {#if index !== 0}
+        <img class="chevron" src={icons.chevronRight} alt="right chevron" />
     {/if}
-    <h2 class="words"> {name} </h2>
+    <span class="words text-body1" on:click={() => switchPage(crumb.page)}> {crumb.name} </span>
 </div>

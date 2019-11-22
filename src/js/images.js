@@ -7,10 +7,17 @@ import history from '../img/menu_icons/icon_history.svg';
 import holdings from '../img/menu_icons/icon_holdings.svg';
 import restore from '../img/menu_icons/icon_restore.svg';
 import signout from '../img/menu_icons/icon_signout.svg';
+import chevronDown from '../img/menu_icons/icon_chevron-down.svg';
+import chevronRight from '../img/menu_icons/icon_chevron-right.svg';
+import arrowUp from '../img/menu_icons/icon_arrow-up.svg';
 import arrowDown from '../img/menu_icons/icon_arrow-down.svg';
-import arrowRight from '../img/menu_icons/icon_arrow-right.svg';
+import plus from '../img/menu_icons/icon_plus.svg';
 
-export const menuIcons = {
+//Logos
+import lamden_logo from '../img/nav/lamden_logo_new.svg';
+import lamden_words from '../img/nav/lamden_words.svg';
+
+export const icons = {
     about,
     backup,
     devtools,
@@ -19,16 +26,10 @@ export const menuIcons = {
     holdings,
     restore,
     signout,
-    arrowDown, arrowRight
-}
-
-//Logos
-import lamden_logo from '../img/nav/lamden_logo_new.svg';
-import lamden_words from '../img/nav/lamden_words.svg';
-
-export const navIcons = {
-    lamden_logo,
-    lamden_words
+    chevronDown, chevronRight,
+    arrowUp, arrowDown,
+    lamden_logo, lamden_words,
+    plus
 }
 
 //Backgrounds

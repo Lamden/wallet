@@ -13,10 +13,14 @@ import FirstRunTOS from '../svelte/firstRun/FirstRunTOS.svelte';
 //Coins
 import CoinsMain from '../svelte/coins/CoinsMain.svelte';
 import Coin from '../svelte/coins/Coin.svelte';
+import CoinDivider from '../svelte/coins/CoinDivider.svelte';
 import CoinDetails from '../svelte/coins/CoinDetails.svelte';
 import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
+
+//Components
+import Button from '../svelte/components/Button.svelte';
 
 //Misc
 import BackupMain from '../svelte/misc/BackupMain.svelte';
@@ -30,6 +34,8 @@ const FirstRun = { FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestor
 
 const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...FirstRun };
 
+const Components = { Button };
+
 const Modals = { CoinSend, CoinRecieve, CoinAdd };
 
 export {
@@ -38,8 +44,10 @@ export {
     FirstRun,
     Pages,
     Modals,
+    Components,
     CoinsMain,
     Coin,
+    CoinDivider,
     CoinDetails,
     CoinRecieve,
     CoinSend,

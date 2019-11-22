@@ -1,6 +1,6 @@
 <script>
     import { getContext  } from 'svelte';
-    import { menuIcons } from '../../js/images.js';
+    import { icons } from '../../js/images.js';
 
     //Stores
 	import { currentPage } from '../../js/stores/stores.js';
@@ -35,7 +35,7 @@
     align-content: center;
 }
 
-.header-arrow{
+.header-chevron{
     width: 12px;
     margin: 0 9px 0 10px;
 }
@@ -70,7 +70,7 @@
 
 <div class="box">
     <div class="header">
-        <img class="header-arrow" src={menuIcons.arrowDown} alt="menu arrow" />
+        <img class="header-chevron" src={icons.chevronDown} alt="menu chevron" />
         <h3 > {heading} </h3>
     </div>
     

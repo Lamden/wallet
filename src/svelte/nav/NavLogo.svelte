@@ -1,5 +1,5 @@
 <script>
-    import { navIcons } from '../../js/images.js';
+    import { icons } from '../../js/images.js';
     
 
 </script>
@@ -26,6 +26,6 @@
 </style>
 
 <div class="box">
-        <img class="logo" src={navIcons.lamden_logo} alt="lamden logo">
-        <img class="words" src={navIcons.lamden_words} alt="lamden words">
+        <img class="logo" src={icons.lamden_logo} alt="lamden logo">
+        <img class="words" src={icons.lamden_words} alt="lamden words">
 </div>

@@ -2,8 +2,6 @@
     //Stores
     import { breadcrumbs } from '../../js/stores/stores.js';
 
-    console.log($breadcrumbs)
-
     //Components
     import NavLogo from './NavLogo.svelte';
     import NavBreadcrumb from './NavBreadcrumb.svelte';
@@ -35,7 +33,7 @@
     <NavLogo />
     <div class="breadcrumbs">
         {#each $breadcrumbs as crumb, index}
-            <NavBreadcrumb name={crumb} last={($breadcrumbs.length -1) === index && index !== 0}/>
+            <NavBreadcrumb crumb={crumb} {index} last={($breadcrumbs.length -1) === index}/>
         {/each}
     </div>
     <NavControls />

@@ -14,8 +14,7 @@
 			themeStyle, 
 			loggedIn, 
 			firstRun, 
-			calcRemainingStorage,
-			breadcrumbs} from '../js/stores/stores.js';
+			calcRemainingStorage} from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'	
@@ -23,7 +22,6 @@
 	onMount(() => {
 		CoinStore.useLocalStorage();
 		SettingsStore.useLocalStorage();
-		$breadcrumbs = [$currentPage.name, 'Testing'];
 		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
@@ -37,7 +35,6 @@
 	function switchPage(name, data) {
 		data = data || {};
 		$SettingsStore.currentPage = {name, data};
-		$breadcrumbs = [name];
 	}
 
 	function showKeys(){

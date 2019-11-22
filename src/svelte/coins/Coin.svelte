@@ -22,26 +22,52 @@
 </script>
 
 <style>
-.container{
-    display: grid;
-    grid-auto-flow: column;
+.coin-box{
+    display: flex;
+    flex-direction: row;
+    height: 63px;
+    padding: 12px 0;
 }
 
 .logo {
-    width: 64px;
-    height: 64px;
+    width: 32px;
+    margin: 0 36px 0 16px;
 }
+
+.text{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.name{
+	width: 234px;
+}
+
+.amount{
+	flex-grow: 1;
+}
+
+.percent{
+    justify-content: flex-end;
+    margin-right: 28px;  
+	width: 203px;
+}
+
 </style>
 
-<div class="container">
-    <img class="logo" src={logo} alt={`${coin.name} logo`} />
-    <h2 on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
-        {#if watching }👀{/if}{` ${coin.name} - ${coin.nickname}`} 
-    </h2>
-    <ul>
-        <li>{`balance ${ balance } ${ symbol }`}</li>
+<div class="coin-box">
+    <div class="name text text-body1">
+        <img class="logo" src={logo} alt={`${coin.name} logo`} />
+        <span class="text-body1" on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
+            {#if watching }{`👀 `}{/if}{`${coin.name}`} 
+        </span>
+    </div>
+    <div class="amount text text-body1">
+        {`${ balance } ${ symbol }`}
         {#if watching}
             <li>Watching Coin</li>
         {/if}
-    </ul>
+    </div>
+    <div class="percent text text-body1"> TBD %</div>
 </div>

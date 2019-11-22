@@ -34,6 +34,12 @@ body{
     display: flex; 
 }
 
+.text-body1{
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+}
+
 ul {
     list-style-type: none;
 }
