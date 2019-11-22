@@ -35,7 +35,7 @@
     <NavLogo />
     <div class="breadcrumbs">
         {#each $breadcrumbs as crumb, index}
-            <NavBreadcrumb name={crumb} last={($breadcrumbs.length -1) === index}/>
+            <NavBreadcrumb name={crumb} last={($breadcrumbs.length -1) === index && index !== 0}/>
         {/each}
     </div>
     <NavControls />

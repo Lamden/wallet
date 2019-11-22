@@ -1,5 +1,5 @@
 <script>
-    import { navIcons } from '../../js/icons.js';
+    import { navIcons } from '../../js/images.js';
     
 
 </script>
@@ -15,7 +15,7 @@
 }
 
 .logo {
-    width: 22.63px;
+    width: 32px;
     margin-right:  15.5px;
     margin-left:    51px;
 }

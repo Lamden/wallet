@@ -1,5 +1,5 @@
 <script>
-    import { menuIcons } from '../../js/icons.js';
+    import { menuIcons } from '../../js/images.js';
 
     export let name;
     export let last;

@@ -1,3 +1,4 @@
+//Icons
 import about from '../img/menu_icons/icon_about.svg';
 import backup from '../img/menu_icons/icon_backup.svg';
 import devtools from '../img/menu_icons/icon_devtools.svg';
@@ -8,9 +9,6 @@ import restore from '../img/menu_icons/icon_restore.svg';
 import signout from '../img/menu_icons/icon_signout.svg';
 import arrowDown from '../img/menu_icons/icon_arrow-down.svg';
 import arrowRight from '../img/menu_icons/icon_arrow-right.svg';
-
-import lamden_logo from '../img/nav/lamden_logo_new.svg';
-import lamden_words from '../img/nav/lamden_words.svg';
 
 export const menuIcons = {
     about,
@@ -24,7 +22,18 @@ export const menuIcons = {
     arrowDown, arrowRight
 }
 
+//Logos
+import lamden_logo from '../img/nav/lamden_logo_new.svg';
+import lamden_words from '../img/nav/lamden_words.svg';
+
 export const navIcons = {
     lamden_logo,
     lamden_words
+}
+
+//Backgrounds
+import sqares_bg from '../img/backgrounds/sqares_bg.svg';
+
+export const backgrounds = {
+    sqares_bg
 }

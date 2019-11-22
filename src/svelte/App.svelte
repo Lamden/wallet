@@ -23,7 +23,7 @@
 	onMount(() => {
 		CoinStore.useLocalStorage();
 		SettingsStore.useLocalStorage();
-		$breadcrumbs = [$currentPage.name, "CoinDetails"];
+		$breadcrumbs = [$currentPage.name, 'Testing'];
 		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
@@ -35,11 +35,9 @@
 	});
 
 	function switchPage(name, data) {
-		console.log($currentPage)
-		console.log(name)
 		data = data || {};
 		$SettingsStore.currentPage = {name, data};
-		console.log($currentPage)
+		$breadcrumbs = [name];
 	}
 
 	function showKeys(){
@@ -120,19 +118,22 @@
 	.container {
 		display:flex;
 		padding-top: 97px;
+		flex-grow: 1;
 	}
 
 	.main-layout{
 		display: flex;
 		flex-direction: row;
 		justify-content: left;
+		flex-grow: 1;
 	}
 
 	.menu-pane{
-		min-width: 346px;
+		min-width: 280px;
 	}
 
 	.content-pane{
-		width: 100%;
+		padding: 21px 61px 0;
+		flex-grow: 1;
 	}
 </style>

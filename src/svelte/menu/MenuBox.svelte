@@ -1,6 +1,6 @@
 <script>
     import { getContext  } from 'svelte';
-    import { menuIcons } from '../../js/icons.js';
+    import { menuIcons } from '../../js/images.js';
 
     //Stores
 	import { currentPage } from '../../js/stores/stores.js';

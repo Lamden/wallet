@@ -8,6 +8,7 @@
 
 	//Components
 	import { Coin, Modal, Modals }  from '../../js/router.js'
+	import { backgrounds } from '../../js/images.js';
 
 	//Utils
 	import { updateBalances } from '../../js/utils.js';
@@ -36,9 +37,23 @@
 </script>
 
 <style>
+.coinsmain{
+	display: flex;
+	flex-direction: column;
+}
+
+.hero-rec{
+	background-image: url('./sqares_bg.svg');
+	height: 430px;
+	border-radius: 4px;
+}
 </style>
 
-<h1>{`You have ${$numberOfCoins} coins!`}</h1>
+<div class="coinsmain">
+	<div class="hero-rec">
+	</div>
+</div>
+
 
 <button on:click={ () => showModal('CoinAdd') }> Add Coin </button>
 

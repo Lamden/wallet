@@ -1,7 +1,7 @@
 <script>
     import MenuBox from './MenuBox.svelte'
 
-    import { menuIcons } from '../../js/icons.js';
+    import { menuIcons } from '../../js/images.js';
 
     let menus = [
         {
@@ -35,7 +35,7 @@
 .menus{
     display:flex;
     flex-direction: column;
-    padding: 21px 66px 0px 40px;
+    padding: 21px 0px 0px 40px;
 }
 </style>
 
