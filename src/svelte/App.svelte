@@ -111,6 +111,21 @@
 		line-height: 10px;
 	}
 
+	:global(h5){
+		font-style: normal;
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 28px;
+		letter-spacing: 0.15px;
+	}
+
+	:global(h6){
+		margin: 0;
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 28px;
+	}
+
 	:global(body){
 		color: var(--font-color);
 		background-color: var(--bg-color);

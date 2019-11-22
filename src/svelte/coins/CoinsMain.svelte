@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+
 	//Stores
 	import {calcRemainingStorage, 
 			coinList, 
@@ -11,6 +12,7 @@
 	import { Coin, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
 	const { Button } = Components;
 	import { backgrounds } from '../../js/images.js';
+	const { squares_bg } = backgrounds;
 
 	//Utils
 	import { updateBalances } from '../../js/utils.js';
@@ -49,7 +51,6 @@
 	box-sizing: border-box;
 	display: flex;
 	align-items: flex-end;
-	background-image: url('./sqares_bg.svg');
 	height: 430px;
 	border-radius: 4px;
 	margin-bottom: 18px;
@@ -93,7 +94,7 @@
 </style>
 
 <div class="coinsmain">
-	<div class="hero-rec">
+	<div class="hero-rec" style="background-image: url({squares_bg});">
 		<Button name="Add Coin" click={() => showModal('CoinAdd')} icon='plus'/>
 	</div>
 	<div class="header header-text divider">

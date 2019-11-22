@@ -19,6 +19,10 @@ import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 
+//DevTools
+import DevToolsMain from '../svelte/devtools/DevToolsMain.svelte';
+import DevToolsDocumentation from '../svelte/devtools/DevToolsDocumentation.svelte';
+ 
 //Components
 import Button from '../svelte/components/Button.svelte';
 import Switch from '../svelte/components/Switch.svelte';
@@ -33,7 +37,7 @@ import Transaction from '../svelte/misc/Transaction.svelte';
 
 const FirstRun = { FirstRunIntro, FirstRunWallet, FirstRunCreate, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...FirstRun };
+const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, DevToolsMain, ...FirstRun };
 
 const Components = { Button, Switch };
 
@@ -53,6 +57,8 @@ export {
     CoinRecieve,
     CoinSend,
     CoinAdd,
+    DevToolsMain,
+    DevToolsDocumentation,
     BackupMain,
     RestoreMain,
     LockScreen,

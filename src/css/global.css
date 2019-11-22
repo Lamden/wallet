@@ -35,9 +35,20 @@ body{
 }
 
 .text-body1{
+    color: var(--font-color);
     font-weight: normal;
     font-size: 16px;
     line-height: 24px;
+}
+
+.text-body2{
+    color: var(--font-color);
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+    color: #e0e0e08a;
 }
 
 ul {

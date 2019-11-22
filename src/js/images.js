@@ -12,6 +12,7 @@ import chevronRight from '../img/menu_icons/icon_chevron-right.svg';
 import arrowUp from '../img/menu_icons/icon_arrow-up.svg';
 import arrowDown from '../img/menu_icons/icon_arrow-down.svg';
 import plus from '../img/menu_icons/icon_plus.svg';
+import doco from '../img/menu_icons/icon_doco.svg';
 
 //Logos
 import lamden_logo from '../img/nav/lamden_logo_new.svg';
@@ -29,12 +30,15 @@ export const icons = {
     chevronDown, chevronRight,
     arrowUp, arrowDown,
     lamden_logo, lamden_words,
-    plus
+    plus,
+    doco
 }
 
 //Backgrounds
-import sqares_bg from '../img/backgrounds/sqares_bg.svg';
+import squares_bg from '../img/backgrounds/squares_bg.svg';
+import github_bg from '../img/backgrounds/github_bg.svg';
 
 export const backgrounds = {
-    sqares_bg
+    squares_bg,
+    github_bg
 }

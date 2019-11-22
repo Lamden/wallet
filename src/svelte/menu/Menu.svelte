@@ -9,7 +9,7 @@
             items:[
                 {logo: icons.holdings, name: 'Holdings', page: 'CoinsMain'},
                 {logo: icons.history, name: 'History', page: 'Transaction'},
-                {logo: icons.devtools, name: 'Developer Tools', page: 'DevTools'},
+                {logo: icons.devtools, name: 'Developer Tools', page: 'DevToolsMain'},
             ]
         },
         {

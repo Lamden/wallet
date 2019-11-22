@@ -25,6 +25,10 @@ button{
     line-height: 16px;
 }
 
+button:hover{
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
 .label{
     text-align: center;
     width: 100%;
