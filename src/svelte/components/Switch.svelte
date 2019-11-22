@@ -5,8 +5,7 @@
     export let checked;
 
     function dispatchState() {
-        console.log('dispatching ' + checked)
-		dispatch('toggleState', checked);
+		  dispatch('toggleState', checked);
 	}
 </script>
 

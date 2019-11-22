@@ -2,7 +2,7 @@
     import { onMount, getContext, setContext} from 'svelte';
 
     //Stores
-    import { SettingsStore } from '../../js/stores/stores.js';
+    import { SettingsStore, themeStyle } from '../../js/stores/stores.js';
 
     //Utils
     import { logos } from '../../js/crypto/logos.js';
@@ -54,11 +54,14 @@
 	width: 203px;
 }
 
+.svg-black{
+    filter: invert(1);
+}
 </style>
 
 <div class="coin-box">
     <div class="name text text-body1">
-        <img class="logo" src={logo} alt={`${coin.name} logo`} />
+        <img class="logo" class:svg-black={$themeStyle === 'light'} src={logo} alt={`${coin.name} logo`} />
         <span class="text-body1" on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
             {#if watching }{`👀 `}{/if}{`${coin.name}`} 
         </span>

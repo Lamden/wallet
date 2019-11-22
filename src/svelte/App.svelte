@@ -26,9 +26,8 @@
 		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
-		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;
+		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
 		pageLoaded.set(true);
-
 	});
 
 	setContext('switchPage', {
@@ -59,33 +58,21 @@
 </script>
 
 {#if $pageLoaded}
-<div class="container">
-	<Nav />
-	<div class="main-layout">
-			<div class="menu-pane">
-				<Menu />
+	<div class="container">
+		{#if $firstRun}
+			<svelte:component this={Pages[$currentPage.name]}/>
+		{/if}
+		{#if !$firstRun}
+			<Nav />
+			<div class="main-layout">
+				<div class="menu-pane">
+					<Menu />
+				</div>
+				<div class="content-pane">
+					<svelte:component this={Pages[$currentPage.name]}/>
+				</div>			
 			</div>
-			<div class="content-pane">
-				<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
-			</div>			
-		</div>
-
-		<!--
-		<nav>
-			<div class="soflexy">
-				<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
-				<button on:click={ () => switchPage('BackupMain') }> Backup </button>
-				<button on:click={ () => switchPage('RestoreMain') }> Restore </button>
-				<button on:click={ () => logout() }> Log Out </button>
-			</div>
-			<div class='controls soflexy'>
-				<button on:click={ () => toggleTheme() }> Toggle Theme </button>
-				<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
-				<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
-				<button on:click={() => showKeys() }> Lamden Keys </button>
-			</div>
-		</nav>
-		-->
+		{/if}
 	</div>
 {/if}
 

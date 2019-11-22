@@ -9,11 +9,9 @@
     const { Switch } = Components;
 
     function toggleTheme(event) {
-        console.log('event: ' + event.detail)
 		SettingsStore.update(current => {
             current.themeStyle = event.detail ? 'light' : 'dark';
             document.querySelector("html").style = themes[current.themeStyle];
-            console.log('set as: ' + current.themeStyle)
             return current;
         })   
     }
