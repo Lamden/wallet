@@ -7,7 +7,7 @@ export const themes = {
              
     'dark': '--primary-color: #9A97F3; ' + 
             '--secondary-color: #818cab; ' +
-            '--font-color: #e1e1ff; ' +
-            '--bg-color: #161625; ' +
+            '--font-color: #FFFFFF; ' +
+            '--bg-color: #151515;; ' +
             '--heading-color: #818cab;'
     }

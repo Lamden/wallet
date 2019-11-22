@@ -14,14 +14,16 @@
 			themeStyle, 
 			loggedIn, 
 			firstRun, 
-			calcRemainingStorage} from '../js/stores/stores.js';
+			calcRemainingStorage,
+			breadcrumbs} from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun }  from '../js/router.js'	
+	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'	
 
 	onMount(() => {
 		CoinStore.useLocalStorage();
 		SettingsStore.useLocalStorage();
+		$breadcrumbs = [$currentPage.name, "CoinDetails"];
 		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
@@ -33,8 +35,11 @@
 	});
 
 	function switchPage(name, data) {
+		console.log($currentPage)
+		console.log(name)
 		data = data || {};
 		$SettingsStore.currentPage = {name, data};
+		console.log($currentPage)
 	}
 
 	function showKeys(){
@@ -57,46 +62,54 @@
 </script>
 
 <div class="container">
-	{#if $firstRun}
-		<svelte:component this={ FirstRun[$currentPage.name] } />
-	{:else}
-		{#if !$loggedIn}
-			<section class="invisible-scrollbar lockscreen">
-				<svelte:component this={Pages['LockScreen']}/>
-			</section>	
-		{/if}
+	<Nav />
+	<div class="main-layout">
+		<div class="menu-pane">
+			<Menu />
+		</div>
+		<div class="content-pane">
+			<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
+		</div>			
+	</div>
 
-		{#if $loggedIn}
-			<nav>
-				<div class="soflexy">
-					<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
-					<button on:click={ () => switchPage('BackupMain') }> Backup </button>
-					<button on:click={ () => switchPage('RestoreMain') }> Restore </button>
-					<button on:click={ () => logout() }> Log Out </button>
-				</div>
-				<div class='controls soflexy'>
-					<button on:click={ () => toggleTheme() }> Toggle Theme </button>
-					<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
-					<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
-					<button on:click={() => showKeys() }> Lamden Keys </button>
-				</div>
-			</nav>
-
-			<section class="invisible-scrollbar content">
-				<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
-			</section>
-		{/if}
-	{/if}
-	{`Storage Remaining: ${($SettingsStore.storage.remaining/1000000).toFixed(2)}MB`}
+	<!--
+	<nav>
+		<div class="soflexy">
+			<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
+			<button on:click={ () => switchPage('BackupMain') }> Backup </button>
+			<button on:click={ () => switchPage('RestoreMain') }> Restore </button>
+			<button on:click={ () => logout() }> Log Out </button>
+		</div>
+		<div class='controls soflexy'>
+			<button on:click={ () => toggleTheme() }> Toggle Theme </button>
+			<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
+			<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
+			<button on:click={() => showKeys() }> Lamden Keys </button>
+		</div>
+	</nav>
+	-->
 </div>
 
 <style>
 	:global(h1){
-		color: var(--primary-color);
+		color: var(--font-color);
+		font-weight: normal;
+		font-size: 24px;
+		line-height: 28px;
 	}
 
 	:global(h2){
-		color: var(--secondary-color);
+		color: var(--font-color);
+		font-weight: normal;
+		font-size: 16px;
+		line-height: 24px;
+	}
+
+	:global(h3){
+		color: var(--font-color);
+		font-weight: 400;
+		font-size: 13px;
+		line-height: 10px;
 	}
 
 	:global(body){
@@ -104,38 +117,22 @@
 		background-color: var(--bg-color);
 	}
 
-	nav{
-		background-color: var(--heading-color);
-    	padding: 10px;
+	.container {
+		display:flex;
+		padding-top: 97px;
 	}
 
-	.controls{
-		padding: 0 20px 0 20px;
-	}
-
-	.soflexy{
-		display: grid;
-    	grid-auto-flow: column;
-	}
-
-	.container {    
+	.main-layout{
 		display: flex;
-  		flex: 1 1 auto;
-  		flex-direction: column;
+		flex-direction: row;
+		justify-content: left;
 	}
 
-	section {
-    	display: flex;
-    	flex: 1 1 auto;
+	.menu-pane{
+		min-width: 346px;
 	}
 
-	section.lockscreen{
-		justify-content: center;
-		align-items: center;
-	}
-
-	section.content {
-		justify-content: start;
-		flex-direction: column;
+	.content-pane{
+		width: 100%;
 	}
 </style>

@@ -1,3 +1,28 @@
+@font-face {
+    font-family: 'Avenir';
+    src: url('../fonts/Avenir-Light.woff') format('woff'),
+         url('../fonts/Avenir-Light.ttf') format('truetype');
+    font-weight: 200;
+  }
+  
+  @font-face {
+    font-family: 'Avenir';
+    src: url('../fonts/Avenir-Medium.woff') format('woff'),
+         url('../fonts/Avenir-Medium.ttf') format('truetype');
+    font-weight: 400;
+  }
+  
+  @font-face {
+    font-family: 'Avenir';
+    src: url('../fonts/Avenir-Heavy.woff') format('woff'),
+         url('../fonts/Avenir-Heavy.ttf') format('truetype');
+    font-weight: bold;
+  }
+  
+* {
+    font-family: 'Avenir';
+}
+
 html, body  {
     height:100%;
 }

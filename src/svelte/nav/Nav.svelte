@@ -1,0 +1,42 @@
+<script>
+    //Stores
+    import { breadcrumbs } from '../../js/stores/stores.js';
+
+    console.log($breadcrumbs)
+
+    //Components
+    import NavLogo from './NavLogo.svelte';
+    import NavBreadcrumb from './NavBreadcrumb.svelte';
+    import NavControls from './NavControls.svelte';
+</script>
+
+<style>
+.nav{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+    right: 0;
+    height: 97px;
+
+    border: 1px solid #3D3D3D;
+}
+
+.breadcrumbs{
+    display: flex;
+    width: 75%;
+}
+</style>
+
+<div class="nav">
+    <NavLogo />
+    <div class="breadcrumbs">
+        {#each $breadcrumbs as crumb, index}
+            <NavBreadcrumb name={crumb} last={($breadcrumbs.length -1) === index}/>
+        {/each}
+    </div>
+    <NavControls />
+</div>

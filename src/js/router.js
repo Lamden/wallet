@@ -1,3 +1,7 @@
+//Layout
+import Nav from '../svelte/nav/Nav.svelte';
+import Menu from '../svelte/menu/Menu.svelte';
+
 //FirstRun
 import FirstRunIntro from '../svelte/firstRun/FirstRunIntro.svelte';
 import FirstRunWallet from '../svelte/firstRun/FirstRunWallet.svelte';
@@ -29,6 +33,8 @@ const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, ...
 const Modals = { CoinSend, CoinRecieve, CoinAdd };
 
 export {
+    Nav,
+    Menu,
     FirstRun,
     Pages,
     Modals,
