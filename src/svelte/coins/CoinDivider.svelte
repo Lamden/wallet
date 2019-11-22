@@ -21,7 +21,7 @@
     content: "";
     margin-left: 63px;
     width: 100%;
-    border-bottom: 1px dashed rgba(224, 224, 224, 0.16);
+    border-bottom: 1px dashed var(--divider-color);
 }
 
 .amount{
@@ -30,9 +30,10 @@
 
 .amount:after {
     content: "";
+    padding-left: 1px;
     margin-right: 17%;
     width: 100%;
-    border-bottom: 1px dashed rgba(224, 224, 224, 0.16);
+    border-bottom: 1px dashed var(--divider-color);
 }
 
 .percent{
@@ -43,7 +44,7 @@
 .percent:after {
     content: "";
     width: 100%;
-    border-bottom: 1px dashed rgba(224, 224, 224, 0.16);
+    border-bottom: 1px dashed var(--divider-color);
 }
 </style>
 

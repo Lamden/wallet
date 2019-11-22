@@ -14,23 +14,30 @@
 			themeStyle, 
 			loggedIn, 
 			firstRun, 
-			calcRemainingStorage} from '../js/stores/stores.js';
+			calcRemainingStorage,
+			pageLoaded} from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'	
+	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'
 
 	onMount(() => {
 		CoinStore.useLocalStorage();
-		SettingsStore.useLocalStorage();
+		//SettingsStore.useLocalStorage();
 		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunIntro', data: {} } : null;
+		pageLoaded.set(true);
+
 	});
 
 	setContext('switchPage', {
-		switchPage: (name, data) => switchPage(name, data),
+		switchPage: (name, data) => switchPage(name, data)
 	});
+
+	function pageIsLoaded(){
+		return pageLoaded;
+	}
 
 	function switchPage(name, data) {
 		data = data || {};
@@ -42,11 +49,6 @@
 		console.log(key)
 	}
 
-	function toggleTheme() {
-		$SettingsStore.themeStyle = $SettingsStore.themeStyle === 'dark' ? 'light' : 'dark';
-		document.querySelector("html").style = themes[$themeStyle];
-	}
-
 	function logout() {
         loggedIn.set(false);
 	}
@@ -56,34 +58,36 @@
 
 </script>
 
+{#if $pageLoaded}
 <div class="container">
 	<Nav />
 	<div class="main-layout">
-		<div class="menu-pane">
-			<Menu />
+			<div class="menu-pane">
+				<Menu />
+			</div>
+			<div class="content-pane">
+				<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
+			</div>			
 		</div>
-		<div class="content-pane">
-			<svelte:component this={Pages[$currentPage.name]} {switchPage}}/>
-		</div>			
-	</div>
 
-	<!--
-	<nav>
-		<div class="soflexy">
-			<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
-			<button on:click={ () => switchPage('BackupMain') }> Backup </button>
-			<button on:click={ () => switchPage('RestoreMain') }> Restore </button>
-			<button on:click={ () => logout() }> Log Out </button>
-		</div>
-		<div class='controls soflexy'>
-			<button on:click={ () => toggleTheme() }> Toggle Theme </button>
-			<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
-			<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
-			<button on:click={() => showKeys() }> Lamden Keys </button>
-		</div>
-	</nav>
-	-->
-</div>
+		<!--
+		<nav>
+			<div class="soflexy">
+				<button on:click={ () => switchPage('CoinsMain') }> CoinsMain </button>
+				<button on:click={ () => switchPage('BackupMain') }> Backup </button>
+				<button on:click={ () => switchPage('RestoreMain') }> Restore </button>
+				<button on:click={ () => logout() }> Log Out </button>
+			</div>
+			<div class='controls soflexy'>
+				<button on:click={ () => toggleTheme() }> Toggle Theme </button>
+				<button on:click={() =>  CoinStore.reset() }> Reset Coins </button>
+				<button on:click={() => CoinStore.updateBalances($CoinStore)}> Refresh Balances </button>
+				<button on:click={() => showKeys() }> Lamden Keys </button>
+			</div>
+		</nav>
+		-->
+	</div>
+{/if}
 
 <style>
 	:global(h1){

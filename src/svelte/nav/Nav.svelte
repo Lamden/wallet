@@ -6,6 +6,7 @@
     import NavLogo from './NavLogo.svelte';
     import NavBreadcrumb from './NavBreadcrumb.svelte';
     import NavControls from './NavControls.svelte';
+
 </script>
 
 <style>
@@ -20,7 +21,7 @@
     right: 0;
     height: 97px;
 
-    border: 1px solid #3D3D3D;
+    border-bottom: 1px solid #3D3D3D;
 }
 
 .breadcrumbs{

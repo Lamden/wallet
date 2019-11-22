@@ -40,7 +40,7 @@
 }
 
 .last{
-    border-bottom: 4px solid white;
+    border-bottom: 4px solid var(--accent-color);
 }
 </style>
 

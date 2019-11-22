@@ -10,6 +10,7 @@ export { SettingsStore, firstRun, themeStyle, currentPage, loggedIn, calcRemaini
 export const CURRENT_KS_VERSION = writable("1.0");
 export const defaultOjects = readable({coin, pubkey});
 export const breadcrumbs = writable([]);
+export const pageLoaded = writable(false);
 
 
 

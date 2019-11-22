@@ -9,7 +9,14 @@ const defualtSettingsStore = {
 }
 
 const createSettingsStore = (key, startValue) => {
+    const json = localStorage.getItem(key);
+    if (json) {
+        startValue = JSON.parse(json)
+    }
     const SettingsStore = writable(startValue);
+    SettingsStore.subscribe(current => {
+        localStorage.setItem(key, JSON.stringify(current));
+    });
     let subscribe = SettingsStore.subscribe;
     let update = SettingsStore.update;
     let set = SettingsStore.set;
@@ -19,17 +26,6 @@ const createSettingsStore = (key, startValue) => {
         subscribe,
         set,
         update,
-        useLocalStorage: () => {  
-            const json = localStorage.getItem(key);
-            if (json) {
-                let returnstr = JSON.parse(json)
-                set(returnstr);
-            }
-            
-            subscribe(current => {
-                localStorage.setItem(key, JSON.stringify(current));
-            });
-        },
         reset: () => {
             set(startValue)
         }
@@ -53,7 +49,10 @@ export const firstRun = derived(
 
 export const themeStyle = derived(
 	SettingsStore,
-	$SettingsStore => $SettingsStore.themeStyle
+	$SettingsStore => {
+        console.log($SettingsStore.themeStyle);
+        return $SettingsStore.themeStyle;
+    }
 );
 
 export function calcRemainingStorage(){
