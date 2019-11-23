@@ -35,8 +35,8 @@
 
     function deleteCoin(){
         if (confirm("Delete?")){
-            CoinStore.update(coinstore => {coinstore.splice(coinstore.indexOf(coin), 1); return coinstore;});
             switchPage('CoinsMain');
+            CoinStore.update(coinstore => {coinstore.splice(coinstore.indexOf(coin), 1); return coinstore;});
         };
     }
 

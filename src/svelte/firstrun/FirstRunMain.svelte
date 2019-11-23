@@ -54,7 +54,7 @@
         <svelte:component this={FirstRun[Steps[currentStep].page]} on:toggleStep={changeStep}/>
     </div>
     <div class="steps">
-        {currentStep + 1}
+        
     </div>
 </div>
 

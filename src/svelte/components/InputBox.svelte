@@ -3,11 +3,13 @@
     const dispatch = createEventDispatcher();
 
     //Props
+    export let value = '';
     export let label = '';
     export let placeholder = '';
     export let intputType = '';
     export let pattern;
     export let required = false;
+    export let width = '200px';
 
     let thisInput;
 
@@ -34,6 +36,7 @@ label{
 input{
     display: flex;
     align-items: center;
+    width: 100%;
 
     background: none;
     border: 1px solid #e0e0e03d;
@@ -47,7 +50,6 @@ input{
     font-size: 16px;
     line-height: 24px;
     color: var(--font-color);
-
     letter-spacing: 0.44px;
 }
 
@@ -71,10 +73,12 @@ input::-webkit-input-placeholder {
 
 <div class="inputbox">
     <label> {label} </label>
-    <input 
+    <input
+        bind:value={value}
         bind:this={thisInput}
         on:change={() => dispatchChanged()}
         class="input:required:invalid input:focus:invalid"
+        style="width: {width};"
         type="password"
         pattern={pattern}
         placeholder={placeholder}

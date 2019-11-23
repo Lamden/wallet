@@ -1,7 +1,15 @@
 import { writable, get, derived } from 'svelte/store';
 
 const createCoinStore = (key, startValue) => {
+    const json = localStorage.getItem(key);
+    if (json) {
+        startValue = JSON.parse(json)
+    }
     const CoinStore = writable(startValue);
+    CoinStore.subscribe(current => {
+        localStorage.setItem(key, JSON.stringify(current));
+    });
+    
     let subscribe = CoinStore.subscribe;
     let update = CoinStore.update;
     let set = CoinStore.set;

@@ -3,7 +3,7 @@
     import { icons } from '../../js/images.js';
 
     //Stores
-	import { currentPage } from '../../js/stores/stores.js';
+	import { currentPage, password } from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('switchPage');
@@ -15,6 +15,14 @@
 
     function isSelected(page){
         return $currentPage.name === page;
+    }
+
+    function menuAction(item){
+        if (item.page === "LockScreen") {
+            password.set('');
+            return
+        }
+        switchPage(item.page)
     }
 
 </script>
@@ -75,7 +83,7 @@
     </div>
     
     {#each menuItems as item}
-        <div class="item" class:selected={isSelected(item.page)} on:click={ () => switchPage(item.page) }>
+        <div class="item" class:selected={isSelected(item.page)} on:click={ () => menuAction(item) }>
             <img class="logo" src={item.logo} alt="menu item logo"/>
             <span class="name"> {item.name} </span>
         </div>

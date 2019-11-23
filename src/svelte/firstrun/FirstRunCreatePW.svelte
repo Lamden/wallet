@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
 
     //Stores
-    import { HashStore } from '../../js/stores/stores.js';
+    import { HashStore, password } from '../../js/stores/stores.js';
 
     //Utils
     import { encryptObject } from '../../js/utils.js';
@@ -13,13 +13,10 @@
     const { InputBox } = Components;
     
     //DOM NODES
-    let passwordField;
-    let confirmPasswordField;
     let formField;
 
-    let form = {};
+    let tempPassword;
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
-    let password = '';
 
     function dispatchState(step) {
         dispatch('toggleStep', step);
@@ -31,12 +28,10 @@
         }
     }
 
-    function savePassword(form){
-        if (form.checkValidity()){
+    function savePassword(){
+        if (formField.checkValidity()){
             try{
-                HashStore.setPassword(password);
-                password = undefined;
-                confirm = undefined;
+                HashStore.setPassword($password);
                 dispatchState(3);
             } catch (e) {
                 console.log(e)
@@ -46,11 +41,11 @@
 
     function validatePassword1(e){
         let obj = e.detail;
-        if (!obj) return
+        tempPassword = obj.value;
         if (obj.validity.patternMismatch){
             obj.setCustomValidity("Password must be 10 characters includeing UPPER/lowercase, number(s) and special character(s)");
         } else {
-            password = e.detail.value;
+            password.set(e.detail.value);
             obj.setCustomValidity('');
         }
         if (obj.checkValidity()) pattern = RegExp.escape(obj.value); 
@@ -58,8 +53,7 @@
 
     function validatePassword2(e){
         let obj = e.detail;
-        if (!obj) return
-        if (obj.value !== password) {
+        if (obj.value !== tempPassword) {
             obj.setCustomValidity("Passwords do not match");
         } else {
             obj.setCustomValidity('');
@@ -112,12 +106,14 @@ form{
         No username required. Use a strong password that you'll remember.
     </div>
 
-    <form on:submit|preventDefault={() => savePassword(formField) } bind:this={formField} target="_self">
+    <form on:submit|preventDefault={() => savePassword() } bind:this={formField} target="_self">
         <div class="input-box">
-            <InputBox 
+            <InputBox
+                value={tempPassword}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
                 intputType= 'password'
+                width="100%"
                 on:changed={validatePassword1}
                 {pattern}
                 required={true}/>
@@ -127,6 +123,7 @@ form{
                 label={"Confirm Password"}
                 placeholder={"At least 8 symbols"}
                 intputType= 'password'
+                width="100%"
                 on:changed={validatePassword2}
                 required={true}/>
         </div>

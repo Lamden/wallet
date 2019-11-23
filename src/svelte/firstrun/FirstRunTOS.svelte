@@ -3,11 +3,15 @@
     const dispatch = createEventDispatcher();
 
     //Stores
-    import { loggedIn, HashStore, SettingsStore, currentPage } from '../../js/stores/stores.js';
+    import { CoinStore, loggedIn, HashStore, SettingsStore, password } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../../js/router.js'
     const { Button } = Components;
+
+	//Utils
+    import { keysFromNew } from '../../js/crypto/wallets.js';
+    import { encryptStrHash } from '../../js/utils.js';
 
     //Props
     export let switchPage;
@@ -16,12 +20,29 @@
         dispatch('toggleStep', step);
     }
 
+    function createStartingWallets(){
+        let keyPair = keysFromNew('lamden', 'TAU');
+        CoinStore.update(coinstore => {
+            let coinInfo = {
+                'network': 'lamden',
+                'name': 'Lamden',
+                'nickname' : 'My TAU Address',
+                'symbol': 'TAU',
+                'vk': keyPair.vk,
+                'sk': encryptStrHash($password, keyPair.sk),
+            }
+            coinstore.push(coinInfo);
+            return current;
+        })
+    }
+
     function accept(){
         SettingsStore.update(current => {
             current.currentPage = {name: 'CoinsMain', data: {}};
             current.firstRun = false;
             return current
         })
+        createStartingWallets();
         loggedIn.set(true);
     }
 

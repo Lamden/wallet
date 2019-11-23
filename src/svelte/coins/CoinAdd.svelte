@@ -2,23 +2,22 @@
     import { onMount, setContext } from 'svelte';
     
 	//Stores
-    import { CoinStore, HashStore, coinMeta } from '../../js/stores/stores.js';
+    import { CoinStore, HashStore, coinMeta, password } from '../../js/stores/stores.js';
     
 	//Utils
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
-    import { checkPassword, encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
+    import { encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
 
     //Props
     export let closeModal;
 
     //DOM NODES
-    let formObj, passwordField, publicKeyField, privateKeyField;
+    let formObj, publicKeyField, privateKeyField;
     
     let selected;
 
     let keyInputs = { privateKeyInput: '', publicKeyInput: ''};
     let keyAttributes = {publicKey: '', privateKey: '', nickname: '' };
-    let password = '';
     let error = '';
     let addType = 1;
 
@@ -43,16 +42,9 @@
         }
     }
 
-    function validatePassword(){
-        passwordField.setCustomValidity('');
-        if ( !HashStore.validatePassword(password) ) {
-            passwordField.setCustomValidity("Incorrect Password");
-        }
-    }
-
     function reValidateTextarea(){
         keyInputs.privateKeyInput = "";
-        keyInputs.publicKeyInput = ""
+        keyInputs.publicKeyInput = "";
     }
 
     function validateTextarea(node){
@@ -86,7 +78,7 @@
                 'nickname' : keyAttributes.nickname,
                 'symbol': selected.symbol,
                 'vk': keyAttributes.publicKey,
-                'sk': addType === 3 ? 'watchOnly' : encryptStrHash(password, keyAttributes.privateKey),
+                'sk': addType === 3 ? 'watchOnly' : encryptStrHash($password, keyAttributes.privateKey),
             }
 
 
@@ -172,17 +164,5 @@
         <label>Key Nickname</label><br>
         <input bind:value={keyAttributes.nickname} required  />
     </div>
-
-    {#if addType !== 3}
-        <div>
-            <label>Wallet Password</label><br>
-            <input  bind:value={password}
-                    bind:this={passwordField}
-                    on:change={() => validatePassword()}
-                    type="password"
-                    required  />
-        </div>
-    {/if}
-
     <input type="submit" value="Save Keys">
 </form>

@@ -6,24 +6,22 @@
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import {CoinStore,
-			symbolList,
+	import {
 			SettingsStore, 
 			HashStore,
 			currentPage, 
 			themeStyle, 
-			loggedIn, 
-			firstRun, 
+			firstRun,
+			password,
 			calcRemainingStorage,
 			pageLoaded} from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'
 
+	$: pwdIsCorrect = HashStore.validatePassword($password);
+
 	onMount(() => {
-		CoinStore.useLocalStorage();
-		//SettingsStore.useLocalStorage();
-		HashStore.useLocalStorage();
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
@@ -43,26 +41,17 @@
 		$SettingsStore.currentPage = {name, data};
 	}
 
-	function showKeys(){
-		const key = pubFromPriv('lamden', 'TAU', "")
-		console.log(key)
-	}
-
-	function logout() {
-        loggedIn.set(false);
-	}
 	function getUsedLocalStorageSpace() {
   		return Object.keys(window.localStorage).map(function(key) { return localStorage[key].length;}).reduce(function(a,b) { return a+b;});
 	};
 
 </script>
-
 {#if $pageLoaded}
 	<div class="container">
 		{#if $firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
 		{/if}
-		{#if !$firstRun}
+		{#if pwdIsCorrect}
 			<Nav />
 			<div class="main-layout">
 				<div class="menu-pane">
@@ -72,6 +61,8 @@
 					<svelte:component this={Pages[$currentPage.name]}/>
 				</div>			
 			</div>
+		{:else}
+			<svelte:component this={Pages['LockScreen']}/>
 		{/if}
 	</div>
 {/if}
