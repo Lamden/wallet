@@ -27,6 +27,7 @@ import DevToolsDocumentation from '../svelte/devtools/DevToolsDocumentation.svel
 //Components
 import Button from '../svelte/components/Button.svelte';
 import Switch from '../svelte/components/Switch.svelte';
+import InputBox from '../svelte/components/InputBox.svelte';
 
 //Misc
 import BackupMain from '../svelte/misc/BackupMain.svelte';
@@ -40,7 +41,7 @@ const FirstRun = { FirstRunMain, FirstRunIntro, FirstRunWallet, FirstRunCreate, 
 
 const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, DevToolsMain, ...FirstRun };
 
-const Components = { Button, Switch };
+const Components = { Button, Switch, InputBox };
 
 const Modals = { CoinSend, CoinRecieve, CoinAdd };
 

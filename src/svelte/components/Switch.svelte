@@ -6,7 +6,7 @@
 
     function dispatchState() {
 		  dispatch('toggleState', checked);
-	}
+	  }
 </script>
 
 <style>

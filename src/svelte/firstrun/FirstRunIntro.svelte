@@ -47,13 +47,12 @@ a{
     <div class="text-box text-body1">
         Creating a wallet is easy and secure. It's stored in the user’s browser, not on remote servers.
     </div>
-    <Button type={'solid purple'}
-            class="button-margin"
+    <Button style={'button__solid button__purple'}
             height={'36px'}
             styles={'margin-bottom: 16px;'}
             name="Create A Wallet" 
             click={() => dispatchState(1)} />
-    <Button type={'solid'} 
+    <Button style={'button__solid'} 
             height={'36px'}
             styles={'margin-bottom: 16px;'}
             name="Restore a Wallet" 

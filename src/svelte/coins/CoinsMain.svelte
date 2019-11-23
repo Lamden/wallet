@@ -95,7 +95,8 @@
 
 <div class="coinsmain">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-		<Button name="Add Coin"
+		<Button style={'button__transparent'}
+				name="Add Coin"
 				width={'145px'}
 				padding={'13px 8px 13px 12px'}
 		 		click={() => showModal('CoinAdd')} 

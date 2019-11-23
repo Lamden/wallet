@@ -1,5 +1,5 @@
 export const themes = { 
-    'light': '--primary-color: #302AE6; ' +
+    'light': '--primary-color: #461BC2; ' +
              '--secondary-color: #536390; ' +
              '--font-color: #424242; ' +
              '--font-body2-color: #4242428a;' +
@@ -8,7 +8,7 @@ export const themes = {
              '--divider-color: #424242;' +
              '--accent-color: #424242;',
              
-    'dark': '--primary-color: #9A97F3; ' + 
+    'dark': '--primary-color: #461BC2; ' + 
             '--secondary-color: #818cab; ' +
             '--font-color: #E0E0E0; ' +
             '--font-body2-color: #e0e0e08a;' +

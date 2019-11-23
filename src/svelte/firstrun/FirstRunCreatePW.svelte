@@ -1,23 +1,29 @@
-<script>
-    import { getContext } from 'svelte';
-    
+<script> 
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+
     //Stores
     import { HashStore } from '../../js/stores/stores.js';
 
     //Utils
     import { encryptObject } from '../../js/utils.js';
+
+    //Components
+	import { Components }  from '../../js/router.js'
+    const { InputBox } = Components;
     
     //DOM NODES
     let passwordField;
     let confirmPasswordField;
     let formField;
 
-    //Context
-    const { switchPage } = getContext('switchPage');
     let form = {};
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
     let password = '';
-    let confirm = '';
+
+    function dispatchState(step) {
+        dispatch('toggleStep', step);
+    }
 
     if(!RegExp.escape) {
         RegExp.escape = function(s) {
@@ -31,23 +37,28 @@
                 HashStore.setPassword(password);
                 password = undefined;
                 confirm = undefined;
-                switchPage('FirstRunTOS');
+                dispatchState(3);
             } catch (e) {
                 console.log(e)
             }
         }
     }
 
-    function validatePassword1(obj){       
+    function validatePassword1(e){
+        let obj = e.detail;
+        if (!obj) return
         if (obj.validity.patternMismatch){
             obj.setCustomValidity("Password must be 10 characters includeing UPPER/lowercase, number(s) and special character(s)");
         } else {
+            password = e.detail.value;
             obj.setCustomValidity('');
         }
         if (obj.checkValidity()) pattern = RegExp.escape(obj.value); 
     }
 
-    function validatePassword2(obj){
+    function validatePassword2(e){
+        let obj = e.detail;
+        if (!obj) return
         if (obj.value !== password) {
             obj.setCustomValidity("Passwords do not match");
         } else {
@@ -57,36 +68,71 @@
 
 </script>
 
-<h1>Create a Password</h1>
-<p>No username required. Use a strong password that you'll remember.</p>
-Password Requirements
-<ol>
-    <li>10 characters long or more</li>
-    <li>1 uppercase letter</li>
-    <li>1 number</li>
-    <li>1 special character</li>
-</ol>
+<style>
+.page{
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    padding: 16px 24px 0 24px;
+}
 
-<form on:submit|preventDefault={() => savePassword(formField) } bind:this={formField} target="_self">
-    <div>
-        <label>Password</label><br>
-        <input bind:value={password}
-               bind:this={passwordField}
-               on:change={() => validatePassword1(passwordField) }
-               class="input:required:invalid input:focus:invalid"
-               type="password"
-               {pattern} 
-               required  />
+.heading{
+    margin-bottom: 16px;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+}
+
+.input-box{
+    margin-bottom: 14px;
+}
+
+.submit-button {
+    height: 36px;
+}
+
+.submit-button-text{
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+}
+</style>
+
+<div class="page">
+    <h6 class="heading">Create a Password</h6>
+    <div class="text-box text-body1">
+        No username required. Use a strong password that you'll remember.
     </div>
-    <div>
-        <label>Confirm Password</label><br>
-        <input bind:value={confirm}
-               bind:this={confirmPasswordField}
-               on:change={() => validatePassword2(confirmPasswordField)}
-               class="input:required:valid"
-               type="password"
-               required />
-    </div>
-    <input type="submit" value="Save Password">
-</form>
-<a href="javascript:void(0)" on:click={() => switchPage('FirstRunIntro')}>go back</a>
+
+    <form on:submit|preventDefault={() => savePassword(formField) } bind:this={formField} target="_self">
+        <div class="input-box">
+            <InputBox 
+                label={"Password"}
+                placeholder={"At least 8 symbols"}
+                intputType= 'password'
+                on:changed={validatePassword1}
+                {pattern}
+                required={true}/>
+        </div>
+        <div class="input-box">
+            <InputBox 
+                label={"Confirm Password"}
+                placeholder={"At least 8 symbols"}
+                intputType= 'password'
+                on:changed={validatePassword2}
+                required={true}/>
+        </div>
+        <input  value="Save Password"
+                class="button__solid button__purple submit submit-button submit-button-text" 
+                type="submit" >
+    </form>
+</div>
+
