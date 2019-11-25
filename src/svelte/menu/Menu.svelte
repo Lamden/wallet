@@ -1,5 +1,6 @@
 <script>
-    import MenuBox from './MenuBox.svelte'
+    //Components
+	import { MenuBox }  from '../../js/router.js'
 
     import { icons } from '../../js/images.js';
 
@@ -7,24 +8,24 @@
         {
             heading: 'Wallet',
             items:[
-                {logo: icons.holdings, name: 'Holdings', page: 'CoinsMain'},
-                {logo: icons.history, name: 'History', page: 'HistoryMain'},
-                {logo: icons.devtools, name: 'Developer Tools', page: 'DevToolsMain'},
+                {logo: icons.holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
+                {logo: icons.history, name: 'History', page: {name: 'HistoryMain'}},
+                {logo: icons.devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
             ]
         },
         {
             heading: 'Safety & Security',
             items:[
-                {logo: icons.backup, name: 'Backup Wallet', page: 'BackupMain'},
-                {logo: icons.restore, name: 'Restore Wallet', page: 'RestoreMain'},
-                {logo: icons.signout, name: 'Sign out & Lock', page: 'LockScreen'},
+                {logo: icons.backup, name: 'Backup Wallet', page: {name: 'BackupMain'}},
+                {logo: icons.restore, name: 'Restore Wallet', page: {name: 'RestoreMain'}},
+                {logo: icons.signout, name: 'Sign out & Lock', page: {name: 'LockScreen'}},
             ]
         },
         {
             heading: 'About & Info',
             items:[
-                {logo: icons.about, name: 'About', page: 'About'},
-                {logo: icons.feedback, name: 'Give Feedback', page: 'FeedBack'},
+                {logo: icons.about, name: 'About', page: {name: 'About'}},
+                {logo: icons.feedback, name: 'Give Feedback', page: {name: 'Feedback'}},
             ]
         },
     ]
@@ -39,7 +40,7 @@
 }
 </style>
 
-<div class="menus">
+<div class="menus text-primary">
     {#each menus as menu}
         <MenuBox heading={menu.heading} menuItems={menu.items} />
     {/each}

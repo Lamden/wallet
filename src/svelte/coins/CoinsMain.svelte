@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 
 	//Stores
 	import {calcRemainingStorage, 
@@ -16,6 +16,9 @@
 
 	//Utils
 	import { updateBalances } from '../../js/utils.js';
+
+	//Context
+    const { switchPage } = getContext('switchPage');
 	
 	//Props
 	export let name
@@ -26,7 +29,7 @@
 	onMount(() => {
 		//CoinStore.updateBalances($CoinStore);
 		calcRemainingStorage();
-		breadcrumbs.set([{name: 'Holdings', page: 'CoinsMain'}]);
+		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
 
 
@@ -93,13 +96,13 @@
 }
 </style>
 
-<div class="coinsmain">
+<div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
 		<Button style={'button__transparent'}
 				name="Add Coin"
 				width={'145px'}
 				padding={'13px 8px 13px 12px'}
-		 		click={() => showModal('CoinAdd')} 
+		 		click={() => switchPage('CoinAdd')} 
 				icon='plus'/>
 	</div>
 	<div class="header header-text divider">
@@ -113,9 +116,3 @@
 	{/each}
 	
 </div>
-
-{#if openModal}
-	<Modal on:close="{() => closeModal()}">
-        <svelte:component this={ Modals[currentModal]} {closeModal} {openModal}/>
-	</Modal>
-{/if}

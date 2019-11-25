@@ -43,8 +43,8 @@ a{
 </style>
 
 <div class="page">
-    <h6 class="heading">Welcome!</h6>
-    <div class="text-box text-body1">
+    <h6 class="heading text-primary">Welcome!</h6>
+    <div class="text-box text-body1 text-primary">
         Creating a wallet is easy and secure. It's stored in the user’s browser, not on remote servers.
     </div>
     <Button style={'button__solid button__purple'}
@@ -57,5 +57,10 @@ a{
             styles={'margin-bottom: 16px;'}
             name="Restore a Wallet" 
             click={() => dispatchState(2)} />
-    <a href="https://www.lamden.io" target="_blank" rel="noopener noreferrer" >Learn More About Lamden</a>
+    <a  class="text-secondary" 
+        href="https://www.lamden.io" 
+        target="_blank" 
+        rel="noopener noreferrer" >
+        Learn More About Lamden
+    </a>
 </div>

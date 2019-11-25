@@ -1,6 +1,8 @@
 <script>
+    import { onMount } from 'svelte';
+    
     //Stores
-    import { CoinStore, coinList, HashStore, CURRENT_KS_VERSION } from '../../js/stores/stores.js';
+    import { CoinStore, coinList, HashStore, breadcrumbs, CURRENT_KS_VERSION } from '../../js/stores/stores.js';
 
     //Utils
     import { copyToClipboard, checkPassword, decryptStrHash, encryptObject } from '../../js/utils.js';
@@ -18,6 +20,10 @@
     let passwordHint = ""
 
     let keys = ""
+
+	onMount(() => {
+		breadcrumbs.set([{name: 'Backup', page: {name: ''}}]);
+	});
 
     function handleSubmit(form){
         if (form.checkValidity()){
@@ -68,37 +74,39 @@
     }
 </script>
 
-<h1>Backup Wallet</h1>
+    <div class="backup text-primary">
+    <h1>Backup Wallet</h1>
 
-{#if !passwordOkay}
-<form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
-    <div>
-        <label>Password</label><br>
-        <input bind:value={password}
-               bind:this={passwordField}
-                on:change={() => validatePassword(passwordField)}
-                type="password"
-                required  />
-    </div>
-    <input type="submit" value="Reveal Private Keys">
-</form>
-{/if}
-{#if passwordOkay}
-    <p>Backup your wallet incase anything would ever happen. Please remember not to share this information.</p>
-
-    <lable>Your Private Keys</lable><br>
-    <textarea bind:value={keys} readonly rows="20" wrap="hard"/>
-
-    {#if keys !== 'You have no keys'}
-        <span>
-            <a href="javascript:void(0)" on:click={() => copyToClipboard(keys)}>copy to clipboard</a>
-            <button on:click={() => download()}>Download Encrypted Backup</button>
-        </span>
+    {#if !passwordOkay}
+    <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
         <div>
-            <label>Password Hint</label><br>
-            <input type="text" bind:value={passwordHint} />
+            <label>Password</label><br>
+            <input bind:value={password}
+                bind:this={passwordField}
+                    on:change={() => validatePassword(passwordField)}
+                    type="password"
+                    required  />
         </div>
+        <input type="submit" value="Reveal Private Keys">
+    </form>
     {/if}
+    {#if passwordOkay}
+        <p>Backup your wallet incase anything would ever happen. Please remember not to share this information.</p>
 
-    <p>We recommend you write down these private keys on paper as well as save them to a flash drive.</p>
-{/if}
+        <lable>Your Private Keys</lable><br>
+        <textarea bind:value={keys} readonly rows="20" wrap="hard"/>
+
+        {#if keys !== 'You have no keys'}
+            <span>
+                <a href="javascript:void(0)" on:click={() => copyToClipboard(keys)}>copy to clipboard</a>
+                <button on:click={() => download()}>Download Encrypted Backup</button>
+            </span>
+            <div>
+                <label>Password Hint</label><br>
+                <input type="text" bind:value={passwordHint} />
+            </div>
+        {/if}
+
+        <p>We recommend you write down these private keys on paper as well as save them to a flash drive.</p>
+    {/if}
+</div>

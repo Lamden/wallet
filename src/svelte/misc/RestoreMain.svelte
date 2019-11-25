@@ -1,8 +1,8 @@
 <script>
-    import { beforeUpdate, getContext } from 'svelte';
+    import { beforeUpdate, getContext, onMount } from 'svelte';
     
     //Stores
-    import { CoinStore, HashStore, defaultOjects } from '../../js/stores/stores.js';
+    import { CoinStore, HashStore, defaultOjects, breadcrumbs } from '../../js/stores/stores.js';
 
     //Utils
     import { decryptObject, encryptStrHash, checkPassword } from '../../js/utils.js';
@@ -21,6 +21,10 @@
     let keyStorePassword = "";
     let keyStore;
     let selectAll = false;
+
+	onMount(() => {
+		breadcrumbs.set([{name: 'Restore', page: {name: ''}}]);
+	});
 
     function openPicker(){
         error = ""
@@ -76,7 +80,7 @@
     function handleKeyStoreSubmit(form){
         if (form.checkValidity()){
             keyStore = decryptObject(keyStorePassword, fileContent.data);
-            console.log(keyStore);
+
         }
     }
 
@@ -137,72 +141,74 @@
     }
 </style>
 
-<div id="dropZone" 
+<div id="dropZone"
      on:dragover={(ev) => ev.preventDefault()} 
      on:drop={(ev) => handleFileEvent(ev)}
     >
-    <h1>Restore Private Keys</h1>
-    <p>To restore your wallet, please upload the file we provided you and choose a new password.</p>
+    <div class="text-primary">
+        <h1>Restore Private Keys</h1>
+        <p>To restore your wallet, please upload the file we provided you and choose a new password.</p>
 
-    <span>
-        Drag and Drop a Keystore file here or 
-        <a href="javascript:void(0)" on:click={() => openPicker()}>click to chose a file</a>
-    </span>
-    <p class="error">{error}</p>
-    <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
+        <span>
+            Drag and Drop a Keystore file here or 
+            <a href="javascript:void(0)" on:click={() => openPicker()}>click to chose a file</a>
+        </span>
+        <p class="error">{error}</p>
+        <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
 
-    {#if fileContent !== "" || keyStore}
-        <strong class="greenText">KeyStore File Vaild</strong><br>
-        <strong>last modified date:</strong> {file.lastModifiedDate}
-    {/if}
+        {#if fileContent !== "" || keyStore}
+            <strong class="greenText">KeyStore File Vaild</strong><br>
+            <strong>last modified date:</strong> {file.lastModifiedDate}
+        {/if}
 
-    {#if fileContent !== "" && !keyStore }
-        <form on:submit|preventDefault={() => handleKeyStoreSubmit(formObj1) } bind:this={formObj1} target="_self">
-            <div>
-                <label>Keystore Password</label><br>
-                <input bind:value={keyStorePassword}
-                       bind:this={keystoreField}
-                        on:change={() => validateKeyStorePassword(keystoreField)}
-                        type="password"
-                        required  />
-            </div>
-            {#if fileContent.w}
+        {#if fileContent !== "" && !keyStore }
+            <form on:submit|preventDefault={() => handleKeyStoreSubmit(formObj1) } bind:this={formObj1} target="_self">
                 <div>
-                    {`Saved Password Hint: ${fileContent.w}`}
+                    <label>Keystore Password</label><br>
+                    <input bind:value={keyStorePassword}
+                        bind:this={keystoreField}
+                            on:change={() => validateKeyStorePassword(keystoreField)}
+                            type="password"
+                            required  />
                 </div>
-            {/if}
-            <input type="submit" value="Restore Keys">
-        </form>
-    {/if}
-    
-    {#if keyStore}
-        <strong>keystore version:</strong> {keyStore.version}<br>
+                {#if fileContent.w}
+                    <div>
+                        {`Saved Password Hint: ${fileContent.w}`}
+                    </div>
+                {/if}
+                <input type="submit" value="Restore Keys">
+            </form>
+        {/if}
+        
+        {#if keyStore}
+            <strong>keystore version:</strong> {keyStore.version}<br>
 
-        <form on:submit|preventDefault={() => handleKeysSubmit(formObj2)} bind:this={formObj2} target="_self">
-            <span>
-                <label>Choose keys to restore</label>
-                <input type="checkbox" bind:checked={selectAll} on:change={(ev) => selectAllKeys(ev)}>
-                Select All Keys
-            </span>
-            
-            {#each keyStore.keyList as key, i}
-                <div>
-                    <input type="checkbox" bind:checked={keyStore.keyList[i].checked}>
-                    {`${key.name}(${key.symbol})  ${key.vk.substring(1, 10)}... `}
-                </div>
-            {/each}
+            <form on:submit|preventDefault={() => handleKeysSubmit(formObj2)} bind:this={formObj2} target="_self">
+                <span>
+                    <label>Choose keys to restore</label>
+                    <input type="checkbox" bind:checked={selectAll} on:change={(ev) => selectAllKeys(ev)}>
+                    Select All Keys
+                </span>
+                
+                {#each keyStore.keyList as key, i}
+                    <div>
+                        <input type="checkbox" bind:checked={keyStore.keyList[i].checked}>
+                        {`${key.name}(${key.symbol})  ${key.vk.substring(1, 10)}... `}
+                    </div>
+                {/each}
 
-            {#if !HashStore.validatePassword(keyStorePassword)}
-                <label>Wallet Password</label><br>
-                <input bind:value={password}
-                       bind:this={passwordField}
-                        on:change={() => validateWalletPassword(passwordField)}
-                        type="password"
-                        required  />
-            {/if}
-            <input type="submit" value="Restore Keys">
-        </form>
-    {/if}
+                {#if !HashStore.validatePassword(keyStorePassword)}
+                    <label>Wallet Password</label><br>
+                    <input bind:value={password}
+                        bind:this={passwordField}
+                            on:change={() => validateWalletPassword(passwordField)}
+                            type="password"
+                            required  />
+                {/if}
+                <input type="submit" value="Restore Keys">
+            </form>
+        {/if}
+    </div>
 </div>
 
 

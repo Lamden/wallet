@@ -26,11 +26,11 @@
 }
 </style>
 
-<button class={style}
+<button class={style }
         on:click={click}
-        style="width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}">
+        style="text-primary width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}">
     {#if icon !== ''}
         <img class="icon" src={icons[icon]} alt='button logo' />
     {/if}
-    <div class="label"> {name} </div>
+    <div class="label text-button"> {name} </div>
  </button>

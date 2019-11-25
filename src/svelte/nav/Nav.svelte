@@ -30,7 +30,7 @@
 }
 </style>
 
-<div class="nav">
+<div class="nav text-primary">
     <NavLogo />
     <div class="breadcrumbs">
         {#each $breadcrumbs as crumb, index}

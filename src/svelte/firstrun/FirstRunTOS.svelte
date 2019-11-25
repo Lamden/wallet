@@ -22,7 +22,7 @@
 
     function createStartingWallets(){
         let keyPair = keysFromNew('lamden', 'TAU');
-        CoinStore.update(coinstore => {
+        CoinStore.update(current => {
             let coinInfo = {
                 'network': 'lamden',
                 'name': 'Lamden',
@@ -31,7 +31,7 @@
                 'vk': keyPair.vk,
                 'sk': encryptStrHash($password, keyPair.sk),
             }
-            coinstore.push(coinInfo);
+            current.push(coinInfo);
             return current;
         })
     }
@@ -73,8 +73,8 @@
 </style>
 
 <div class="page">
-    <h6 class="heading">Remember</h6>
-    <div class="text-box text-body1">
+    <h6 class="heading text-primary">Remember</h6>
+    <div class="text-box text-body1 text-primary">
         Your password, private keys, and locking your wallet are important to keeping your cryptocurrency safe.
     </div>
 

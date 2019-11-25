@@ -29,8 +29,8 @@
 
 	onMount(() => {
         breadcrumbs.set([
-            {name: 'Holdings', page: 'CoinsMain'},
-            {name: `${coin.name} ${symbol}`, page: ''},
+            {name: 'Holdings', page: {name: 'CoinsMain'}},
+            {name: `${coin.name} ${symbol}`, page: {name: ''}},
         ]);
     });
     
@@ -98,7 +98,7 @@
 
 </style>
 
-<div class="page">
+<div class="page text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <div class="amount-box">
             <div class="text-body1"> {symbol} </div>
@@ -112,7 +112,7 @@
                 height={'42px'}
 				padding={'13px 8px 13px 12px'}
                 margin={'0 49px 0 0'}
-		 		click={() => showModal('CoinSend')} 
+		 		click={() => switchPage('CoinSend', coin)} 
 				icon='arrowUp'/>
 
 		    <Button style={'button__transparent button__blue'}
@@ -120,16 +120,10 @@
 				width={'150px'}
                 height={'42px'}
 				padding={'13px 8px 13px 12px'}
-		 		click={() => showModal('CoinRecieve')} 
+		 		click={() => switchPage('CoinRecieve', coin)} 
 				icon='arrowDown'/>
         </div>
 
 	</div>
     <HistoryMain filter={coin} />
 </div>
-
-{#if openModal}
-	<Modal on:close="{() => openModal = false}">
-        <svelte:component this={Modals[currentModal]} {switchPage} {coin}}/>
-	</Modal>
-{/if}

@@ -11,7 +11,7 @@
     export let filter;
 
 	onMount(() => {
-        if (!filter) breadcrumbs.set([{name: 'History', page: 'HistoryMain'}]);
+        if (!filter) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
     });
     
     $: txByDay = groupByDate();
@@ -101,7 +101,7 @@
 }
 </style>
 
-<div class="history">
+<div class="history text-primary">
     {#each Object.keys(txByDay) as day}
         <div class="section-header text-body2">
             {new Date(day).toDateString()}

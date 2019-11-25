@@ -2,14 +2,11 @@
     import { onMount, setContext } from 'svelte';
     
 	//Stores
-    import { CoinStore, HashStore, coinMeta, password } from '../../js/stores/stores.js';
+    import { CoinStore, HashStore, coinMeta, password, breadcrumbs } from '../../js/stores/stores.js';
     
 	//Utils
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
     import { encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
-
-    //Props
-    export let closeModal;
 
     //DOM NODES
     let formObj, publicKeyField, privateKeyField;
@@ -24,7 +21,10 @@
 
     onMount(() => {
         selected = coinMeta.LamdenTau;
-        console.log(selected)
+        breadcrumbs.set([
+            {name: 'Holdings', page: {name: 'CoinsMain'}},
+            {name: 'Add Coin', page: {name: ''}},
+        ]);
 	});
 
     async function handleSubmit(){

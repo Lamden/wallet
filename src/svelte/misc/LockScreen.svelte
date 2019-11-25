@@ -108,10 +108,10 @@ form{
 </style>
 
 <div class="layout">
-    <div class="header">
+    <div class="header text-primary">
         <NavLogo />
     </div>
-    <div class="content">
+    <div class="content text-primary">
         <div class="page">
             <h6 class="heading">Sign In</h6>
             <div class="text-box text-body1">  

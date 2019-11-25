@@ -50,7 +50,6 @@ export const firstRun = derived(
 export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => {
-        console.log($SettingsStore.themeStyle);
         return $SettingsStore.themeStyle;
     }
 );

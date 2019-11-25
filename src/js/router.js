@@ -1,6 +1,8 @@
 //Layout
 import Nav from '../svelte/nav/Nav.svelte';
 import Menu from '../svelte/menu/Menu.svelte';
+import MenuBox from '../svelte/menu/MenuBox.svelte';
+import MenuItem from '../svelte/menu/MenuItem.svelte';
 
 //FirstRun
 import FirstRunMain from '../svelte/firstRun/FirstRunMain.svelte';
@@ -37,10 +39,21 @@ import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Modal from '../svelte/misc/Modal.svelte';
 import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
+import About from '../svelte/misc/About.svelte';
+import Feedback from '../svelte/misc/Feedback.svelte';
 
 const FirstRun = { FirstRunMain, FirstRunIntro, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, DevToolsMain, HistoryMain, ...FirstRun };
+const Pages = { 
+    CoinsMain, CoinDetails, CoinAdd, CoinSend, CoinRecieve, 
+    LockScreen, 
+    BackupMain, 
+    RestoreMain, 
+    DevToolsMain, 
+    HistoryMain, 
+    About, 
+    Feedback, 
+    ...FirstRun };
 
 const Components = { Button, Switch, InputBox };
 
@@ -48,27 +61,23 @@ const Modals = { CoinSend, CoinRecieve, CoinAdd };
 
 export {
     Nav,
-    Menu,
+    Menu, MenuBox, MenuItem,
     FirstRun,
     Pages,
     Modals,
     Components,
     CoinsMain,
-    Coin,
-    CoinDivider,
-    CoinDetails,
-    CoinRecieve,
-    CoinSend,
-    CoinAdd,
-    DevToolsMain,
-    DevToolsDocumentation,
+    Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSend, CoinAdd,
+    DevToolsMain, DevToolsDocumentation,
     BackupMain,
     RestoreMain,
     LockScreen,
     Modal,
     MyCoinsDropDown,
     HistoryMain,
-    Transaction
+    Transaction,
+    Feedback,
+    About
 };
 
 

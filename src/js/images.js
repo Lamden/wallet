@@ -38,7 +38,7 @@ export const icons = {
 }
 
 //Backgrounds
-import squares_bg from '../img/backgrounds/squares_bg.svg';
+import squares_bg from '../img/backgrounds/squares_bg.png';
 import github_bg from '../img/backgrounds/github_bg.svg';
 
 export const backgrounds = {

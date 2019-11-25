@@ -47,8 +47,8 @@
     {#if index !== 0}
         <img class="chevron" src={icons.chevronRight} alt="right chevron" />
     {/if}
-    {#if crumb.page !== ''}
-        <span class="words link text-body1" on:click={() => switchPage(crumb.page)}> {crumb.name} </span>
+    {#if crumb.page.name !== ''}
+        <span class="words link text-body1" on:click={() => switchPage(crumb.page.name, crumb.page.data)}> {crumb.name} </span>
     {:else}
         <span class="words text-body1"> {crumb.name} </span>
     {/if}

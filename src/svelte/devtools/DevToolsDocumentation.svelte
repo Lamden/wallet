@@ -76,8 +76,8 @@
 }
 
 </style>
-
-<div class="box">
+ 
+<div class="box text-primary">
     <h5>Documentation</h5>
     <div class="docos-box">
         {#each docoLinks as docoLink}
@@ -90,7 +90,7 @@
                     <img class="logo" src={doco} alt="doco logo" />
                     <div>
                         <h6>{docoLink.name}</h6>
-                        <div class="text-body2">{docoLink.desc}</div>
+                        <div class="text-body2 text-primary-dark">{docoLink.desc}</div>
                     </div>
                 </div>
             </div>

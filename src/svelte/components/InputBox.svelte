@@ -10,6 +10,7 @@
     export let pattern;
     export let required = false;
     export let width = '200px';
+    export let margin = 'unset';
 
     let thisInput;
 
@@ -31,6 +32,7 @@ label{
     line-height: 16px;
     background: var(--bg-color);
     padding: 0 4px;
+    color: var(--font-primary);
 }
 
 input{
@@ -49,7 +51,7 @@ input{
     font-weight: normal;
     font-size: 16px;
     line-height: 24px;
-    color: var(--font-color);
+    color: var(--font-primary);
     letter-spacing: 0.44px;
 }
 
@@ -67,11 +69,11 @@ input::-webkit-input-placeholder {
     display: flex;
     align-items: center;
     letter-spacing: 0.44px;
-    color: var(--font-color)
+    color: var(--font-primary);
 }
 </style>
 
-<div class="inputbox">
+<div class="inputbox" style="margin: {margin};">
     <label> {label} </label>
     <input
         bind:value={value}

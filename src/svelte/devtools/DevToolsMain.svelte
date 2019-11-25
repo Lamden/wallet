@@ -8,7 +8,7 @@
 	import { DevToolsDocumentation }  from '../../js/router.js'
             
 	onMount(() => {
-		breadcrumbs.set([{name: 'Developer Tools', page: 'DevToolsMain'}]);
+		breadcrumbs.set([{name: 'Developer Tools', page: {name: ''}}]);
 	});
 
 </script>

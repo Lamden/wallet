@@ -50,20 +50,23 @@
 	<div class="container">
 		{#if $firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
-		{/if}
-		{#if pwdIsCorrect}
-			<Nav />
-			<div class="main-layout">
-				<div class="menu-pane">
-					<Menu />
-				</div>
-				<div class="content-pane">
-					<svelte:component this={Pages[$currentPage.name]}/>
-				</div>			
-			</div>
 		{:else}
-			<svelte:component this={Pages['LockScreen']}/>
+			<!--{#if pwdIsCorrect}-->
+				<Nav />
+				<div class="main-layout">
+					<div class="menu-pane">
+						<Menu />
+					</div>
+					<div class="content-pane">
+						<svelte:component this={Pages[$currentPage.name]}/>
+					</div>			
+				</div>
+			<!--{/if}
+			{#if !pwdIsCorrect}
+				<svelte:component this={Pages['LockScreen']}/>
+			{/if}-->
 		{/if}
+
 	</div>
 {/if}
 

@@ -101,8 +101,8 @@ form{
 </style>
 
 <div class="page">
-    <h6 class="heading">Create a Password</h6>
-    <div class="text-box text-body1">
+    <h6 class="heading text-primary">Create a Password</h6>
+    <div class="text-box text-body1 text-primary">
         No username required. Use a strong password that you'll remember.
     </div>
 
@@ -114,6 +114,7 @@ form{
                 placeholder={"At least 8 symbols"}
                 intputType= 'password'
                 width="100%"
+                margin={"21px 0 0 0"}
                 on:changed={validatePassword1}
                 {pattern}
                 required={true}/>
