@@ -21,14 +21,13 @@
     align-items: center;
     text-align: center;
     width: 180px;
-    
 }
 
 .words {
     width: 100%;
 }
 
-.words:hover{
+.link:hover{
     text-decoration: underline;
     cursor: pointer;
 }
@@ -48,5 +47,9 @@
     {#if index !== 0}
         <img class="chevron" src={icons.chevronRight} alt="right chevron" />
     {/if}
-    <span class="words text-body1" on:click={() => switchPage(crumb.page)}> {crumb.name} </span>
+    {#if crumb.page !== ''}
+        <span class="words link text-body1" on:click={() => switchPage(crumb.page)}> {crumb.name} </span>
+    {:else}
+        <span class="words text-body1"> {crumb.name} </span>
+    {/if}
 </div>

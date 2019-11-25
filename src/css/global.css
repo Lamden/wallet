@@ -36,7 +36,8 @@ body{
 
 .text-body1{
     color: var(--font-color);
-    font-weight: normal;
+    font-style: normal;
+    font-weight: lighter;
     font-size: 16px;
     line-height: 24px;
     letter-spacing: 0.44px;
@@ -73,10 +74,6 @@ body{
     color: #FFFFFF;
 }
 
-.button__purple{
-    background: #461BC2;
-}
-
 .button__transparent{
     display: flex;
     align-items: center;
@@ -91,6 +88,14 @@ body{
     font-weight: 500;
     font-size: 14px;
     line-height: 16px;
+}
+
+.button__purple{
+    background: #461BC2;
+}
+
+.button__blue{
+    border: 1px solid #4FB8FF;
 }
 
 .button__transparent:hover{

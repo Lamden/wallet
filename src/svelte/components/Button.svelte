@@ -8,6 +8,7 @@
     export let width = 'unset';
     export let height = 'unset';
     export let padding = 'unset';
+    export let margin = 'unset';
     export let style = 'button__solid';
     export let styles = '';
 </script>
@@ -27,7 +28,7 @@
 
 <button class={style}
         on:click={click}
-        style="width: {width}; height: {height}; padding: {padding}; {styles}">
+        style="width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}">
     {#if icon !== ''}
         <img class="icon" src={icons[icon]} alt='button logo' />
     {/if}

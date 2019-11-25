@@ -15,9 +15,6 @@ const createCoinStore = (key, startValue) => {
     let set = CoinStore.set;
 
     const getCoin = (coin, coinstore) => {
-        if (coin.is_token){
-            return coinstore.find(f=> f.network === coin.network && f.token_address === coin.token_address && f.vk === coin.vk);
-        }
         return  coinstore.find(f=> f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk);
     }
     
@@ -48,9 +45,6 @@ const createCoinStore = (key, startValue) => {
         },
         getCoin: (coin) => {
             return get(CoinStore).find( f => {
-                if (coin.is_token){
-                    return f.network === coin.network && f.token_address === coin.token_address && f.vk === coin.vk;
-                }
                 return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
             });
         },

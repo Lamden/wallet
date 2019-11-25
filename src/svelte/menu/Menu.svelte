@@ -8,7 +8,7 @@
             heading: 'Wallet',
             items:[
                 {logo: icons.holdings, name: 'Holdings', page: 'CoinsMain'},
-                {logo: icons.history, name: 'History', page: 'History'},
+                {logo: icons.history, name: 'History', page: 'HistoryMain'},
                 {logo: icons.devtools, name: 'Developer Tools', page: 'DevToolsMain'},
             ]
         },

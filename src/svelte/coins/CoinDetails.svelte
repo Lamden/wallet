@@ -1,11 +1,14 @@
 <script> 
-    import { setContext, getContext} from 'svelte';
+    import { setContext, getContext, onMount } from 'svelte';
 
     //Stores
-    import { CoinStore, SettingsStore, previousPage, getCoinReference } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore, previousPage, getCoinReference, breadcrumbs } from '../../js/stores/stores.js';
 
     //Components
-    import { Modal, Modals, Transaction }  from '../../js/router.js'
+	import { HistoryMain, Modal, Modals, Components }  from '../../js/router.js'
+	const { Button } = Components;
+	import { backgrounds } from '../../js/images.js';
+	const { squares_bg } = backgrounds;
 
     //Utils
     import { logos } from '../../js/crypto/logos.js';
@@ -23,7 +26,15 @@
     $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
- 
+
+	onMount(() => {
+        breadcrumbs.set([
+            {name: 'Holdings', page: 'CoinsMain'},
+            {name: `${coin.name} ${symbol}`, page: ''},
+        ]);
+    });
+    
+
     function showModal(modal){
         currentModal = modal;
         openModal = true;
@@ -43,34 +54,78 @@
 </script>
 
 <style>
-    div{
-        display: grid;
-    }
+.page{
+	display: flex;
+	flex-direction: column;
+}
+
+.hero-rec{
+    display: flex;
+    flex-direction: column;
+	box-sizing: border-box;
+	height: 247px;
+	border-radius: 4px;
+	margin-bottom: 18px;
+    padding: 40px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.amount-box{
+    display: flex;
+	flex-direction: column;
+}
+
+.amount{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 55px;
+    line-height: 69px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.25px;
+}
+
+
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    flex-grow: 1;
+}
+
+
 </style>
 
-<h2 on:click={ () => switchPage('CoinsMain')} style="cursor: pointer;"> {"<- Back"} </h2>
-<div>
-    <img class="logo" src={logo} alt={`${coin.name} logo`} />
-</div>
-<div>
-    <h2>{coin.name}</h2>
-    <div> {`balance ${ balance } ${ symbol }`}</div>
-</div>
-{#if coin.sk !== 'watchOnly'}
-    <button on:click={ () => showModal('CoinSend') }> Send </button>
-{/if}
-<button on:click={ () => showModal('CoinRecieve') }> Recieve </button>
+<div class="page">
+	<div class="hero-rec" style="background-image: url({squares_bg});">
+        <div class="amount-box">
+            <div class="text-body1"> {symbol} </div>
+            <div class="amount"> {balance} </div>
+        </div>
+        <div class="buttons">
+        	<Button 
+                style={'button__transparent'}
+				name="Send Coin"
+				width={'150px'}
+                height={'42px'}
+				padding={'13px 8px 13px 12px'}
+                margin={'0 49px 0 0'}
+		 		click={() => showModal('CoinSend')} 
+				icon='arrowUp'/>
 
-<div>
-    {#if coin.txList}
-        <h2>Transactions</h2>
-        {#each coin.txList as txInfo}
-            <Transaction {txInfo} {coin} />
-        {/each}
-    {/if}
-</div>
-<div>
-    <button on:click={() => deleteCoin()}>DELETE COIN</button>
+		    <Button style={'button__transparent button__blue'}
+				name="Recieve Coin"
+				width={'150px'}
+                height={'42px'}
+				padding={'13px 8px 13px 12px'}
+		 		click={() => showModal('CoinRecieve')} 
+				icon='arrowDown'/>
+        </div>
+
+	</div>
+    <HistoryMain filter={coin} />
 </div>
 
 {#if openModal}

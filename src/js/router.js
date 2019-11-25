@@ -18,6 +18,9 @@ import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 
+//History
+import HistoryMain from '../svelte/history/HistoryMain.svelte';
+
 //DevTools
 import DevToolsMain from '../svelte/devtools/DevToolsMain.svelte';
 import DevToolsDocumentation from '../svelte/devtools/DevToolsDocumentation.svelte';
@@ -33,11 +36,11 @@ import RestoreMain from '../svelte/misc/RestoreMain.svelte';
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Modal from '../svelte/misc/Modal.svelte';
 import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
-import History from '../svelte/misc/History.svelte';
+import Transaction from '../svelte/misc/Transaction.svelte';
 
 const FirstRun = { FirstRunMain, FirstRunIntro, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
 
-const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, DevToolsMain, ...FirstRun };
+const Pages = { CoinsMain, CoinDetails, LockScreen, BackupMain, RestoreMain, DevToolsMain, HistoryMain, ...FirstRun };
 
 const Components = { Button, Switch, InputBox };
 
@@ -64,7 +67,8 @@ export {
     LockScreen,
     Modal,
     MyCoinsDropDown,
-    History,
+    HistoryMain,
+    Transaction
 };
 
 
