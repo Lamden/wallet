@@ -1,9 +1,9 @@
 <script> 
-    import { createEventDispatcher } from 'svelte';
+    import { onMount, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Stores
-    import { HashStore, password } from '../../js/stores/stores.js';
+    import { HashStore, password, steps } from '../../js/stores/stores.js';
 
     //Utils
     import { encryptObject } from '../../js/utils.js';
@@ -17,6 +17,18 @@
 
     let tempPassword;
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
+
+    onMount(() => {
+        steps.set({
+            currentStep: 1,
+            stepList: [
+                {number: 1, name: 'Password', desc:'Make it Good'},
+                {number: 2, name: 'Consent', desc:'Agree to Terms'},
+                {number: 3, name: 'Create Key', desc:'Ensure to Save'},
+                {number: 4, name: 'Get Ready', desc:'About to Get lit'},
+            ]
+        });
+    });
 
     function dispatchState(step) {
         dispatch('toggleStep', step);
@@ -67,8 +79,8 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    width: 280px;
-    padding: 16px 24px 0 24px;
+    width: 498px;
+    padding: 156px 24px 0 242px;
 }
 
 .heading{

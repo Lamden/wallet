@@ -1,13 +1,16 @@
 <script>
 	//Components
-	import { FirstRun }  from '../../js/router.js'
+    import { Components, FirstRun }  from '../../js/router.js'
+    const { Steps, Step } = Components;
     import NavLogo from '../nav/NavLogo.svelte';
 
-    let Steps = [
+    let SetupSteps = [
         {page: 'FirstRunIntro'},
         {page: 'FirstRunCreatePW'},
         {page: 'FirstRunRestore'},
         {page: 'FirstRunTOS'},
+        {page: 'FirstRunGenWallets'},
+        {page: 'FirstRunFinishing'},
     ]
     let currentStep = 0;
 
@@ -20,12 +23,12 @@
 .layout{
     display: flex;
     flex-direction: column;
-    padding-left: 218px;
-    padding-top: 140px;
+    flex-grow: 1;
 }
 
 .content{
     flex-grow: 1;
+    display: flex;
 }
 
 .header{
@@ -42,7 +45,9 @@
 }
 
 .steps{
-    height: 125px;
+    display: flex;
+    justify-content: center;
+    height: 180px;
 }
 </style>
 
@@ -51,10 +56,10 @@
         <NavLogo />
     </div>
     <div class="content">
-        <svelte:component this={FirstRun[Steps[currentStep].page]} on:toggleStep={changeStep}/>
+        <svelte:component this={FirstRun[SetupSteps[currentStep].page]} on:toggleStep={changeStep}/>
     </div>
     <div class="steps">
-        
+        <Steps />
     </div>
 </div>
 

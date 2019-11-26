@@ -1,9 +1,9 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    import { onMount, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Stores
-    import { CoinStore, loggedIn, HashStore, SettingsStore, password } from '../../js/stores/stores.js';
+    import { CoinStore, loggedIn, HashStore, SettingsStore, password,steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../../js/router.js'
@@ -16,34 +16,19 @@
     //Props
     export let switchPage;
 
+    onMount(() => {
+        steps.update(current => {
+            current.currentStep = 2;
+            return current
+        });
+    });
+
     function dispatchState(step) {
         dispatch('toggleStep', step);
     }
 
-    function createStartingWallets(){
-        let keyPair = keysFromNew('lamden', 'TAU');
-        CoinStore.update(current => {
-            let coinInfo = {
-                'network': 'lamden',
-                'name': 'Lamden',
-                'nickname' : 'My TAU Address',
-                'symbol': 'TAU',
-                'vk': keyPair.vk,
-                'sk': encryptStrHash($password, keyPair.sk),
-            }
-            current.push(coinInfo);
-            return current;
-        })
-    }
-
     function accept(){
-        SettingsStore.update(current => {
-            current.currentPage = {name: 'CoinsMain', data: {}};
-            current.firstRun = false;
-            return current
-        })
-        createStartingWallets();
-        loggedIn.set(true);
+        dispatchState(4)
     }
 
     function startOver(){
@@ -58,8 +43,8 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    width: 280px;
-    padding: 16px 24px 0 24px;
+    width: 498px;
+    padding: 156px 24px 0 242px;
 }
 
 .heading{

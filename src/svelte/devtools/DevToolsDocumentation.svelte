@@ -1,8 +1,7 @@
 <script>
     //Images
-    import { backgrounds } from '../../js/images.js';
+    import { backgrounds, icons } from '../../js/images.js';
     const { github_bg, squares_bg } = backgrounds;
-    import { icons } from '../../js/images.js';
     const { doco } = icons;
 
     function openLink(url){
@@ -45,6 +44,7 @@
 .docos-box{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     margin-top: 1rem;
 }
 

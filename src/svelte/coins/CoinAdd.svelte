@@ -108,61 +108,63 @@
 </script>
 
 <p style="color: red;">{error}</p>
- <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
-    <div>
-        <h1>Add Wallet</h1>
-        <p>This will add a Lamden wallet.</p>
-    </div>
-
-    <div>
-        <p>Action</p>
-        <span>
-            <label>
-                <input type=radio bind:group={addType} value={1}>
-                Create Key
-            </label>
-
-            <label>
-                <input type=radio bind:group={addType} value={2}>
-                Add Existing
-            </label>
-
-            <label>
-                <input type=radio bind:group={addType} value={3}>
-                Track Wallet
-            </label>
-        </span>
-    </div>
-
-    {#if addType === 2}
+<div class="add text-primary">
+    <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
         <div>
-            <textarea bind:value={keyInputs.privateKeyInput} 
-                    id="privateKeyInput"
-                    placeholder={"Enter Private Key"}
-                    bind:this={privateKeyField}
-                    on:change={ () => validateTextarea(privateKeyField) }
-                    on:show={ reValidateTextarea() }
-                    rows="2"
-                    required  />
+            <h1>Add Wallet</h1>
+            <p>This will add a Lamden wallet.</p>
         </div>
-    {/if}
 
-    {#if addType === 3}
         <div>
-            <textarea bind:value={keyInputs.publicKeyInput}
-                    id="publicKeyInput"
-                    placeholder={"Enter Public Key"}
-                    bind:this={publicKeyField}
-                    on:change={ () => validateTextarea(publicKeyField) }
-                    on:show={ reValidateTextarea() }
-                    rows="2"
-                    required  />
-        </div>
-    {/if}
+            <p>Action</p>
+            <span>
+                <label>
+                    <input type=radio bind:group={addType} value={1}>
+                    Create Key
+                </label>
 
-    <div>
-        <label>Key Nickname</label><br>
-        <input bind:value={keyAttributes.nickname} required  />
-    </div>
-    <input type="submit" value="Save Keys">
-</form>
+                <label>
+                    <input type=radio bind:group={addType} value={2}>
+                    Add Existing
+                </label>
+
+                <label>
+                    <input type=radio bind:group={addType} value={3}>
+                    Track Wallet
+                </label>
+            </span>
+        </div>
+
+        {#if addType === 2}
+            <div>
+                <textarea bind:value={keyInputs.privateKeyInput} 
+                        id="privateKeyInput"
+                        placeholder={"Enter Private Key"}
+                        bind:this={privateKeyField}
+                        on:change={ () => validateTextarea(privateKeyField) }
+                        on:show={ reValidateTextarea() }
+                        rows="2"
+                        required  />
+            </div>
+        {/if}
+
+        {#if addType === 3}
+            <div>
+                <textarea bind:value={keyInputs.publicKeyInput}
+                        id="publicKeyInput"
+                        placeholder={"Enter Public Key"}
+                        bind:this={publicKeyField}
+                        on:change={ () => validateTextarea(publicKeyField) }
+                        on:show={ reValidateTextarea() }
+                        rows="2"
+                        required  />
+            </div>
+        {/if}
+
+        <div>
+            <label>Key Nickname</label><br>
+            <input bind:value={keyAttributes.nickname} required  />
+        </div>
+        <input type="submit" value="Save Keys">
+    </form>
+</div>

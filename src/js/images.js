@@ -15,6 +15,9 @@ import handDown from '../img/menu_icons/icon_hand-down.svg';
 import handUp from '../img/menu_icons/icon_hand-up.svg';
 import plus from '../img/menu_icons/icon_plus.svg';
 import doco from '../img/menu_icons/icon_doco.svg';
+import checkmark from '../img/menu_icons/icon_checkmark.svg';
+import spinner from '../img/menu_icons/icon_spinner.svg';
+
 
 //Logos
 import lamden_logo from '../img/nav/lamden_logo_new.svg';
@@ -34,7 +37,9 @@ export const icons = {
     handUp, handDown,
     lamden_logo, lamden_words,
     plus,
-    doco
+    doco,
+    checkmark,
+    spinner
 }
 
 //Backgrounds

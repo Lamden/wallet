@@ -1,23 +1,31 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    import { onMount, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+
+    //Stores
+    import { steps } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'
     const { Button } = Components;
+
+    onMount(() => {
+        steps.set({current:0, stepList:[]});
+    });
     
     function dispatchState(step) {
         dispatch('toggleStep', step);
     }
 </script>
 
+
 <style>
 .page{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    width: 280px;
-    padding: 16px 24px 0 24px;
+    width: 498px;
+    padding: 156px 24px 0 242px;
 }
 
 .heading{

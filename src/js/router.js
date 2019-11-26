@@ -10,6 +10,8 @@ import FirstRunIntro from '../svelte/firstRun/FirstRunIntro.svelte';
 import FirstRunRestore from '../svelte/firstRun/FirstRunRestore.svelte';
 import FirstRunCreatePW from '../svelte/firstRun/FirstRunCreatePW.svelte';
 import FirstRunTOS from '../svelte/firstRun/FirstRunTOS.svelte';
+import FirstRunGenWallets from '../svelte/firstRun/FirstRunGenWallets.svelte';
+import FirstRunFinishing from '../svelte/firstRun/FirstRunFinishing.svelte';
 
 //Coins
 import CoinsMain from '../svelte/coins/CoinsMain.svelte';
@@ -31,6 +33,9 @@ import DevToolsDocumentation from '../svelte/devtools/DevToolsDocumentation.svel
 import Button from '../svelte/components/Button.svelte';
 import Switch from '../svelte/components/Switch.svelte';
 import InputBox from '../svelte/components/InputBox.svelte';
+import Steps from '../svelte/components/Steps.svelte';
+import Step from '../svelte/components/Step.svelte';
+import Loading from '../svelte/components/Loading.svelte';
 
 //Misc
 import BackupMain from '../svelte/misc/BackupMain.svelte';
@@ -42,7 +47,15 @@ import Transaction from '../svelte/misc/Transaction.svelte';
 import About from '../svelte/misc/About.svelte';
 import Feedback from '../svelte/misc/Feedback.svelte';
 
-const FirstRun = { FirstRunMain, FirstRunIntro, FirstRunRestore, FirstRunCreatePW, FirstRunTOS };
+const FirstRun = { 
+    FirstRunMain, 
+    FirstRunIntro, 
+    FirstRunRestore, 
+    FirstRunCreatePW, 
+    FirstRunTOS, 
+    FirstRunGenWallets, 
+    FirstRunFinishing 
+};
 
 const Pages = { 
     CoinsMain, CoinDetails, CoinAdd, CoinSend, CoinRecieve, 
@@ -53,9 +66,10 @@ const Pages = {
     HistoryMain, 
     About, 
     Feedback, 
-    ...FirstRun };
+    ...FirstRun 
+};
 
-const Components = { Button, Switch, InputBox };
+const Components = { Button, Switch, InputBox, Steps, Step, Loading };
 
 const Modals = { CoinSend, CoinRecieve, CoinAdd };
 
