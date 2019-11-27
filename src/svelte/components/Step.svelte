@@ -20,7 +20,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 120px;
+    width: 128px;
 }
 
 .middle:before {

@@ -1,6 +1,5 @@
 <script> 
-    import { onMount, createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { onMount, getContext } from 'svelte';
 
     //Stores
     import { HashStore, password, steps } from '../../js/stores/stores.js';
@@ -11,28 +10,38 @@
     //Components
 	import { Components }  from '../../js/router.js'
     const { InputBox } = Components;
+
+    //Context
+    const { changeStep } = getContext('functions');
     
     //DOM NODES
     let formField;
+
+    //PROPS
+    export let restore = false;
 
     let tempPassword;
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
 
     onMount(() => {
-        steps.set({
-            currentStep: 1,
-            stepList: [
-                {number: 1, name: 'Password', desc:'Make it Good'},
-                {number: 2, name: 'Consent', desc:'Agree to Terms'},
-                {number: 3, name: 'Create Key', desc:'Ensure to Save'},
-                {number: 4, name: 'Get Ready', desc:'About to Get lit'},
-            ]
-        });
-    });
+        if (restore){
+            steps.update(current => {
+                current.currentStep = 4;
+                return current
+            });
+        }else{
+            steps.set({
+                currentStep: 1,
+                stepList: [
+                    {number: 1, name: 'Password', desc:'Make it Good'},
+                    {number: 2, name: 'Consent', desc:'Agree to Terms'},
+                    {number: 3, name: 'Create Key', desc:'Ensure to Save'},
+                    {number: 4, name: 'Get Ready', desc:'About to Get lit'},
+                ]
+            });
+        }
 
-    function dispatchState(step) {
-        dispatch('toggleStep', step);
-    }
+    });
 
     if(!RegExp.escape) {
         RegExp.escape = function(s) {
@@ -44,7 +53,9 @@
         if (formField.checkValidity()){
             try{
                 HashStore.setPassword($password);
-                dispatchState(3);
+                if (restore) changeStep(5);
+                else changeStep(3);
+                
             } catch (e) {
                 console.log(e)
             }
@@ -52,6 +63,7 @@
     }
 
     function validatePassword1(e){
+        console.log(e)
         let obj = e.detail;
         tempPassword = obj.value;
         if (obj.validity.patternMismatch){
@@ -95,21 +107,6 @@ form{
 .input-box{
     margin-bottom: 14px;
 }
-
-.submit-button {
-    height: 36px;
-}
-
-.submit-button-text{
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 16px;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    letter-spacing: 0.75px;
-    text-transform: uppercase;
-}
 </style>
 
 <div class="page">
@@ -121,7 +118,6 @@ form{
     <form on:submit|preventDefault={() => savePassword() } bind:this={formField} target="_self">
         <div class="input-box">
             <InputBox
-                value={tempPassword}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
                 intputType= 'password'

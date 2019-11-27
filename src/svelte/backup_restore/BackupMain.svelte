@@ -2,10 +2,10 @@
     import { onMount } from 'svelte';
     
     //Stores
-    import { CoinStore, coinList, HashStore, breadcrumbs, CURRENT_KS_VERSION } from '../../js/stores/stores.js';
+    import { CoinStore, coinList, HashStore, breadcrumbs, CURRENT_KS_VERSION, password, obscure } from '../../js/stores/stores.js';
 
     //Utils
-    import { copyToClipboard, checkPassword, decryptStrHash, encryptObject } from '../../js/utils.js';
+    import { copyToClipboard, decryptStrHash, encryptObject, encryptStrHash } from '../../js/utils.js';
 
     //Components
     import { BackupPW, BackupDownload }  from '../../js/router.js'
@@ -14,7 +14,7 @@
     let passwordField;
     let formObj;
 
-    let password;
+    let pwd;
     let passwordOkay;
     let keyList = [];
     let passwordHint = ""
@@ -35,22 +35,22 @@
     }
 
     function validatePassword(obj){
-        if (!HashStore.validatePassword(password)) {
+        if (!HashStore.validatePassword(pwd)) {
             obj.setCustomValidity("Incorrect Wallet Password");
         } else {
             obj.setCustomValidity('');
         }
     }
-    function decryptSk(password, sk){
-        return decryptStrHash(password, sk) ? decryptStrHash(password, sk) : 'Cannot decrypt Secret Key';
+    function decryptSk(sk){
+        return decryptStrHash($password, sk) ? decryptStrHash($password, sk) : 'Cannot decrypt Secret Key';
     }
 
     function download() {
         let currDateTime = new Date().toLocaleString();
-        let filename = "Lamden_Vault_" + currDateTime + ".keystore";
+        let filename = "Lamden_Wallet_" + currDateTime + ".keystore";
         let file = JSON.stringify({
-            data: encryptObject(password, {'version' : $CURRENT_KS_VERSION, keyList}),
-            w: passwordHint,
+            data: encryptObject($password, {'version' : $CURRENT_KS_VERSION, keyList: decryptedKeys()}),
+            w: passwordHint === "" ? "" : encryptStrHash(obscure, passwordHint),
         });
 
         var element = document.createElement('a');
@@ -67,21 +67,28 @@
         keys = `!! KEEP THIS INFORMATION SECRET !!\n`
         keyList.map(function(keypair){
             keys = `${keys}\n${keypair.name}(${keypair.symbol}) - ${keypair.nickname}`;
-            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${decryptSk(password, keypair.sk)}\n`;
+            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${decryptSk(keypair.sk)}\n`;
             return keypair;
         });
         if(keyList.length === 0) keys = "Key Storage Empty";
     }
+
+    function decryptedKeys(){
+        return JSON.parse(JSON.stringify($CoinStore)).map( key => {
+            key.sk = decryptSk(key.sk);
+            return key;
+        })
+    }
 </script>
 
-    <div class="backup text-primary">
+<div class="backup text-primary">
     <h1>Backup Wallet</h1>
 
     {#if !passwordOkay}
     <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
         <div>
             <label>Password</label><br>
-            <input bind:value={password}
+            <input bind:value={pwd}
                 bind:this={passwordField}
                     on:change={() => validatePassword(passwordField)}
                     type="password"

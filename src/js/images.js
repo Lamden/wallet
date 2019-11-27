@@ -16,7 +16,9 @@ import handUp from '../img/menu_icons/icon_hand-up.svg';
 import plus from '../img/menu_icons/icon_plus.svg';
 import doco from '../img/menu_icons/icon_doco.svg';
 import checkmark from '../img/menu_icons/icon_checkmark.svg';
+import checkmark_White from '../img/menu_icons/icon_checkmark_white.svg';
 import spinner from '../img/menu_icons/icon_spinner.svg';
+import error from '../img/menu_icons/icon_error.svg';
 
 
 //Logos
@@ -39,7 +41,8 @@ export const icons = {
     plus,
     doco,
     checkmark,
-    spinner
+    spinner,
+    error
 }
 
 //Backgrounds

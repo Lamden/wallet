@@ -19,12 +19,20 @@ body{
     color: #121212;
 }
 
+.text-purple{
+    color: var(--primary-color);
+}
+
 .text-primary{
     color: var(--font-primary);
 }
 
 .text-primary-dark{
     color: var(--font-primary-dark);
+}
+
+.text-primary-light{
+    color: var(--font-primary-light);
 }
 
 .text-secondary{
@@ -47,12 +55,28 @@ body{
     letter-spacing: 0.25px;
 }
 
+.text-subtitle1{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.25px;
+}
+
 .text-subtitle2{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
     line-height: 24px;
     letter-spacing: 0.1px;
+}
+
+.text-caption{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.4px;
 }
 
 .text-button{
@@ -107,6 +131,21 @@ button {
     font-size: 10px;
     margin: 2px;
     padding: 3px;
+}
+
+.submit-button {
+    height: 36px;
+}
+
+.submit-button-text{
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
 }
 
 .error {

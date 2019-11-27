@@ -120,7 +120,16 @@
 				width={'150px'}
                 height={'42px'}
 				padding={'13px 8px 13px 12px'}
+                margin={'0 49px 0 0'}
 		 		click={() => switchPage('CoinRecieve', coin)} 
+				icon='arrowDown'/>
+
+            <Button style={'button__transparent button__blue'}
+				name="Delete Coin"
+				width={'150px'}
+                height={'42px'}
+				padding={'13px 8px 13px 12px'}
+		 		click={() => deleteCoin()} 
 				icon='arrowDown'/>
         </div>
 

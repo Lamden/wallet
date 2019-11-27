@@ -6,7 +6,8 @@
 			coinList, 
 			CoinStore,
 			numberOfCoins,
-			breadcrumbs } from '../../js/stores/stores.js';
+			breadcrumbs,
+			password } from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
@@ -15,7 +16,7 @@
 	const { squares_bg } = backgrounds;
 
 	//Utils
-	import { updateBalances } from '../../js/utils.js';
+	import { updateBalances, decryptObject } from '../../js/utils.js';
 
 	//Context
     const { switchPage } = getContext('switchPage');
@@ -40,8 +41,7 @@
 	
 	function closeModal(){
         openModal = false;
-    }
-
+	}
 </script>
 
 <style>

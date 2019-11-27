@@ -8,8 +8,8 @@
     
     //Props
     export let txInfo;
-
-    $: coin = CoinStore.getCoin(txInfo.coin)
+    
+    $: coin = txInfo.coin
     $: icon = txInfo.type === 'Sent' ? handUp :  handDown;
 
 </script>

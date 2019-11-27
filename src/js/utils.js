@@ -47,6 +47,7 @@ const decryptStrHash = typedFunction( [ String, String ],  ( password, encrypted
         const decrypted = CryptoJS.AES.decrypt(encryptedString, password);
         return CryptoJS.enc.Utf8.stringify(decrypted) === '' ? false : CryptoJS.enc.Utf8.stringify(decrypted);
     } catch (e) {
+        console.log(e)
         return false;
     }
 });

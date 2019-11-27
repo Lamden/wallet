@@ -1,6 +1,5 @@
 <script>
-    import { onMount, createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { onMount } from 'svelte';
 
     //Stores
     import { SettingsStore, loggedIn, steps } from '../../js/stores/stores.js';
@@ -9,20 +8,29 @@
 	import { Components }  from '../../js/router.js'
     const { Loading } = Components;
 
+    //Props
+    export let restore = false;
+
     $: message = 'Finishing Up';
 
     onMount(() => {
-        steps.update(current => {
-            current.currentStep = 4;
-            return current
-        });
+        if (!restore) {
+            steps.set({current:0, stepList:[]});
+        }else{
+            steps.update(current => {
+                current.currentStep = 4;
+                return current
+            });
+        }
 
         new Promise(function(resolve, reject) {
             setTimeout(() => {
-                steps.update(current => {
-                    current.currentStep = 5;
-                    return current
-                });
+                if (!restore) {
+                    steps.update(current => {
+                        current.currentStep = 5;
+                        return current
+                    });
+                }
                 message = 'Done!'
                 resolve();
             }, 2000);
@@ -41,7 +49,6 @@
             return current
         })
         loggedIn.set(true);
-        
     }
 </script>
 
@@ -50,7 +57,7 @@
     display: flex;
     flex-grow: 1;
     justify-content: center;
-    align-items: center;
+    padding-top: 359px;
 }
 
 </style>

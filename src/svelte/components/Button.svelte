@@ -11,6 +11,7 @@
     export let margin = 'unset';
     export let style = 'button__solid';
     export let styles = '';
+    export let disabled = false;
 </script>
 
 <style>
@@ -28,6 +29,7 @@
 
 <button class={style }
         on:click={click}
+        disabled={disabled}
         style="text-primary width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}">
     {#if icon !== ''}
         <img class="icon" src={icons[icon]} alt='button logo' />

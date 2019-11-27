@@ -1,7 +1,8 @@
 <script>
     //Components
-	import { MenuBox }  from '../../js/router.js'
-
+    import { MenuBox }  from '../../js/router.js'
+    
+    //Images
     import { icons } from '../../js/images.js';
 
     let menus = [

@@ -1,22 +1,35 @@
 <script>
+    import { setContext } from 'svelte';
+
 	//Components
     import { Components, FirstRun }  from '../../js/router.js'
     const { Steps, Step } = Components;
     import NavLogo from '../nav/NavLogo.svelte';
 
+    //Context
+    setContext('functions', {
+        changeStep: (step) => {
+            if (step === -1 && currentStep === 0) currentStep = 0;
+            else if (step === -1) currentStep = back;
+            else currentStep = step;
+        }
+	});
+
     let SetupSteps = [
-        {page: 'FirstRunIntro'},
-        {page: 'FirstRunCreatePW'},
-        {page: 'FirstRunRestore'},
-        {page: 'FirstRunTOS'},
-        {page: 'FirstRunGenWallets'},
-        {page: 'FirstRunFinishing'},
+        {page: 'FirstRunIntro', hideSteps: false, back: 0},
+        {page: 'FirstRunCreatePW', hideSteps: false, back: 0},
+        {page: 'FirstRunRestore', hideSteps: false, back: 0},
+        {page: 'FirstRunTOS', hideSteps: false, back: 0},
+        {page: 'FirstRunGenWallets', hideSteps: false, back: 0},
+        {page: 'FirstRunFinishing', hideSteps: false, back: 0},
     ]
     let currentStep = 0;
+    let restore = false;
 
-    function changeStep(event){
-        currentStep = event.detail;
-    }
+    $: currentPage = SetupSteps[currentStep].page;
+    $: hideSteps = SetupSteps[currentStep].hideSteps;
+    $: back = SetupSteps[currentStep].back;
+
 </script>
 
 <style>
@@ -56,10 +69,10 @@
         <NavLogo />
     </div>
     <div class="content">
-        <svelte:component this={FirstRun[SetupSteps[currentStep].page]} on:toggleStep={changeStep}/>
+        <svelte:component this={FirstRun[SetupSteps[currentStep].page]} {restore}/>
     </div>
     <div class="steps">
-        <Steps />
+        <Steps {back} />
     </div>
 </div>
 

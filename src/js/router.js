@@ -7,7 +7,7 @@ import MenuItem from '../svelte/menu/MenuItem.svelte';
 //FirstRun
 import FirstRunMain from '../svelte/firstRun/FirstRunMain.svelte';
 import FirstRunIntro from '../svelte/firstRun/FirstRunIntro.svelte';
-import FirstRunRestore from '../svelte/firstRun/FirstRunRestore.svelte';
+import FirstRunRestoreMain from '../svelte/firstRun/FirstRunRestoreMain.svelte';
 import FirstRunCreatePW from '../svelte/firstRun/FirstRunCreatePW.svelte';
 import FirstRunTOS from '../svelte/firstRun/FirstRunTOS.svelte';
 import FirstRunGenWallets from '../svelte/firstRun/FirstRunGenWallets.svelte';
@@ -21,6 +21,16 @@ import CoinDetails from '../svelte/coins/CoinDetails.svelte';
 import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
+
+//Backup and Restore
+import BackupMain from '../svelte/backup_restore/BackupMain.svelte';
+import RestoreMain from '../svelte/backup_restore/RestoreMain.svelte';
+import RestoreUpload from '../svelte/backup_restore/RestoreUpload.svelte';
+import RestoreCheck from '../svelte/backup_restore/RestoreCheck.svelte';
+import RestorePassword from '../svelte/backup_restore/RestorePassword.svelte';
+import RestoreAddWallets from '../svelte/backup_restore/RestoreAddWallets.svelte';
+import RestoreSaveWallets from '../svelte/backup_restore/RestoreSaveWallets.svelte';
+import RestoreComplete from '../svelte/backup_restore/RestoreComplete.svelte';
 
 //History
 import HistoryMain from '../svelte/history/HistoryMain.svelte';
@@ -36,10 +46,9 @@ import InputBox from '../svelte/components/InputBox.svelte';
 import Steps from '../svelte/components/Steps.svelte';
 import Step from '../svelte/components/Step.svelte';
 import Loading from '../svelte/components/Loading.svelte';
+import ErrorBox from '../svelte/components/ErrorBox.svelte';
 
 //Misc
-import BackupMain from '../svelte/misc/BackupMain.svelte';
-import RestoreMain from '../svelte/misc/RestoreMain.svelte';
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Modal from '../svelte/misc/Modal.svelte';
 import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
@@ -47,17 +56,28 @@ import Transaction from '../svelte/misc/Transaction.svelte';
 import About from '../svelte/misc/About.svelte';
 import Feedback from '../svelte/misc/Feedback.svelte';
 
-const FirstRun = { 
+export const RestorePages = { 
+    RestoreMain, 
+    RestoreUpload, 
+    RestoreCheck, 
+    RestorePassword, 
+    RestoreAddWallets,
+    RestoreSaveWallets,
+    RestoreComplete,  
+};
+
+export const FirstRun = { 
     FirstRunMain, 
     FirstRunIntro, 
-    FirstRunRestore, 
+    FirstRunRestoreMain, 
     FirstRunCreatePW, 
     FirstRunTOS, 
     FirstRunGenWallets, 
-    FirstRunFinishing 
+    FirstRunFinishing,
+    ...RestorePages
 };
 
-const Pages = { 
+export const Pages = { 
     CoinsMain, CoinDetails, CoinAdd, CoinSend, CoinRecieve, 
     LockScreen, 
     BackupMain, 
@@ -69,17 +89,14 @@ const Pages = {
     ...FirstRun 
 };
 
-const Components = { Button, Switch, InputBox, Steps, Step, Loading };
 
-const Modals = { CoinSend, CoinRecieve, CoinAdd };
+
+
+export const Components = { Button, Switch, InputBox, Steps, Step, Loading, ErrorBox };
 
 export {
     Nav,
     Menu, MenuBox, MenuItem,
-    FirstRun,
-    Pages,
-    Modals,
-    Components,
     CoinsMain,
     Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSend, CoinAdd,
     DevToolsMain, DevToolsDocumentation,

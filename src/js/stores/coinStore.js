@@ -24,17 +24,6 @@ const createCoinStore = (key, startValue) => {
         set,
         update,
         getCoin,
-        useLocalStorage: () => {  
-            const json = localStorage.getItem(key);
-            if (json) {
-                let returnstr = JSON.parse(json)
-                set(returnstr);
-            }
-            
-            subscribe(current => {
-                localStorage.setItem(key, JSON.stringify(current));
-            });
-        },
         reset: () => {
             const json = localStorage.getItem(key);
             if (json) {

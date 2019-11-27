@@ -20,14 +20,19 @@ const createHashStore = (key, startValue) => {
         set,
         update,
         setPassword: (password) => {
+            if (!password || password === '') return false;
             set( {'encode' : encryptObject(password, { 'date' : new Date() })} )
         },
         validatePassword: (password) => {
             //  Decrypts the wallets Password HASH and compares it to the password provided
             //  Return: Is Vaild Password (bool)
             if (!password || password === '') return false;
-            if ( decryptObject( password, get(HashStore).encode ) ) return true;
-            return false;
+            try{
+                if ( decryptObject( password, get(HashStore).encode ) ) return true;
+            } catch (e) {
+                console.log(e)
+                return false;
+            } 
           }
     };
 }

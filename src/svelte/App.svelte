@@ -20,6 +20,7 @@
 	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'
 
 	$: pwdIsCorrect = HashStore.validatePassword($password);
+	let fullPage = ['RestoreMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
 	onMount(() => {
 		calcRemainingStorage();
@@ -51,20 +52,24 @@
 		{#if $firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
 		{:else}
-			<!--{#if pwdIsCorrect}-->
-				<Nav />
-				<div class="main-layout">
-					<div class="menu-pane">
-						<Menu />
+			{#if pwdIsCorrect}
+				{#if fullPage.includes($currentPage.name)}
+					<svelte:component this={Pages[$currentPage.name]}/>
+				{:else}
+					<Nav />
+					<div class="main-layout">
+						<div class="menu-pane">
+							<Menu />
+						</div>
+						<div class="content-pane">
+							<svelte:component this={Pages[$currentPage.name]}/>
+						</div>			
 					</div>
-					<div class="content-pane">
-						<svelte:component this={Pages[$currentPage.name]}/>
-					</div>			
-				</div>
-			<!--{/if}
+				{/if}
+			{/if}
 			{#if !pwdIsCorrect}
 				<svelte:component this={Pages['LockScreen']}/>
-			{/if}-->
+			{/if}
 		{/if}
 
 	</div>

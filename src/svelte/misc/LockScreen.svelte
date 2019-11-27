@@ -1,26 +1,16 @@
 <script>
-    import { onMount } from 'svelte';
-
     //Components
     import NavLogo from '../nav/NavLogo.svelte';
 	import { Components }  from '../../js/router.js'
     const { InputBox } = Components;
     
-
     //Stores
     import { loggedIn, HashStore, password } from '../../js/stores/stores.js';
-
-    //Utils
-    import { checkPassword } from '../../js/utils.js';
     
     //DOM nodes
     let formObj;
 
     let pwd = '';
-
-    onMount(() => {
-		//password.set('');
-	});
 
     function handleSubmit(){
         if (formObj.checkValidity()){
@@ -89,21 +79,6 @@ form{
 
 .input-box{
     margin-bottom: 14px;
-}
-
-.submit-button {
-    height: 36px;
-}
-
-.submit-button-text{
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 16px;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    letter-spacing: 0.75px;
-    text-transform: uppercase;
 }
 </style>
 

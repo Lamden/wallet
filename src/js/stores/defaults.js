@@ -12,3 +12,5 @@ export const pubkey = {
     vk : '',
     sk : '',
 }
+
+export const obscure = 'n1ahcKc0lb';

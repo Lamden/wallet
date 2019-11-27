@@ -1,6 +1,5 @@
 <script>
-    import { onMount, createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { onMount, getContext } from 'svelte';
 
     //Stores
     import { CoinStore, loggedIn, HashStore, SettingsStore, password,steps } from '../../js/stores/stores.js';
@@ -13,8 +12,8 @@
     import { keysFromNew } from '../../js/crypto/wallets.js';
     import { encryptStrHash } from '../../js/utils.js';
 
-    //Props
-    export let switchPage;
+    //Context
+    const { changeStep } = getContext('functions');
 
     onMount(() => {
         steps.update(current => {
@@ -23,17 +22,13 @@
         });
     });
 
-    function dispatchState(step) {
-        dispatch('toggleStep', step);
-    }
-
     function accept(){
-        dispatchState(4)
+        changeStep(4)
     }
 
     function startOver(){
         HashStore.set({ 'encode' : undefined });
-        dispatchState(0);
+        changeStep(0);
     }
 
 </script>
