@@ -106,29 +106,25 @@
         </div>
         <div class="buttons">
         	<Button 
-                style={'button__transparent'}
+                classes={'button__transparent'}
 				name="Send Coin"
-				width={'150px'}
-                height={'42px'}
-				padding={'13px 8px 13px 12px'}
+				padding={'13px 16px'}
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('CoinSend', coin)} 
 				icon='arrowUp'/>
 
-		    <Button style={'button__transparent button__blue'}
+		    <Button 
+                classes={'button__transparent button__blue'}
 				name="Recieve Coin"
-				width={'150px'}
-                height={'42px'}
-				padding={'13px 8px 13px 12px'}
+				padding={'13px 16px'}
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('CoinRecieve', coin)} 
 				icon='arrowDown'/>
 
-            <Button style={'button__transparent button__blue'}
+            <Button 
+                classes={'button__transparent button__blue'}
 				name="Delete Coin"
-				width={'150px'}
-                height={'42px'}
-				padding={'13px 8px 13px 12px'}
+				padding={'13px 16px'}
 		 		click={() => deleteCoin()} 
 				icon='arrowDown'/>
         </div>

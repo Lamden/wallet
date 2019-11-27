@@ -14,7 +14,7 @@
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
         changeStep: (step) => {
-            if (step === -1 && currentStep === 0) switchPage('CoinsMain');
+            if (step === -1 && currentStep === 0) switchPage('Restore');
             else if (step === -1) currentStep = back;
             else currentStep = step;
         }

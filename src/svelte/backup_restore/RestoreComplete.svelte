@@ -62,10 +62,6 @@
     flex-direction: column;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 .header{
     display: flex;
     flex-direction: row;
@@ -133,17 +129,7 @@ a{
     text-decoration: unset;
     color: #ffffff99;
 }
-/*
-input[type="checkbox"]{
-    width: 18px;
-    height: 18px;
-    background: #DADADA;
-}
 
-input[type="checkbox"].added{
-    background: var(--color-primary);;
-}
-*/
 input[type=checkbox].css-checkbox {
     position:absolute; 
     z-index:-1000; 
@@ -209,7 +195,7 @@ label.css-label-error {
 
 <div class="page">
     <div class="content">
-        <h6 class="heading">Wallets Restored</h6>
+        <h6>Wallets Restored</h6>
     
         <div class="text-box text-body1 text-primary">
             You've added the following wallets succesfully! You may now perform transactions using these addresses.

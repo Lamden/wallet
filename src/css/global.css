@@ -179,3 +179,7 @@ button {
     outline: none;
 }
 
+.no-margin{
+    margin: 0;
+}
+

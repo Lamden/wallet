@@ -99,10 +99,10 @@
 
 	:global(h5){
 		font-style: normal;
-		font-weight: 500;
-		font-size: 20px;
+		font-weight: normal;
+		font-size: 24px;
 		line-height: 28px;
-		letter-spacing: 0.15px;
+		margin-bottom: 10px;
 	}
 
 	:global(h6){
@@ -111,6 +111,7 @@
 		font-size: 20px;
 		line-height: 28px;
 		letter-spacing: 0.15px;
+		margin: 16px 0;
 	}
 
 	:global(body){

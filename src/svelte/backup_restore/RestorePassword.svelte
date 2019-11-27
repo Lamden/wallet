@@ -60,10 +60,6 @@
     padding: 156px 24px 0 242px;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 .text-box{
     margin-bottom: 8px;
 }
@@ -89,7 +85,7 @@ a{
 </style>
 
 <div class="page">
-    <h6 class="heading">Keystore File Confirmed</h6>
+    <h6>Keystore File Confirmed</h6>
     
     <div class="text-box text-body1 text-primary">
         Nice job. Now let's enter your original Keystore file password.

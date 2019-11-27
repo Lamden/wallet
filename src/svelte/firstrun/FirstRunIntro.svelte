@@ -27,10 +27,6 @@
     padding: 156px 24px 0 242px;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 .text-box{
    height: 144px;
    margin-bottom: 20px;
@@ -44,7 +40,7 @@ a{
 </style>
 
 <div class="page">
-    <h6 class="heading text-primary">Welcome!</h6>
+    <h6 class="text-primary">Welcome!</h6>
     <div class="text-box text-body1 text-primary">
         Creating a wallet is easy and secure. It's stored in the user’s browser, not on remote servers.
     </div>

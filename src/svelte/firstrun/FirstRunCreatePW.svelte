@@ -95,10 +95,6 @@
     padding: 156px 24px 0 242px;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 form{
     display: flex;
     flex-direction: column;
@@ -110,7 +106,7 @@ form{
 </style>
 
 <div class="page">
-    <h6 class="heading text-primary">Create a Password</h6>
+    <h6 class="text-primary">Create a Password</h6>
     <div class="text-box text-body1 text-primary">
         No username required. Use a strong password that you'll remember.
     </div>

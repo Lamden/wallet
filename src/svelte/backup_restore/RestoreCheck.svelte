@@ -64,7 +64,6 @@
     
 }
 
-
 .loading-padding{
     padding-top: 359px;
 }

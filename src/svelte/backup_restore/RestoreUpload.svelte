@@ -82,10 +82,6 @@
     padding: 156px 24px 0 242px;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 .caption-box{
     display: inline;
     margin: 16px 0 84px 0;
@@ -98,7 +94,7 @@ a{
 </style>
 
 <div class="page" on:dragover={(ev) => ev.preventDefault()} on:drop={(ev) => handleFileEvent(ev)}>
-    <h6 class="heading">Welcome!</h6>
+    <h6>Welcome!</h6>
     
     <div class="text-box text-body1 text-primary">
         To restore your wallet, please upload the file we provided you and choose a new password.

@@ -24,6 +24,7 @@ import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 
 //Backup and Restore
 import BackupMain from '../svelte/backup_restore/BackupMain.svelte';
+import Restore from '../svelte/backup_restore/Restore.svelte';
 import RestoreMain from '../svelte/backup_restore/RestoreMain.svelte';
 import RestoreUpload from '../svelte/backup_restore/RestoreUpload.svelte';
 import RestoreCheck from '../svelte/backup_restore/RestoreCheck.svelte';
@@ -47,6 +48,7 @@ import Steps from '../svelte/components/Steps.svelte';
 import Step from '../svelte/components/Step.svelte';
 import Loading from '../svelte/components/Loading.svelte';
 import ErrorBox from '../svelte/components/ErrorBox.svelte';
+import Card from '../svelte/components/Card.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
@@ -56,7 +58,7 @@ import Transaction from '../svelte/misc/Transaction.svelte';
 import About from '../svelte/misc/About.svelte';
 import Feedback from '../svelte/misc/Feedback.svelte';
 
-export const RestorePages = { 
+export const RestorePages = {
     RestoreMain, 
     RestoreUpload, 
     RestoreCheck, 
@@ -81,7 +83,7 @@ export const Pages = {
     CoinsMain, CoinDetails, CoinAdd, CoinSend, CoinRecieve, 
     LockScreen, 
     BackupMain, 
-    RestoreMain, 
+    Restore, 
     DevToolsMain, 
     HistoryMain, 
     About, 
@@ -89,10 +91,16 @@ export const Pages = {
     ...FirstRun 
 };
 
-
-
-
-export const Components = { Button, Switch, InputBox, Steps, Step, Loading, ErrorBox };
+export const Components = { 
+    Button, 
+    Switch, 
+    InputBox, 
+    Steps, 
+    Step, 
+    Loading, 
+    ErrorBox,
+    Card
+};
 
 export {
     Nav,
@@ -101,7 +109,7 @@ export {
     Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSend, CoinAdd,
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
-    RestoreMain,
+    Restore,
     LockScreen,
     Modal,
     MyCoinsDropDown,

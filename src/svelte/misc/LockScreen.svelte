@@ -102,7 +102,7 @@ form{
                         on:changed={validatePassword}
                         required={true}/>
                 </div>
-                <input  value="Save Password"
+                <input  value="Login"
                         class="button__solid button__purple submit submit-button submit-button-text" 
                         type="submit" >
             </form>

@@ -67,10 +67,6 @@
     flex-direction: column;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 .header{
     display: flex;
     flex-direction: row;
@@ -132,7 +128,7 @@ input[type="checkbox"]{
 
 <div class="page">
     <div class="content">
-        <h6 class="heading">Password Confirmed</h6>
+        <h6>Password Confirmed</h6>
     
         <div class="text-box text-body1 text-primary">
             Almost there! Now let's select which wallets you'd like to restore

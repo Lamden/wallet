@@ -42,10 +42,6 @@
     padding: 156px 24px 0 242px;
 }
 
-.heading{
-    margin-bottom: 16px;
-}
-
 .text-box{
    height: 144px;
    margin-bottom: 20px;
@@ -53,7 +49,8 @@
 </style>
 
 <div class="page">
-    <h6 class="heading text-primary">Remember</h6>
+    <h6 class="text-primary">Remember</h6>
+    
     <div class="text-box text-body1 text-primary">
         Your password, private keys, and locking your wallet are important to keeping your cryptocurrency safe.
     </div>
