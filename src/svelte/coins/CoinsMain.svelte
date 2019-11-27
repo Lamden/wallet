@@ -10,7 +10,7 @@
 			password } from '../../js/stores/stores.js';
 
 	//Components
-	import { Coin, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
+	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
 	const { Button } = Components;
 	import { backgrounds } from '../../js/images.js';
 	const { squares_bg } = backgrounds;
@@ -109,9 +109,15 @@
 		<div class="header-amount header-text">Amount</div>
 		<div class="header-percent header-text">Portfolio %</div>
 	</div>
-	{#each $CoinStore as coin, id}
-		<Coin {coin} />
-		<CoinDivider />
-	{/each}
+	{#if $CoinStore.length === 0}
+		<CoinEmpty />
+	{:else}
+		{#each $CoinStore as coin, id}
+			<Coin {coin} />
+			<CoinDivider />
+		{/each}
+	{/if}
+
+	
 	
 </div>

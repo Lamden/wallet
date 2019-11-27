@@ -21,6 +21,7 @@ import CoinDetails from '../svelte/coins/CoinDetails.svelte';
 import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
+import CoinEmpty from '../svelte/coins/CoinEmpty.svelte';
 
 //Backup and Restore
 import Backup from '../svelte/backup_restore/Backup.svelte';
@@ -111,8 +112,8 @@ export const Components = {
 export {
     Nav,
     Menu, MenuBox, MenuItem,
-    CoinsMain,
-    Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSend, CoinAdd,
+    CoinsMain, 
+    Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSend, CoinAdd, CoinEmpty,
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
     Restore,
