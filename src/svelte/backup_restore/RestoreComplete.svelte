@@ -201,8 +201,7 @@ label.css-label-error {
             You've added the following wallets succesfully! You may now perform transactions using these addresses.
         </div>
 
-        <Button style={`button__solid button__purple`}
-                height={'36px'}
+        <Button classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Back to Home"
                 disabled={false}

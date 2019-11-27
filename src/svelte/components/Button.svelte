@@ -8,7 +8,7 @@
     export let iconPosition = 'before';
     export let width = 'unset';
     export let height = 'unset';
-    export let padding = 'unset';
+    export let padding = '13px 16px';
     export let margin = 'unset';
     export let classes = 'button__solid';
     export let styles = '';

@@ -29,7 +29,7 @@
     display: flex;
     flex-direction: column;
 	box-sizing: border-box;
-	height: 310px;
+	min-height: 310px;
 	border-radius: 4px;
 	margin-bottom: 18px;
     padding: 40px;
@@ -42,6 +42,7 @@
     flex-direction: row;
     align-items: flex-end;
     flex-grow: 1;
+    margin-top: 4rem;
 }
 
 .subtext{
@@ -65,7 +66,6 @@
         	<Button 
                 classes={'button__transparent'}
 				name="Create Keystore"
-				padding={'13px 16px'}
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('BackupMain')} 
 				icon='arrowRight'

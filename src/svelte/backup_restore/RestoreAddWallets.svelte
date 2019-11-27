@@ -134,8 +134,7 @@ input[type="checkbox"]{
             Almost there! Now let's select which wallets you'd like to restore
         </div>
 
-        <Button style={`button__solid button__purple`}
-                height={'36px'}
+        <Button classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Restore Wallets"
                 disabled={false}

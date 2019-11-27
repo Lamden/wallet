@@ -108,8 +108,7 @@ a{
     
     <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
     
-    <Button style={`button__solid ${activeButton}`}
-            height={'36px'}
+    <Button classes={`button__solid ${activeButton}`}
             styles={'margin-bottom: 16px;'}
             name="Confirm Keystore"
             disabled={disabledButton}

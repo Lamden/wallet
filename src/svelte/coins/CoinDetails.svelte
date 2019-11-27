@@ -63,7 +63,7 @@
     display: flex;
     flex-direction: column;
 	box-sizing: border-box;
-	height: 247px;
+	min-height: 247px;
 	border-radius: 4px;
 	margin-bottom: 18px;
     padding: 40px;
@@ -86,13 +86,13 @@
     letter-spacing: 0.25px;
 }
 
-
-
 .buttons{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-end;
     flex-grow: 1;
+    margin-top: 4rem;
 }
 
 
@@ -108,7 +108,6 @@
         	<Button 
                 classes={'button__transparent'}
 				name="Send Coin"
-				padding={'13px 16px'}
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('CoinSend', coin)} 
 				icon='arrowUp'/>
@@ -116,7 +115,6 @@
 		    <Button 
                 classes={'button__transparent button__blue'}
 				name="Recieve Coin"
-				padding={'13px 16px'}
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('CoinRecieve', coin)} 
 				icon='arrowDown'/>
@@ -124,7 +122,6 @@
             <Button 
                 classes={'button__transparent button__blue'}
 				name="Delete Coin"
-				padding={'13px 16px'}
 		 		click={() => deleteCoin()} 
 				icon='arrowDown'/>
         </div>
