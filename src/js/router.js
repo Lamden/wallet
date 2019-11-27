@@ -23,6 +23,7 @@ import CoinSend from '../svelte/coins/CoinSend.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 
 //Backup and Restore
+import Backup from '../svelte/backup_restore/Backup.svelte';
 import BackupMain from '../svelte/backup_restore/BackupMain.svelte';
 import Restore from '../svelte/backup_restore/Restore.svelte';
 import RestoreMain from '../svelte/backup_restore/RestoreMain.svelte';
@@ -68,6 +69,10 @@ export const RestorePages = {
     RestoreComplete,  
 };
 
+export const BackupPages = {
+    BackupMain
+};
+
 export const FirstRun = { 
     FirstRunMain, 
     FirstRunIntro, 
@@ -83,7 +88,8 @@ export const Pages = {
     CoinsMain, CoinDetails, CoinAdd, CoinSend, CoinRecieve, 
     LockScreen, 
     BackupMain, 
-    Restore, 
+    Restore,
+    Backup,
     DevToolsMain, 
     HistoryMain, 
     About, 

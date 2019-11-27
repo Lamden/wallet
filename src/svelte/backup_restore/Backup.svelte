@@ -54,19 +54,20 @@
 <div class="page text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <h5 class="heading">
-            Restoring Your Lamden Wallet is Quick & Easy
+            Backing Up Your Lamden Wallet is Very Important
         </h5>
         <div class="subtext text-body2 text-primary-dark">
-            It only taktes a few minutes, please have your original Keystore file ready,
-            and be prepared to provide the password for it.
+            All of the information for your keys is stored in this browser. 
+            We highly recommend creating a KeyStore file so that you can recover 
+            your wallet if anythign happens to this computer.
         </div>
         <div class="buttons">
         	<Button 
                 classes={'button__transparent'}
-				name="Restore Now"
+				name="Create Keystore"
 				padding={'13px 16px'}
                 margin={'0 49px 0 0'}
-		 		click={() => switchPage('RestoreMain')} 
+		 		click={() => switchPage('BackupMain')} 
 				icon='arrowRight'
                 iconPosition='after'/>
         </div>

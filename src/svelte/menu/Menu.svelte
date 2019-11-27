@@ -17,7 +17,7 @@
         {
             heading: 'Safety & Security',
             items:[
-                {logo: icons.backup, name: 'Backup Wallet', page: {name: 'BackupMain'}},
+                {logo: icons.backup, name: 'Backup Wallet', page: {name: 'Backup'}},
                 {logo: icons.restore, name: 'Restore Wallet', page: {name: 'Restore'}},
                 {logo: icons.signout, name: 'Sign out & Lock', page: {name: 'LockScreen'}},
             ]
