@@ -13,7 +13,7 @@
     const { checkmarkWhite } = icons;
 
     //Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
     const { setKeys, changeStep } = getContext('functions');
 
     //Props

@@ -6,7 +6,7 @@
 	import { currentPage, password } from '../../js/stores/stores.js';
 
     //Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
 
     //Props
     export let menuItem;

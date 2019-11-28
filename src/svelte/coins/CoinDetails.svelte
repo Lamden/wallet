@@ -13,19 +13,17 @@
     //Utils
     import { logos } from '../../js/crypto/logos.js';
 
-    setContext('closeModal', {
-		closeModal: () => closeModal(),
-	});
+    const { switchPage, openModal, closeModal } = getContext('app_functions');
 
-    const { switchPage } = getContext('switchPage');
-
-    let openModal = false;
-    let currentModal = '';
+    let sendPages = {
+        lamden: 'CoinSendLamden'
+    }
 
     $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
     $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
+    $: sendPage = sendPages[coin.network]
 
 	onMount(() => {
         breadcrumbs.set([
@@ -33,16 +31,6 @@
             {name: `${coin.name} ${symbol}`, page: {name: ''}},
         ]);
     });
-    
-
-    function showModal(modal){
-        currentModal = modal;
-        openModal = true;
-    }
-
-    function closeModal(){
-        openModal = false;
-    }
 
     function deleteCoin(){
         if (confirm("Delete?")){
@@ -109,7 +97,7 @@
                 classes={'button__transparent'}
 				name="Send Coin"
                 margin={'0 49px 0 0'}
-		 		click={() => switchPage('CoinSend', coin)} 
+		 		click={() => openModal(sendPage, coin)} 
 				icon='arrowUp'/>
 
 		    <Button 

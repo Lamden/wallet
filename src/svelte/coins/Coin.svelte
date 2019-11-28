@@ -11,7 +11,7 @@
     export let coin;
 
     //Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
     
     $: watching = coin.sk === 'watchOnly';
 

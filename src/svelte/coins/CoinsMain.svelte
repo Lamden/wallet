@@ -19,13 +19,10 @@
 	import { updateBalances, decryptObject } from '../../js/utils.js';
 
 	//Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage, openModal } = getContext('app_functions');
 	
 	//Props
 	export let name
-
-	let openModal = false;
-	let currentModal = '';
 
 	onMount(() => {
 		//CoinStore.updateBalances($CoinStore);
@@ -33,15 +30,6 @@
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
 
-
-	function showModal(modal){
-        currentModal = modal;
-        openModal = true;
-	}
-	
-	function closeModal(){
-        openModal = false;
-	}
 </script>
 
 <style>
@@ -101,7 +89,7 @@
 		<Button 
 				classes={'button__transparent'}
 				name="Add Coin"
-		 		click={() => switchPage('CoinAdd')} 
+		 		click={() => openModal('CoinAdd')} 
 				icon='plus'/>
 	</div>
 	<div class="header header-text divider">
@@ -117,7 +105,4 @@
 			<CoinDivider />
 		{/each}
 	{/if}
-
-	
-	
 </div>

@@ -7,7 +7,7 @@
     import NavLogo from '../nav/NavLogo.svelte';
 
     //Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
 
     setContext('functions', {
         setFile: (value) => {file = value;},

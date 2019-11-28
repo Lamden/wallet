@@ -7,6 +7,7 @@
 		
 	//Stores
 	import {
+			CoinStore,
 			SettingsStore, 
 			HashStore,
 			currentPage, 
@@ -17,20 +18,29 @@
 			pageLoaded} from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu }  from '../js/router.js'
+	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from '../js/router.js'
+	const { Modal } = Components;
 
-	$: pwdIsCorrect = HashStore.validatePassword($password);
+	let showModal = false;
+	let currentModal;
+	let modalData;
 	let fullPage = ['RestoreMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
+	$: pwdIsCorrect = HashStore.validatePassword($password);
+
 	onMount(() => {
+		console.log($password)
+		CoinStore.setPwd('Summer0!0101')
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
 		pageLoaded.set(true);
 	});
 
-	setContext('switchPage', {
-		switchPage: (name, data) => switchPage(name, data)
+	setContext('app_functions', {
+		switchPage: (name, data) => switchPage(name, data),
+		openModal: (modal, data) => openModal(modal, data),
+		closeModal: () => showModal = false,
 	});
 
 	function pageIsLoaded(){
@@ -45,6 +55,12 @@
 	function getUsedLocalStorageSpace() {
   		return Object.keys(window.localStorage).map(function(key) { return localStorage[key].length;}).reduce(function(a,b) { return a+b;});
 	};
+
+	function openModal(modal, data){
+		currentModal = modal;
+		modalData = data;
+        showModal = true;
+	}
 
 </script>
 {#if $pageLoaded}
@@ -63,7 +79,12 @@
 						</div>
 						<div class="content-pane">
 							<svelte:component this={Pages[$currentPage.name]}/>
-						</div>			
+						</div>
+						{#if showModal}
+							<Modal>
+								<svelte:component this={Modals[currentModal]} {modalData}/>
+							</Modal>
+						{/if}
 					</div>
 				{/if}
 			{/if}

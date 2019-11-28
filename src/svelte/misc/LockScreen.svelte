@@ -5,7 +5,7 @@
     const { InputBox } = Components;
     
     //Stores
-    import { loggedIn, HashStore, password } from '../../js/stores/stores.js';
+    import { loggedIn, HashStore, CoinStore } from '../../js/stores/stores.js';
     
     //DOM nodes
     let formObj;
@@ -14,8 +14,7 @@
 
     function handleSubmit(){
         if (formObj.checkValidity()){
-            password.set(pwd);
-            loggedIn.set(true);
+            CoinStore.setPwd(pwd);
         }
     }
 

@@ -8,7 +8,7 @@
     import { icons } from '../../js/images.js';
 
     //Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
 
     export let crumb;
     export let index;

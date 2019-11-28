@@ -122,3 +122,4 @@ export function verify(vk, msg, sig) {
         return false;
     }
 }
+

@@ -10,7 +10,7 @@
 
     //Context
     const { changeStep } = getContext('functions');
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
 
     onMount(() => {
         steps.set({current:0, stepList:[]});

@@ -2,13 +2,14 @@
     import { getContext, onMount} from 'svelte';
 
 	//Stores
-    import { HashStore, CoinStore, SettingsStore, breadcrumbs } from '../../js/stores/stores.js';
+    import { HashStore, CoinStore, SettingsStore } from '../../js/stores/stores.js';
     
     //Utils
     import { checkPassword, copyToClipboard, decryptStrHash } from '../../js/utils.js';
+    import * as contract from '../../js/lamden/contract.js'
     import { validateAddress, signTx } from '../../js/crypto/wallets.js';
 
-    $: coin = $SettingsStore.currentPage.data
+    $: coin = $SettingsStore.currentPage.data;
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
 
@@ -16,7 +17,7 @@
     let formObj1, formObj2, passwordField, addressField;
 
     //Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
 
     let error, status = "";
     let value = 0;
@@ -26,12 +27,45 @@
     let txData = {};
 
     onMount(() => {
-        breadcrumbs.set([
-            {name: 'Holdings', page: {name: 'CoinsMain'}},
-            {name: `${coin.name} ${symbol}`, page: {name: 'CoinDetails', data: coin}},
-            {name: `Send ${symbol}`, page: {name: ''}},
-        ]);
+        console.log(contract)
+        submit_tx_to_network(100, s.txStamps, s.txDestination,
+                                this.currentKey,
+                                this.storage.getPrivateKey(this.network, this.currentKey))
     });
+
+    function submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_vk, wallet_sk) => {
+        return new Promise(function(resolve, reject) {
+            var nonce = "";
+
+            if (nonceDisabled) {
+                nonce = wallet_vk + 'B'.repeat(64); 
+            } else {
+                // TODO: request nonce from network
+            }
+
+            var cct = new contract.CurrencyContractTransaction();
+            var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
+            var tc = new contract.CurrencyTransactionContainer();
+            tc.create(tx);
+
+            var tcbytes = tc.toBytesPacked();
+            var xhr = new XMLHttpRequest();
+
+            xhr.onload = function() {
+                if (xhr.readyState == xhr.DONE) {
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        resolve(data);
+                    }
+                }
+            }
+            
+            xhr.onerror = reject;
+            xhr.timeout = 60000;
+            xhr.open('POST', get_mn_url() + '/', true); 
+            xhr.send(tcbytes);
+        });
+    }
 
     function displayError(e){
         console.log(e); 

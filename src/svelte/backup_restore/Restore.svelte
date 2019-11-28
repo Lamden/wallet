@@ -11,7 +11,7 @@
 	const { squares_bg } = backgrounds;
 
 	//Context
-    const { switchPage } = getContext('switchPage');
+    const { switchPage } = getContext('app_functions');
 
 	onMount(() => {
         breadcrumbs.set([{name: 'Restore Wallet', page: {name: ''}}]);

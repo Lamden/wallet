@@ -1,5 +1,5 @@
 <script>
-    import { onMount, setContext } from 'svelte';
+    import { onMount, getContext } from 'svelte';
     
 	//Stores
     import { CoinStore, HashStore, coinMeta, password, breadcrumbs } from '../../js/stores/stores.js';
@@ -8,6 +8,9 @@
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
     import { encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
 
+	//Context
+    const { closeModal } = getContext('app_functions');
+    
     //DOM NODES
     let formObj, publicKeyField, privateKeyField;
     
@@ -36,7 +39,7 @@
                 saveKeys();
             }
             if (error.length === 0){
-                CoinStore.updateBalances($CoinStore);
+                //CoinStore.updateBalances($CoinStore);
                 closeModal();
             }
         }
@@ -64,6 +67,8 @@
     }
 
     function saveKeys(){
+        console.log(CoinStore)
+        console.log($CoinStore)
         if ($CoinStore.filter(f =>  f.network === selected.network &&
                                     f.symbol === selected.symbol &&
                                     f.vk === keyAttributes.publicKey).length > 0){
@@ -80,7 +85,6 @@
                 'vk': keyAttributes.publicKey,
                 'sk': addType === 3 ? 'watchOnly' : encryptStrHash($password, keyAttributes.privateKey),
             }
-
 
             if (coinInfo.vk === "") {
                 error = "vk blank"

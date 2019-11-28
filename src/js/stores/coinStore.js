@@ -1,37 +1,52 @@
 import { writable, get, derived } from 'svelte/store';
+import { encryptObject, decryptObject } from '../../js/utils.js';
 
-const createCoinStore = (key, startValue) => {
-    const json = localStorage.getItem(key);
-    if (json) {
-        startValue = JSON.parse(json)
-    }
+const createCoinStore = () => {
+    let startValue;
+    const passwordStore = writable('');
+
+    if ( get(passwordStore) === '' ) startValue = [];
     const CoinStore = writable(startValue);
+
     CoinStore.subscribe(current => {
-        localStorage.setItem(key, JSON.stringify(current));
+        if ( get(passwordStore) !== '' ){
+            localStorage.setItem('coins', JSON.stringify( encryptObject( get(passwordStore), current)));
+        }
     });
-    
+
+    passwordStore.subscribe(currPwd => {
+        if (currPwd !== ''){
+            CoinStore.update(curr => {
+                const encryptedStorage = localStorage.getItem('coins');
+
+                if (encryptedStorage) {
+                    let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
+                    startValue = decryptedStorage;
+                    if (decryptedStorage) localStorage.setItem('backup', encryptedStorage);
+                    else if(localStorage.getItem('backup')) {
+                        const encryptedBackupStorage = localStorage.getItem('backup');
+                        startValue = JSON.parse(decryptObject( get(passwordStore), encryptedBackupStorage))
+                    }
+                }
+
+                if (startValue) return startValue;
+                return [];
+            })
+        }
+    });
+
     let subscribe = CoinStore.subscribe;
     let update = CoinStore.update;
     let set = CoinStore.set;
+	let setPwd = passwordStore.set;
 
-    const getCoin = (coin, coinstore) => {
-        return  coinstore.find(f=> f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk);
-    }
-    
     return {
         startValue,
         subscribe,
         set,
         update,
-        getCoin,
-        reset: () => {
-            const json = localStorage.getItem(key);
-            if (json) {
-                let returnstr = JSON.parse(json)
-                set(returnstr);
-            }
-            set(startValue)
-        },
+        setPwd,
+        password: () => {return get(passwordStore)},
         getCoin: (coin) => {
             return get(CoinStore).find( f => {
                 return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
@@ -49,21 +64,6 @@ const createCoinStore = (key, startValue) => {
         }
     };
 }
-export const CoinStore = createCoinStore('coins', []);
+export const CoinStore = createCoinStore();
 
-export const numberOfCoins = derived(
-    CoinStore,
-    $CoinStore => $CoinStore.length
-);
-
-export const symbolList = derived(
-    CoinStore,
-    ($CoinStore) => {
-        let symbols = [];
-
-        $CoinStore.map(coin =>{
-            if (!coin.symbol.includes('TESTNET')) symbols.push(coin.symbol);
-        })
-        return Array.from(new Set(symbols));
-    }
-);
+export const password = derived(CoinStore, () => CoinStore.password());

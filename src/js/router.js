@@ -19,7 +19,7 @@ import Coin from '../svelte/coins/Coin.svelte';
 import CoinDivider from '../svelte/coins/CoinDivider.svelte';
 import CoinDetails from '../svelte/coins/CoinDetails.svelte';
 import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
-import CoinSend from '../svelte/coins/CoinSend.svelte';
+import CoinSendLamden from '../svelte/coins/CoinSendLamden.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 import CoinEmpty from '../svelte/coins/CoinEmpty.svelte';
 
@@ -51,10 +51,10 @@ import Step from '../svelte/components/Step.svelte';
 import Loading from '../svelte/components/Loading.svelte';
 import ErrorBox from '../svelte/components/ErrorBox.svelte';
 import Card from '../svelte/components/Card.svelte';
+import Modal from '../svelte/components/Modal.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
-import Modal from '../svelte/misc/Modal.svelte';
 import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
 import About from '../svelte/misc/About.svelte';
@@ -86,7 +86,7 @@ export const FirstRun = {
 };
 
 export const Pages = { 
-    CoinsMain, CoinDetails, CoinAdd, CoinSend, CoinRecieve, 
+    CoinsMain, CoinDetails, 
     LockScreen, 
     BackupMain, 
     Restore,
@@ -106,14 +106,21 @@ export const Components = {
     Step, 
     Loading, 
     ErrorBox,
-    Card
+    Card,
+    Modal
 };
+
+export const Modals = {
+    CoinSendLamden,
+    CoinRecieve,
+    CoinAdd
+}
 
 export {
     Nav,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSend, CoinAdd, CoinEmpty,
+    Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSendLamden, CoinAdd, CoinEmpty,
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
     Restore,
