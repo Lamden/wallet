@@ -75,11 +75,12 @@ label{
     right: 25px;
     width: 0px;
     height: 0;
+    border: 6px solid transparent;
     border-color: var(--font-primary-dark) transparent transparent transparent;
 }
 
 .select-selected.select-arrow-active:after {
-    border-color: transparent transparent #fff transparent;
+    border-color: transparent transparent var(--font-primary-dark) transparent;
     top: 28px;
 }
 
