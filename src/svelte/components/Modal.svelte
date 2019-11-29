@@ -41,7 +41,7 @@
 
 <div class='modal-background' on:click={() => closeModal()}></div>
 
-<div class='modal'>
+<div class='modal' style="overflow: visible;">
 	<slot></slot>
 	<button on:click={() => closeModal()}>close modal</button>
 </div>

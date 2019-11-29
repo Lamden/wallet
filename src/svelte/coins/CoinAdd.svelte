@@ -67,8 +67,6 @@
     }
 
     function saveKeys(){
-        console.log(CoinStore)
-        console.log($CoinStore)
         if ($CoinStore.filter(f =>  f.network === selected.network &&
                                     f.symbol === selected.symbol &&
                                     f.vk === keyAttributes.publicKey).length > 0){

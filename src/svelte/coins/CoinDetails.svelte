@@ -104,7 +104,7 @@
                 classes={'button__transparent button__blue'}
 				name="Recieve Coin"
                 margin={'0 49px 0 0'}
-		 		click={() => switchPage('CoinRecieve', coin)} 
+		 		click={() => openModal('CoinRecieve', coin)} 
 				icon='arrowDown'/>
 
             <Button 

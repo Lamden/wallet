@@ -29,7 +29,6 @@
             current.currentStep = 2;
             return current
         });
-        console.log(pwdHint)
     });
 
     function validateKeyStorePassword(e){

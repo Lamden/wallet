@@ -29,8 +29,7 @@
 	$: pwdIsCorrect = HashStore.validatePassword($password);
 
 	onMount(() => {
-		console.log($password)
-		CoinStore.setPwd('Summer0!0101')
+
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;

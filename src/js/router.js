@@ -52,10 +52,10 @@ import Loading from '../svelte/components/Loading.svelte';
 import ErrorBox from '../svelte/components/ErrorBox.svelte';
 import Card from '../svelte/components/Card.svelte';
 import Modal from '../svelte/components/Modal.svelte';
+import DropDown from '../svelte/components/DropDown.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
-import MyCoinsDropDown from '../svelte/misc/MyCoinsDropDown.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
 import About from '../svelte/misc/About.svelte';
 import Feedback from '../svelte/misc/Feedback.svelte';
@@ -107,7 +107,8 @@ export const Components = {
     Loading, 
     ErrorBox,
     Card,
-    Modal
+    Modal,
+    DropDown
 };
 
 export const Modals = {
@@ -120,13 +121,12 @@ export {
     Nav,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinRecieve, CoinSendLamden, CoinAdd, CoinEmpty,
+    Coin, CoinDivider, CoinDetails, CoinSendLamden, CoinAdd, CoinEmpty,
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
     Restore,
     LockScreen,
     Modal,
-    MyCoinsDropDown,
     HistoryMain,
     Transaction,
     Feedback,
