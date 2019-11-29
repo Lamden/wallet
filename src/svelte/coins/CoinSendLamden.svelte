@@ -1,57 +1,147 @@
 <script>
-    import { getContext, onMount} from 'svelte';
+    import { getContext, onMount, beforeUpdate, afterUpdate, tick} from 'svelte';
 
 	//Stores
-    import { HashStore, CoinStore, SettingsStore } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore, password } from '../../js/stores/stores.js';
+
+    //Components
+    import { Components }  from '../../js/router.js'
+    const { DropDown, InputBox, Button } = Components;
     
     //Utils
-    import { checkPassword, copyToClipboard, decryptStrHash } from '../../js/utils.js';
+    import { decryptStrHash } from '../../js/utils.js';
     import * as contract from '../../js/lamden/contract.js'
-    import { validateAddress, signTx } from '../../js/crypto/wallets.js';
-
-    $: coin = $SettingsStore.currentPage.data;
-    $: symbol = coin.symbol;
-    $: balance = coin.balance ? coin.balance : 0;
+    import * as oldContract from '../../js/lamden/oldcontract.js'
 
     //DOM NODES
-    let formObj1, formObj2, passwordField, addressField;
+    let formObj1
 
     //Context
     const { switchPage } = getContext('app_functions');
 
+    //Props
+    export let modalData;
+
     let error, status = "";
     let value = 0;
     let reciever_address = '';
-    let info_valid = false;
-    let password = '';
     let txData = {};
+    let selectedWallet;
+    let contractError = false;
+    let contractMethods;
 
+    $: coin = modalData;
+    $: symbol = coin.symbol;
+    $: balance = coin.balance ? coin.balance : 0;
+    $: contractName = 'currency'
+    $: methodArgs = [];
+    
     onMount(() => {
-        console.log(contract)
-        submit_tx_to_network(100, s.txStamps, s.txDestination,
-                                this.currentKey,
-                                this.storage.getPrivateKey(this.network, this.currentKey))
+        contractMethods = getMethods(contractName)
+
+        let kwargs = {
+            'amount': {
+                'value': 2000,
+                'type': 'fixedPoint'
+            },
+            'to': {
+                'value': '3d093133af5b54b4af9c52cc9b556aa495583c8c193f1060190b7d74e98c4416',
+                'type': 'text'
+            }
+        }
+        /*
+        submit_tx_to_network('currency', 'transfer', 50000, kwargs)
+        submit_tx_to_network2(
+            decryptStrHash($password, coin.sk),
+            30000,
+            coin.vk + 'B'.repeat(64),
+            '3d093133af5b54b4af9c52cc9b556aa495583c8c193f1060190b7d74e98c4416',
+            2000
+        )
+        */
     });
 
-    function submit_tx_to_network = (txAmount, txStamps, txDestination, wallet_vk, wallet_sk) => {
-        return new Promise(function(resolve, reject) {
-            var nonce = "";
-
-            if (nonceDisabled) {
-                nonce = wallet_vk + 'B'.repeat(64); 
-            } else {
-                // TODO: request nonce from network
+    function coinList(){
+        return $CoinStore.map(coin => {
+            return {
+                value: coin,
+                name: `${coin.nickname} - ${coin.vk.substring(1, 55 - coin.nickname.length)}...`,
             }
+        })
+    }
 
-            var cct = new contract.CurrencyContractTransaction();
-            var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
-            var tc = new contract.CurrencyTransactionContainer();
-            tc.create(tx);
+    function methodList(methods){
+        if (!methods) return [];
+        return methods.map(method => {
+            return {
+                value: method,
+                name: `${method.name}`,
+            }
+        })
+    }
 
-            var tcbytes = tc.toBytesPacked();
+    function setArgs(args){
+        if (!args) return
+        methodArgs = [...args]
+    }
+
+    function getMethods(contract){
+        return fetch(`http://192.168.1.141:8000/contracts/${contract}/methods`)
+                    .then(res => res.json())
+                    .then(res => {
+                        if (!res.methods) contractError = true;
+                        contractError = false;
+                        setArgs(res.methods[0].arguments)
+                        return res.methods
+                    })
+
+    }
+
+    function submit_tx_to_network2(wallet_sk, txStamps, nonce, txDestination, txAmount){
+        var cct = new oldContract.CurrencyContractTransaction();
+        var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
+        var tc = new oldContract.CurrencyTransactionContainer();
+        tc.create(tx);
+
+        var tcbytes = tc.toBytesPacked();
+
+        send(tcbytes)
+            .then(res => handleResponse(res)  )
+    }
+
+    function submit_tx_to_network (contract_name, func_name, stamps, kwargs){
+        let contractTx = new contract.ContractTransaction();
+        let txContainer = new contract.ContractTransactionContainer();
+
+        contractTx.create(contract_name, func_name, stamps, kwargs);
+        contractTx.sign(decryptStrHash($password, coin.sk))
+        console.log(contractTx)
+        
+        txContainer.create(contractTx.tx);
+        console.log(txContainer)
+
+        let tx = txContainer.toBytesPacked();
+        console.log(tx)
+
+        send(tx)
+            .then(res => handleResponse(res)  )
+
+        /*
+        fetch("http://192.168.1.141:8000/", {
+            method: 'post',
+            data: tx
+        })
+            .then(res => handleResponse(res))
+            .catch(err => handleError(err))
+          */  
+    }
+
+    function send(tx){
+        return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
 
             xhr.onload = function() {
+                console.log(xhr)
                 if (xhr.readyState == xhr.DONE) {
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
@@ -62,143 +152,117 @@
             
             xhr.onerror = reject;
             xhr.timeout = 60000;
-            xhr.open('POST', get_mn_url() + '/', true); 
-            xhr.send(tcbytes);
+            xhr.open('POST', 'http://192.168.1.141:8000/', true); 
+            xhr.send(tx);
         });
     }
 
-    function displayError(e){
-        console.log(e); 
-        error = e;
+    function handleResponse(res){
+        console.log(res)
     }
 
-    function handleSubmit1(){
-        error = '';
-        if (formObj1.checkValidity()){
-            createTransaction();
-        }
+    function handleError(err){
+        console.log(err)
     }
 
-    async function handleSubmit2(){
-        error = '';
-        if (formObj2.checkValidity()){
-            if ( await createSignedTx() ){
-                await sendTx();
-                
-                //Check to make sure the transaction was published (does not mean confirmed)
-                if ( await checkPublish() ) {
-                    status = 'Redeem Transaction Sent!';
-                    txData.txResult.sent = new Date();
-                    finishTransaction();
-                }
-            }
-        }
-    }
-
-    function createTransaction() {
-        status = "Getting Transaction Details";
-    }
-
-    function createSignedTx(){
-        status = "Signing Transaction";
-        try{
-            txData.txInfo.signed_transaction = signTx(txData.txInfo.unsigned_raw_tx, decryptStrHash(password, coin.sk), coin.network, coin.symbol);
-            status = "Transaction Signed!";
-            return true;
-        }catch (e) {
-            displayError(e);
-            return false;
-        }
-    }
-
-    function sendTx(){
-        status = "Publishing Transaction"
-    }
-
-    function checkPublish() {
-        let transaction = txData.txResult.transaction;
-        status = `Checking for Transaction on the Blockchain`;
-    }
-
-    function finishTransaction(){
-            CoinStore.updateCoinTransaction(coin, txData);
-            closeModal();
-    }
-
-    function addressValidation(obj){
-        obj.setCustomValidity("");
-        try{
-            reciever_address = validateAddress(coin.network, reciever_address);
-        } catch (e) {
-            displayError(e);
-            obj.setCustomValidity(e);
-        }
-        if (coin.vk === reciever_address){
-            obj.setCustomValidity('cannot send to yourself');
-        }
-    }
-
-    function validatePassword(obj){
-        obj.setCustomValidity('');
-        if (!checkPassword(password, $HashStore.encode)) {
-            obj.setCustomValidity("Incorrect Password");
-        }
+    function handleNext(){
+        console.log('next')
     }
 </script>
 
 <style>
-    div{
-        display: grid;
+    .send-lamden{
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 804px;
+        width: 100%;
     }
-    
+
+    .coin-info{
+        height: 18px;
+    }
+
+    .contract-details{
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: 400px;
+        padding: 28px 103px 57px 0;
+        margin-right: 25px;
+        border-right: 1px solid var(--font-primary-dark)
+    }
+
+    .buttons{
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+    }
+
 </style>
 
 {#if error}{error}{:else}{status}{/if}
-<div class="send text-primary">
-    <h2> Send {coin.name} </h2>
-    {#if !info_valid}
-        <form on:submit|preventDefault={() => handleSubmit1() } bind:this={formObj1} target="_self">
-            <h3>Public Key</h3>
-            <div>
-                <span><small>{`${coin.name} - ${coin.nickname}`}</small></span>
-                <span><small>{`${balance} (${symbol})`}</small></span>
-            </div>
-            <a class="copy-link" href="javascript:void(0)" on:click={ () => copyToClipboard(coin.vk) }>{coin.vk}</a>
-            <small>click to copy public key to clipboard</small>
+<div class="send-lamden">
+    <h5> {`Send Lamden ${coin.name}`} </h5>
+    <DropDown  
+        items={coinList()} 
+        id={'mycoins'} 
+        label={'Select Wallet to Send From'}
+        styles="margin-bottom: 19px;"
+        required={true}
+        on:selected={(e) => selectedWallet = e.detail.selected.value}
+    />
 
-            <div>
-                <lable>Amount</lable>
-                <input type="text" bind:value={value} required/>
-                <!-- <small>USD Value 0.0001</small> -->
-            </div>
-            <div>
-                <lable>To Address</lable>
-                <input type="text" 
-                    bind:value={reciever_address}
-                    bind:this={addressField}
-                    required 
-                    on:change={() => addressValidation(addressField)}/>
-            </div>
-            <div>
-                <input type="submit" value="Get Transaction Information" required>
-            </div>
-        </form>
-    {/if}
+    <div class="coin-info text-subtitle3">
+        {#if selectedWallet}
+            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance} ${selectedWallet.symbol}`}
+        {/if}
+    </div>
 
-    {#if info_valid}
-        <form on:submit|preventDefault={() => handleSubmit2() } bind:this={formObj2} target="_self">
-            <div>
-                <label>Wallet Password</label>
-                <input bind:value={password}
-                        bind:this={passwordField}
-                        on:change={() => validatePassword(passwordField)}
-                        type="password"
-                        required  />
-                <input type="submit" value="Publish Transaction" required>
-            </div>
-        </form>
-    {/if}
+    <div class="contract-details">
+        <InputBox
+            width="100%"
+            value= {contractName}
+            label={"Enter Contract Name"}
+            styles={`margin-bottom: 17px;`}
+            on:changed={(e) => contractMethods = getMethods(e.detail.value)}
+            required={true}
+        />
+        <div class="args">
+            {#await contractMethods }
+                <DropDown  label={'Functions'} />
+            {:then methods}
+                <DropDown  
+                    items={methodList(methods)} 
+                    id={'methods'} 
+                    label={'Function Name'} 
+                    styles={`margin-bottom: 40px;`}
+                    required={true}
+                    on:selected={(e) => setArgs(e.detail.selected.value.arguments)}
+                />
+                {#each methodArgs as arg, index}
+                    <InputBox
+                            id={index}
+                            width="100%"
+                            label={arg}
+                            on:changed={(e) => console.log(e.detail.value)}
+                            required={true}
+                    />        
+                {/each}
+            {:catch}
+                <DropDown  label={'Functions'} />
+            {/await}
+        </div>
 
+    </div>
+    <div class="buttons">
+        <Button classes={'button__solid button__purple'} 
+                width={'232px'}
+                height={'36px'}
+                margin={'0 0 17px 0'}
+                name="Next" 
+                click={() => handleNext()} />
+    </div>
 </div>
 
 

@@ -1,6 +1,10 @@
 <script>
 	import { getContext } from 'svelte';
 
+	//Components
+    import { Components }  from '../../js/router.js'
+    const { Button } = Components;
+
 	//Context
     const { closeModal } = getContext('app_functions');
 
@@ -20,28 +24,31 @@
 	.modal {
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		position: absolute;
+		overflow: visible;
 		left: 50%;
 		top: 50%;
 		width: calc(100vw - 4em);
 		max-width: 50em;
 		max-height: calc(100vh - 4em);
-		overflow: auto;
 		transform: translate(-50%,-50%);
-		padding: 33px 55px;
+		padding: 30px 55px;
 		background: var(--bg-color);
 		box-shadow: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
 		border-radius: 4px;
 	}
 
-	button {
-		display: block;
-	}
 </style>
 
 <div class='modal-background' on:click={() => closeModal()}></div>
 
-<div class='modal' style="overflow: visible;">
+<div class='modal'>
 	<slot></slot>
-	<button on:click={() => closeModal()}>close modal</button>
+    <Button classes={'button__text text-caption'} 
+            width={'125px'}
+			height={'24px'}
+			padding={0}
+            name="Cancel" 
+            click={() => closeModal()} />
 </div>

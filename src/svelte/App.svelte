@@ -29,7 +29,7 @@
 	$: pwdIsCorrect = HashStore.validatePassword($password);
 
 	onMount(() => {
-
+		
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
@@ -122,7 +122,7 @@
 		font-weight: normal;
 		font-size: 24px;
 		line-height: 28px;
-		margin-bottom: 10px;
+		margin: 10px 0;
 	}
 
 	:global(h6){

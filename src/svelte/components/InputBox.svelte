@@ -3,10 +3,12 @@
     const dispatch = createEventDispatcher();
 
     //Props
+    export let id;
+    export let styles = ''; 
     export let value = '';
     export let label = '';
     export let placeholder = '';
-    export let intputType = '';
+    export let inputType = '';
     export let pattern;
     export let required = false;
     export let width = '200px';
@@ -25,7 +27,7 @@
 label{
     position: relative;
     top: 8px;
-    left: 12px;
+    left: 9px;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -39,6 +41,7 @@ input{
     display: flex;
     align-items: center;
     width: 100%;
+    min-height: 56px;
 
     background: none;
     border: 1px solid #e0e0e03d;
@@ -75,14 +78,28 @@ input::-webkit-input-placeholder {
 
 <div class="inputbox" style="margin: {margin};">
     <label> {label} </label>
-    <input
-        bind:value={value}
-        bind:this={thisInput}
-        on:change={() => dispatchChanged()}
-        class="input:required:invalid input:focus:invalid"
-        style="width: {width};"
-        type="password"
-        pattern={pattern}
-        placeholder={placeholder}
-        required={required}  />
+    {#if inputType === "password"}
+        <input
+            id={id}
+            bind:value={value}
+            bind:this={thisInput}
+            on:change={() => dispatchChanged()}
+            class="input:required:invalid input:focus:invalid"
+            style={`width: ${width}; ${styles}`}
+            type="password"
+            pattern={pattern}
+            placeholder={placeholder}
+            required={required}  />
+    {:else}
+        <input
+            id={id}
+            bind:value={value}
+            bind:this={thisInput}
+            on:change={() => dispatchChanged()}
+            class="input:required:invalid input:focus:invalid"
+            style={`width: ${width}; ${styles}`}
+            pattern={pattern}
+            placeholder={placeholder}
+            required={required}  />
+    {/if}
 </div>

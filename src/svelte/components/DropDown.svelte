@@ -1,12 +1,13 @@
 
 
 <script>
-    import { createEventDispatcher, onMount} from 'svelte';
+    import { createEventDispatcher, onMount, beforeUpdate} from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Props
     export let id;
     export let label;
+    export let defaultText = 'None';
     export let initial = '';
     export let items = [];
     export let styles = '';
@@ -19,12 +20,20 @@
     let hideBox = true;
 
     onMount(()=>{
-        selectElm.options[0].selected = true;
+        if (selectElm.options[0]){
+            selectElm.options[0].selected = true;
+            dispatchSelected(selectElm.options[0])
+        }
+    })
+
+    beforeUpdate(() => {
+        console.log(styles)
     })
 
     function dispatchSelected(selected) {
             let selectedIndex = initial === '' ? selectElm.selectedIndex : selectElm.selectedIndex - 1;
             dispatch('selected', {id, selected: items[selectedIndex]});
+            console.log(items[selectedIndex])
     }
 
     function handleClick(option, index){
@@ -44,7 +53,7 @@
 label{
     position: relative;
     top: 8px;
-    left: 12px;
+    left: 9px;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -68,11 +77,17 @@ label{
     border: 1px solid #e0e0e03d;
 }
 
+.select-selected.open {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e03d;
+    border-radius: 4px 4px 0 0;
+}
+
 .select-selected:after {
-    position: absolute;
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
     content: "";
-    top: 36px;
-    right: 25px;
     width: 0px;
     height: 0;
     border: 6px solid transparent;
@@ -81,15 +96,17 @@ label{
 
 .select-selected.select-arrow-active:after {
     border-color: transparent transparent var(--font-primary-dark) transparent;
-    top: 28px;
+    margin-bottom: 8px;
+    margin-top: 0px;
 }
 
 .select-items div,.select-selected {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
+    min-height: 56px;
 
-    background: none;
     box-sizing: border-box;
     transition: border 0.5s;
     border-radius: 4px;
@@ -108,6 +125,8 @@ label{
 
 .select-items {
     position: absolute;
+    border: 1px solid #e0e0e03d;
+    border-radius: 0 0 4px 4px;
     background-color: var(--bg-color);
     top: 100%;
     left: 0;
@@ -139,9 +158,10 @@ label{
         <div bind:this={newSelectElm} 
              class="select-selected"
              class:select-arrow-active={!hideBox}
+             class:open={!hideBox}
              on:click={() => toggleBox()}
              >
-            {selectElm.options[selectElm.selectedIndex].innerHTML}
+            {selectElm.options.length > 0 ? selectElm.options[selectElm.selectedIndex].innerHTML : defaultText}
         </div>
         <div class="select-items" class:select-hide={hideBox}>
             {#each selectElm.options as option, index }
