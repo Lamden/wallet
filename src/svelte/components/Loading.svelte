@@ -7,7 +7,7 @@
     const { spinner } = icons;
     
 
-    export let message;
+    export let message = '';
 
 </script>
 
@@ -44,5 +44,5 @@
 
 <div class="loading">
     <img class:svg-black={$themeStyle === 'light'} class="spinner" src={spinner} alt="spinner icon" />
-    <h6 class="message text-primary">{message}</h6>
+    {#if message !== ''}<h6 class="message text-primary">{message}</h6>{/if}
 </div>

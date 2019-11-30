@@ -15,6 +15,17 @@ body{
     display: flex; 
     color: #e0e0e08a;
 }
+
+.flex-column{
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row{
+    display: flex;
+    flex-direction: row;
+}
+
 .text-black{
     color: #121212;
 }
@@ -200,3 +211,10 @@ button {
     margin: 0;
 }
 
+.no-top-margin{
+    margin-top: 0px;
+}
+
+.no-bottom-margin{
+    margin-bottom: 0px;
+}

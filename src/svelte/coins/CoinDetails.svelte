@@ -16,7 +16,7 @@
     const { switchPage, openModal, closeModal } = getContext('app_functions');
 
     let sendPages = {
-        lamden: 'CoinSendLamden'
+        lamden: 'CoinLamdenSend'
     }
 
     $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;

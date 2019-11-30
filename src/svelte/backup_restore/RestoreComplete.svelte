@@ -157,7 +157,7 @@ input[type=checkbox].css-checkbox + label.css-label {
 }
 
 label.css-label {
-    background-image:url('./icon_checkmark_white.svg');
+    background-image:url('./icon_checkmark-white.svg');
     background-color: var(--primary-color);
     -webkit-touch-callout: none;
     -webkit-user-select: none;

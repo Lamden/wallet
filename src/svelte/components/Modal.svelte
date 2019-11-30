@@ -6,7 +6,7 @@
     const { Button } = Components;
 
 	//Context
-    const { closeModal } = getContext('app_functions');
+	const { closeModal } = getContext('app_functions');
 
 </script>
 
@@ -45,10 +45,4 @@
 
 <div class='modal'>
 	<slot></slot>
-    <Button classes={'button__text text-caption'} 
-            width={'125px'}
-			height={'24px'}
-			padding={0}
-            name="Cancel" 
-            click={() => closeModal()} />
 </div>

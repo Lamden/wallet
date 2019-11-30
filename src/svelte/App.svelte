@@ -29,7 +29,6 @@
 	$: pwdIsCorrect = HashStore.validatePassword($password);
 
 	onMount(() => {
-		
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
@@ -97,24 +96,32 @@
 
 <style>
 	:global(h1){
-		color: var(--font-color);
+		font-style: normal;
 		font-weight: normal;
 		font-size: 24px;
 		line-height: 28px;
 	}
 
 	:global(h2){
-		color: var(--font-color);
+		font-style: normal;
 		font-weight: normal;
 		font-size: 16px;
 		line-height: 24px;
 	}
 
 	:global(h3){
-		color: var(--font-color);
-		font-weight: 400;
+		font-style: normal;
+		font-weight: normal;
 		font-size: 13px;
 		line-height: 10px;
+	}
+
+	:global(h4){
+		font-style: normal;
+		font-weight: normal;
+		font-size: 20px;
+		line-height: 20px;
+		letter-spacing: 0.44px;
 	}
 
 	:global(h5){

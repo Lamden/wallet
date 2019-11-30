@@ -19,9 +19,13 @@ import Coin from '../svelte/coins/Coin.svelte';
 import CoinDivider from '../svelte/coins/CoinDivider.svelte';
 import CoinDetails from '../svelte/coins/CoinDetails.svelte';
 import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
-import CoinSendLamden from '../svelte/coins/CoinSendLamden.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 import CoinEmpty from '../svelte/coins/CoinEmpty.svelte';
+import CoinLamdenSend from '../svelte/coins/CoinLamdenSend.svelte';
+import CoinLamdenContract from '../svelte/coins/CoinLamdenContract.svelte';
+import CoinConfirmTx from '../svelte/coins/CoinConfirmTx.svelte';
+import CoinSendingTx from '../svelte/coins/CoinSendingTx.svelte';
+import CoinTxResult from '../svelte/coins/CoinTxResult.svelte';
 
 //Backup and Restore
 import Backup from '../svelte/backup_restore/Backup.svelte';
@@ -112,16 +116,20 @@ export const Components = {
 };
 
 export const Modals = {
-    CoinSendLamden,
+    CoinLamdenSend,
+    CoinLamdenContract,
     CoinRecieve,
-    CoinAdd
+    CoinAdd,
+    CoinConfirmTx,
+    CoinSendingTx,
+    CoinTxResult
 }
 
 export {
     Nav,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinSendLamden, CoinAdd, CoinEmpty,
+    Coin, CoinDivider, CoinDetails, CoinEmpty,
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
     Restore,

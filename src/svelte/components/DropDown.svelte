@@ -1,13 +1,14 @@
 
 
 <script>
-    import { createEventDispatcher, onMount, beforeUpdate} from 'svelte';
+    import { createEventDispatcher, onMount} from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Props
     export let id;
     export let label;
     export let defaultText = 'None';
+    export let selected;
     export let initial = '';
     export let items = [];
     export let styles = '';
@@ -20,20 +21,18 @@
     let hideBox = true;
 
     onMount(()=>{
-        if (selectElm.options[0]){
+        if (selected && selectElm.options[0]){
+            null
+        }
+        else if (selectElm.options[0]){
             selectElm.options[0].selected = true;
             dispatchSelected(selectElm.options[0])
         }
     })
 
-    beforeUpdate(() => {
-        console.log(styles)
-    })
-
     function dispatchSelected(selected) {
             let selectedIndex = initial === '' ? selectElm.selectedIndex : selectElm.selectedIndex - 1;
             dispatch('selected', {id, selected: items[selectedIndex]});
-            console.log(items[selectedIndex])
     }
 
     function handleClick(option, index){
@@ -43,7 +42,7 @@
     }
 
     function toggleBox(){
-        hideBox = !hideBox;
+        if (items.length > 0) hideBox = !hideBox;
     }
 
 </script>

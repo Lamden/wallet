@@ -5,7 +5,7 @@
     //Props
     export let id;
     export let styles = ''; 
-    export let value = '';
+    export let value;
     export let label = '';
     export let placeholder = '';
     export let inputType = '';

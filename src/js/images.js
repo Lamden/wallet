@@ -17,10 +17,11 @@ import handUp from '../img/menu_icons/icon_hand-up.svg';
 import plus from '../img/menu_icons/icon_plus.svg';
 import doco from '../img/menu_icons/icon_doco.svg';
 import checkmark from '../img/menu_icons/icon_checkmark.svg';
-import checkmark_White from '../img/menu_icons/icon_checkmark_white.svg';
+import checkmarkWhite from '../img/menu_icons/icon_checkmark-white.svg';
 import spinner from '../img/menu_icons/icon_spinner.svg';
 import error from '../img/menu_icons/icon_error.svg';
 import heart from '../img/menu_icons/icon_heart.svg';
+import errorCircle from '../img/menu_icons/icon_error-circle.svg';
 
 //Social Icons
 import twitter from '../img/menu_icons/icon_twitter.svg';
@@ -51,9 +52,9 @@ export const icons = {
     lamden_logo, lamden_words,
     plus,
     doco,
-    checkmark, checkmark_White,
+    checkmark, checkmarkWhite,
     spinner,
-    error,
+    error, errorCircle,
     heart
 }
 
