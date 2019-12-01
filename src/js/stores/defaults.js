@@ -14,3 +14,10 @@ export const pubkey = {
 }
 
 export const obscure = 'n1ahcKc0lb';
+
+export const supportedCoins = {
+    lamden: [
+        {name: 'Lamden', symbol: 'TAU', contract: 'currency'},
+        {name: 'Stu Bucks', symbol: 'STU', contract: 'stubucks'},
+    ]
+}

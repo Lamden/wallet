@@ -20,6 +20,7 @@ import CoinDivider from '../svelte/coins/CoinDivider.svelte';
 import CoinDetails from '../svelte/coins/CoinDetails.svelte';
 import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
+import CoinAddDetails from '../svelte/coins/CoinAddDetails.svelte';
 import CoinEmpty from '../svelte/coins/CoinEmpty.svelte';
 import CoinLamdenSend from '../svelte/coins/CoinLamdenSend.svelte';
 import CoinLamdenContract from '../svelte/coins/CoinLamdenContract.svelte';
@@ -57,6 +58,7 @@ import ErrorBox from '../svelte/components/ErrorBox.svelte';
 import Card from '../svelte/components/Card.svelte';
 import Modal from '../svelte/components/Modal.svelte';
 import DropDown from '../svelte/components/DropDown.svelte';
+import MessageBox from '../svelte/components/MessageBox.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
@@ -112,24 +114,25 @@ export const Components = {
     ErrorBox,
     Card,
     Modal,
-    DropDown
+    DropDown,
 };
 
 export const Modals = {
     CoinLamdenSend,
     CoinLamdenContract,
     CoinRecieve,
-    CoinAdd,
+    CoinAdd, CoinAddDetails,
     CoinConfirmTx,
     CoinSendingTx,
-    CoinTxResult
+    CoinTxResult,
+    MessageBox
 }
 
 export {
     Nav,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinEmpty,
+    Coin, CoinDivider, CoinDetails, CoinEmpty, 
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
     Restore,

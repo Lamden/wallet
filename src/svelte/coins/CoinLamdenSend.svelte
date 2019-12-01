@@ -36,8 +36,8 @@
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
         {page: 'CoinTxResult', back: -1, cancelButton: false}
     ]
-
     let currentStep = 1;
+    
     let error, status = "";
     let txData = {};
     let stamps = 100000;

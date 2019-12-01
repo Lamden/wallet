@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext } from 'svelte';
+    import { getContext } from 'svelte';
 
     //Components
     import { Components } from '../../js/router.js';
@@ -19,10 +19,6 @@
     $: error = txData.txResult.error;
     $: resultHeader = error ? 'Transaction Failed to Send' : 'Transaction Sent Successfully'
     $: resultMessage = error ? 'Transaction Failed' : 'Transaction Sent'
-
-    onMount(() => {
-        console.log(txData)
-    })
 
 </script>
 

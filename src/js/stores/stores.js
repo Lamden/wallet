@@ -1,7 +1,7 @@
 import { readable, writable} from 'svelte/store';
 import { coin, pubkey } from './defaults.js';
 
-export { obscure } from './defaults.js';
+export { obscure, supportedCoins } from './defaults.js';
 export { coinMeta } from './coinMeta.js';
 export { HashStore } from './hashStore.js';
 export { CoinStore, numberOfCoins, symbolList, password } from './coinStore.js';

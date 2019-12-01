@@ -13,6 +13,8 @@
     export let classes = 'button__solid';
     export let styles = '';
     export let disabled = false;
+    export let tabIndex;
+    export let spellcheck = true;
 
     $: iconAfter = iconPosition === 'after' ? true : false;
 </script>
@@ -59,6 +61,8 @@
         disabled={disabled}
         style="width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
         class:icon-after={iconAfter}
+        tabIndex={tabIndex}
+        type="button"
     >
 
     {#if icon !== ''}

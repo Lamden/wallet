@@ -20,6 +20,7 @@ import checkmark from '../img/menu_icons/icon_checkmark.svg';
 import checkmarkWhite from '../img/menu_icons/icon_checkmark-white.svg';
 import spinner from '../img/menu_icons/icon_spinner.svg';
 import error from '../img/menu_icons/icon_error.svg';
+import warning from '../img/menu_icons/icon_warning.svg';
 import heart from '../img/menu_icons/icon_heart.svg';
 import errorCircle from '../img/menu_icons/icon_error-circle.svg';
 
@@ -55,6 +56,7 @@ export const icons = {
     checkmark, checkmarkWhite,
     spinner,
     error, errorCircle,
+    warning,
     heart
 }
 

@@ -13,6 +13,7 @@
     export let required = false;
     export let width = '200px';
     export let margin = 'unset';
+    export let spellcheck = true;
 
     let thisInput;
 
@@ -100,6 +101,7 @@ input::-webkit-input-placeholder {
             style={`width: ${width}; ${styles}`}
             pattern={pattern}
             placeholder={placeholder}
-            required={required}  />
+            required={required}
+            spellcheck={spellcheck}  />
     {/if}
 </div>

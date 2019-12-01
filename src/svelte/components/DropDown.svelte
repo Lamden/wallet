@@ -8,7 +8,6 @@
     export let id;
     export let label;
     export let defaultText = 'None';
-    export let selected;
     export let initial = '';
     export let items = [];
     export let styles = '';
@@ -21,18 +20,19 @@
     let hideBox = true;
 
     onMount(()=>{
-        if (selected && selectElm.options[0]){
-            null
-        }
-        else if (selectElm.options[0]){
+        if (selectElm.options[0]){
             selectElm.options[0].selected = true;
-            dispatchSelected(selectElm.options[0])
+            dispatchSelected();
         }
     })
 
-    function dispatchSelected(selected) {
+    function dispatchSelected() {
+        if (selectElm.options[0].selected){
+            dispatch('selected', {id, selected: undefined});
+        } else {
             let selectedIndex = initial === '' ? selectElm.selectedIndex : selectElm.selectedIndex - 1;
             dispatch('selected', {id, selected: items[selectedIndex]});
+        } 
     }
 
     function handleClick(option, index){
