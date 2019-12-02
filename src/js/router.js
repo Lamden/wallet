@@ -18,7 +18,8 @@ import CoinsMain from '../svelte/coins/CoinsMain.svelte';
 import Coin from '../svelte/coins/Coin.svelte';
 import CoinDivider from '../svelte/coins/CoinDivider.svelte';
 import CoinDetails from '../svelte/coins/CoinDetails.svelte';
-import CoinRecieve from '../svelte/coins/CoinRecieve.svelte';
+import CoinModify from '../svelte/coins/CoinModify.svelte';
+import CoinOptions from '../svelte/coins/CoinOptions.svelte';
 import CoinAdd from '../svelte/coins/CoinAdd.svelte';
 import CoinAddDetails from '../svelte/coins/CoinAddDetails.svelte';
 import CoinEmpty from '../svelte/coins/CoinEmpty.svelte';
@@ -26,7 +27,9 @@ import CoinLamdenSend from '../svelte/coins/CoinLamdenSend.svelte';
 import CoinLamdenContract from '../svelte/coins/CoinLamdenContract.svelte';
 import CoinConfirmTx from '../svelte/coins/CoinConfirmTx.svelte';
 import CoinSendingTx from '../svelte/coins/CoinSendingTx.svelte';
-import CoinTxResult from '../svelte/coins/CoinTxResult.svelte';
+import CoinEditNickname from '../svelte/coins/CoinEditNickname.svelte'; 
+import CoinDelete from '../svelte/coins/CoinDelete.svelte'; 
+import CoinDeleting from '../svelte/coins/CoinDeleting.svelte'; 
 
 //Backup and Restore
 import Backup from '../svelte/backup_restore/Backup.svelte';
@@ -59,6 +62,7 @@ import Card from '../svelte/components/Card.svelte';
 import Modal from '../svelte/components/Modal.svelte';
 import DropDown from '../svelte/components/DropDown.svelte';
 import MessageBox from '../svelte/components/MessageBox.svelte';
+import ResultBox from '../svelte/components/ResultBox.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
@@ -118,21 +122,26 @@ export const Components = {
 };
 
 export const Modals = {
-    CoinLamdenSend,
+    CoinLamdenSend, 
     CoinLamdenContract,
-    CoinRecieve,
+    CoinModify,
+    CoinOptions,
+    CoinEditNickname,
+    CoinLamdenContract,
+    CoinDelete,
     CoinAdd, CoinAddDetails,
     CoinConfirmTx,
     CoinSendingTx,
-    CoinTxResult,
-    MessageBox
+    ResultBox,
+    MessageBox,
+    CoinDeleting
 }
 
 export {
     Nav,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinEmpty, 
+    Coin, CoinDivider, CoinDetails, CoinEmpty,
     DevToolsMain, DevToolsDocumentation,
     BackupMain,
     Restore,

@@ -8,7 +8,6 @@
     export let id;
     export let label;
     export let defaultText = 'None';
-    export let initial = '';
     export let items = [];
     export let styles = '';
     export let classes = '';
@@ -20,19 +19,20 @@
     let hideBox = true;
 
     onMount(()=>{
-        if (selectElm.options[0]){
-            selectElm.options[0].selected = true;
+        console.log(selectElm.options)
+        console.log(items)
+        if (selectElm.options){
+            items.forEach((item, index) => {
+                selectElm.options[index].selected = item.selected;
+                console.log(selectElm.options)
+                console.log(items)
+            })
             dispatchSelected();
         }
     })
 
     function dispatchSelected() {
-        if (selectElm.options[0].selected){
-            dispatch('selected', {id, selected: undefined});
-        } else {
-            let selectedIndex = initial === '' ? selectElm.selectedIndex : selectElm.selectedIndex - 1;
-            dispatch('selected', {id, selected: items[selectedIndex]});
-        } 
+        if (selectElm.selectedIndex >= 0) dispatch('selected', {id, selected: items[selectElm.selectedIndex]});
     }
 
     function handleClick(option, index){
@@ -146,11 +146,8 @@ label{
 <div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:100%; ${styles}`}>
     <label>{label}</label>
     <select required={required} bind:this={selectElm}>
-        {#if initial !== ''}
-            <option value={0}>{initial}</option>
-        {/if}
         {#each items as item, index}
-            <option value={initial === '' ? index : index + 1}>{item.name}</option>
+            <option value={index}>{item.name}</option>
         {/each}
     </select>
     {#if selectElm}

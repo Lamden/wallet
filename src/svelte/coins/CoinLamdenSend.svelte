@@ -18,7 +18,7 @@
 	const { closeModal } = getContext('app_functions');
 
 	setContext('tx_functions', {
-		nextPage: () => currentStep = currentStep + 1,
+		nextPage: () => nextPage(),
         back: () => currentStep = currentStep -1,
         send: () => submit_tx_to_network( txData.txInfo.contractName,
                                           txData.txInfo.methodName,
@@ -34,12 +34,17 @@
         {page: 'CoinLamdenContract', back: -1, cancelButton: true},
         {page: 'CoinConfirmTx', back: 0, cancelButton: true},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
-        {page: 'CoinTxResult', back: -1, cancelButton: false}
+        {page: 'ResultBox', back: -1, cancelButton: false}
     ]
+    let buttons = [
+            {name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
+            {name: 'New Transaction', click: () => home(), class: 'button__solid'}
+        ]
     let currentStep = 1;
     
     let error, status = "";
     let txData = {};
+    let resultInfo = {};
     let stamps = 100000;
 
     $: coin = modalData;
@@ -68,6 +73,10 @@
         )
         */
     });
+
+    function nextPage(){
+        currentStep = currentStep + 1
+    }
 
     function submit_tx_to_network2(wallet_sk, txStamps, nonce, txDestination, txAmount){
         var cct = new oldContract.CurrencyContractTransaction();
@@ -98,15 +107,37 @@
 
         await fetch("http://192.168.1.141:8000/", {method: 'post', data: tx})
             .then(res => {
-                    txData.txResult = res;
+                    txData.result = res;
                     return res.json();
             })
             .then(res => {
-                if (res.error) txData.txResult.error = res.error;
-                currentStep = currentStep + 1;
+                if (res.error)  handleError(res);
+                else handleSuccess();
             })
             .catch(err => console.log(error))
+    }
 
+    function handleError(res){
+        txData.result.error = res.error;
+        resultInfo = {
+            title: 'Transaction Failed to Send',
+            subtitle: txData.result.error,
+            message: 'Transaction Failed',
+            type: 'error',
+            buttons
+        }
+        nextPage()
+    }
+
+    function handleSuccess(){
+        resultInfo = {
+            title: 'Transaction Sent Successfully',
+            subtitle: `Your ${coin.symbol} transaction was sent and should take 7 seconds to process`,
+            message: 'Transaction Sent',
+            type: 'success',
+            buttons
+        }
+        nextPage()
     }
 
     function send(tx){
@@ -160,7 +191,7 @@
 
 <CoinLamdenContract {coin} currentPage={steps[currentStep - 1].page} on:contractDetails={(e) => saveTxDetails(e)} />
 {#if currentStep > 1}
-    <svelte:component this={Modals[steps[currentStep - 1].page]} {coin} {txData} txDetails={createTxDetails()}/>
+    <svelte:component this={Modals[steps[currentStep - 1].page]} result={resultInfo} {coin} {txData} txDetails={createTxDetails()}/>
 {/if}
 {#if steps[currentStep - 1].cancelButton}
     <Button classes={'button__text text-caption'} 

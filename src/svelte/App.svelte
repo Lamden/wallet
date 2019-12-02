@@ -38,7 +38,9 @@
 	setContext('app_functions', {
 		switchPage: (name, data) => switchPage(name, data),
 		openModal: (modal, data) => openModal(modal, data),
+		getModalData: () => {return modalData},
 		closeModal: () => showModal = false,
+		appHome: () => switchPage('CoinMain')
 	});
 
 	function pageIsLoaded(){
@@ -47,6 +49,7 @@
 
 	function switchPage(name, data) {
 		data = data || {};
+		showModal = false;
 		$SettingsStore.currentPage = {name, data};
 	}
 

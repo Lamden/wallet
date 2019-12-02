@@ -11,7 +11,7 @@
     export let inputType = '';
     export let pattern;
     export let required = false;
-    export let width = '200px';
+    export let width = '100%';
     export let margin = 'unset';
     export let spellcheck = true;
 

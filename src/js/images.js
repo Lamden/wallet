@@ -23,6 +23,11 @@ import error from '../img/menu_icons/icon_error.svg';
 import warning from '../img/menu_icons/icon_warning.svg';
 import heart from '../img/menu_icons/icon_heart.svg';
 import errorCircle from '../img/menu_icons/icon_error-circle.svg';
+import copyWhite from '../img/menu_icons/icon_copy_white.svg';
+import copyGreen from '../img/menu_icons/icon_copy_green.svg';
+import edit from '../img/menu_icons/icon_edit.svg';
+import del from '../img/menu_icons/icon_delete.svg';
+import successCircle from '../img/menu_icons/icon_success_circle.svg';
 
 //Social Icons
 import twitter from '../img/menu_icons/icon_twitter.svg';
@@ -57,7 +62,9 @@ export const icons = {
     spinner,
     error, errorCircle,
     warning,
-    heart
+    heart,
+    copyWhite, copyGreen, edit, del,
+    successCircle
 }
 
 //Backgrounds

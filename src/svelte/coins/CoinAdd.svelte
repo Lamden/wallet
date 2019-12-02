@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext, setContext } from 'svelte';
+    import { getContext, setContext } from 'svelte';
     
 	//Stores
     import { CoinStore, HashStore, coinMeta, password, breadcrumbs } from '../../js/stores/stores.js';
@@ -16,7 +16,7 @@
         setMessage: (msg) => message = msg
     });
     
-    let message = 'this is soemthing';
+    let message = '';
     let steps = [
         {page: 'CoinAddDetails', cancelButton: true},
         {page: 'MessageBox', cancelButton: false},

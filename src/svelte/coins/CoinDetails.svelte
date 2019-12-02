@@ -32,13 +32,6 @@
         ]);
     });
 
-    function deleteCoin(){
-        if (confirm("Delete?")){
-            switchPage('CoinsMain');
-            CoinStore.update(coinstore => {coinstore.splice(coinstore.indexOf(coin), 1); return coinstore;});
-        };
-    }
-
 </script>
 
 <style>
@@ -104,13 +97,7 @@
                 classes={'button__transparent button__blue'}
 				name="Recieve Coin"
                 margin={'0 49px 0 0'}
-		 		click={() => openModal('CoinRecieve', coin)} 
-				icon='arrowDown'/>
-
-            <Button 
-                classes={'button__transparent button__blue'}
-				name="Delete Coin"
-		 		click={() => deleteCoin()} 
+		 		click={() => openModal('CoinModify', coin)} 
 				icon='arrowDown'/>
         </div>
 

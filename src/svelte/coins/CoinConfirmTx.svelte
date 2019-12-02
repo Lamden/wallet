@@ -22,7 +22,7 @@
 
 <style>
 .confirm-tx{
-    width: 100%;
+    width: 572px;
     
 }
 

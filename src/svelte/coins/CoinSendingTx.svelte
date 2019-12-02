@@ -21,7 +21,7 @@
 <style>
 .sending-tx{
     height: 224px;
-    width: 718px;
+    width: 668px;
     align-items: center;
     justify-content: space-around;
 }

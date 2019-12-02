@@ -7,6 +7,7 @@ export const themes = {
              '--font-primary-light: #4242428a; ' +
              '--font-secondary: #4242428a;' +
              '--bg-color: #fff; ' +
+             '--bg-color-grey: #303030;' +
              '--heading-color: #292922;' +
              '--divider-color: #424242;' +
              '--accent-color: #424242;',
@@ -19,6 +20,7 @@ export const themes = {
             '--font-primary-light: #ffffff99; ' +
             '--font-secondary: #D1D1D1;' +
             '--bg-color: #151515; ' +
+            '--bg-color-grey: #303030;' +
             '--bg-color-dark: #121212;' +
             '--heading-color: #818cab;' +
             '--divider-color: #e0e0e029;' +

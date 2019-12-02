@@ -6,7 +6,7 @@
     const { Button } = Components;
 
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, openModal } = getContext('app_functions');
 </script>
 
 <style>
@@ -22,7 +22,7 @@
             styles={'margin-right: 23px;'}
             width={'232px'}
             name="Create A Wallet" 
-            click={() => switchPage('CoinAdd')} />
+            click={() => openModal('CoinAdd')} />
     <Button classes={'button__solid'} 
             width={'232px'}
             name="Restore a Wallet" 

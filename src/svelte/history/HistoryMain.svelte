@@ -22,42 +22,42 @@
             type: 'Sent',
             amount: '2000.12',
             coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            txResult: {transaction_link: 'www.google.com'}
+            result: {transaction_link: 'www.google.com'}
         },
         {
             date: '2019-11-22T04:14:00',
             type: 'Recieved',
             amount: '10',
             coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            txResult: {transaction_link: 'www.google.com'}
+            result: {transaction_link: 'www.google.com'}
         },
         {
             date: '2019-11-21T16:44:00',
             type: 'Sent',
             amount: '83854.16',
             coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            txResult: {transaction_link: 'www.google.com'}
+            result: {transaction_link: 'www.google.com'}
         },
         {
             date: '2019-11-21T12:30:10',
             type: 'Sent',
             amount: '100',
             coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            txResult: {transaction_link: 'www.google.com'}
+            result: {transaction_link: 'www.google.com'}
         },
         {
             date: '2019-11-20T10:20:44',
             type: 'Sent',
             amount: '0.0045632',
             coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            txResult: {transaction_link: 'www.google.com'}
+            result: {transaction_link: 'www.google.com'}
         },
         {
             date: '2019-11-22T18:55:17',
             type: 'Sent',
             amount: '1000.0045632',
             coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            txResult: {transaction_link: 'www.google.com'}
+            result: {transaction_link: 'www.google.com'}
         },
     ]
 

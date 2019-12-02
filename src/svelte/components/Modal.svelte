@@ -13,7 +13,7 @@
 <style>
 	.modal-background {
 		position: fixed;
-		top: 0;
+		top: 98px;
 		left: 0;
 		width: 100%;
 		height: 100%;
@@ -28,9 +28,7 @@
 		position: absolute;
 		overflow: visible;
 		left: 50%;
-		top: 50%;
-		width: calc(100vw - 4em);
-		max-width: 50em;
+		top: calc(100vh - 45vh);
 		max-height: calc(100vh - 4em);
 		transform: translate(-50%,-50%);
 		padding: 30px 55px;
@@ -38,7 +36,6 @@
 		box-shadow: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
 		border-radius: 4px;
 	}
-
 </style>
 
 <div class='modal-background' on:click={() => closeModal()}></div>

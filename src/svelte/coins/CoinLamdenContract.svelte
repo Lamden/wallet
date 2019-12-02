@@ -90,13 +90,9 @@
 
 <style>
     .send-lamden{
-        width: 100%;
+        width: 668px;
     }
-
-    .coin-info{
-        height: 18px;
-    }
-
+    
     .contract-details{
         padding: 28px 103px 30px 0;
         margin-right: 25px;

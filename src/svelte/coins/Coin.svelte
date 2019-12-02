@@ -27,6 +27,7 @@
     flex-direction: row;
     height: 63px;
     padding: 12px 0;
+    cursor: pointer;
 }
 
 .logo {
@@ -59,18 +60,25 @@
 }
 </style>
 
-<div class="coin-box">
+<div class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
     <div class="name text text-body1">
         <img class="logo" class:svg-black={$themeStyle === 'light'} src={logo} alt={`${coin.name} logo`} />
-        <span class="text-body1" on:click={ () => switchPage('CoinDetails', coin)} style="cursor: pointer;">
-            {#if watching }{`👀 `}{/if}{`${coin.name}`} 
-        </span>
+        <div class="name-box">
+            <div class="text-body1">
+                {#if watching }{`👀`}{/if}{`${coin.name}`} 
+            </div>
+            <div class="text-body2 text-primary-dark">
+                {`${coin.nickname}`} 
+            </div>
+        </div>
     </div>
+
     <div class="amount text text-body1">
         {`${ balance } ${ symbol }`}
         {#if watching}
             <li>Watching Coin</li>
         {/if}
     </div>
+
     <div class="percent text text-body1"> TBD %</div>
 </div>

@@ -87,8 +87,8 @@
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
 		<Button 
-				classes={'button__transparent'}
-				name="Add Coin"
+				classes={'button__transparent button__blue'}
+				name="Add Wallet"
 		 		click={() => openModal('CoinAdd')} 
 				icon='plus'/>
 	</div>
