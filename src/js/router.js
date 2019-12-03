@@ -34,6 +34,12 @@ import CoinDeleting from '../svelte/coins/CoinDeleting.svelte';
 //Backup and Restore
 import Backup from '../svelte/backup_restore/Backup.svelte';
 import BackupMain from '../svelte/backup_restore/BackupMain.svelte';
+import BackupIntro from '../svelte/backup_restore/BackupIntro.svelte';
+import BackupEnterPassword from '../svelte/backup_restore/BackupEnterPassword.svelte';
+import BackupViewKeys from '../svelte/backup_restore/BackupViewKeys.svelte';
+import BackupKeystorePassword from '../svelte/backup_restore/BackupKeystorePassword.svelte';
+import BackupKeystoreCreate from '../svelte/backup_restore/BackupKeystoreCreate.svelte';
+import BackupKeystoreComplete from '../svelte/backup_restore/BackupKeystoreComplete.svelte';
 import Restore from '../svelte/backup_restore/Restore.svelte';
 import RestoreMain from '../svelte/backup_restore/RestoreMain.svelte';
 import RestoreUpload from '../svelte/backup_restore/RestoreUpload.svelte';
@@ -81,7 +87,13 @@ export const RestorePages = {
 };
 
 export const BackupPages = {
-    BackupMain
+    BackupMain,
+    BackupIntro,
+    BackupEnterPassword,
+    BackupViewKeys,
+    BackupKeystorePassword,
+    BackupKeystoreCreate,
+    BackupKeystoreComplete
 };
 
 export const FirstRun = { 

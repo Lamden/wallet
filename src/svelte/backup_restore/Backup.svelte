@@ -14,7 +14,7 @@
     const { switchPage } = getContext('app_functions');
 
 	onMount(() => {
-        breadcrumbs.set([{name: 'Restore Wallet', page: {name: ''}}]);
+        breadcrumbs.set([{name: 'Backup Wallet', page: {name: ''}}]);
     });
 
 </script>
@@ -65,7 +65,7 @@
         <div class="buttons">
         	<Button 
                 classes={'button__transparent'}
-				name="Create Keystore"
+				name="Backup Wallet"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('BackupMain')} 
 				icon='arrowRight'

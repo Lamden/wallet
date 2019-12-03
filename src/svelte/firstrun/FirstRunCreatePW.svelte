@@ -56,14 +56,13 @@
                 if (restore) changeStep(5);
                 else changeStep(3);
                 
-            } catch (e) {
-                console.log(e)
+            } catch (err) {
+                console.log(err)
             }
         }
     }
 
     function validatePassword1(e){
-        console.log(e)
         let obj = e.detail;
         tempPassword = obj.value;
         if (obj.validity.patternMismatch){

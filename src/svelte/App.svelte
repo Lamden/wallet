@@ -24,11 +24,12 @@
 	let showModal = false;
 	let currentModal;
 	let modalData;
-	let fullPage = ['RestoreMain', 'FirstRunRestoreMain', 'FirstRunMain']
+	let fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
 	$: pwdIsCorrect = HashStore.validatePassword($password);
 
 	onMount(() => {
+		
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;

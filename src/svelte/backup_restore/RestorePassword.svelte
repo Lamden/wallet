@@ -103,7 +103,7 @@ a{
             <InputBox
                 width="100%"
                 label={"Password"}
-                intputType= 'password'
+                inputType= 'password'
                 on:changed={validateKeyStorePassword}
                 required={true}/>
         </div>

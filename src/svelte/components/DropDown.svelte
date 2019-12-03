@@ -19,13 +19,9 @@
     let hideBox = true;
 
     onMount(()=>{
-        console.log(selectElm.options)
-        console.log(items)
         if (selectElm.options){
             items.forEach((item, index) => {
                 selectElm.options[index].selected = item.selected;
-                console.log(selectElm.options)
-                console.log(items)
             })
             dispatchSelected();
         }
@@ -104,7 +100,7 @@ label{
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    min-height: 56px;
+    min-height: 42px;
 
     box-sizing: border-box;
     transition: border 0.5s;

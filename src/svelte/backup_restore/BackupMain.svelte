@@ -1,119 +1,88 @@
 <script>
-    import { onMount } from 'svelte';
-    
-    //Stores
-    import { CoinStore, coinList, HashStore, breadcrumbs, CURRENT_KS_VERSION, password, obscure } from '../../js/stores/stores.js';
+    import { setContext, getContext } from 'svelte';
 
-    //Utils
-    import { copyToClipboard, decryptStrHash, encryptObject, encryptStrHash } from '../../js/utils.js';
+	//Components
+    import { Components, BackupPages }  from '../../js/router.js'
+    const { Steps, Step } = Components;
+    import NavLogo from '../nav/NavLogo.svelte';
 
-    //Components
-    import { BackupPW, BackupDownload }  from '../../js/router.js'
+    //Context
+    const { switchPage } = getContext('app_functions');
 
-    //DOM NODES
-    let passwordField;
-    let formObj;
-
-    let pwd;
-    let passwordOkay;
-    let keyList = [];
-    let passwordHint = ""
-
-    let keys = ""
-
-	onMount(() => {
-		breadcrumbs.set([{name: 'Backup', page: {name: ''}}]);
+    setContext('functions', {
+        changeStep: (step) => {
+            if (step === -1 && currentStep === 0) switchPage('Backup');
+            else if (step === -1) currentStep = back;
+            else currentStep = step;
+        },
+        setKeystorePW: (info) => ksPwdInfo = info,
+        setKeystoreFile: (file) => keystoreFile = file
 	});
 
-    function handleSubmit(form){
-        if (form.checkValidity()){
-            passwordOkay = true;
-            createKeyList();
-        } else {
-            alert('no')
-        }
-    }
+    let currentStep = 0;
+    let ksPwdInfo;
+    let keystoreFile;
 
-    function validatePassword(obj){
-        if (!HashStore.validatePassword(pwd)) {
-            obj.setCustomValidity("Incorrect Wallet Password");
-        } else {
-            obj.setCustomValidity('');
-        }
-    }
-    function decryptSk(sk){
-        return decryptStrHash($password, sk) ? decryptStrHash($password, sk) : 'Cannot decrypt Secret Key';
-    }
+    let RestoreSteps = [
+        {page: 'BackupIntro', hideSteps: true, back: 0},
+        {page: 'BackupEnterPassword', hideSteps: false, back: 0},
+        {page: 'BackupViewKeys', hideSteps: false, back: 0},
+        {page: 'BackupKeystorePassword', hideSteps: false, back: 0},
+        {page: 'BackupKeystoreCreate', hideSteps: false, back: 3},
+        {page: 'BackupKeystoreComplete', hideSteps: false, back: 0},
+    ]
 
-    function download() {
-        let currDateTime = new Date().toLocaleString();
-        let filename = "Lamden_Wallet_" + currDateTime + ".keystore";
-        let file = JSON.stringify({
-            data: encryptObject($password, {'version' : $CURRENT_KS_VERSION, keyList: decryptedKeys()}),
-            w: passwordHint === "" ? "" : encryptStrHash(obscure, passwordHint),
-        });
-
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(file));
-        element.setAttribute('download', filename);
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-    }
-
-    function createKeyList(){
-        keyList = JSON.parse(JSON.stringify($CoinStore));
-        keys = `!! KEEP THIS INFORMATION SECRET !!\n`
-        keyList.map(function(keypair){
-            keys = `${keys}\n${keypair.name}(${keypair.symbol}) - ${keypair.nickname}`;
-            keys = `${keys}\nPUBLIC KEY:\n${keypair.vk}\nPRIVATE KEY:\n${decryptSk(keypair.sk)}\n`;
-            return keypair;
-        });
-        if(keyList.length === 0) keys = "Key Storage Empty";
-    }
-
-    function decryptedKeys(){
-        return JSON.parse(JSON.stringify($CoinStore)).map( key => {
-            key.sk = decryptSk(key.sk);
-            return key;
-        })
-    }
+    $: currentPage = RestoreSteps[currentStep].page;
+    $: hideSteps = RestoreSteps[currentStep].hideSteps;
+    $: back = RestoreSteps[currentStep].back;
+    
 </script>
 
-<div class="backup text-primary">
-    <h1>Backup Wallet</h1>
+<style>
+.layout{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
 
-    {#if !passwordOkay}
-    <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
-        <div>
-            <label>Password</label><br>
-            <input bind:value={pwd}
-                bind:this={passwordField}
-                    on:change={() => validatePassword(passwordField)}
-                    type="password"
-                    required  />
-        </div>
-        <input type="submit" value="Reveal Private Keys">
-    </form>
-    {/if}
-    {#if passwordOkay}
-        <p>Backup your wallet incase anything would ever happen. Please remember not to share this information.</p>
+.content{
+    flex-grow: 1;
+    display: flex;
+}
 
-        <lable>Your Private Keys</lable><br>
-        <textarea bind:value={keys} readonly rows="20" wrap="hard"/>
+.header{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+    right: 0;
+    height: 97px;
+    border-bottom: 1px solid #3D3D3D;
+}
 
-        {#if keys !== 'You have no keys'}
-            <span>
-                <a href="javascript:void(0)" on:click={() => copyToClipboard(keys)}>copy to clipboard</a>
-                <button on:click={() => download()}>Download Encrypted Backup</button>
-            </span>
-            <div>
-                <label>Password Hint</label><br>
-                <input type="text" bind:value={passwordHint} />
-            </div>
-        {/if}
+.steps{
+    display: flex;
+    justify-content: center;
+    height: 180px;
+}
 
-        <p>We recommend you write down these private keys on paper as well as save them to a flash drive.</p>
-    {/if}
+.hide-steps{
+    display: none;
+}
+</style>
+
+<div class="layout">
+    <div class="header">
+        <NavLogo />
+    </div>
+    <div class="content">
+        <svelte:component this={BackupPages[currentPage]} {keystoreFile} {ksPwdInfo} />
+    </div>
+    <div class="steps" class:hide-steps={hideSteps}>
+        <Steps {back}/>
+    </div>
 </div>
+

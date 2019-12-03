@@ -59,7 +59,7 @@
 }
 </style>
 <div class="steps" class:hide={noSteps}>
-    <div class="back-box" class:hide={$steps.currentStep === $steps.stepList.length}>
+    <div class="back-box" class:hide={$steps.currentStep >= $steps.stepList.length }>
         <img class="back-arrow" src={chevronRight} alt="back icon" />
         <div class="back-button text-button" on:click={() => goBack()}>{'BACK'}</div>
     </div>

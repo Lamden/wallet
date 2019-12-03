@@ -42,7 +42,7 @@ input{
     display: flex;
     align-items: center;
     width: 100%;
-    min-height: 56px;
+    min-height: 42px;
 
     background: none;
     border: 1px solid #e0e0e03d;

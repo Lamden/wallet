@@ -238,3 +238,15 @@ button {
 .no-bottom-margin{
     margin-bottom: 0px;
 }
+
+.outside-link{
+    color: cyan;
+}
+
+.outside-link:hover {
+    color: var(--primary-color);
+}
+
+.outside-link:visited {
+    outline: none;
+}
