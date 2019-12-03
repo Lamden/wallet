@@ -19,9 +19,6 @@
     const { getModalData } = getContext('app_functions');
     const { close, setPage, setSelectedCoin } = getContext('coinmodify_functions');
 
-    //Props
-    export let nicknameChanged;
-
     let selectedWallet;
     let copySuccessful;
     let options = [

@@ -51,7 +51,7 @@
 </style>
 
 <div class="coin-modify">
-    <svelte:component this={Modals[steps[currentStep - 1].page]} coin={selectedCoin} result={resultInfo} {nicknameChanged}/>
+    <svelte:component this={Modals[steps[currentStep - 1].page]} coin={selectedCoin} result={resultInfo} />
     {#if steps[currentStep - 1].cancelButton}
         <div class="cancel-button">
             <Button classes={'button__text text-caption'} 
