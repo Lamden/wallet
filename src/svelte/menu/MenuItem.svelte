@@ -11,12 +11,18 @@
     //Props
     export let menuItem;
 
+    let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
+
     $: isSelected = $currentPage.name === menuItem.page;
 
     function menuAction(){
         if (menuItem.page.name === "LockScreen") {
             password.set('');
             return
+        }
+        if (menuItem.page.name === 'Feedback'){
+             window.open(feedbackURL, '_blank');
+             return
         }
         switchPage(menuItem.page.name)
     }
