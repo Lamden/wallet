@@ -44,11 +44,11 @@
 }
 
 .icon-left {
-    margin: 0 8px 0 0;   
+    margin: -2px 8px 0 0;   
 }
 
 .icon-right {
-    margin: 0 0 0 8px;
+    margin: -2px 0 0 8px;
 }
 
 .icon-after{
