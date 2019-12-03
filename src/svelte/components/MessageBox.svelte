@@ -9,10 +9,10 @@
 
     //Props
     export let message;
-    export let buttons = [];
 
     $: text = message.text;
     $: type = message.type;
+    $: buttons = message.buttons;
 
 </script>
 

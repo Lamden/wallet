@@ -16,20 +16,16 @@
         setMessage: (msg) => message = msg
     });
     
-    let message = '';
+    let message = {};
     let steps = [
         {page: 'CoinAddDetails', cancelButton: true},
         {page: 'MessageBox', cancelButton: false},
     ]
     let currentStep = 1;
-    let buttons = [
-            {name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
-            {name: 'Add Another', click: () => currentStep = 1, class: 'button__solid'}
-        ]
 
 </script>
 
-<svelte:component this={Modals[steps[currentStep - 1].page]} {buttons} {message}/>
+<svelte:component this={Modals[steps[currentStep - 1].page]} {message}/>
 {#if steps[currentStep - 1].cancelButton}
     <Button classes={'button__text text-caption'} 
             width={'125px'}

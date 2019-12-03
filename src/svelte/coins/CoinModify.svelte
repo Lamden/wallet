@@ -16,12 +16,14 @@
         setPage: (num) => currentStep = num,
         setSelectedCoin: (coin) => selectedCoin = coin,
         setResult: (result) => resultInfo = result,
+        setMessage: (msg) => message = msg,
         home: () => currentStep = 1,
         close: () => closeModal(),
         deleteCoin: () => deleteCoin(),
     });
     
     let resultInfo = {}
+    let message = '';
     let selectedCoin;
     let steps = [
         {page: 'CoinOptions', cancelButton: false},
@@ -29,6 +31,7 @@
         {page: 'CoinDelete', cancelButton: true},
         {page: 'CoinDeleting', cancelButton: false},
         {page: 'ResultBox', cancelButton: false},
+        {page: 'MessageBox', cancelButton: false},
     ]
     let currentStep = 1;
 
@@ -51,7 +54,7 @@
 </style>
 
 <div class="coin-modify">
-    <svelte:component this={Modals[steps[currentStep - 1].page]} coin={selectedCoin} result={resultInfo} />
+    <svelte:component this={Modals[steps[currentStep - 1].page]} coin={selectedCoin} result={resultInfo} {message} />
     {#if steps[currentStep - 1].cancelButton}
         <div class="cancel-button">
             <Button classes={'button__text text-caption'} 

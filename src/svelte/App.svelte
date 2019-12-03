@@ -40,7 +40,7 @@
 		openModal: (modal, data) => openModal(modal, data),
 		getModalData: () => {return modalData},
 		closeModal: () => showModal = false,
-		appHome: () => switchPage('CoinMain')
+		appHome: () => switchPage('CoinsMain')
 	});
 
 	function pageIsLoaded(){

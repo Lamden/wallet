@@ -8,13 +8,20 @@
 	import { Components }  from '../../js/router.js'
     const { Button, InputBox } = Components;
 
-	//Context
-    const { home, doneEditNickname } = getContext('coinmodify_functions');
+    //Context
+    const { appHome } = getContext('app_functions');
+    const { home, setMessage, setPage } = getContext('coinmodify_functions');
     
     //Props
     export let coin;
 
     let newCoinNickname = coin.nickname;
+    let returnMessage = {};
+    
+    returnMessage.buttons = [
+        {name: 'Home', click: () => appHome(), class: 'button__solid button__purple'},
+        {name: 'Back', click: () => setPage(1), class: 'button__solid'}
+    ]
 
     function saveNickName(){
         CoinStore.update( current => {
@@ -25,7 +32,14 @@
             }
             return current
         })
-        home();
+        sendMessage()
+        setPage(6);
+    }
+
+    function sendMessage(){
+            returnMessage.type = 'success';
+            returnMessage.text = `Wallet Nickname changed!`;
+        setMessage(returnMessage)
     }
 
 </script>

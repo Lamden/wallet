@@ -25,6 +25,11 @@
     let keyPair = {};
     let addType = 1;
 
+    returnMessage.buttons = [
+            {name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
+            {name: 'Add Another', click: () => currentStep = 1, class: 'button__solid'}
+        ]
+
     $: buttonGroup = [
             {name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__purple ' : '' },
             {name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__purple ' : '' },
