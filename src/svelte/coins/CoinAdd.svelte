@@ -28,7 +28,8 @@
 
 <svelte:component this={Modals[steps[currentStep - 1].page]} {message}/>
 {#if steps[currentStep - 1].cancelButton}
-    <Button classes={'button__text text-caption'} 
+    <Button id={'modal-cancel-btn'}
+            classes={'button__text text-caption'} 
             width={'125px'}
 			height={'24px'}
 			padding={0}

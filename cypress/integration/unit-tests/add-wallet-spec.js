@@ -131,5 +131,20 @@ describe('Test that the Lockscreen Loads and has functionality', () => {
         cy.get('#home-btn').should('exist')
         cy.get('#another-btn').should('exist').focus().click()
         cy.wait(500)
+
+        //---------------------------------
+        cy.log('New Keys are displayed in Coinsmain')
+        cy.get('#modal-cancel-btn').focus().click()
+        cy.get('.coinsmain').should('exist')
+        cy.get('#coin-nickname-1').should('exist').then(($div) => {
+            expect($div[0].textContent).to.eq("Testing CREATE NEW")
+        })
+        cy.get('#coin-nickname-2').should('exist').then(($div) => {
+            expect($div[0].textContent).to.eq("Testing ADD EXISTING")
+        })
+        cy.get('#coin-nickname-3').should('exist').then(($div) => {
+            expect($div[0].textContent).to.eq("Testing ADD WATCHING")
+        })
+        cy.wait(500)
     })
 })

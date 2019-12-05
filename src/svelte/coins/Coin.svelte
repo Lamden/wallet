@@ -9,6 +9,7 @@
 
     // Props
     export let coin;
+    export let id;
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -67,7 +68,7 @@
             <div class="text-body1">
                 {#if watching }{`👀`}{/if}{`${coin.name}`} 
             </div>
-            <div class="text-body2 text-primary-dark">
+            <div id={`coin-nickname-${id}`} class="text-body2 text-primary-dark">
                 {`${coin.nickname}`} 
             </div>
         </div>

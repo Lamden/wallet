@@ -101,7 +101,7 @@
 		<CoinEmpty />
 	{:else}
 		{#each $CoinStore as coin, id}
-			<Coin {coin} />
+			<Coin {coin} {id} />
 			<CoinDivider />
 		{/each}
 	{/if}
