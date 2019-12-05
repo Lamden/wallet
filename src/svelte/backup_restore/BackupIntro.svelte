@@ -50,17 +50,20 @@ a{
     </div>
 
     <div class="buttons">
-        <Button classes={'button__solid button__purple'}
+        <Button id={'create-btn'}
+                classes={'button__solid button__purple'}
                 styles={'margin-bottom: 16px;'}
                 width={'100%'}
                 name="Create Backup File" 
                 click={() => changeStep(3)} />
-        <Button classes={'button__solid'} 
+        <Button id={'view-keys-btn'}
+                classes={'button__solid'} 
                 styles={'margin-bottom: 16px;'}
                 width={'100%'}
                 name="View Stored Keys" 
                 click={() => changeStep(1)} />
-        <Button classes={'button__solid'} 
+        <Button id={'back-btn'}
+                classes={'button__solid'} 
                 styles={'margin-bottom: 16px;'}
                 width={'100%'}
                 name="Back" 

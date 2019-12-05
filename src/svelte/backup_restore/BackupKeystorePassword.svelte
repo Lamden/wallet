@@ -12,10 +12,9 @@
     const { changeStep, setKeystorePW } = getContext('functions');
 
     //DOM Nodes
-    let formObj;
+    let formObj, pwdObj1, pwdObj2, hintObj;
 
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
-    let pwdInfo = {pwd: '', hint: ''};
 
     onMount(() => {
         steps.set({
@@ -34,30 +33,22 @@
     }
 
     function savePassword(){
+        console.log(pwdObj1.value)
+        if (pwdObj2.value !== pwdObj1.value) {
+            pwdObj2.setCustomValidity("Passwords do not match");
+        }
+        pwdObj2.reportValidity();
         if (formObj.checkValidity()){
-            setKeystorePW(pwdInfo);
+            console.log(pwdObj1.value)
+            setKeystorePW( {pwd: pwdObj1.value, hint: hintObj.value} );
             changeStep(4);
         }
     }
 
-    function validatePassword1(e){
-        let obj = e.detail.target;
-        if (obj.validity.patternMismatch){
-            obj.setCustomValidity("Password must be 10 characters includeing UPPER/lowercase, number(s) and special character(s)");
-        } else {
-            obj.setCustomValidity('');
-        }
-        if (obj.checkValidity()) pattern = RegExp.escape(obj.value); 
+    function refreshValidity(e){
+        e.detail.target.setCustomValidity('');
     }
 
-    function validatePassword2(e){
-        let obj = e.detail.target;
-        if (obj.value !== pwdInfo.pwd) {
-            obj.setCustomValidity("Passwords do not match");
-        } else {
-            obj.setCustomValidity('');
-        }
-    }
 
 </script>
 
@@ -103,25 +94,29 @@ a{
 
     <form on:submit|preventDefault={() => savePassword() } bind:this={formObj} target="_self">
             <InputBox
-                bind:value={pwdInfo.pwd}
+                id={'pwd1-input'}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
                 width="100%"
-                on:changed={validatePassword1}
+                bind:thisInput={pwdObj1}
+                on:changed={refreshValidity}
                 inputType={"password"}
                 {pattern}
                 required={true}/>
-            <InputBox 
+            <InputBox
+                id={'pwd2-input'} 
                 label={"Confirm Password"}
                 placeholder={"At least 8 symbols"}
                 width="100%"
                 styles={'margin-bottom: 16px;'}
-                on:changed={validatePassword2}
+                bind:thisInput={pwdObj2}
+                on:changed={refreshValidity}
                 inputType={"password"}
                 required={true}/>
 
-            <InputBox 
-                bind:value={pwdInfo.hint}
+            <InputBox
+                id={'hint-input'}
+                bind:thisInput={hintObj}
                 label={"Password Hint (Optional)"}
                 styles={'margin-bottom: 16px;'}
                 placeholder={"Create a Password Hint"}
@@ -129,7 +124,8 @@ a{
             />
 
         <div class="buttons">
-            <input  value="Create Keystore"
+            <input  id={'create-pw-btn'}
+                    value="Create Keystore"
                     class="button__solid button__purple submit submit-button submit-button-text" 
                     type="submit" > 
         </div>

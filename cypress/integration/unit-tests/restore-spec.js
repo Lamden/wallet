@@ -4,7 +4,7 @@ import 'cypress-file-upload';
 
 const fileName = 'files/Testing.keystore'
 
-describe('First Run Restore Wallet Process', () => {
+describe('Restore Wallet Process', () => {
     before(function (){
         cy.viewport(1920, 1080)
         mount(App)
@@ -34,7 +34,7 @@ describe('First Run Restore Wallet Process', () => {
         cy.get('.coinsmain').should('exist')
     })
     
-    it('Loads FirstRunInto to start', () => {
+    it('Will Restore a Key from a Keystore file', () => {
         cy.fixture(fileName, 'utf-8').then(fileContent => {
             //---------------------------------
             cy.log('Renders Restore.svelte')

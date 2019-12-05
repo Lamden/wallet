@@ -11,7 +11,8 @@
     "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js  --headed --no-exit",
     "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js  --headed --no-exit",
     "test-modify-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/modify-wallet-spec.js  --headed --no-exit",
-    "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js  --headed --no-exit"
+    "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js  --headed --no-exit",
+    "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js  --headed --no-exit"
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.0",

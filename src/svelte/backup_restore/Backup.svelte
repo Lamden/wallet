@@ -20,7 +20,7 @@
 </script>
 
 <style>
-.page{
+.backup{
 	display: flex;
 	flex-direction: column;
 }
@@ -52,7 +52,7 @@
 
 </style>
 
-<div class="page text-primary">
+<div class="backup text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <h5 class="heading">
             Backing Up Your Lamden Wallet is Very Important
@@ -63,7 +63,8 @@
             your wallet if anythign happens to this computer.
         </div>
         <div class="buttons">
-        	<Button 
+        	<Button
+                id={'backup-btn'} 
                 classes={'button__transparent'}
 				name="Backup Wallet"
                 margin={'0 49px 0 0'}

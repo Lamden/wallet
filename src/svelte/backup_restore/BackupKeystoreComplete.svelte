@@ -58,7 +58,7 @@
 </script>
 
 <style>
-.page{
+.backup-complete{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -81,7 +81,7 @@ input[type="checkbox"]{
 }
 </style>
 
-<div class="page">
+<div class="backup-complete">
     <h6 class="text-primary">Remember</h6>
     
     <div class="text-box text-body1 text-primary">
@@ -93,11 +93,12 @@ input[type="checkbox"]{
         Safe storage of your keystore and password are important to keeping your cryptocurrency safe.
     </div>
     <div class="consent flex-row">
-        <input type="checkbox" class="css-checkbox" bind:checked={consent}>
+        <input id={'consent-chk'} type="checkbox" class="css-checkbox" bind:checked={consent}>
         <span class="text-body1 text-primary">I Understand </span>
     </div>
 
-    <Button classes={`button__solid ${consent ? 'button__purple' : ''}`}
+    <Button id={'download-btn'}
+            classes={`button__solid ${consent ? 'button__purple' : ''}`}
             styles={'margin-bottom: 16px;'}
             width={'100%'}
             disabled={!consent}
