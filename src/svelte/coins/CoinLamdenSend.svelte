@@ -12,7 +12,7 @@
     //Utils
     import { decryptStrHash } from '../../js/utils.js';
     import * as contract from '../../js/lamden/contract.js'
-    import * as oldContract from '../../js/lamden/oldcontract.js'
+    //import * as oldContract from '../../js/lamden/oldcontract.js'
 
     //Context
 	const { closeModal } = getContext('app_functions');
