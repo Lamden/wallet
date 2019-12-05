@@ -33,13 +33,11 @@
     }
 
     function savePassword(){
-        console.log(pwdObj1.value)
         if (pwdObj2.value !== pwdObj1.value) {
             pwdObj2.setCustomValidity("Passwords do not match");
+            pwdObj2.reportValidity()
         }
-        pwdObj2.reportValidity();
         if (formObj.checkValidity()){
-            console.log(pwdObj1.value)
             setKeystorePW( {pwd: pwdObj1.value, hint: hintObj.value} );
             changeStep(4);
         }
