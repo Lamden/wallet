@@ -57,7 +57,7 @@
     function savePassword(){
         if (pwdObj2.value !== pwdObj1.value) {
             pwdObj2.setCustomValidity("Passwords do not match");
-            pwdObj.reportValidity()
+            pwdObj2.reportValidity()
         }
         if (formField.checkValidity()){
             try{
