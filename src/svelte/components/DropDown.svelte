@@ -141,9 +141,9 @@ label{
 
 <div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:100%; ${styles}`}>
     <label>{label}</label>
-    <select required={required} bind:this={selectElm}>
+    <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}
-            <option value={index}>{item.name}</option>
+            <option id={`coin-${index}`} value={index}>{item.name}</option>
         {/each}
     </select>
     {#if selectElm}

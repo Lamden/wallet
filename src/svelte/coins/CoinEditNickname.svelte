@@ -11,24 +11,30 @@
     //Context
     const { appHome } = getContext('app_functions');
     const { home, setMessage, setPage } = getContext('coinmodify_functions');
+
+    //DOM Nodes
+    let nicknameObj;
     
     //Props
     export let coin;
 
-    let newCoinNickname = coin.nickname;
     let returnMessage = {};
     
     returnMessage.buttons = [
-        {name: 'Home', click: () => appHome(), class: 'button__solid button__purple'},
-        {name: 'Back', click: () => setPage(1), class: 'button__solid'}
+        {id: "home-btn", name: 'Home', click: () => appHome(), class: 'button__solid button__purple'},
+        {id: "back-btn", name: 'Back', click: () => setPage(1), class: 'button__solid'}
     ]
+
+    onMount(() => {
+        nicknameObj.value = coin.nickname;
+    })
 
     function saveNickName(){
         CoinStore.update( current => {
             let coinMatch = current.find( c => coin.network === c.network && coin.symbol === c.symbol && coin.vk === c.vk)
             console.log(coinMatch)
             if (coinMatch) {
-                coinMatch.nickname = newCoinNickname === '' ? `My ${coin.name} ${coin.symbol}` : newCoinNickname;
+                coinMatch.nickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
             }
             return current
         })
@@ -55,13 +61,14 @@
 <div class="edit-nickname">
     <h5> Edit Wallet Nickname </h5>
 
-    <InputBox 
+    <InputBox
+        id={"modify-edit-nickname"}
         label="nickname"
         margin="0 0 19px 0"
-        bind:value={newCoinNickname}
+        bind:thisInput={nicknameObj}
     />
 
-    <div class="coin-info text-subtitle3">
+    <div id={'modify-edit-info'} class="coin-info text-subtitle3">
         {coin.name}
         <strong>
             {`${coin.symbol} - ${!coin.balance ? 0 : coin.balance} ${coin.symbol}`}
@@ -69,13 +76,17 @@
     </div>
 
     <div class="buttons flex-column">
-        <Button classes={'button__solid button__purple'} 
+        <Button
+            id={"save-btn"}
+            classes={'button__solid button__purple'} 
             width={'232px'}
             margin={'0 0 9px 0'}
             name="Save" 
             click={() => saveNickName()} />  
 
-        <Button classes={'button__solid'} 
+        <Button 
+            id={"home-btn"}
+            classes={'button__solid'} 
             width={'232px'}
             margin={'0 0 0 0'}
             name="Back" 

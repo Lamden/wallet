@@ -22,9 +22,9 @@
     let selectedWallet;
     let copySuccessful;
     let options = [
-        {name: 'Copy', desc: 'Key to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
-        {name: 'Edit', desc: 'Wallet Nickname', icon: edit, color: 'purple', click: () => showEdit() },
-        {name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
+        {id: 'modify-copy-btn', name: 'Copy', desc: 'Key to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
+        {id: 'modify-edit-btn', name: 'Edit', desc: 'Wallet Nickname', icon: edit, color: 'purple', click: () => showEdit() },
+        {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
     ]
 
     $: coin = getModalData();
@@ -62,6 +62,7 @@
     margin-top: 13px;
 }
 .options{
+    cursor: pointer;
     box-sizing: border-box;
     align-items: center;
     justify-content: space-between;
@@ -92,9 +93,9 @@
 
 <div class="modify text-primary">
     <h5> {`Recieve ${coin.name} ${coin.symbol}`} </h5>
-    <DropDown  
+    <DropDown
+        id={'wallets-dd'}
         items={coinList()} 
-        id={'mycoins'} 
         label={'Wallets'}
         styles="margin-bottom: 19px;"
         on:selected={(e) => selectedWallet = e.detail.selected.value}
@@ -110,7 +111,7 @@
     </div>
     <div class="options-box flex-row">
         {#each options as option}
-            <div class="options flex-column"
+            <div id={option.id} class="options flex-column"
                 class:grey={ option.color === 'grey'}
                 class:purple={ option.color === 'purple'}
                 on:click={option.click}>

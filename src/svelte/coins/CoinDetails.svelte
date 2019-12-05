@@ -35,7 +35,7 @@
 </script>
 
 <style>
-.page{
+.coin-details{
 	display: flex;
 	flex-direction: column;
 }
@@ -79,14 +79,15 @@
 
 </style>
 
-<div class="page text-primary">
+<div class="coin-details text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <div class="amount-box">
             <div class="text-body1"> {symbol} </div>
             <div class="amount"> {balance} </div>
         </div>
         <div class="buttons">
-        	<Button 
+        	<Button
+                id={'send-coin-btn'} 
                 classes={'button__transparent'}
 				name="Send Coin"
                 margin={'0 49px 0 0'}
@@ -94,6 +95,7 @@
 				icon='arrowUp'/>
 
 		    <Button 
+                id={'modify-coin-btn'} 
                 classes={'button__transparent button__blue'}
 				name="Recieve Coin"
                 margin={'0 49px 0 0'}
