@@ -8,7 +8,8 @@
     "unit-test": "./node_modules/.bin/cypress run --config integrationFolder=cypress/unit-tests",
     "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-create-spec.js --headed --no-exit",
     "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-restore-spec.js  --headed --no-exit",
-    "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js  --headed --no-exit"
+    "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js  --headed --no-exit",
+    "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js  --headed --no-exit"
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.0",

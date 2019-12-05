@@ -14,32 +14,34 @@
 
 	//Context
     const { closeModal } = getContext('app_functions');
-    const { nextPage, setMessage } = getContext('coinadd_functions');
+    const { nextPage, setMessage, detailsPage } = getContext('coinadd_functions');
     
     //DOM NODES
-    let formObj
+    let formObj, privateKeyObj, publicKeyObj, nicknameObj
     
-    let returnMessage = {type:'', text:''};
+    let returnMessage = {type:'', text:'', buttons: []};
     let selectedInput;
-    let keyAttributes = {publicKey: '', privateKey: '', nickname: '' };
     let keyPair = {};
     let addType = 1;
 
-    returnMessage.buttons = [
-            {name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
-            {name: 'Add Another', click: () => currentStep = 1, class: 'button__solid'}
+    let returnMessageButtons = [
+            {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
+            {id: "another-btn", name: 'Add Another', click: () => detailsPage(), class: 'button__solid'}
         ]
 
     $: buttonGroup = [
-            {name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__purple ' : '' },
-            {name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__purple ' : '' },
-            {name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__purple ' : '' }
+            {id:"create-new-btn", name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__purple ' : '' },
+            {id:"add-existing-btn", name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__purple ' : '' },
+            {id:"track-address-btn", name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__purple ' : '' }
         ]
 
     $: supportedCoinsList = createCoinList();
     $: selected = selectedInput ? selectedInput.value : selectedInput;
 
     async function handleSubmit(){
+        if (addType === 2) validatePrivateKey();
+        if (addType === 3) validatePublicKey();
+        
         if (formObj.checkValidity()){
             if (addType === 1) {
                 createAndSaveKeys();
@@ -51,33 +53,45 @@
         }
     }
 
+    function refreshValidity(e){
+        e.detail.target.setCustomValidity('');
+    }
+
+    function refreshValidityKeyup(e){ 
+        if (e.detail.keyCode !== 13) e.detail.target.setCustomValidity('');
+    }
+
     function sendMessage(){
         if (returnMessage.type !== 'error' && returnMessage.type !== 'warning') {
             returnMessage.type = 'success';
             returnMessage.text = `${selected.name} (${selected.symbol}) Wallet Added Successfully`;
         }
+        returnMessage.buttons = returnMessageButtons
+        console.log(returnMessage)
         setMessage(returnMessage)
     }
 
-    function reValidateInputBox(){
-        keyAttributes.privateKey = "";
-        keyAttributes.publicKey = "";
-    }
-
-    function validateInputBox(node){
-        node.setCustomValidity('');
+    function validatePrivateKey(){
+        privateKeyObj.setCustomValidity('');
         try{
-            if (addType === 2) {
-                keyPair.vk = pubFromPriv(selected.network, selected.symbol, keyAttributes.privateKey);
-                keyPair.sk = keyAttributes.privateKey;
-            }
-            if (addType === 3) {
-                keyPair.vk = validateAddress(selected.network, keyAttributes.publicKey);
-            }
+            keyPair.vk = pubFromPriv(selected.network, selected.symbol, privateKeyObj.value);
+            keyPair.sk = privateKeyObj.value;
         } catch (e) {
             console.log(e)
-            node.setCustomValidity(e);
+            privateKeyObj.setCustomValidity(e);
         }
+        privateKeyObj.reportValidity()
+    }
+
+    function validatePublicKey(){
+        publicKeyObj.setCustomValidity('');
+        try{
+            keyPair.vk = validateAddress(selected.network, publicKeyObj.value);
+        } catch (e) {
+            console.log(e)
+            publicKeyObj.setCustomValidity(e);
+        }
+        publicKeyObj.reportValidity()
     }
 
     function saveKeys(){
@@ -89,7 +103,7 @@
         }
 
         CoinStore.update(coinstore => {
-            let nickname = keyAttributes.nickname === '' ? `New ${selected.name} Wallet` : keyAttributes.nickname;
+            let nickname = nicknameObj.value === '' ? `New ${selected.name} Wallet` : nicknameObj.value;
             let coinInfo = {
                 'network': selected.network,
                 'name': selected.name,
@@ -131,7 +145,7 @@
 
 </script>
 <style>
-.coin-add{
+.coin-add-details{
     width: 100%;
     height: 570px;
 }
@@ -155,7 +169,7 @@
 }
 </style>
 
-<form  class="coin-add flex-column" on:submit|preventDefault={() => handleSubmit() } 
+<form  class="coin-add-details flex-column" on:submit|preventDefault={() => handleSubmit() } 
     target="_self" bind:this={formObj}>
     <h5 class="header">Select Wallet</h5>
     <div class="text-subtitle3">
@@ -174,7 +188,9 @@
         <h5 class="header">Choose Action</h5>
         <div class="button-group flex-row">
             {#each buttonGroup as button, index}
-                <Button classes={`button__solid ${button.class}`} 
+                <Button
+                    id={button.id} 
+                    classes={`button__solid ${button.class}`} 
                     width={'222px'}
                     name={button.name}
                     click={button.click}
@@ -184,12 +200,14 @@
         
         {#if addType === 2}
             <InputBox
+                id="private-key"
                 width="100%"
-                bind:value={keyAttributes.privateKey}
+                bind:thisInput={privateKeyObj}
                 label={"Enter Private Key"}
                 placeholder={`Private Key`}
                 styles={`margin-bottom: 17px;`}
-                on:changed={ (e) => validateInputBox(e.detail) }
+                on:changed={refreshValidity}
+                on:keyup={refreshValidityKeyup}
                 spellcheck={false}
                 required={true}
             />
@@ -197,20 +215,23 @@
 
         {#if addType === 3}
             <InputBox
+                id="public-key"
                 width="100%"
-                bind:value={keyAttributes.publicKey}
+                bind:thisInput={publicKeyObj}
                 label={"Enter Public Key"}
                 placeholder={`Public Key`}
                 styles={`margin-bottom: 17px;`}
-                on:changed={ (e) => validateInputBox(e.detail) }
+                on:changed={refreshValidity}
+                on:keyup={refreshValidityKeyup}
                 spellcheck={false}
                 required={true}
             />
         {/if}
 
         <InputBox
+            id={"nickname"}
             width="100%"
-            bind:value={keyAttributes.nickname}
+            bind:thisInput={nicknameObj}
             placeholder={`Wallet Nickname`}
             label={"Wallet Nickname (Optional)"}
             styles={`margin-bottom: 17px;`}

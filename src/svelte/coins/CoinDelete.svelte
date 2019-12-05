@@ -105,7 +105,7 @@
                     placeholder={`Enter Lamden Wallet Password`}
                     styles={`margin-bottom: 17px;`}
                     on:changed={ (e) => validatePassword(e) }
-                    type={"password"}
+                    inputType={"password"}
                     required={true}
                 />
             {:else}
