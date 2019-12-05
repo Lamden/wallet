@@ -67,7 +67,6 @@
             returnMessage.text = `${selected.name} (${selected.symbol}) Wallet Added Successfully`;
         }
         returnMessage.buttons = returnMessageButtons
-        console.log(returnMessage)
         setMessage(returnMessage)
     }
 

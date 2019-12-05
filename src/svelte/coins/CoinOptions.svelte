@@ -126,7 +126,7 @@
     </div>
     <div class="results">
         {#if copySuccessful}
-            <div class="copy-message flex-row text-caption2">
+            <div id={"copy-address"} class="copy-message flex-row text-caption2">
                 <img class="copy-message-icon" src={copyGreen} alt="copy icon" />
                 Wallet Address Copied
             </div>

@@ -32,7 +32,6 @@
     function saveNickName(){
         CoinStore.update( current => {
             let coinMatch = current.find( c => coin.network === c.network && coin.symbol === c.symbol && coin.vk === c.vk)
-            console.log(coinMatch)
             if (coinMatch) {
                 coinMatch.nickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
             }

@@ -62,7 +62,8 @@
             and be prepared to provide the password for it.
         </div>
         <div class="buttons">
-        	<Button 
+        	<Button
+                id={'restore-btn'} 
                 classes={'button__transparent'}
 				name="Restore Now"
                 margin={'0 49px 0 0'}

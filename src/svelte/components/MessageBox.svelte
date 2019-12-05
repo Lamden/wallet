@@ -1,6 +1,4 @@
 <script>
-    import { onMount } from 'svelte';
-
     //Components
     import { Components } from '../../js/router.js';
     const { Button } = Components;
@@ -15,10 +13,6 @@
     $: text = message.text;
     $: type = message.type;
     $: buttons = message.buttons;
-
-    onMount(() => {
-        console.log(buttons)
-    })
 
 </script>
 

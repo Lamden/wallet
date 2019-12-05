@@ -2,6 +2,7 @@ import App from '../../../src/svelte/App.svelte';
 import mount from 'cypress-svelte-unit-test';
 import "cypress-localstorage-commands";
 
+
 describe('Test that all Modify Wallet Options and screens', () => {
     before(function (){
         cy.viewport(1920, 1080)
@@ -71,7 +72,6 @@ describe('Test that all Modify Wallet Options and screens', () => {
         cy.viewport(1920, 1080)
         cy.get('#modify-delete-btn').should('exist').click()
         cy.get('[type="submit"]').should('exist').then(($submit) => {
-            console.log($submit)
             expect($submit[0].value).to.eq("Validate Wallet Password")
         })
         //
@@ -93,7 +93,6 @@ describe('Test that all Modify Wallet Options and screens', () => {
         cy.viewport(1920, 1080)
         cy.get('#modify-delete-btn').should('exist').click()
         cy.get('[type="submit"]').should('exist').then(($submit) => {
-            console.log($submit)
             expect($submit[0].value).to.eq("Validate Wallet Password")
         })
 
