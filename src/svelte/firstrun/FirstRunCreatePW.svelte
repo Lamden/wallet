@@ -118,7 +118,7 @@ form{
                 bind:thisInput={pwdObj1}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
-                inputType= 'assword'
+                inputType= 'password'
                 width="100%"
                 margin={"21px 0 0 0"}
                 on:changed={refreshValidity}
@@ -131,7 +131,7 @@ form{
                 bind:thisInput={pwdObj2}
                 label={"Confirm Password"}
                 placeholder={"At least 8 symbols"}
-                inputType= 'assword'
+                inputType= 'password'
                 width="100%"
                 on:changed={refreshValidity}
                 required={true}/>
