@@ -28,10 +28,18 @@
             setTimeout(() => {
                 createStartingWallets();
                 resolve();
-            }, 3000);
+            }, 1500);
         })
         .then(res => {
-            changeStep(5)
+            steps.update(current => {
+                current.currentStep = 4;
+                return current
+            });
+        })
+        .then(res => {
+            setTimeout(() => {
+                changeStep(5)
+            }, 1500);
         })
     });
 
