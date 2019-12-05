@@ -36,13 +36,13 @@
     "stripCoinRef":{
         "data":{
             "coinList":[
-                {"is_token":false,"network":"bitcoin","network_symbol":"BTC","name":"bitcoin","nickname":"My Ethereum Wallet","symbol":"ETH","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "swapList":[], "txList": [] }, 
-                {"is_token":false,"network":"ethereum","network_symbol":"ETH","name":"ethereum","nickname":"My Bitcoin Wallet","symbol":"BTC","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "swapList":[], "txList": [] }
+                {"is_token":false,"network":"lamden","network_symbol":"TAU","name":"Lamden","nickname":"My Lamden Wallet","symbol":"TAU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }, 
+                {"is_token":false,"network":"lamden","network_symbol":"STU","name":"Stu Bucks","nickname":"My Stu Bucks Wallet","symbol":"STU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }
             ]
         },
         "result":{
-            "newCoin":{ "is_token": false, "network": "ethereum", "network_symbol": "ETH", "name": "ethereum", "nickname": "My Bitcoin Wallet", "symbol": "BTC", "vk": "thisisapublickey", "sk": "thisisaprivatekey"},
-            "coinBeforeCopy": {"is_token":false,"network":"ethereum","network_symbol":"ETH","name":"ethereum","nickname":"My Bitcoin Wallet","symbol":"BTC","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "swapList":[], "txList": [] }
+            "newCoin":{ "is_token": false, "network":"lamden","network_symbol":"TAU","name":"Lamden","nickname":"My Lamden Wallet","symbol":"TAU", "vk": "thisisapublickey", "sk": "thisisaprivatekey"},
+            "coinBeforeCopy": {"is_token":false,"network":"lamden","network_symbol":"STU","name":"Stu Bucks","nickname":"My Stu Bucks Wallet","symbol":"STU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }
         }
     },
     "toCurrencyFormat":{

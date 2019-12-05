@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { HashStore, steps } from '../../js/stores/stores.js';
+    import { CoinStore, steps } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'
@@ -32,7 +32,7 @@
 
     function validatePassword(e){
         let obj = e.detail;
-        if (!HashStore.validatePassword(obj.value)) {
+        if (!CoinStore.validatePassword(obj.value)) {
             obj.setCustomValidity("Incorrect Wallet Password");
         } else {
             obj.setCustomValidity('');

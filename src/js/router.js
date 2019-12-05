@@ -74,7 +74,6 @@ import ResultBox from '../svelte/components/ResultBox.svelte';
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
 import About from '../svelte/misc/About.svelte';
-import Feedback from '../svelte/misc/Feedback.svelte';
 
 export const RestorePages = {
     RestoreMain, 
@@ -116,7 +115,6 @@ export const Pages = {
     DevToolsMain, 
     HistoryMain, 
     About, 
-    Feedback, 
     ...FirstRun 
 };
 
@@ -161,7 +159,6 @@ export {
     Modal,
     HistoryMain,
     Transaction,
-    Feedback,
     About
 };
 

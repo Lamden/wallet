@@ -41,7 +41,7 @@
     }
 
     function validatePassword1(e){
-        let obj = e.detail;
+        let obj = e.detail.target;
         if (obj.validity.patternMismatch){
             obj.setCustomValidity("Password must be 10 characters includeing UPPER/lowercase, number(s) and special character(s)");
         } else {
@@ -51,7 +51,7 @@
     }
 
     function validatePassword2(e){
-        let obj = e.detail;
+        let obj = e.detail.target;
         if (obj.value !== pwdInfo.pwd) {
             obj.setCustomValidity("Passwords do not match");
         } else {

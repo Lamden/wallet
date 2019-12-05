@@ -9,7 +9,7 @@
     const { Button } = Components;
 
     //Context
-    const { setFile, changeStep } = getContext('functions');
+    const { setFile, nextPage } = getContext('functions');
 
     //Props
     export let restore = false;
@@ -19,15 +19,9 @@
 
 	onMount(() => {
         if (restore){
-            steps.set({
-                currentStep: 1,
-                stepList: [
-                    {number: 1, name: 'Upload', desc:'Keystore File'},
-                    {number: 2, name: 'Unlock', desc:'Keystore Password'},
-                    {number: 3, name: 'Wallets', desc:'Restore Keys'},
-                    {number: 4, name: 'Create Password', desc:'Make it Good!'},
-                    {number: 5, name: 'Complete!', desc:'Return to Wallet'},
-                ]
+            steps.update(current => {
+                current.currentStep = 2;
+                return current
             });
         } else {
             steps.set({
@@ -57,13 +51,12 @@
         } else if (ev.dataTransfer.items) {
             ev.dataTransfer.items[0].kind === 'file' ? file = ev.dataTransfer.items[0].getAsFile() : null;
         } else if (ev.dataTransfer.files) {
-            file = ev.dataTransfer.files;
+            ev.dataTransfer.files[0].kind === 'file' ? file = ev.dataTransfer.files[0].getAsFile() : null;
         }
         if (file) {
             setFile(file);
             disabledButton = false;
         }
-
     }
     
 </script>
@@ -74,7 +67,7 @@
     display: none;
 }
 
-.page{
+.restore-upload{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -91,9 +84,13 @@ a{
     text-decoration: unset;
 }
 
+span{
+    cursor: pointer;
+}
+
 </style>
 
-<div class="page" on:dragover={(ev) => ev.preventDefault()} on:drop={(ev) => handleFileEvent(ev)}>
+<div class="restore-upload" on:dragover={(ev) => ev.preventDefault()} on:drop={(ev) => handleFileEvent(ev)}>
     <h6>Welcome!</h6>
     
     <div class="text-box text-body1 text-primary">
@@ -102,17 +99,18 @@ a{
     
     <div class="caption-box text-caption text-secondary">
         Drag and drop your file anywhere on this page. Or
-        <a class="text-purple" href="javascript:void(0)" on:click={() => openPicker()}>click to chose a file</a>
+        <span class="text-purple" on:click={() => openPicker()}>click to chose a file</span>
         to manually select.
     </div>
     
     <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
     
-    <Button classes={`button__solid ${activeButton}`}
+    <Button id={'confirm-keystore-btn'}
+            classes={`button__solid ${activeButton}`}
             styles={'margin-bottom: 16px;'}
             name="Confirm Keystore"
             disabled={disabledButton}
-            click={() => changeStep(1)} />
+            click={() => nextPage()} />
 
     <a  class="text-caption text-secondary" 
         href="https://www.lamden.io" 

@@ -10,6 +10,7 @@
     const { switchPage } = getContext('app_functions');
 
     setContext('functions', {
+        nextPage: () => {currentStep = currentStep + 1},
         setFile: (value) => {file = value;},
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
@@ -27,11 +28,11 @@
     let currentStep = 0;
 
     let RestoreSteps = [
+        {page: 'FirstRunCreatePW', hideSteps: false, back: -1},
         {page: 'RestoreUpload', hideSteps: false, back: 0},
         {page: 'RestoreCheck', hideSteps: true, back: 0},
         {page: 'RestorePassword', hideSteps: false, back: 0},
         {page: 'RestoreAddWallets', hideSteps: false, back: 0},
-        {page: 'FirstRunCreatePW', hideSteps: false, back: 3},
         {page: 'RestoreSaveWallets', hideSteps: true, back: 0},
         {page: 'RestoreComplete', hideSteps: false, back: 0},
         {page: 'FirstRunFinishing', hideSteps: false, back: 0},
@@ -44,7 +45,7 @@
 </script>
 
 <style>
-.layout{
+.firstrun-restore{
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -79,7 +80,7 @@
 }
 </style>
 
-<div class="layout">
+<div class="firstrun-restore">
     <div class="header">
         <NavLogo />
     </div>

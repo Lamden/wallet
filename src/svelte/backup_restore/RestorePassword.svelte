@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { HashStore, steps, obscure } from '../../js/stores/stores.js';
+    import { steps, obscure } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'
@@ -12,46 +12,49 @@
     import { decryptObject, decryptStrHash } from '../../js/utils.js';
 
     //Context
-    const { setKeys, changeStep } = getContext('functions');
+    const { setKeys, changeStep, nextPage } = getContext('functions');
 
     //DOM nodes
-    let formObj;
+    let formObj, pwdObj;
 
     //Props
     export let file;
     export let keystoreFile;
     
-    let pwd;
     $: pwdHint = keystoreFile.w === "" ? "" : decryptStrHash(obscure, keystoreFile.w);
 
 	onMount(() => {
         steps.update(current => {
-            current.currentStep = 2;
+            current.currentStep = 3;
             return current
         });
     });
 
-    function validateKeyStorePassword(e){
-        let obj = e.detail;
-        if (decryptObject(obj.value, keystoreFile.data)){
-            pwd = obj.value;
-            obj.setCustomValidity('');
+    function handleSubmit(){
+        if (decryptObject(pwdObj.value, keystoreFile.data)) {
+            pwdObj.setCustomValidity('');
         } else {
-            obj.setCustomValidity("Incorrect Password");
+            pwdObj.setCustomValidity("Incorrect Password");
+        }
+        pwdObj.reportValidity()
+        if (formObj.checkValidity()){
+            setKeys(decryptObject(pwdObj.value, keystoreFile.data));
+            nextPage();
         }
     }
 
-    function handleSubmit(){
-        if (formObj.checkValidity()){
-            setKeys(decryptObject(pwd, keystoreFile.data))
-            changeStep(3);
-        }
+    function refreshValidity(e){
+        e.detail.target.setCustomValidity('');
+    }
+
+    function refreshValidityKeyup(e){ 
+        if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
     }
     
 </script>
 
 <style>
-.page{
+.restore-password{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -83,7 +86,7 @@ a{
 
 </style>
 
-<div class="page">
+<div class="restore-password">
     <h6>Keystore File Confirmed</h6>
     
     <div class="text-box text-body1 text-primary">
@@ -95,19 +98,23 @@ a{
 
     <div class="caption-box text-caption text-secondary" class:hide={pwdHint === ""}>
         <div><strong>Password Hint</strong></div>
-        <div>{pwdHint}</div>
+        <div id="pwd-hint">{pwdHint}</div>
     </div>
     
     <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
         <div class="input-box">
             <InputBox
-                width="100%"
-                label={"Password"}
-                inputType= 'password'
-                on:changed={validateKeyStorePassword}
-                required={true}/>
+                    id={'pwd-input'}
+                    width="100%"
+                    label={"Password"}
+                    inputType= 'password'
+                    bind:thisInput={pwdObj}
+                    on:changed={refreshValidity}
+                    on:keyup={refreshValidityKeyup}
+                    required={true}/>
         </div>
-        <input  value="Confirm Password"
+        <input  id={'pwd-btn'}
+                value="Confirm Password"
                 class="button__solid button__purple submit submit-button submit-button-text" 
                 type="submit" >
     </form>

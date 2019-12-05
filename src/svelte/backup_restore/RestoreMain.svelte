@@ -10,6 +10,7 @@
     const { switchPage } = getContext('app_functions');
 
     setContext('functions', {
+        nextPage: () => currentStep = currentStep + 1,
         setFile: (value) => {file = value;},
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},

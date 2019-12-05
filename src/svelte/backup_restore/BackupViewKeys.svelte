@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, HashStore, steps, password } from '../../js/stores/stores.js';
+    import { CoinStore, steps, password } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'

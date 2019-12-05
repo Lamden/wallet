@@ -3,7 +3,7 @@
     import { icons } from '../../js/images.js';
 
     //Stores
-	import { currentPage, password } from '../../js/stores/stores.js';
+	import { currentPage, CoinStore } from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -17,7 +17,7 @@
 
     function menuAction(){
         if (menuItem.page.name === "LockScreen") {
-            password.set('');
+            CoinStore.setPwd('');
             return
         }
         if (menuItem.page.name === 'Feedback'){
@@ -57,7 +57,7 @@
 </style>
 
 
-<div class="item" class:selected={isSelected} on:click={ () => menuAction() }>
+<div id={menuItem.id} class="item" class:selected={isSelected} on:click={ () => menuAction() }>
     <img class="logo" src={menuItem.logo} alt="menu item logo"/>
     <span class="name"> {menuItem.name} </span>
 </div>

@@ -9,7 +9,7 @@
     const { Button } = Components;
 
     //Context
-    const { setKeys, changeStep } = getContext('functions');
+    const { setKeys, changeStep, nextPage } = getContext('functions');
 
     //DOM nodes
     let formObj;
@@ -21,14 +21,14 @@
 
 	onMount(() => {
         steps.update(current => {
-            current.currentStep = 3;
+            current.currentStep = 4;
             return current
         });
     });
 
-    function nextPage(){
+    function nextStep(){
         setKeys(keys);
-        changeStep(4);
+        nextPage();
     }
 
     function selectAllKeys(ev){
@@ -42,7 +42,7 @@
 </script>
 
 <style>
-.page{
+.restore-addwallets{
     display: flex;
     flex-direction: row;
     flex-grow:1;
@@ -126,7 +126,7 @@ input[type="checkbox"]{
 
 </style>
 
-<div class="page">
+<div class="restore-addwallets">
     <div class="content">
         <h6>Password Confirmed</h6>
     
@@ -134,11 +134,12 @@ input[type="checkbox"]{
             Almost there! Now let's select which wallets you'd like to restore
         </div>
 
-        <Button classes={`button__solid button__purple`}
+        <Button id={'restore-btn'}
+                classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Restore Wallets"
                 disabled={false}
-                click={() => nextPage()} />
+                click={() => nextStep()} />
 
         <a  class="text-caption text-secondary" 
             href="https://www.lamden.io" 
@@ -155,7 +156,7 @@ input[type="checkbox"]{
         </div>
         <div class="key-row">
             <div class="checkbox-box">
-                <input type="checkbox" bind:checked={selectAll} on:change={(ev) => selectAllKeys(ev)}>
+                <input id="chk-all" type="checkbox" bind:checked={selectAll} on:change={(ev) => selectAllKeys(ev)}>
             </div>
             <div class="name">{'All Wallets'}</div>
             <div class="address"></div>
@@ -163,10 +164,10 @@ input[type="checkbox"]{
         {#each keys.keyList as key, i}
             <div class="key-row">
                 <div class="checkbox-box">
-                    <input type="checkbox" bind:checked={keys.keyList[i].checked}>
+                    <input id={`chkbox-${i}`} type="checkbox" bind:checked={keys.keyList[i].checked}>
                 </div>
                 <div class="name">{`${key.name}`}</div>
-                <div class="address">{`${key.vk}`}</div>
+                <div id={`div-address-${i}`} class="address">{`${key.vk}`}</div>
             </div>
         {/each}
     </div>

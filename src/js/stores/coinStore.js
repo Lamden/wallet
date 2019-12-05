@@ -25,7 +25,7 @@ const createCoinStore = () => {
                     if (decryptedStorage) localStorage.setItem('backup', encryptedStorage);
                     else if(localStorage.getItem('backup')) {
                         const encryptedBackupStorage = localStorage.getItem('backup');
-                        startValue = JSON.parse(decryptObject( get(passwordStore), encryptedBackupStorage))
+                        startValue = decryptObject( get(passwordStore), JSON.parse(encryptedBackupStorage))
                     }
                 }
 
@@ -46,7 +46,13 @@ const createCoinStore = () => {
         set,
         update,
         setPwd,
+        passwordStore,
         password: () => {return get(passwordStore)},
+        validatePassword: (pwd) => {
+            if (typeof pwd  !== "undefined" && !pwd) return false;
+            if(decryptObject( pwd, JSON.parse(localStorage.getItem('coins'))) == false) return false;
+            return true;
+        },
         getCoin: (coin) => {
             return get(CoinStore).find( f => {
                 return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
@@ -66,4 +72,4 @@ const createCoinStore = () => {
 }
 export const CoinStore = createCoinStore();
 
-export const password = derived(CoinStore, () => CoinStore.password());
+export const password = derived(CoinStore.passwordStore, ($passwordStore) => $passwordStore);

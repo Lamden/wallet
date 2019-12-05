@@ -18,7 +18,7 @@
             steps.set({current:0, stepList:[]});
         }else{
             steps.update(current => {
-                current.currentStep = 4;
+                current.currentStep = 5;
                 return current
             });
         }
@@ -53,7 +53,7 @@
 </script>
 
 <style>
-.page{
+.firstrun-finishing{
     display: flex;
     flex-grow: 1;
     justify-content: center;
@@ -62,7 +62,7 @@
 
 </style>
 
-<div class="page">
+<div class="firstrun-finishing">
     <Loading {message} />
 </div>
 

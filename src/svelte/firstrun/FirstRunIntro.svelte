@@ -19,7 +19,7 @@
 </script>
 
 <style>
-.page{
+.firstrun-intro{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -39,16 +39,18 @@ a{
 
 </style>
 
-<div class="page">
+<div class="firstrun-intro">
     <h6 class="text-primary">Welcome!</h6>
     <div class="text-box text-body1 text-primary">
         Creating a wallet is easy and secure. It's stored in the user’s browser, not on remote servers.
     </div>
-    <Button classes={'button__solid button__purple'}
+    <Button id="create-wallet"
+            classes={'button__solid button__purple'}
             styles={'margin-bottom: 16px;'}
             name="Create A Wallet" 
             click={() => changeStep(1)} />
-    <Button classes={'button__solid'} 
+    <Button id="restore-wallet"
+            classes={'button__solid'} 
             styles={'margin-bottom: 16px;'}
             name="Restore a Wallet" 
             click={() => switchPage('FirstRunRestoreMain')} />

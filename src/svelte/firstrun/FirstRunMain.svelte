@@ -1,6 +1,6 @@
 <script>
     import { setContext } from 'svelte';
-
+    
 	//Components
     import { Components, FirstRun }  from '../../js/router.js'
     const { Steps, Step } = Components;
@@ -8,6 +8,7 @@
 
     //Context
     setContext('functions', {
+        nextPage: () => currentStep = currentStep + 1,
         changeStep: (step) => {
             if (step === -1 && currentStep === 0) currentStep = 0;
             else if (step === -1) currentStep = back;

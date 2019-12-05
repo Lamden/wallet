@@ -5,29 +5,31 @@
     const { InputBox } = Components;
     
     //Stores
-    import { loggedIn, HashStore, CoinStore } from '../../js/stores/stores.js';
+    import { loggedIn, CoinStore } from '../../js/stores/stores.js';
     
     //DOM nodes
-    let formObj;
-
-    let pwd = '';
+    let formObj, pwdObj;
 
     function handleSubmit(){
-        if (formObj.checkValidity()){
-            CoinStore.setPwd(pwd);
-        }
-    }
-
-    function validatePassword(e){
-        let obj = e.detail;
-        pwd = obj.value
-        if (!HashStore.validatePassword(pwd)) {
-            obj.setCustomValidity("Incorrect Password");
+        if (!CoinStore.validatePassword(pwdObj.value)) {
+            pwdObj.setCustomValidity("Incorrect Password");
+            pwdObj.reportValidity()
         } else {
-            obj.setCustomValidity('');
+            pwdObj.setCustomValidity('');
+            pwdObj.reportValidity()
+        }
+        if (formObj.checkValidity()){
+            CoinStore.setPwd(pwdObj.value);
         }
     }
 
+    function refreshValidity(e){
+        e.detail.target.setCustomValidity('');
+    }
+
+    function refreshValidityKeyup(e){ 
+        if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
+    }
 </script>
 
 <style>
@@ -63,7 +65,7 @@
     margin-bottom: 16px;
 }
 
-.page{
+.lockscreen{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -86,7 +88,7 @@ form{
         <NavLogo />
     </div>
     <div class="content text-primary">
-        <div class="page">
+        <div class="lockscreen">
             <h6 class="heading">Sign In</h6>
             <div class="text-box text-body1">  
                 Access your Lamden Wallet.
@@ -95,13 +97,17 @@ form{
             <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
                 <div class="input-box">
                     <InputBox
+                        id="pwd-input"
+                        bind:thisInput={pwdObj}
+                        on:changed={refreshValidity}
+                        on:keyup={refreshValidityKeyup}
                         width="100%"
                         label={"Password"}
                         inputType= 'password'
-                        on:changed={validatePassword}
                         required={true}/>
                 </div>
-                <input  value="Login"
+                <input  id="login-btn"
+                        value="Login"
                         class="button__solid button__purple submit submit-button submit-button-text" 
                         type="submit" >
             </form>

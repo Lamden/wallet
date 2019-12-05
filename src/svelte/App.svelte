@@ -9,7 +9,6 @@
 	import {
 			CoinStore,
 			SettingsStore, 
-			HashStore,
 			currentPage, 
 			themeStyle, 
 			firstRun,
@@ -26,10 +25,10 @@
 	let modalData;
 	let fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
-	$: pwdIsCorrect = HashStore.validatePassword($password);
+	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
-		
+		//CoinStore.setPwd('Summer0!0101')
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;

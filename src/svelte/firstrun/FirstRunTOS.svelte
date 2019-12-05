@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, loggedIn, HashStore, SettingsStore, password,steps } from '../../js/stores/stores.js';
+    import { CoinStore, loggedIn, SettingsStore, password,steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../../js/router.js'
@@ -27,14 +27,13 @@
     }
 
     function startOver(){
-        HashStore.set({ 'encode' : undefined });
         changeStep(0);
     }
 
 </script>
 
 <style>
-.page{
+.firstrun-tos{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -48,20 +47,22 @@
 }
 </style>
 
-<div class="page">
+<div class="firstrun-tos">
     <h6 class="text-primary">Remember</h6>
     
     <div class="text-box text-body1 text-primary">
         Your password, private keys, and locking your wallet are important to keeping your cryptocurrency safe.
     </div>
 
-    <Button style={'button__solid'}
-        height={'36px'}
+    <Button
+        id={"i-understand"} 
+        classes={'button__solid'}
         styles={'margin-bottom: 16px;'}
         name="I understand" 
         click={() => accept()} />
-    <Button style={'button__solid button__purple'}
-        height={'36px'}
+    <Button
+        id={"go-back"}  
+        classes={'button__solid button__purple'}
         styles={'margin-bottom: 16px;'}
         name="go back" 
         click={() => startOver()} />

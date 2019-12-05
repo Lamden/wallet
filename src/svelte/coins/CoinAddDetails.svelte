@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
     
 	//Stores
-    import { CoinStore, HashStore, coinMeta, password, supportedCoins } from '../../js/stores/stores.js';
+    import { CoinStore, coinMeta, password, supportedCoins } from '../../js/stores/stores.js';
 
     //Components
     import { Components, Modals } from '../../js/router.js';

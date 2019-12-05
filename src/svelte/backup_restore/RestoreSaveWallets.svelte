@@ -12,7 +12,7 @@
     import { encryptStrHash } from '../../js/utils.js';
 
     //Context
-    const { setKeys, changeStep } = getContext('functions');
+    const { setKeys, changeStep, nextPage } = getContext('functions');
 
     //Props
     export let keys;
@@ -26,8 +26,7 @@
         })
         .then(res => {
             setKeys(keys);
-            if (restore) changeStep(6);
-            else changeStep(5);
+            nextPage();
         })
     });
 
@@ -52,7 +51,7 @@
 </script>
 
 <style>
-.page{
+.restore-savewallets{
     display: flex;
     flex-grow: 1;
     justify-content: center;
@@ -62,7 +61,7 @@
 
 </style>
 
-<div class="page">
-    <Loading message={'Checking Keystore'} />
+<div class="restore-savewallets">
+    <Loading message={'Saving Keys to Wallet'} />
 </div>
 

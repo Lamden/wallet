@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store';
 
 const defualtSettingsStore = {
-    'currentPage' : {'name': 'CoinsMain', 'data' : {}},
+    'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
     'version':'v0_0_2',

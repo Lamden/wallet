@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { HashStore, password, steps } from '../../js/stores/stores.js';
+    import { CoinStore, password, steps } from '../../js/stores/stores.js';
 
     //Utils
     import { encryptObject } from '../../js/utils.js';
@@ -15,19 +15,24 @@
     const { changeStep } = getContext('functions');
     
     //DOM NODES
-    let formField;
+    let formField, pwdObj1, pwdObj2;
 
     //PROPS
     export let restore = false;
 
-    let tempPassword;
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
 
     onMount(() => {
         if (restore){
-            steps.update(current => {
-                current.currentStep = 4;
-                return current
+            steps.set({
+                currentStep: 1,
+                stepList: [
+                    {number: 1, name: 'Wallet Password', desc:'Make it Good!'},
+                    {number: 2, name: 'Upload', desc:'Keystore File'},
+                    {number: 3, name: 'Unlock', desc:'Keystore Password'},
+                    {number: 4, name: 'Restore', desc:'Make Your Choice'},
+                    {number: 5, name: 'Complete!', desc:'About to Get lit'},
+                ]
             });
         }else{
             steps.set({
@@ -50,10 +55,13 @@
     }
 
     function savePassword(){
+        if (pwdObj2.value !== pwdObj1.value) {
+            pwdObj2.setCustomValidity("Passwords do not match");
+        }
         if (formField.checkValidity()){
             try{
-                HashStore.setPassword($password);
-                if (restore) changeStep(5);
+                CoinStore.setPwd(pwdObj1.value);
+                if (restore) changeStep(1);
                 else changeStep(3);
                 
             } catch (err) {
@@ -62,31 +70,24 @@
         }
     }
 
-    function validatePassword1(e){
-        let obj = e.detail;
-        tempPassword = obj.value;
-        if (obj.validity.patternMismatch){
-            obj.setCustomValidity("Password must be 10 characters includeing UPPER/lowercase, number(s) and special character(s)");
-        } else {
-            password.set(e.detail.value);
-            obj.setCustomValidity('');
-        }
-        if (obj.checkValidity()) pattern = RegExp.escape(obj.value); 
+    function refreshValidity(e){
+        e.detail.target.setCustomValidity('');
     }
 
-    function validatePassword2(e){
-        let obj = e.detail;
-        if (obj.value !== tempPassword) {
-            obj.setCustomValidity("Passwords do not match");
-        } else {
-            obj.setCustomValidity('');
+    function validatePassword2(){
+        if (pwdObj2.value === pwdObj1.value) {
+            pwdObj2.setCustomValidity('');
+            return
         }
+        pwdObj2.setCustomValidity("Passwords do not match");
+
+        
     }
 
 </script>
 
 <style>
-.page{
+.firstrun-create-pwd{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -104,7 +105,7 @@ form{
 }
 </style>
 
-<div class="page">
+<div class="firstrun-create-pwd">
     <h6 class="text-primary">Create a Password</h6>
     <div class="text-box text-body1 text-primary">
         No username required. Use a strong password that you'll remember.
@@ -113,25 +114,30 @@ form{
     <form on:submit|preventDefault={() => savePassword() } bind:this={formField} target="_self">
         <div class="input-box">
             <InputBox
+                id="pwd1"
+                bind:thisInput={pwdObj1}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
-                intputType= 'password'
+                inputType= 'assword'
                 width="100%"
                 margin={"21px 0 0 0"}
-                on:changed={validatePassword1}
+                on:changed={refreshValidity}
                 {pattern}
                 required={true}/>
         </div>
         <div class="input-box">
             <InputBox 
+                id="pwd2"
+                bind:thisInput={pwdObj2}
                 label={"Confirm Password"}
                 placeholder={"At least 8 symbols"}
-                intputType= 'password'
+                inputType= 'assword'
                 width="100%"
-                on:changed={validatePassword2}
+                on:changed={refreshValidity}
                 required={true}/>
         </div>
-        <input  value="Save Password"
+        <input  id="save-pwd"
+                value="Save Password"
                 class="button__solid button__purple submit submit-button submit-button-text" 
                 type="submit" >
     </form>

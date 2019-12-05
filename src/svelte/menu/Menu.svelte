@@ -9,24 +9,24 @@
         {
             heading: 'Wallet',
             items:[
-                {logo: icons.holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
-                {logo: icons.history, name: 'History', page: {name: 'HistoryMain'}},
-                {logo: icons.devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
+                {id:"holdings", logo: icons.holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
+                {id:"history", logo: icons.history, name: 'History', page: {name: 'HistoryMain'}},
+                {id:"devtools", logo: icons.devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
             ]
         },
         {
             heading: 'Safety & Security',
             items:[
-                {logo: icons.backup, name: 'Backup Wallet', page: {name: 'Backup'}},
-                {logo: icons.restore, name: 'Restore Wallet', page: {name: 'Restore'}},
-                {logo: icons.signout, name: 'Sign out & Lock', page: {name: 'LockScreen'}},
+                {id:"backup", logo: icons.backup, name: 'Backup Wallet', page: {name: 'Backup'}},
+                {id:"restore", logo: icons.restore, name: 'Restore Wallet', page: {name: 'Restore'}},
+                {id:"lock", logo: icons.signout, name: 'Sign out & Lock', page: {name: 'LockScreen'}},
             ]
         },
         {
             heading: 'About & Info',
             items:[
-                {logo: icons.about, name: 'About', page: {name: 'About'}},
-                {logo: icons.feedback, name: 'Give Feedback', page: {name: 'Feedback'}},
+                {id:"about", logo: icons.about, name: 'About', page: {name: 'About'}},
+                {id:"feedback", logo: icons.feedback, name: 'Give Feedback', page: {name: 'Feedback'}},
             ]
         },
     ]

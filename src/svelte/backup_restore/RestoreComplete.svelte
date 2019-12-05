@@ -22,6 +22,8 @@
 
     let selectAll = false;
 
+    $: buttonName = restore ? "Complete Restore" : "Back To Home";
+
 	onMount(() => {
         steps.update(current => {
             current.currentStep = restore ? 5 : 4;
@@ -37,7 +39,7 @@
 </script>
 
 <style>
-.page{
+.restore-complete{
     display: flex;
     flex-direction: row;
     flex-grow:1;
@@ -193,7 +195,7 @@ label.css-label-error {
 
 </style>
 
-<div class="page">
+<div class="restore-complete">
     <div class="content">
         <h6>Wallets Restored</h6>
     
@@ -201,7 +203,8 @@ label.css-label-error {
             You've added the following wallets succesfully! You may now perform transactions using these addresses.
         </div>
 
-        <Button classes={`button__solid button__purple`}
+        <Button id={'home-btn'}
+                classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Back to Home"
                 disabled={false}

@@ -14,11 +14,16 @@
     export let width = '100%';
     export let margin = 'unset';
     export let spellcheck = true;
+    export let oninput;
 
-    let thisInput;
+    export let thisInput;
 
-    function dispatchChanged() {
-        dispatch('changed', thisInput);
+    function dispatchChanged(e) {
+        dispatch('changed', e);
+    }
+
+    function dispatchKeyUp(e){
+        dispatch('keyup', e);
     }
 
 </script>
@@ -84,10 +89,12 @@ input::-webkit-input-placeholder {
             id={id}
             bind:value={value}
             bind:this={thisInput}
-            on:change={() => dispatchChanged()}
+            on:change={(e) => dispatchChanged(e)}
+            on:keyup={(e) => dispatchKeyUp(e)}
             class="input:required:invalid input:focus:invalid"
             style={`width: ${width}; ${styles}`}
             type="password"
+            oninput={oninput}
             pattern={pattern}
             placeholder={placeholder}
             required={required}  />
@@ -96,10 +103,12 @@ input::-webkit-input-placeholder {
             id={id}
             bind:value={value}
             bind:this={thisInput}
-            on:change={() => dispatchChanged()}
+            on:change={(e) => dispatchChanged(e)}
+            on:keyup={(e) => dispatchKeyUp(e)}
             class="input:required:invalid input:focus:invalid"
             style={`width: ${width}; ${styles}`}
             pattern={pattern}
+            oninput={oninput}
             placeholder={placeholder}
             required={required}
             spellcheck={spellcheck}  />

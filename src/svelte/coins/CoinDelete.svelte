@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
 	//Stores
-    import { HashStore, CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../../js/router.js'
@@ -27,12 +27,9 @@
 
     function handleSubmit(form){
         if (form.checkValidity()){
-            console.log(passwordOkay)
             if (!passwordOkay){
-                console.log('setting passwordokay to true')
                 passwordOkay = true;
             }else{
-                console.log('okay to delete')
                 setPage(4);
             }
         } else {
@@ -41,9 +38,8 @@
     }
 
     function validatePassword(e){
-        console.log(e);
-        let obj = e.detail;
-        if (!HashStore.validatePassword(pwd)) {
+        let obj = e.detail.target;
+        if (!CoinStore.validatePassword(pwd)) {
             obj.setCustomValidity("Incorrect Wallet Password");
         } else {
             obj.setCustomValidity('');

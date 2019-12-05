@@ -6,7 +6,7 @@
     const { Loading, ErrorBox } = Components;
 
     //Context
-    const { setKeyStore, changeStep } = getContext('functions');
+    const { setKeyStore, changeStep, nextPage } = getContext('functions');
 
     //Props
     export let file;
@@ -20,7 +20,7 @@
             }, 1000);
         })
         .then(res => {
-            changeStep(2);
+            nextPage();
         })
         .catch(err => error = err)
     });

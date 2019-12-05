@@ -2,6 +2,7 @@
     import { icons } from '../../js/images.js';
 
     //Props
+    export let id;
     export let name;
     export let click;
     export let icon = '';
@@ -57,6 +58,7 @@
 </style>
 
 <button class={`${classes}`}
+        id={id}
         on:click={click}
         disabled={disabled}
         style="width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"

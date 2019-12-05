@@ -1,6 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
-
+    
     //Stores
     import { CoinStore, password, steps } from '../../js/stores/stores.js';
 
@@ -58,7 +58,7 @@
 </script>
 
 <style>
-.page{
+.firstrun-genwallets{
     display: flex;
     flex-grow: 1;
     justify-content: center;
@@ -67,7 +67,7 @@
 
 </style>
 
-<div class="page">
+<div class="firstrun-genwallets">
     <Loading message={'Creating Keys'} />
 </div>
 

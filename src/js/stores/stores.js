@@ -3,7 +3,6 @@ import { coin, pubkey } from './defaults.js';
 
 export { obscure, supportedCoins } from './defaults.js';
 export { coinMeta } from './coinMeta.js';
-export { HashStore } from './hashStore.js';
 export { CoinStore, password } from './coinStore.js';
 export { SettingsStore, firstRun, themeStyle, currentPage, loggedIn, calcRemainingStorage  } from './settingsStore.js';
 

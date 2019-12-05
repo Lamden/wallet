@@ -22,13 +22,13 @@ describe('Unit Test Crypto Wallet functions', function () {
     context('pubFromPriv: Creates appropriate errors - ', function () {
         it('Rejects unrecognized network ', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
-                const fdata = f_wallets.pubFromPriv_eth.data
-                expect(() => pubFromPriv('testing', 'ETH', fdata.sk) ).to.throw(Error, 'testing is not a supported network');
+                const fdata = f_wallets.pubFromPriv_lamden.data
+                expect(() => pubFromPriv('testing', 'STU', fdata.sk) ).to.throw(Error, 'testing is not a supported network');
             })
         })
 
         it('Rejects bad Lamden private key ', function () {
-            expect(() => pubFromPriv('lamden', 'TAU', 'thisisBAD') ).to.throw(Error, 'bad seed size');
+            expect(() => pubFromPriv('lamden', 'TAU', 'thisisBAD') ).to.throw(Error, 'Invalid lamden privateKey');
         })
     })
 
@@ -62,11 +62,11 @@ describe('Unit Test Crypto Wallet functions', function () {
         it('Rejects unrecognized network ', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
                 const fdata = f_wallets.validateAddress.data
-                expect(() => validateAddress('testing', fdata.vaild_Eth) ).to.throw(Error, 'testing is not a supported network');
+                expect(() => validateAddress('testing', fdata.vaild_Lamden) ).to.throw(Error, 'testing is not a supported network');
             })
         })
     })
-
+/*
     context('signTx: Signes a raw transaction - ', function () {
         it('Can remove whitespace from a private key string', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets ) => {
@@ -93,4 +93,5 @@ describe('Unit Test Crypto Wallet functions', function () {
             })
         })
     })
+    */
 })
