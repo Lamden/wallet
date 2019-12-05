@@ -17,33 +17,42 @@
     const { home, setPage } = getContext('coinmodify_functions');
 
     //DOM Nodes
-    let formObj;
+    let formObj, passwordObj;
 
     //Props
     export let coin;
 
-    let pwd;
     let passwordOkay = false;
 
     function handleSubmit(form){
-        if (form.checkValidity()){
+        if(!passwordOkay){
+            validatePassword()
+            passwordObj.reportValidity()
+        };
+
+        if (formObj.checkValidity()){
             if (!passwordOkay){
                 passwordOkay = true;
             }else{
                 setPage(4);
             }
-        } else {
-            alert('no')
         }
     }
 
-    function validatePassword(e){
-        let obj = e.detail.target;
-        if (!CoinStore.validatePassword(pwd)) {
-            obj.setCustomValidity("Incorrect Wallet Password");
+    function validatePassword(){
+        if (!CoinStore.validatePassword(passwordObj.value)) {
+            passwordObj.setCustomValidity("Incorrect Wallet Password");
         } else {
-            obj.setCustomValidity('');
+            passwordObj.setCustomValidity('');
         }
+    }
+
+    function refreshValidity(){
+        passwordObj.setCustomValidity('');
+    }
+
+    function refreshValidityKeyup(e){ 
+        if (e.detail.keyCode !== 13) passwordObj.setCustomValidity('');
     }
 </script>
 
@@ -100,16 +109,17 @@
         <div class="content-box">
             {#if passwordOkay ==- false}
                 <InputBox
-                    bind:value={pwd}
+                    id={'pwd-input'}
+                    bind:thisInput={passwordObj}
                     label={"Password"}
                     placeholder={`Enter Lamden Wallet Password`}
                     styles={`margin-bottom: 17px;`}
-                    on:changed={ (e) => validatePassword(e) }
+                    on:changed={refreshValidity}
+                    on:keyup={refreshValidityKeyup}
                     inputType={"password"}
-                    required={true}
-                />
+                    required={true}/>
             {:else}
-                <div class="warning-message flex-row">
+                <div id={'warning-msg'} class="warning-message flex-row">
                     <img class="icon" src={warning} alt="warning icon" />
                     <h6>Please Confirm Wallet Deletion</h6>
                 </div>
@@ -122,7 +132,9 @@
                     class:button-purple={!passwordOkay}
                     type="submit" 
                     value={passwordOkay ? "Confirm Wallet Deletion" : "Validate Wallet Password"}>
-            <Button classes={'button__solid buttom__purple'} 
+            <Button 
+                    id={"back-btn"}
+                    classes={'button__solid buttom__purple'} 
                     width={'232px'}
                     margin={'10px 0 0 0'}
                     name="Back" 

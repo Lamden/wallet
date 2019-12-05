@@ -21,7 +21,7 @@
 </script>
 
 <style>
-.tx-result{
+.results-box{
     align-items: center;    
 }
 
@@ -41,19 +41,21 @@
 }
 </style>
 
-<div class="tx-result flex-column">
-    <h5>{result.title}</h5> 
+<div class="results-box flex-column">
+    <h5 id={'results-title'}>{result.title}</h5> 
 
-    <div class="text-body1">{result.subtitle}</div>
+    <div id={'results-subtitle'} class="text-body1">{result.subtitle}</div>
 
     <div class="message flex-row">
         <img class="icon" src={icon} alt={`${result.type} icon`} />
-        <h6>{result.message}</h6>
+        <h6 id={'results-message'}>{result.message}</h6>
     </div>
 
     <div class="buttons flex-row">
         {#each result.buttons as button, index}
-            <Button classes={button.class} 
+            <Button
+                id={button.id} 
+                classes={button.class} 
                 width={button.width ? button.width : '232px'}
                 margin={button.margin ? button.margin : '0 7px'}
                 name={button.name}

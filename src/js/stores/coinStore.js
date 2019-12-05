@@ -49,8 +49,9 @@ const createCoinStore = () => {
         passwordStore,
         password: () => {return get(passwordStore)},
         validatePassword: (pwd) => {
-            if (typeof pwd  !== "undefined" && !pwd) return false;
-            if(decryptObject( pwd, JSON.parse(localStorage.getItem('coins'))) == false) return false;
+            if (typeof pwd  !== "undefined" && !pwd && pwd === '') return false;
+            if (!localStorage.getItem('coins')) return false;
+            if(decryptObject( pwd, JSON.parse(localStorage.getItem('coins'))) === false) return false;
             return true;
         },
         getCoin: (coin) => {

@@ -13,7 +13,7 @@
     export let coin;
 
     let buttons = [
-        {name: 'Home', click: () => appHome(), class: 'button__solid button__purple'}
+        {id: 'home-btn', name: 'Home', click: () => appHome(), class: 'button__solid button__purple'}
     ]
 
     onMount(() => {

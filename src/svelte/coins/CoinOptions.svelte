@@ -57,6 +57,9 @@
 </script>
 
 <style>
+.coin-options{
+    
+}
 .options-box{
     justify-content: space-between;
     margin-top: 13px;
@@ -91,7 +94,7 @@
 }
 </style>
 
-<div class="modify text-primary">
+<div class="coin-options text-primary">
     <h5> {`Recieve ${coin.name} ${coin.symbol}`} </h5>
     <DropDown
         id={'wallets-dd'}

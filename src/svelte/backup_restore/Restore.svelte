@@ -20,7 +20,7 @@
 </script>
 
 <style>
-.page{
+.restore{
 	display: flex;
 	flex-direction: column;
 }
@@ -52,7 +52,7 @@
 
 </style>
 
-<div class="page text-primary">
+<div class="restore text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <h5 class="heading">
             Restoring Your Lamden Wallet is Quick & Easy

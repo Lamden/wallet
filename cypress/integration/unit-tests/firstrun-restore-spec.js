@@ -4,7 +4,7 @@ import 'cypress-file-upload';
 
 const fileName = 'files/Testing.keystore'
 
-describe('First Run Create Wallet Process', () => {
+describe('First Run Restore Wallet Process', () => {
 
 
     it('Loads FirstRunInto to start', () => {

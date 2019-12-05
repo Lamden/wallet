@@ -13,11 +13,10 @@
     function handleSubmit(){
         if (!CoinStore.validatePassword(pwdObj.value)) {
             pwdObj.setCustomValidity("Incorrect Password");
-            pwdObj.reportValidity()
         } else {
             pwdObj.setCustomValidity('');
-            pwdObj.reportValidity()
         }
+        pwdObj.reportValidity()
         if (formObj.checkValidity()){
             CoinStore.setPwd(pwdObj.value);
         }

@@ -11,7 +11,7 @@ const testingWallet = {
 
 }
 
-describe('Test that the Lockscreen Loads and has functionality', () => {
+describe('Test all Add Wallet options', () => {
     before(function (){
         cy.viewport(1920, 1080)
         mount(App)
