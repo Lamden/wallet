@@ -58,7 +58,7 @@ describe('First Run Create Wallet Process', () => {
         })
         cy.get('input#pwd1').invoke('attr', 'value', '')
     })
-/*
+
     it('Password2 validation - Passwords do not match', () => {
         //PWD1 strong PDW2 different
         cy.get('input#pwd1').invoke('attr', 'value', 'Testing0!0101')
@@ -71,7 +71,7 @@ describe('First Run Create Wallet Process', () => {
         cy.get('input#pwd1').invoke('attr', 'value', '')
         cy.get('input#pwd2').invoke('attr', 'value', '')
     })
-*/
+
     it('Loads FirstRunTOS after accepting matching strong passwords', () => {
         //Renders FirstRunTOS.svelte after strong passwords are entered and button clicked
         cy.get('input#pwd1').focus().invoke('attr', 'value', 'Testing0!0101')

@@ -15,7 +15,7 @@
     const { changeStep } = getContext('functions');
     
     //DOM NODES
-    let formField, pwdObj1, pwdObj2;
+    let formField, pwdInput1, pwdInput2;
 
     //PROPS
     export let restore = false;
@@ -48,33 +48,38 @@
 
     });
 
-    if(!RegExp.escape) {
-        RegExp.escape = function(s) {
-            return String(s).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
-        }
+	function formValidation(){
+		pwdInput2.setCustomValidity("")
+		if (formField.checkValidity()){
+				if (pwdInput1.value === pwdInput2.value){
+					savePassword()
+				} else {
+					pwdInput2.setCustomValidity("Passwords do not match");
+					pwdInput2.reportValidity()
+				}
+		}
+	}
+	
+	function pwd1Validity(){
+		pwdInput1.checkValidity()
+		pwdInput1.reportValidity()
+	}
+	
+	function pwd2Validity(){
+		pwdInput2.checkValidity()
+		pwdInput2.reportValidity()
     }
-
+    
     function savePassword(){
-        if (pwdObj2.value !== pwdObj1.value) {
-            pwdObj2.setCustomValidity("Passwords do not match");
-            pwdObj2.reportValidity()
-        }
-        if (formField.checkValidity()){
-            try{
-                CoinStore.setPwd(pwdObj1.value);
-                if (restore) changeStep(1);
-                else changeStep(3);
-                
-            } catch (err) {
-                console.log(err)
-            }
+        try{
+            CoinStore.setPwd(pwdInput1.value);
+            if (restore) changeStep(1);
+            else changeStep(3);
+            
+        } catch (err) {
+            console.log(err)
         }
     }
-
-    function refreshValidity(e){
-        e.detail.target.setCustomValidity('');
-    }
-
 </script>
 
 <style>
@@ -102,32 +107,33 @@ form{
         No username required. Use a strong password that you'll remember.
     </div>
 
-    <form on:submit|preventDefault={() => savePassword() } bind:this={formField} target="_self">
+    <form on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
         <div class="input-box">
             <InputBox
                 id="pwd1"
-                bind:thisInput={pwdObj1}
+                bind:thisInput={pwdInput1}
+                on:changed={() => pwd1Validity()}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
                 inputType={'password'}
                 width="100%"
                 margin={"21px 0 0 0"}
-                on:changed={refreshValidity}
                 {pattern}
                 required={true}/>
         </div>
         <div class="input-box">
             <InputBox 
                 id="pwd2"
-                bind:thisInput={pwdObj2}
+                bind:thisInput={pwdInput2}
+                on:changed={() => pwd2Validity()}
                 label={"Confirm Password"}
                 placeholder={"At least 8 symbols"}
                 inputType={'password'}
                 width="100%"
-                on:changed={refreshValidity}
                 required={true}/>
         </div>
         <input  id="save-pwd"
+                on:click={() => formValidation()}
                 value="Save Password"
                 class="button__solid button__purple submit submit-button submit-button-text" 
                 type="submit" >

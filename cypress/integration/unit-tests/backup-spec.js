@@ -77,7 +77,7 @@ describe('Backup Wallet Process', () => {
             expect($input[0].validationMessage).to.eq("Please fill in this field.")
         })
     })
-    /*
+
     it('Second Password Input Throws validations when passwords do not match', () => {
         cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!0101')
         cy.get('#pwd2-input').focus().invoke('attr', 'value', 'testing0!0101')
@@ -86,7 +86,7 @@ describe('Backup Wallet Process', () => {
             expect($input[0].validationMessage).to.eq("Passwords do not match")
         })
     })
-*/
+
     it('Accpets Matching Strong passwords', () => {
         cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!0101')
         cy.get('#pwd2-input').focus().invoke('attr', 'value', 'Testing0!0101')

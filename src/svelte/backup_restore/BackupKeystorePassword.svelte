@@ -12,7 +12,7 @@
     const { changeStep, setKeystorePW } = getContext('functions');
 
     //DOM Nodes
-    let formObj, pwdObj1, pwdObj2, hintObj;
+    let formField, pwdInput1, pwdInput2, hintObj;
 
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
 
@@ -26,27 +26,39 @@
             ]
         });
     })
-    if(!RegExp.escape) {
-        RegExp.escape = function(s) {
-            return String(s).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
-        }
-    }
 
+	function formValidation(){
+		pwdInput2.setCustomValidity("")
+		if (formField.checkValidity()){
+				if (pwdInput1.value === pwdInput2.value){
+					setKeystorePW( {pwd: pwdInput1.value, hint: hintObj.value} );
+                    changeStep(4);
+				} else {
+					pwdInput2.setCustomValidity("Passwords do not match");
+					pwdInput2.reportValidity()
+				}
+		}
+	}
+	
+	function pwd1Validity(){
+		pwdInput1.checkValidity()
+		pwdInput1.reportValidity()
+	}
+	
+	function pwd2Validity(){
+		pwdInput2.checkValidity()
+		pwdInput2.reportValidity()
+    }
+    
     function savePassword(){
-        if (pwdObj2.value !== pwdObj1.value) {
-            pwdObj2.setCustomValidity("Passwords do not match");
-            pwdObj2.reportValidity()
-        }
-        if (formObj.checkValidity()){
-            setKeystorePW( {pwd: pwdObj1.value, hint: hintObj.value} );
-            changeStep(4);
+        try{
+            CoinStore.setPwd(pwdInput1.value);
+            if (restore) changeStep(1);
+            else changeStep(3);
+        } catch (err) {
+            console.log(err)
         }
     }
-
-    function refreshValidity(e){
-        e.detail.target.setCustomValidity('');
-    }
-
 
 </script>
 
@@ -90,14 +102,14 @@ a{
         Lamden is not responsible for lost or stolen passwords 
     </div>
 
-    <form on:submit|preventDefault={() => savePassword() } bind:this={formObj} target="_self">
+    <form on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
             <InputBox
                 id={'pwd1-input'}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
                 width="100%"
-                bind:thisInput={pwdObj1}
-                on:changed={refreshValidity}
+                bind:thisInput={pwdInput1}
+                on:changed={() => pwd1Validity()}
                 inputType={"password"}
                 {pattern}
                 required={true}/>
@@ -107,8 +119,8 @@ a{
                 placeholder={"At least 8 symbols"}
                 width="100%"
                 styles={'margin-bottom: 16px;'}
-                bind:thisInput={pwdObj2}
-                on:changed={refreshValidity}
+                bind:thisInput={pwdInput2}
+                on:changed={() => pwd2Validity()}
                 inputType={"password"}
                 required={true}/>
 
@@ -123,6 +135,7 @@ a{
 
         <div class="buttons">
             <input  id={'create-pw-btn'}
+                    on:click={() => formValidation()}
                     value="Create Keystore"
                     class="button__solid button__purple submit submit-button submit-button-text" 
                     type="submit" > 
