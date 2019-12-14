@@ -7,6 +7,10 @@
 	import { Components }  from '../../js/router.js'
     const { Button } = Components;
 
+    //Images
+    import { icons } from '../../js/images.js';
+    const { warning } = icons;
+
     //Context
     const { nextPage, back } = getContext('tx_functions');
 
@@ -15,7 +19,7 @@
     export let txData;
     export let txDetails;
 
-    $: yourKey = `${txData.sender.nickname} - ${txData.sender.vk.substring(1, 55 - txData.sender.nickname.length)}...`
+    $: yourKey = `${txData.sender.nickname} - ${txData.sender.vk.substring(1, 45 - txData.sender.nickname.length)}...`
 
 
 </script>
@@ -53,6 +57,16 @@
     justify-content: center;
     align-items: center;
 }
+
+.warning{
+    color: orange
+}
+
+.warning-icon{
+    margin-right: 8px;
+    position: relative;
+    top: -1px;
+}
 </style>
 
 <div class="confirm-tx flex-column">
@@ -63,7 +77,14 @@
         <div class="details flex-column">
             {#each txDetails as detail}
                 <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
-                <div class="values text-body1">{detail.value}</div>
+                {#if detail.value === ''}
+                    <div class="values text-body1 warning flex-row">
+                        <img class="warning-icon" src={warning} alt={'warning icon'} />
+                        {'Empty Field'}
+                    </div>
+                {:else}
+                    <div class="values text-body1">{detail.value}</div>
+                {/if}
             {/each}
         </div>
     </div>
