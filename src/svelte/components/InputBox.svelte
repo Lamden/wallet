@@ -43,7 +43,7 @@ label{
     color: var(--font-primary);
 }
 
-input{
+.mainbox{
     display: flex;
     align-items: center;
     width: 100%;
@@ -64,13 +64,13 @@ input{
     letter-spacing: 0.44px;
 }
 
-input:focus{
+.mainbox:focus{
     outline: none; 
     border: 1px solid var(--primary-color);
 
 }
 
-input::-webkit-input-placeholder { 
+.mainbox::-webkit-input-placeholder { 
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
@@ -80,9 +80,30 @@ input::-webkit-input-placeholder {
     letter-spacing: 0.44px;
     color: var(--font-primary);
 }
-</style>
 
-<div class="inputbox" style="margin: {margin};">
+/* Chrome, Safari, Edge, Opera */
+.mainbox::-webkit-outer-spin-button,
+.mainbox::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.mainbox[type=number] {
+  -moz-appearance:textfield;
+}
+
+.mainbox:-webkit-autofill,
+.mainbox:-webkit-autofill:hover, 
+.mainbox:-webkit-autofill:focus
+ {
+  border: 1px solid #e0e0e03d;
+  -webkit-text-fill-color: var(--font-primary);
+  box-shadow: 0 0 0px 1000px var(--bg-color) inset;
+}
+
+</style>
+<div class="inputbox" style={`margin: ${margin}; width: ${width};`}>
     <label> {label} </label>
     {#if inputType === "password"}
         <input
@@ -91,22 +112,53 @@ input::-webkit-input-placeholder {
             bind:this={thisInput}
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
-            class="input:required:invalid input:focus:invalid"
-            style={`width: ${width}; ${styles}`}
+            class="mainbox input:required:invalid input:focus:invalid"
+            style={`width: 100%; ${styles}`}
             type="password"
             oninput={oninput}
             pattern={pattern}
             placeholder={placeholder}
             required={required}  />
-    {:else}
+    {/if}
+    {#if inputType === "number"}
         <input
             id={id}
             bind:value={value}
             bind:this={thisInput}
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
-            class="input:required:invalid input:focus:invalid"
-            style={`width: ${width}; ${styles}`}
+            class="mainbox input:required:invalid input:focus:invalid"
+            style={`width: 100%; ${styles}`}
+            type="number"
+            oninput={oninput}
+            pattern={pattern}
+            placeholder={placeholder}
+            required={required}  />
+    {/if}
+    {#if inputType === "textarea"}
+        <textarea
+            id={id}
+            rows='1'
+            bind:value={value}
+            bind:this={thisInput}
+            on:change={(e) => dispatchChanged(e)}
+            on:keyup={(e) => dispatchKeyUp(e)}
+            class="mainbox textarea:required:invalid textarea:focus:invalid"
+            style={`width: 100%; ${styles}`}
+            oninput={oninput}
+            pattern={pattern}
+            placeholder={placeholder}
+            required={required}  />
+    {/if}
+    {#if inputType === ''}
+        <input
+            id={id}
+            bind:value={value}
+            bind:this={thisInput}
+            on:change={(e) => dispatchChanged(e)}
+            on:keyup={(e) => dispatchKeyUp(e)}
+            class="mainbox input:required:invalid input:focus:invalid"
+            style={`width: 100%; ${styles}`}
             pattern={pattern}
             oninput={oninput}
             placeholder={placeholder}

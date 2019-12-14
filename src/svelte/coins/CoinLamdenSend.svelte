@@ -2,17 +2,12 @@
     import { onMount, setContext, getContext } from 'svelte';
 
 	//Stores
-    import { CoinStore, SettingsStore, password } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
     import { Modals, Components }  from '../../js/router.js'
     const { CoinLamdenContract } = Modals
     const { Button } = Components
-
-    //Utils
-    import { decryptStrHash } from '../../js/utils.js';
-    import * as contract from '../../js/lamden/contract.js'
-    //import * as oldContract from '../../js/lamden/oldcontract.js'
 
     //Context
 	const { closeModal } = getContext('app_functions');
@@ -38,7 +33,7 @@
     ]
     let buttons = [
             {name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
-            {name: 'New Transaction', click: () => home(), class: 'button__solid'}
+            {name: 'New Transaction', click: () => currentStep = 1, class: 'button__solid'}
         ]
     let currentStep = 1;
     
@@ -46,79 +41,18 @@
     let txData = {};
     let resultInfo = {};
     let stamps = 100000;
+    let transaction;
 
     $: coin = modalData;
 
-
-    
     onMount(() => {
-        let kwargs = {
-            'amount': {
-                'value': 2000,
-                'type': 'fixedPoint'
-            },
-            'to': {
-                'value': '3d093133af5b54b4af9c52cc9b556aa495583c8c193f1060190b7d74e98c4416',
-                'type': 'text'
-            }
-        }
-        /*
-        submit_tx_to_network('currency', 'transfer', 50000, kwargs)
-        submit_tx_to_network2(
-            decryptStrHash($password, coin.sk),
-            30000,
-            coin.vk + 'B'.repeat(64),
-            '3d093133af5b54b4af9c52cc9b556aa495583c8c193f1060190b7d74e98c4416',
-            2000
-        )
-        */
     });
 
     function nextPage(){
         currentStep = currentStep + 1
     }
 
-    function submit_tx_to_network2(wallet_sk, txStamps, nonce, txDestination, txAmount){
-        var cct = new oldContract.CurrencyContractTransaction();
-        var tx = cct.create(wallet_sk, txStamps, nonce, txDestination, txAmount);
-        var tc = new oldContract.CurrencyTransactionContainer();
-        tc.create(tx);
-
-        var tcbytes = tc.toBytesPacked();
-
-        send(tcbytes)
-            .then(res => handleResponse(res)  )
-    }
-
-    async function submit_tx_to_network (contract_name, func_name, stamps, kwargs){
-        let contractTx = new contract.ContractTransaction();
-        let txContainer = new contract.ContractTransactionContainer();
-
-        contractTx.create(contract_name, func_name, stamps, kwargs);
-        contractTx.sign(decryptStrHash($password, txData.sender.sk))
-        console.log(contractTx)
-        
-        txContainer.create(contractTx.tx);
-        console.log(txContainer)
-
-        let tx = txContainer.toBytesPacked();
-        console.log(tx)
-
-
-        await fetch("http://192.168.1.141:8000/", {method: 'post', data: tx})
-            .then(res => {
-                    txData.result = res;
-                    return res.json();
-            })
-            .then(res => {
-                if (res.error)  handleError(res);
-                else handleSuccess();
-            })
-            .catch(err => console.log(error))
-    }
-
-    function handleError(res){
-        txData.result.error = res.error;
+    function handleError(){
         resultInfo = {
             title: 'Transaction Failed to Send',
             subtitle: txData.result.error,
@@ -140,39 +74,21 @@
         nextPage()
     }
 
-    function send(tx){
-        return new Promise(function(resolve, reject) {
-            var xhr = new XMLHttpRequest();
-
-            xhr.onload = function() {
-
-                if (xhr.readyState == xhr.DONE) {
-                    if (xhr.status === 200) {
-                        var data = JSON.parse(xhr.responseText);
-                        resolve(data);
-                    }
-                }
-            }
-            
-            xhr.onerror = reject;
-            xhr.timeout = 60000;
-            xhr.open('POST', 'http://192.168.1.141:8000/', true); 
-            xhr.send(tx);
-        });
-    }
-
     function saveTxDetails(e){
         txData = {...e.detail};
         currentStep = currentStep + 1; 
     }
 
     function createTxDetails(){
+        console.log(txData)
         let txDetails = [
-            {name:'Contract Name', value:txData.txInfo.contractName},
-            {name:'Function', value:txData.txInfo.methodName}
+            {name:'Contract Name', value: txData.txInfo.contractName},
+            {name:'Function', value: txData.txInfo.methodName},
+            {name:'Stamp Limit', value: txData.txInfo.stampLimit}
         ]
-        Object.entries(txData.txInfo.args).map(arg => {
-            txDetails.push({name: arg[0], value: arg[1]})
+        Object.keys(txData.txInfo.args).map(arg => {
+            let argValue = txData.txInfo.args[arg]
+            txDetails.push({name: `${arg} (${argValue.type})`, value: argValue.value})
             return arg;
         })
         return txDetails
@@ -187,11 +103,22 @@
         })
         return payload;
     }
+
+    function resultDetails(e){
+        txData.result = e.detail;
+        if (txData.result.error) {handleError(); return}
+        handleSuccess()
+    }
 </script>
 
 <CoinLamdenContract {coin} currentPage={steps[currentStep - 1].page} on:contractDetails={(e) => saveTxDetails(e)} />
 {#if currentStep > 1}
-    <svelte:component this={Modals[steps[currentStep - 1].page]} result={resultInfo} {coin} {txData} txDetails={createTxDetails()}/>
+    <svelte:component this={Modals[steps[currentStep - 1].page]} 
+                      result={resultInfo} 
+                      {coin} 
+                      {txData} 
+                      txDetails={createTxDetails()}
+                      on:txResult={(e) => resultDetails(e)}/>
 {/if}
 {#if steps[currentStep - 1].cancelButton}
     <Button classes={'button__text text-caption'} 

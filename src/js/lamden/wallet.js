@@ -93,6 +93,8 @@ export function new_wallet(seed = null) {
  */
 export function sign(sk, msg) {
     var kp = format_to_keys(sk);
+    console.log(msg)
+    console.log(helpers.buf2hex(msg))
     // This is required due to the secretKey required to sign a transaction
     // in the js implementation of NaCL being the combination of the sk and
     // vk for some stupid reason. That being said, we still want the sk and

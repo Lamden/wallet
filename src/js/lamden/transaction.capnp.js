@@ -24,13 +24,23 @@ export class MetaData extends __S {
     toString() { return "MetaData_" + super.toString(); }
 }
 MetaData._capnp = { displayName: "MetaData", id: "a70e205986d03e12", size: new __O(8, 2) };
-export class ContractPayload extends __S {
-    getSender() { return __S.getText(0, this); }
-    setSender(value) { __S.setText(0, value, this); }
-    getNonce() { return __S.getText(1, this); }
-    setNonce(value) { __S.setText(1, value, this); }
-    getStampsSupplied() { return __S.getUint64(0, this); }
-    setStampsSupplied(value) { __S.setUint64(0, value, this); }
+export class TransactionPayload extends __S {
+    adoptSender(value) { __S.adopt(value, __S.getPointer(0, this)); }
+    disownSender() { return __S.disown(this.getSender()); }
+    getSender() { return __S.getData(0, this); }
+    hasSender() { return !__S.isNull(__S.getPointer(0, this)); }
+    initSender(length) { return __S.initData(0, length, this); }
+    setSender(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
+    adoptProcessor(value) { __S.adopt(value, __S.getPointer(1, this)); }
+    disownProcessor() { return __S.disown(this.getProcessor()); }
+    getProcessor() { return __S.getData(1, this); }
+    hasProcessor() { return !__S.isNull(__S.getPointer(1, this)); }
+    initProcessor(length) { return __S.initData(1, length, this); }
+    setProcessor(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
+    getNonce() { return __S.getUint64(0, this); }
+    setNonce(value) { __S.setUint64(0, value, this); }
+    getStampsSupplied() { return __S.getUint64(8, this); }
+    setStampsSupplied(value) { __S.setUint64(8, value, this); }
     getContractName() { return __S.getText(2, this); }
     setContractName(value) { __S.setText(2, value, this); }
     getFunctionName() { return __S.getText(3, this); }
@@ -41,10 +51,10 @@ export class ContractPayload extends __S {
     hasKwargs() { return !__S.isNull(__S.getPointer(4, this)); }
     initKwargs() { return __S.initStructAt(4, Map, this); }
     setKwargs(value) { __S.copyFrom(value, __S.getPointer(4, this)); }
-    toString() { return "ContractPayload_" + super.toString(); }
+    toString() { return "TransactionPayload_" + super.toString(); }
 }
-ContractPayload._capnp = { displayName: "ContractPayload", id: "a2f9223e3c957376", size: new __O(8, 5) };
-export class ContractTransaction extends __S {
+TransactionPayload._capnp = { displayName: "TransactionPayload", id: "9da7e0d2cce0cea1", size: new __O(16, 5) };
+export class Transaction extends __S {
     adoptMetadata(value) { __S.adopt(value, __S.getPointer(0, this)); }
     disownMetadata() { return __S.disown(this.getMetadata()); }
     getMetadata() { return __S.getStruct(0, MetaData, this); }
@@ -53,95 +63,43 @@ export class ContractTransaction extends __S {
     setMetadata(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
     adoptPayload(value) { __S.adopt(value, __S.getPointer(1, this)); }
     disownPayload() { return __S.disown(this.getPayload()); }
-    getPayload() { return __S.getData(1, this); }
+    getPayload() { return __S.getStruct(1, TransactionPayload, this); }
     hasPayload() { return !__S.isNull(__S.getPointer(1, this)); }
-    initPayload(length) { return __S.initData(1, length, this); }
+    initPayload() { return __S.initStructAt(1, TransactionPayload, this); }
     setPayload(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
-    toString() { return "ContractTransaction_" + super.toString(); }
+    toString() { return "Transaction_" + super.toString(); }
 }
-ContractTransaction._capnp = { displayName: "ContractTransaction", id: "ca37bc74f7386799", size: new __O(0, 2) };
-export class PublishPayload extends __S {
-    getSender() { return __S.getText(0, this); }
-    setSender(value) { __S.setText(0, value, this); }
-    getNonce() { return __S.getText(1, this); }
-    setNonce(value) { __S.setText(1, value, this); }
-    getStampsSupplied() { return __S.getUint64(0, this); }
-    setStampsSupplied(value) { __S.setUint64(0, value, this); }
-    getContractName() { return __S.getText(2, this); }
-    setContractName(value) { __S.setText(2, value, this); }
-    getContractCode() { return __S.getText(3, this); }
-    setContractCode(value) { __S.setText(3, value, this); }
-    toString() { return "PublishPayload_" + super.toString(); }
-}
-PublishPayload._capnp = { displayName: "PublishPayload", id: "fef088de36a4a4b0", size: new __O(8, 4) };
-export class PublishTransaction extends __S {
-    adoptMetadata(value) { __S.adopt(value, __S.getPointer(0, this)); }
-    disownMetadata() { return __S.disown(this.getMetadata()); }
-    getMetadata() { return __S.getStruct(0, MetaData, this); }
-    hasMetadata() { return !__S.isNull(__S.getPointer(0, this)); }
-    initMetadata() { return __S.initStructAt(0, MetaData, this); }
-    setMetadata(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    adoptPayload(value) { __S.adopt(value, __S.getPointer(1, this)); }
-    disownPayload() { return __S.disown(this.getPayload()); }
-    getPayload() { return __S.getData(1, this); }
-    hasPayload() { return !__S.isNull(__S.getPointer(1, this)); }
-    initPayload(length) { return __S.initData(1, length, this); }
-    setPayload(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
-    toString() { return "PublishTransaction_" + super.toString(); }
-}
-PublishTransaction._capnp = { displayName: "PublishTransaction", id: "9c18835ec6f5b892", size: new __O(0, 2) };
+Transaction._capnp = { displayName: "Transaction", id: "f784dfdeb15a3120", size: new __O(0, 2) };
 export class TransactionData extends __S {
     adoptTransaction(value) { __S.adopt(value, __S.getPointer(0, this)); }
     disownTransaction() { return __S.disown(this.getTransaction()); }
-    getTransaction() { return __S.getData(0, this); }
+    getTransaction() { return __S.getStruct(0, Transaction, this); }
     hasTransaction() { return !__S.isNull(__S.getPointer(0, this)); }
-    initTransaction(length) { return __S.initData(0, length, this); }
+    initTransaction() { return __S.initStructAt(0, Transaction, this); }
     setTransaction(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    getStatus() { return __S.getText(1, this); }
-    setStatus(value) { __S.setText(1, value, this); }
-    getState() { return __S.getText(2, this); }
-    setState(value) { __S.setText(2, value, this); }
-    getContractType() { return __S.getUint16(0, this); }
-    setContractType(value) { __S.setUint16(0, value, this); }
+    getStatus() { return __S.getUint8(0, this); }
+    setStatus(value) { __S.setUint8(0, value, this); }
+    adoptState(value) { __S.adopt(value, __S.getPointer(1, this)); }
+    disownState() { return __S.disown(this.getState()); }
+    getState() { return __S.getData(1, this); }
+    hasState() { return !__S.isNull(__S.getPointer(1, this)); }
+    initState(length) { return __S.initData(1, length, this); }
+    setState(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
+    getStampsUsed() { return __S.getUint64(8, this); }
+    setStampsUsed(value) { __S.setUint64(8, value, this); }
     toString() { return "TransactionData_" + super.toString(); }
 }
-TransactionData._capnp = { displayName: "TransactionData", id: "a2d62360f4be217c", size: new __O(8, 3) };
+TransactionData._capnp = { displayName: "TransactionData", id: "a2d62360f4be217c", size: new __O(16, 2) };
 export class Transactions extends __S {
     adoptTransactions(value) { __S.adopt(value, __S.getPointer(0, this)); }
     disownTransactions() { return __S.disown(this.getTransactions()); }
-    getTransactions() { return __S.getList(0, capnp.DataList, this); }
+    getTransactions() { return __S.getList(0, Transactions._Transactions, this); }
     hasTransactions() { return !__S.isNull(__S.getPointer(0, this)); }
-    initTransactions(length) { return __S.initList(0, capnp.DataList, length, this); }
+    initTransactions(length) { return __S.initList(0, Transactions._Transactions, length, this); }
     setTransactions(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
     toString() { return "Transactions_" + super.toString(); }
 }
 Transactions._capnp = { displayName: "Transactions", id: "bbfe7f501da387e9", size: new __O(0, 1) };
-export class TransactionContainer extends __S {
-    getType() { return __S.getUint16(0, this); }
-    setType(value) { __S.setUint16(0, value, this); }
-    adoptPayload(value) { __S.adopt(value, __S.getPointer(0, this)); }
-    disownPayload() { return __S.disown(this.getPayload()); }
-    getPayload() { return __S.getData(0, this); }
-    hasPayload() { return !__S.isNull(__S.getPointer(0, this)); }
-    initPayload(length) { return __S.initData(0, length, this); }
-    setPayload(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    toString() { return "TransactionContainer_" + super.toString(); }
-}
-TransactionContainer._capnp = { displayName: "TransactionContainer", id: "e0df0e0be01dea86", size: new __O(8, 1) };
-export class OrderingContainer extends __S {
-    getType() { return __S.getUint16(0, this); }
-    setType(value) { __S.setUint16(0, value, this); }
-    adoptTransaction(value) { __S.adopt(value, __S.getPointer(0, this)); }
-    disownTransaction() { return __S.disown(this.getTransaction()); }
-    getTransaction() { return __S.getData(0, this); }
-    hasTransaction() { return !__S.isNull(__S.getPointer(0, this)); }
-    initTransaction(length) { return __S.initData(0, length, this); }
-    setTransaction(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    getUtcTimeMs() { return __S.getUint64(8, this); }
-    setUtcTimeMs(value) { __S.setUint64(8, value, this); }
-    toString() { return "OrderingContainer_" + super.toString(); }
-}
-OrderingContainer._capnp = { displayName: "OrderingContainer", id: "8c0e979c553fd93f", size: new __O(16, 1) };
 export class TransactionBatch extends __S {
     adoptTransactions(value) { __S.adopt(value, __S.getPointer(0, this)); }
     disownTransactions() { return __S.disown(this.getTransactions()); }
@@ -149,42 +107,28 @@ export class TransactionBatch extends __S {
     hasTransactions() { return !__S.isNull(__S.getPointer(0, this)); }
     initTransactions(length) { return __S.initList(0, TransactionBatch._Transactions, length, this); }
     setTransactions(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
+    getTimestamp() { return __S.getFloat64(0, this); }
+    setTimestamp(value) { __S.setFloat64(0, value, this); }
+    adoptSignature(value) { __S.adopt(value, __S.getPointer(1, this)); }
+    disownSignature() { return __S.disown(this.getSignature()); }
+    getSignature() { return __S.getData(1, this); }
+    hasSignature() { return !__S.isNull(__S.getPointer(1, this)); }
+    initSignature(length) { return __S.initData(1, length, this); }
+    setSignature(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
+    adoptSender(value) { __S.adopt(value, __S.getPointer(2, this)); }
+    disownSender() { return __S.disown(this.getSender()); }
+    getSender() { return __S.getData(2, this); }
+    hasSender() { return !__S.isNull(__S.getPointer(2, this)); }
+    initSender(length) { return __S.initData(2, length, this); }
+    setSender(value) { __S.copyFrom(value, __S.getPointer(2, this)); }
+    adoptInputHash(value) { __S.adopt(value, __S.getPointer(3, this)); }
+    disownInputHash() { return __S.disown(this.getInputHash()); }
+    getInputHash() { return __S.getData(3, this); }
+    hasInputHash() { return !__S.isNull(__S.getPointer(3, this)); }
+    initInputHash(length) { return __S.initData(3, length, this); }
+    setInputHash(value) { __S.copyFrom(value, __S.getPointer(3, this)); }
     toString() { return "TransactionBatch_" + super.toString(); }
 }
-TransactionBatch._capnp = { displayName: "TransactionBatch", id: "b7fe07c9f4fa8a5b", size: new __O(0, 1) };
-export class StandardTransaction_Payload extends __S {
-    adoptSender(value) { __S.adopt(value, __S.getPointer(0, this)); }
-    disownSender() { return __S.disown(this.getSender()); }
-    getSender() { return __S.getData(0, this); }
-    hasSender() { return !__S.isNull(__S.getPointer(0, this)); }
-    initSender(length) { return __S.initData(0, length, this); }
-    setSender(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    adoptReceiver(value) { __S.adopt(value, __S.getPointer(1, this)); }
-    disownReceiver() { return __S.disown(this.getReceiver()); }
-    getReceiver() { return __S.getData(1, this); }
-    hasReceiver() { return !__S.isNull(__S.getPointer(1, this)); }
-    initReceiver(length) { return __S.initData(1, length, this); }
-    setReceiver(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
-    getAmount() { return __S.getUint64(0, this); }
-    setAmount(value) { __S.setUint64(0, value, this); }
-    toString() { return "StandardTransaction_Payload_" + super.toString(); }
-}
-StandardTransaction_Payload._capnp = { displayName: "Payload", id: "da2bd110e8191c10", size: new __O(8, 2) };
-export class StandardTransaction extends __S {
-    adoptMetadata(value) { __S.adopt(value, __S.getPointer(0, this)); }
-    disownMetadata() { return __S.disown(this.getMetadata()); }
-    getMetadata() { return __S.getStruct(0, MetaData, this); }
-    hasMetadata() { return !__S.isNull(__S.getPointer(0, this)); }
-    initMetadata() { return __S.initStructAt(0, MetaData, this); }
-    setMetadata(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    adoptPayload(value) { __S.adopt(value, __S.getPointer(1, this)); }
-    disownPayload() { return __S.disown(this.getPayload()); }
-    getPayload() { return __S.getStruct(1, StandardTransaction_Payload, this); }
-    hasPayload() { return !__S.isNull(__S.getPointer(1, this)); }
-    initPayload() { return __S.initStructAt(1, StandardTransaction_Payload, this); }
-    setPayload(value) { __S.copyFrom(value, __S.getPointer(1, this)); }
-    toString() { return "StandardTransaction_" + super.toString(); }
-}
-StandardTransaction.Payload = StandardTransaction_Payload;
-StandardTransaction._capnp = { displayName: "StandardTransaction", id: "b7524d22a62ea1c9", size: new __O(0, 2) };
-TransactionBatch._Transactions = capnp.CompositeList(OrderingContainer);
+TransactionBatch._capnp = { displayName: "TransactionBatch", id: "b7fe07c9f4fa8a5b", size: new __O(8, 4) };
+Transactions._Transactions = capnp.CompositeList(Transaction);
+TransactionBatch._Transactions = capnp.CompositeList(Transaction);

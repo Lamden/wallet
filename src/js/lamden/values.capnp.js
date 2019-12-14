@@ -244,8 +244,11 @@ Value.STRUCT = Value_Which.STRUCT;
 Value.ANY_POINTER = Value_Which.ANY_POINTER;
 Value._capnp = { displayName: "Value", id: "eb2d33a1ada10a9b", size: new __O(16, 1) };
 export class Map_Entry extends __S {
-    getKey() { return __S.getText(0, this); }
-    setKey(value) { __S.setText(0, value, this); }
+    adoptKey(value) { __S.adopt(value, __S.getPointer(0, this)); }
+    disownKey() { return __S.disown(this.getKey()); }
+    getKey() { return __S.getPointer(0, this); }
+    hasKey() { return !__S.isNull(__S.getPointer(0, this)); }
+    setKey(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
     adoptValue(value) { __S.adopt(value, __S.getPointer(1, this)); }
     disownValue() { return __S.disown(this.getValue()); }
     getValue() { return __S.getPointer(1, this); }
@@ -265,14 +268,4 @@ export class Map extends __S {
 }
 Map.Entry = Map_Entry;
 Map._capnp = { displayName: "Map", id: "e7e566cc912a6f7b", size: new __O(0, 1) };
-export class Kwargs extends __S {
-    adoptKwargs(value) { __S.adopt(value, __S.getPointer(0, this)); }
-    disownKwargs() { return __S.disown(this.getKwargs()); }
-    getKwargs() { return __S.getStruct(0, Map, this); }
-    hasKwargs() { return !__S.isNull(__S.getPointer(0, this)); }
-    initKwargs() { return __S.initStructAt(0, Map, this); }
-    setKwargs(value) { __S.copyFrom(value, __S.getPointer(0, this)); }
-    toString() { return "Kwargs_" + super.toString(); }
-}
-Kwargs._capnp = { displayName: "Kwargs", id: "9a25ebc47d11913b", size: new __O(0, 1) };
 Map._Entries = capnp.CompositeList(Map_Entry);

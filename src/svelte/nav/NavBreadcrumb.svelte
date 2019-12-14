@@ -25,6 +25,7 @@
 
 .words {
     width: 100%;
+    margin-bottom: -4px;
 }
 
 .link:hover{

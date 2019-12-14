@@ -10,13 +10,18 @@
     export let defaultText = 'None';
     export let items = [];
     export let styles = '';
+    export let width = '100%';
+    export let innerHeight = '46px'
     export let classes = '';
     export let required = false;
+    export let sideBox = false;
 
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
 
     let hideBox = true;
+
+    $: selctedBoxTop = `${parseInt(innerHeight.split('px')[0]) + 15}px`;
 
     onMount(()=>{
         if (selectElm.options){
@@ -123,7 +128,6 @@ label{
     border: 1px solid #e0e0e03d;
     border-radius: 0 0 4px 4px;
     background-color: var(--bg-color);
-    top: 100%;
     left: 0;
     right: 0;
     z-index: 99;
@@ -139,7 +143,7 @@ label{
 
 </style>
 
-<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:100%; ${styles}`}>
+<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; `}>
     <label>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}
@@ -149,13 +153,14 @@ label{
     {#if selectElm}
         <div bind:this={newSelectElm} 
              class="select-selected"
+             style={`height: ${innerHeight}; width:${width}; ${styles}`}
              class:select-arrow-active={!hideBox}
              class:open={!hideBox}
              on:click={() => toggleBox()}
              >
             {selectElm.options.length > 0 ? selectElm.options[selectElm.selectedIndex].innerHTML : defaultText}
         </div>
-        <div class="select-items" class:select-hide={hideBox}>
+        <div class="select-items" style={`top: ${selctedBoxTop}`} class:select-hide={hideBox}>
             {#each selectElm.options as option, index }
                 <div class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(option, index)}

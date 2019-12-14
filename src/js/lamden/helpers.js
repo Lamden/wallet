@@ -50,3 +50,8 @@ export function randomString(length) {
     }
     return text;
 }
+export function isStringHex(string = '') {
+    let hexRegEx = /([0-9]|[a-f])/gim;
+    return typeof string === 'string' &&
+        (string.match(hexRegEx) || []).length === string.length;
+}
