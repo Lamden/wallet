@@ -38,5 +38,5 @@
             <NavBreadcrumb crumb={crumb} {index} last={($breadcrumbs.length -1) === index}/>
         {/each}
     </div>
-    <NavControls />
+    <!-- To return one day <NavControls />-->
 </div>
