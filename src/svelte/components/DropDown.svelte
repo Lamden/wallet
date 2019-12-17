@@ -46,6 +46,12 @@
         if (items.length > 0) hideBox = !hideBox;
     }
 
+    function handleWindowClick(event) {
+        if (!customSelectElm) return;
+        if (customSelectElm.contains(event.target)) return;
+        hideBox = true;
+    }
+
 </script>
 
 <style>
@@ -142,7 +148,7 @@ label{
 }
 
 </style>
-
+<svelte:window on:click={(e) => handleWindowClick(e)} />
 <div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; `}>
     <label>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
