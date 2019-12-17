@@ -28,6 +28,7 @@ export class TransactionBuilder {
         //If Nonce or Processor are not provided then getNonce can be called to set both from the masternode
         if (this.nonce != null) this.nonce = nonce;
         if (this.processor != null) this.processor = processor;
+        console.log(this)
     }
     numberToUnit64(number) {
         if (number == null)

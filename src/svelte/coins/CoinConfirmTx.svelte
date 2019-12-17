@@ -35,8 +35,6 @@
 }
 
 .details{
-    overflow: visible;
-    max-height: 400px;
     padding: 5px 0 57px 76px;
     margin-top: 17px;
     margin-left: 50px;
@@ -44,9 +42,8 @@
 }
 
 .values{
-    display: flex;
     align-items: center;
-    height: 36px;
+    overflow-wrap: break-word;
 }
 
 
@@ -79,11 +76,13 @@
                 <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
                 {#if detail.value === ''}
                     <div class="values text-body1 warning flex-row">
-                        <img class="warning-icon" src={warning} alt={'warning icon'} />
+                        <img class="warning-icon text-body1" src={warning} alt={'warning icon'} />
                         {'Empty Field'}
                     </div>
                 {:else}
-                    <div class="values text-body1">{detail.value}</div>
+                    <div class="values text-body1">
+                        {detail.value}
+                    </div>
                 {/if}
             {/each}
         </div>

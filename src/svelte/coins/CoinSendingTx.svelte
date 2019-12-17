@@ -19,29 +19,24 @@
     let transaction;
 
     $: sendingCoin = txData.sender
+    $: contractName = txData.txInfo.contractName
+    $: methodName = txData.txInfo.methodName
+    $: stampLimit = txData.txInfo.stampLimit
+    $: kwargs = txData.txInfo.args
 
     onMount(() => {
         send();
     })
 
     async function send(){
+        console.log('creating')
         await createTransaction();
-        //await sendTransaction();
+        console.log('sending')
+        await sendTransaction();
     }
 
     async function createTransaction(){
-        let kwargs1 = {
-            'to': {
-                'value': '2a60bc77f404fb07c712b4af3d73f838949e4d0802fd16cba8af0668320aa4f8',
-                'type': 'data'
-            },
-            'amount': {
-                'value': 10000,
-                'type': 'fixedPoint'
-            }
-        }
-
-        let txb = new TransactionBuilder(sendingCoin.vk, 'currency', 'transfer', kwargs1, 40000)
+        let txb = new TransactionBuilder(sendingCoin.vk, contractName, methodName, kwargs, stampLimit)
         await txb.getNonce((res, err) => {
             let txResult = {};
             if (err) {
@@ -49,18 +44,20 @@
                 dispatch('txResult', txResult)
                 return;
             }
+            console.log('got nonce')
             transaction = txb
         })
     }
 
     async function sendTransaction(){
-        await transaction.send(decryptStrHash($password, sendingCoin.sk), (res, error) =>{
-                if (err) {
-                    txResult.error = err;
-                    dispatch('txResult', txResult)
-                    return;
-                }
-                console.log(res)
+        await transaction.send(decryptStrHash($password, sendingCoin.sk), (res, err) =>{
+            let txResult = {};
+            if (err) {
+                txResult.error = err;
+                dispatch('txResult', txResult)
+                return;
+            }
+            console.log(res)
         })
     }
 </script>

@@ -53,7 +53,7 @@
     let functions = [{value:{name:"transfer", arguments:['to','amount']}, name:"transfer"}]
     
     onMount(() => {
-        //contractMethods = getMethods(contractName)
+        contractMethods = getMethods(contractName)
     });
 
     function coinList(){
@@ -136,9 +136,11 @@
     }
 
     function getMethods(contract){
+        console.log(contract)
         return fetch(`http://192.168.1.141:8000/contracts/${contract}/methods`)
                     .then(res => res.json())
                     .then(res => {
+                        console.log(res)
                         if (!res.methods) contractError = true;
                         contractError = false;
                         setArgs(res.methods[0])
@@ -252,16 +254,16 @@
             value= {contractName}
             label={"Enter Contract Name"}
             styles={`margin-bottom: 17px;`}
-            on:changed={(e) => contractMethods = getMethods(e.detail.value)}
+            on:changed={(e) => contractMethods = getMethods(e.detail.target.value)}
             required={true}
         />
         <div class="args">
             {#await contractMethods }
-                <DropDown  label={'Functions'} />
+                <DropDown  label={'Function Name'}  defaultText={'No Functions'}/>
             {:then methods}
                 <DropDown  
-                    items={/*methodList(methods)*/functions} 
-                    id={'methods'} 
+                    items={methodList(methods)} 
+                    id={'methods'}
                     label={'Function Name'} 
                     styles={`margin-bottom: 40px;`}
                     required={true}
@@ -299,7 +301,7 @@
                     </div>        
                 {/each}
             {:catch}
-                <DropDown  label={'Functions'} />
+                <DropDown  label={'Function Name'}  defaultText={'No Functions'} />
             {/await}
         </div>
 
