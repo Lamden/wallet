@@ -111,6 +111,9 @@ export class TransactionBuilder {
             //Error if the user did not specifiy any kwarg data
             throw new TypeError(`"${key}" kwarg has no value property.`);
         let valueType = typeof value.value;
+        console.log(value)
+        console.log(valueType)
+        console.log(typeLookup[value.type])
         if (valueType !== typeLookup[value.type])
             //Error if the user supplied type does not match the actual kwarg data type
             throw new TypeError(`"${key}" kwarg value is incorrect type or type assignment is incorrect. Recieved value of type "${valueType}" with type property "${value.type}"`);
@@ -143,7 +146,7 @@ export class TransactionBuilder {
         return pointer;
     }
     getNonce(callback = undefined) {
-        return fetch(`http://192.168.1.141:8000/nonce/${this.sender}`)
+        return fetch(`http://192.168.1.82:8000/nonce/${this.sender}`)
             .then(res => { this.nonceResponse = res; return res.json(); })
             .then(res => {
             this.nonceResult = res;
@@ -270,7 +273,7 @@ export class TransactionBuilder {
         
         const data = this.serialize();
 
-        return fetch(`http://192.168.1.141:8000`, {
+        return fetch(`http://192.168.1.82:8000`, {
             method: 'POST',
             body: data
         })

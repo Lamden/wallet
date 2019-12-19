@@ -1,5 +1,5 @@
 <script>
-    import { onMount, setContext, getContext } from 'svelte';
+    import { setContext, getContext } from 'svelte';
 
 	//Stores
     import { CoinStore, SettingsStore } from '../../js/stores/stores.js';
@@ -45,9 +45,6 @@
 
     $: coin = modalData;
 
-    onMount(() => {
-    });
-
     function nextPage(){
         currentStep = currentStep + 1
     }
@@ -58,20 +55,17 @@
             subtitle: txData.result.error,
             message: 'Transaction Failed',
             type: 'error',
-            buttons
         }
-        nextPage()
     }
 
     function handleSuccess(){
+        let stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
         resultInfo = {
             title: 'Transaction Sent Successfully',
-            subtitle: `Your ${coin.symbol} transaction was sent and should take 7 seconds to process`,
+            subtitle: `Your ${coin.symbol} transaction was sent successfully using ${stampsUsed} stamps`,
             message: 'Transaction Sent',
             type: 'success',
-            buttons
-        }
-        nextPage()
+        }        
     }
 
     function saveTxDetails(e){
@@ -80,7 +74,6 @@
     }
 
     function createTxDetails(){
-        console.log(txData)
         let txDetails = [
             {name:'Contract Name', value: txData.txInfo.contractName},
             {name:'Function', value: txData.txInfo.methodName},
@@ -107,7 +100,16 @@
     function resultDetails(e){
         txData.result = e.detail;
         if (txData.result.error) {handleError(); return}
-        handleSuccess()
+        handleSuccess();
+        txData.resultInfo = resultInfo;
+        storeTransaction();
+        if (txData.result.state_changes) resultInfo.stateInfo = txData.result.state_changes;
+        txData.resultInfo.buttons = buttons;
+        nextPage();
+    }
+
+    function storeTransaction(){
+        CoinStore.updateCoinTransaction(txData);
     }
 </script>
 

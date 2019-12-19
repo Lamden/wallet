@@ -62,15 +62,32 @@ const createCoinStore = () => {
         updateBalances: (storeValue) => {
             console.log('!! REFRESHING BALANCES !!')
         },
-        updateCoinTransaction: (coinToUpdate, tx_info) => {
-            update(coinstore => {
-                let coin = getCoin(coinToUpdate, coinstore)
-                coin.txList = !coin.txList ? [tx_info] : [...coin.txList, tx_info];
+        updateCoinTransaction: (txInfo) => {
+            txInfo = JSON.parse(JSON.stringify(txInfo))
+            CoinStore.update(coinstore => {
+                let coinToUpdate = coinstore.find( f => {
+                    return  f.network === txInfo.sender.network && f.symbol === txInfo.sender.symbol && f.vk === txInfo.sender.vk;
+                });
+                if (coinToUpdate){
+                    txInfo.date = new Date().toUTCString();
+                    if (!coinToUpdate.txList) coinToUpdate.txList = [txInfo];
+                    else coinToUpdate.txList.push(txInfo);
+                };
                 return coinstore;
             })
+
         }
     };
 }
 export const CoinStore = createCoinStore();
 
 export const password = derived(CoinStore.passwordStore, ($passwordStore) => $passwordStore);
+
+export const allTransactions = derived(CoinStore, ($CoinStore) => {
+    let txList = [];
+    $CoinStore.map(coin => {
+        if (!coin.txList) return
+        txList = [...txList, ...coin.txList]
+    })
+    return txList;
+});

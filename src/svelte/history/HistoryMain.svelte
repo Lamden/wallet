@@ -1,88 +1,49 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
     
     //Stores
-    import { breadcrumbs } from '../../js/stores/stores.js';
+    import { breadcrumbs, allTransactions } from '../../js/stores/stores.js';
 
 	//Components
     import { Transaction }  from '../../js/router.js'
     
     //Props
     export let filter;
-
+    $: txList = [...$allTransactions];
+    $: txByDay = txList.length > 0 ? groupByDate() : {};
+  
 	onMount(() => {
         if (!filter) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
     });
-    
-    $: txByDay = groupByDate();
-
-    let txList = [
-        {
-            date: '2019-11-21T03:24:00',
-            type: 'Sent',
-            amount: '2000.12',
-            coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            result: {transaction_link: 'www.google.com'}
-        },
-        {
-            date: '2019-11-22T04:14:00',
-            type: 'Recieved',
-            amount: '10',
-            coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            result: {transaction_link: 'www.google.com'}
-        },
-        {
-            date: '2019-11-21T16:44:00',
-            type: 'Sent',
-            amount: '83854.16',
-            coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            result: {transaction_link: 'www.google.com'}
-        },
-        {
-            date: '2019-11-21T12:30:10',
-            type: 'Sent',
-            amount: '100',
-            coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            result: {transaction_link: 'www.google.com'}
-        },
-        {
-            date: '2019-11-20T10:20:44',
-            type: 'Sent',
-            amount: '0.0045632',
-            coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            result: {transaction_link: 'www.google.com'}
-        },
-        {
-            date: '2019-11-22T18:55:17',
-            type: 'Sent',
-            amount: '1000.0045632',
-            coin: {name: 'Lamden', network: 'lamden', symbol: 'TAU', vk:'d6ade800dd94bb641ebcde3141d97a7fb1f1e32c7a9bbc4f399b914731217d1c'},
-            result: {transaction_link: 'www.google.com'}
-        },
-    ]
 
     function filterTxList(){
-        if (filter){
-            return txList.filter( f => {
-                return  f.coin.network === filter.network && f.coin.symbol === filter.symbol && f.coin.vk === filter.vk;
+        if (filter && txList){
+            console.log(txList)
+            let filteredList = txList.filter( f => {
+                console.log(f.sender.network, filter.network)
+                console.log(f.sender.symbol, filter.symbol)
+                console.log(f.sender.vk, filter.vk)
+                console.log(f.sender.network === filter.network && f.sender.symbol === filter.symbol && f.sender.vk === filter.vk)
+                return  f.sender.network === filter.network && f.sender.symbol === filter.symbol && f.sender.vk === filter.vk;
             });
+            return filteredList
         }
         return txList;
     }
 
     function sortTxList(){
-        filterTxList().sort((a, b) => new Date(b.date) - new Date(a.date));
+        txList = filterTxList().sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
     function groupByDate(){
         sortTxList();
         let txDict = {};
         txList.map(tx => {
-            let day = tx.date.split("T")[0]
-            if (!txDict[tx.date.split("T")[0]]){
-                txDict[tx.date.split("T")[0]] = [tx];
+            let date = new Date(tx.date).toLocaleDateString();
+            if (!txDict[date]){
+                txDict[date] = [tx];
             }else{
-                txDict[tx.date.split("T")[0]].push(tx);
+                txDict[date].push(tx);
             }   
         })
         return txDict
@@ -107,7 +68,7 @@
             {new Date(day).toDateString()}
         </div>
         {#each txByDay[day] as tx}
-            <Transaction txInfo={tx}/>
+            <Transaction txData={tx}/>
         {/each}
     {/each}
 </div>

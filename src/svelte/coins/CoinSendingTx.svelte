@@ -51,13 +51,14 @@
 
     async function sendTransaction(){
         await transaction.send(decryptStrHash($password, sendingCoin.sk), (res, err) =>{
+            console.log(res)
             let txResult = {};
             if (err) {
                 txResult.error = err;
-                dispatch('txResult', txResult)
-                return;
+            }else{
+                txResult = res;
             }
-            console.log(res)
+            dispatch('txResult', txResult)
         })
     }
 </script>

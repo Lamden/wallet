@@ -14,7 +14,6 @@
     export let width = '100%';
     export let margin = 'unset';
     export let spellcheck = true;
-    export let oninput;
 
     export let thisInput;
 
@@ -115,7 +114,6 @@ label{
             class="mainbox input:required:invalid input:focus:invalid"
             style={`width: 100%; ${styles}`}
             type="password"
-            oninput={oninput}
             pattern={pattern}
             placeholder={placeholder}
             required={required}  />
@@ -130,8 +128,8 @@ label{
             class="mainbox input:required:invalid input:focus:invalid"
             style={`width: 100%; ${styles}`}
             type="number"
-            oninput={oninput}
-            pattern={pattern}
+            min="0.000000001"
+            step="0.000000001"
             placeholder={placeholder}
             required={required}  />
     {/if}
@@ -145,7 +143,6 @@ label{
             on:keyup={(e) => dispatchKeyUp(e)}
             class="mainbox textarea:required:invalid textarea:focus:invalid"
             style={`width: 100%; ${styles}`}
-            oninput={oninput}
             pattern={pattern}
             placeholder={placeholder}
             required={required}  />
@@ -160,7 +157,6 @@ label{
             class="mainbox input:required:invalid input:focus:invalid"
             style={`width: 100%; ${styles}`}
             pattern={pattern}
-            oninput={oninput}
             placeholder={placeholder}
             required={required}
             spellcheck={spellcheck}  />

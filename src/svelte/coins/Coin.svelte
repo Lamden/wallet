@@ -20,6 +20,14 @@
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
 
+    onMount(() => {
+        fetch(`http://192.168.1.82:8000/contracts/currency/balances/?key=${coin.vk}`)
+        .then(res => res.json())
+        .then(res => {
+            balance = res.value;
+        })
+    })
+
 </script>
 
 <style>

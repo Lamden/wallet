@@ -20,12 +20,12 @@
     export let coin;
     export let currentPage;
 
-    let error, status = "";
     let txData = {};
     let selectedWallet;
     let contractError = false;
     let contractMethods;
     let transaction;
+    let dataTypes = ['text', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
         text: 'textarea',
         data: '',
@@ -40,17 +40,10 @@
     }
     let stampLimit = 35000;
     
-
     $: contractName = 'currency'
     $: methodName  = ''
     $: argValueTracker = {};
     $: methodArgs = [];
-    $: ArgTypes = []
-    $: functionList = methodList(['transfer'])
-
-    //testing 
-    let dataTypes = ['text', 'data', 'fixedPoint', 'bool']
-    let functions = [{value:{name:"transfer", arguments:['to','amount']}, name:"transfer"}]
     
     onMount(() => {
         contractMethods = getMethods(contractName)
@@ -118,11 +111,13 @@
             if (!isStringHex(e.detail.target.value)){
                 e.detail.target.setCustomValidity('Data fields must be hex')
                 e.detail.target.reportValidity()
-            }else{
-
             }
         }
         let argValue = selectedType === 'bool' ?  e.detail.selected.value : e.detail.target.value;
+        if (selectedType === 'fixedPoint'){
+            argValue = parseFloat(argValue)
+            console.log(argValue)
+        }
         argValueTracker[contractName][methodName][arg][selectedType].value = argValue;
         if (selectedType !== 'bool')  argValueTracker[contractName][methodName][arg][selectedType].target = e.detail.target;
     }
@@ -136,11 +131,9 @@
     }
 
     function getMethods(contract){
-        console.log(contract)
-        return fetch(`http://192.168.1.141:8000/contracts/${contract}/methods`)
+        return fetch(`http://192.168.1.82:8000/contracts/${contract}/methods`)
                     .then(res => res.json())
                     .then(res => {
-                        console.log(res)
                         if (!res.methods) contractError = true;
                         contractError = false;
                         setArgs(res.methods[0])
