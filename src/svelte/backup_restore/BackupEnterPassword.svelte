@@ -12,7 +12,7 @@
     const { changeStep } = getContext('functions');
 
     //DOM Nodes
-    let formObj;
+    let formObj, pwdObj;
 
     onMount(() => {
         steps.set({
@@ -23,12 +23,18 @@
                 ]
             });
     })
-
-    function handleSubmit(form){
-        if (form.checkValidity()){
-                changeStep(2);
+    function handleSubmit(){
+        if (!CoinStore.validatePassword(pwdObj.value)) {
+            pwdObj.setCustomValidity("Incorrect Password");
+        } else {
+            pwdObj.setCustomValidity('');
+        }
+        pwdObj.reportValidity()
+        if (formObj.checkValidity()){
+            changeStep(2);
         }
     }
+
 
     function validatePassword(e){
         let obj = e.detail;
@@ -38,6 +44,15 @@
             obj.setCustomValidity('');
         }
     }
+
+    function refreshValidityKeyup(e){ 
+        if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
+    }
+
+    function refreshValidity(e){
+        e.detail.target.setCustomValidity('');
+    }
+
 </script>
 
 <style>
@@ -68,12 +83,14 @@ a{
         Enter your Lamden wallet password to continue.
     </div>
 
-    <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
+    <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
         <InputBox
+            bind:thisInput={pwdObj}
             label={"Wallet Password"}
             placeholder={`Enter Wallet Password`}
             styles={`margin-bottom: 17px;`}
-            on:changed={ (e) => validatePassword(e) }
+            on:changed={refreshValidity}
+            on:keyup={refreshValidityKeyup}
             inputType={"password"}
             required={true} />
 

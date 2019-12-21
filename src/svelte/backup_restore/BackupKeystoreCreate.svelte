@@ -12,7 +12,7 @@
     import { decryptStrHash, encryptObject, encryptStrHash } from '../../js/utils.js';
 
     //Context
-    const { changeStep, setKeystoreFile  } = getContext('functions');
+    const { changeStep, setKeystoreFile, getKeystorePW  } = getContext('functions');
 
     //Props
     export let ksPwdInfo;
@@ -36,8 +36,10 @@
     });
 
     function createKeystore() {
+        let ksPwdInfo = getKeystorePW();
+        console.log(ksPwdInfo)
         let file = JSON.stringify({
-            data: encryptObject($password, {'version' : $CURRENT_KS_VERSION, keyList: decryptedKeys()}),
+            data: encryptObject(ksPwdInfo.pwd, {'version' : $CURRENT_KS_VERSION, keyList: decryptedKeys()}),
             w: ksPwdInfo.hint === "" ? "" : encryptStrHash(obscure, ksPwdInfo.hint),
         });
 

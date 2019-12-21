@@ -16,6 +16,7 @@
             else currentStep = step;
         },
         setKeystorePW: (info) => ksPwdInfo = info,
+        getKeystorePW: () => {return ksPwdInfo},
         setKeystoreFile: (file) => keystoreFile = file
 	});
 

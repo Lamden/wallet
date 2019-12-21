@@ -83,11 +83,11 @@
 }
 
 .name{
-    display: flex;
     width: 141px;
     height: 88px;
-    margin-right: 16px;
     border-bottom: 1px dashed var(--font-primary-darker);
+    margin-right: 16px;
+    display: flex;
     align-items: center;
 }
 
@@ -103,6 +103,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.key-info{
+    width: 141px;
+    height: 88px;
+    margin-right: 16px;
+    justify-content: center;
+    border-bottom: 1px dashed var(--font-primary-darker);
 }
 
 .checkbox-box{
@@ -166,7 +174,11 @@ input[type="checkbox"]{
                 <div class="checkbox-box">
                     <input id={`chkbox-${i}`} type="checkbox" bind:checked={keys.keyList[i].checked}>
                 </div>
-                <div class="name">{`${key.name}`}</div>
+                <div class="key-info flex-column">
+                    <div>{`${key.name} (${key.symbol})`}</div>
+                    <div class="nickname text-primary-dark">{`${key.nickname}`}</div>
+                </div>
+                
                 <div id={`div-address-${i}`} class="address">{`${key.vk}`}</div>
             </div>
         {/each}
