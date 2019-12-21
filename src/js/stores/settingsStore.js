@@ -4,9 +4,9 @@ const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
-    'version':'v0_0_2',
+    'version':'v9_5_0',
     'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
-    'networks' : [{name: 'Public Testnet', ip:'192.168.1.82', port: '8000', del: false, selected: true}]
+    'networks' : [{name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', del: false, selected: true}]
 }
 
 const createSettingsStore = (key, startValue) => {
