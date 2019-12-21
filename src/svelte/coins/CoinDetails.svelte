@@ -30,7 +30,6 @@
             {name: 'Holdings', page: {name: 'CoinsMain'}},
             {name: `${coin.name} ${symbol}`, page: {name: ''}},
         ]);
-        console.log(coin)
     });
 
 </script>
@@ -98,10 +97,10 @@
 		    <Button 
                 id={'modify-coin-btn'} 
                 classes={'button__transparent button__blue'}
-				name="Recieve Coin"
+				name="Coin Options"
                 margin={'0 49px 0 0'}
 		 		click={() => openModal('CoinModify', coin)} 
-				icon='arrowDown'/>
+				/>
         </div>
 
 	</div>

@@ -20,7 +20,6 @@
     let checking = false;
 
     $: addButtonColor = checking ? '' : 'button__purple';
-    $: deleteButtonColor = $currentNetwork.original ? '' : 'button__red';
     $: buttonName = checking ? 'Checking For Network' : 'Add Network';
     $: network = {name, ip, port, selected: false}
 
@@ -94,7 +93,17 @@
             items={$networks}
             width={"250px"}
             label="Current Network"
-            on:selected={(e) => handleSelected(e)} />   
+            on:selected={(e) => handleSelected(e)} />  
+        {#if !$currentNetwork.lamden}
+            <Button 
+                id="del-network"
+                name={`delete ${$currentNetwork.name}`}
+                classes={`button__solid`}
+                width={'232px'}
+                margin={'20px 0 0 0'}
+                click={() => openModal('DevToolsDeleteNetwork')}
+                disabled={$currentNetwork.lamden} /> 
+        {/if} 
     </div>
     <!--<Switch checked={$themeStyle === 'dark'} on:toggleState={toggleTheme}  }/>-->
     <form class="add-network" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
@@ -135,15 +144,6 @@
         />
         
     </form>
-    <div>
-        <h5 class="delete-heading">Delete Current Network</h5>
-        <Button 
-            id="del-network"
-            name={`delete ${$currentNetwork.name}`}
-            classes={`button__solid ${deleteButtonColor}`}
-            width={'232px'}
-            click={() => openModal('DevToolsDeleteNetwork')}
-            disabled={$currentNetwork.original} /> 
-    </div>
+
 
 </div>

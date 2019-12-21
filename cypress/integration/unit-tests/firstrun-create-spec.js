@@ -8,8 +8,9 @@ describe('First Run Create Wallet Process', () => {
             'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
             'firstRun': true,
             'themeStyle':'dark',
-            'version':'v0_0_2',
+            'version':'v9_5_0',
             'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
+            'networks' : [{name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, selected: true}]
         }
         
         cy.viewport(1920, 1080)

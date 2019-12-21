@@ -1,5 +1,4 @@
 <script>
-import {onMount} from 'svelte'
     //Components
     import { Components } from '../../js/router.js';
     const { Button } = Components;
@@ -27,10 +26,6 @@ import {onMount} from 'svelte'
             info.value = result.stateInfo[i]
             return info
         }) : undefined;
-
-    onMount(() => {
-        console.log(result)
-    })
 
 </script>
 

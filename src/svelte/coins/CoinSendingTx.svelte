@@ -62,7 +62,6 @@
             }else{
                 txResult = res;
             }
-            console.log(txResult)
             dispatch('txResult', txResult)
         })
     }

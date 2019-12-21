@@ -29,7 +29,7 @@
 
 	onMount(() => {
 		//prevent lockscreen from poping up durring testing//
-		//CoinStore.setPwd('Testing0!0101')
+		CoinStore.setPwd('Testing0!0101')
 		///
 		//calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
@@ -60,7 +60,6 @@
 	};
 
 	function openModal(modal, data){
-		console.log(arguments)
 		currentModal = modal;
 		modalData = data;
         showModal = true;
