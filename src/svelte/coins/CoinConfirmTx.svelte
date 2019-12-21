@@ -19,7 +19,7 @@
     export let txData;
     export let txDetails;
 
-    $: yourKey = `${txData.sender.nickname} - ${txData.sender.vk.substring(1, 45 - txData.sender.nickname.length)}...`
+    $: yourKey = `${txData.sender.nickname} - ${txData.sender.vk.substring(0, 45 - txData.sender.nickname.length)}...`
 
 
 </script>
