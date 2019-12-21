@@ -18,12 +18,7 @@
 
     function filterTxList(){
         if (filter && txList){
-            console.log(txList)
             let filteredList = txList.filter( f => {
-                console.log(f.sender.network, filter.network)
-                console.log(f.sender.symbol, filter.symbol)
-                console.log(f.sender.vk, filter.vk)
-                console.log(f.sender.network === filter.network && f.sender.symbol === filter.symbol && f.sender.vk === filter.vk)
                 return  f.sender.network === filter.network && f.sender.symbol === filter.symbol && f.sender.vk === filter.vk;
             });
             return filteredList

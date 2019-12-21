@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
+import {onMount} from 'svelte'
     //Components
     import { Components } from '../../js/router.js';
     const { Button } = Components;
@@ -25,13 +25,11 @@
             info.variableName = iSplit[1]
             info.keyName = iSplit[2]
             info.value = result.stateInfo[i]
-            console.log(info)
             return info
         }) : undefined;
 
     onMount(() => {
         console.log(result)
-        console.log(stateInfo)
     })
 
 </script>

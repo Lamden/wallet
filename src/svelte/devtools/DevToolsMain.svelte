@@ -5,7 +5,7 @@
     import { breadcrumbs } from '../../js/stores/stores.js';
     
     //Components
-	import { DevToolsDocumentation }  from '../../js/router.js'
+	import { DevToolsDocumentation, DevToolsNetworks }  from '../../js/router.js'
             
 	onMount(() => {
 		breadcrumbs.set([{name: 'Developer Tools', page: {name: ''}}]);
@@ -13,5 +13,5 @@
 
 </script>
 
-
+<DevToolsNetworks />
 <DevToolsDocumentation />

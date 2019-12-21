@@ -1,12 +1,16 @@
 <script>
-    import { themes } from '../../js/themes.js'
+    import { getContext } from 'svelte';
+    import { themes } from '../../js/themes.js';
 
 	//Stores
-	import { SettingsStore, themeStyle, pageLoaded } from '../../js/stores/stores.js';
+	import { SettingsStore, networks, themeStyle } from '../../js/stores/stores.js';
 
     //Components
-    import { Components }  from '../../js/router.js'
-    const { Switch } = Components;
+    import { Components }  from '../../js/router.js';
+    const { Switch, DropDown } = Components;
+
+    //Context
+    const { switchPage } = getContext('app_functions');
 
     function toggleTheme(event) {
 		SettingsStore.update(current => {
@@ -15,7 +19,10 @@
             return current;
         })   
     }
-    
+
+    function handleSelected(e){
+        SettingsStore.setNetwork(e.detail.selected.value)
+    }
 </script>
 
 <style>
@@ -23,10 +30,16 @@
     display: flex;
     justify-items: center;
     align-items: center;
-    padding: 0 92px 0 30px;
+    padding: 0 21px 0 30px;
 }
 </style>
 
-<div class="box">
+<div class="box"><!--
+    <DropDown 
+        items={$networks}
+        width={"250px"}
+        label="Current Network"
+        on:selected={(e) => handleSelected(e)} />
     <Switch checked={$themeStyle === 'dark'} on:toggleState={toggleTheme}  }/>
+    -->
 </div>

@@ -99,8 +99,10 @@
 
     function resultDetails(e){
         txData.result = e.detail;
-        if (txData.result.error) {handleError(); return}
-        handleSuccess();
+        if (txData.result.error) {handleError()}
+        else {
+            handleSuccess();
+        }
         txData.resultInfo = resultInfo;
         storeTransaction();
         if (txData.result.state_changes) resultInfo.stateInfo = txData.result.state_changes;

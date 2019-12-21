@@ -30,6 +30,7 @@
             {name: 'Holdings', page: {name: 'CoinsMain'}},
             {name: `${coin.name} ${symbol}`, page: {name: ''}},
         ]);
+        console.log(coin)
     });
 
 </script>

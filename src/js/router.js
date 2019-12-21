@@ -1,5 +1,8 @@
 //Layout
 import Nav from '../svelte/nav/Nav.svelte';
+import NavLogo from '../svelte/nav/NavLogo.svelte';
+import NavBreadcrumb from '../svelte/nav/NavBreadcrumb.svelte';
+import NavControls from '../svelte/nav/NavControls.svelte';
 import Menu from '../svelte/menu/Menu.svelte';
 import MenuBox from '../svelte/menu/MenuBox.svelte';
 import MenuItem from '../svelte/menu/MenuItem.svelte';
@@ -55,6 +58,8 @@ import HistoryMain from '../svelte/history/HistoryMain.svelte';
 //DevTools
 import DevToolsMain from '../svelte/devtools/DevToolsMain.svelte';
 import DevToolsDocumentation from '../svelte/devtools/DevToolsDocumentation.svelte';
+import DevToolsNetworks from '../svelte/devtools/DevToolsNetworks.svelte';
+import DevToolsDeleteNetwork from '../svelte/devtools/DevToolsDeleteNetwork.svelte';
  
 //Components
 import Button from '../svelte/components/Button.svelte';
@@ -145,15 +150,16 @@ export const Modals = {
     CoinSendingTx,
     ResultBox,
     MessageBox,
-    CoinDeleting
+    CoinDeleting,
+    DevToolsDeleteNetwork
 }
 
 export {
-    Nav,
+    Nav, NavLogo, NavBreadcrumb, NavControls,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
     Coin, CoinDivider, CoinDetails, CoinEmpty,
-    DevToolsMain, DevToolsDocumentation,
+    DevToolsMain, DevToolsDocumentation, DevToolsNetworks,
     BackupMain,
     Restore,
     LockScreen,

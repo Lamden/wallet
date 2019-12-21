@@ -46,7 +46,7 @@
 <div class="box text-primary">
     <div class="doco-box"> 
         {#each docoLinks as cardInfo}
-            <Card {cardInfo} width={'30%'}/>
+            <Card {cardInfo} width={'530px'}/>
         {/each}
     </div>
 </div>

@@ -1,7 +1,7 @@
 
 
 <script>
-    import { createEventDispatcher, onMount} from 'svelte';
+    import { createEventDispatcher, onMount, afterUpdate, beforeUpdate} from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Props
@@ -31,6 +31,8 @@
             dispatchSelected();
         }
     })
+
+ 
 
     function dispatchSelected() {
         if (selectElm.selectedIndex >= 0) dispatch('selected', {id, selected: items[selectElm.selectedIndex]});
@@ -167,11 +169,11 @@ label{
             {selectElm.options.length > 0 ? selectElm.options[selectElm.selectedIndex].innerHTML : defaultText}
         </div>
         <div class="select-items" style={`top: ${selctedBoxTop}`} class:select-hide={hideBox}>
-            {#each selectElm.options as option, index }
+            {#each items as item, index }
                 <div class:same-as-selected={selectElm.selectedIndex === index}
-                     on:click={() => handleClick(option, index)}
-                     >
-                     {option.innerHTML}
+                     on:click={() => handleClick(selectElm.options[index], index)}
+                    >
+                     {selectElm.options[index].innerHTML}
                 </div>
             {/each}  
         </div>

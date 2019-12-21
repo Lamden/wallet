@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
 
     //Stores
-    import { password } from '../../js/stores/stores.js';
+    import { password, currentNetwork } from '../../js/stores/stores.js';
     
     //Components
     import { Components }  from '../../js/router.js';
@@ -29,14 +29,19 @@
     })
 
     async function send(){
-        console.log('creating')
         await createTransaction();
-        console.log('sending')
         await sendTransaction();
     }
 
     async function createTransaction(){
-        let txb = new TransactionBuilder(sendingCoin.vk, contractName, methodName, kwargs, stampLimit)
+        let txb = new TransactionBuilder(
+            `http://${$currentNetwork.ip}:${$currentNetwork.port}`, 
+            sendingCoin.vk, 
+            contractName, 
+            methodName, 
+            kwargs, 
+            stampLimit
+        )
         await txb.getNonce((res, err) => {
             let txResult = {};
             if (err) {
@@ -51,13 +56,13 @@
 
     async function sendTransaction(){
         await transaction.send(decryptStrHash($password, sendingCoin.sk), (res, err) =>{
-            console.log(res)
             let txResult = {};
             if (err) {
                 txResult.error = err;
             }else{
                 txResult = res;
             }
+            console.log(txResult)
             dispatch('txResult', txResult)
         })
     }

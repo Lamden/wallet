@@ -4,7 +4,8 @@ import { Value } from './values.capnp';
 import * as wallet from './wallet';
 import * as pow from './pow';
 export class TransactionBuilder {
-    constructor(sender, contract, func, kwargs, stamps, nonce = undefined, processor = undefined) {
+    constructor(networkNode, sender, contract, func, kwargs, stamps, nonce = undefined, processor = undefined) {
+        this.networkNode = networkNode;
         //Stores variables in self for convenience
         this.sender = sender;
         this.stamps = stamps;
@@ -28,7 +29,6 @@ export class TransactionBuilder {
         //If Nonce or Processor are not provided then getNonce can be called to set both from the masternode
         if (this.nonce != null) this.nonce = nonce;
         if (this.processor != null) this.processor = processor;
-        console.log(this)
     }
     numberToUnit64(number) {
         if (number == null)
@@ -88,11 +88,11 @@ export class TransactionBuilder {
                 kwargsEntries.get(index).setValue(this.mapTypes(this.kwargs[key]));
             });
         }
-        console.log('setKwargs')
     }
     vaildateKwarg(key = undefined, value) {
         //Match what the user provided as the type typeof results with.
         const typeLookup = {
+            key: "string",
             bool: "boolean",
             fixedPoint: "number",
             text: "string",
@@ -111,9 +111,6 @@ export class TransactionBuilder {
             //Error if the user did not specifiy any kwarg data
             throw new TypeError(`"${key}" kwarg has no value property.`);
         let valueType = typeof value.value;
-        console.log(value)
-        console.log(valueType)
-        console.log(typeLookup[value.type])
         if (valueType !== typeLookup[value.type])
             //Error if the user supplied type does not match the actual kwarg data type
             throw new TypeError(`"${key}" kwarg value is incorrect type or type assignment is incorrect. Recieved value of type "${valueType}" with type property "${value.type}"`);
@@ -129,6 +126,7 @@ export class TransactionBuilder {
         let pointer = new capnp.Message().initRoot(Value);
         const setPointerType = {
             'text': () => pointer.setText(kwargValue),
+            'key': () => pointer.setText(kwargValue),
             'bool': () => pointer.setBool(kwargValue),
             'fixedPoint': () => pointer.setFixedPoint(kwargValue.toString()),
             'data': () => {
@@ -159,34 +157,30 @@ export class TransactionBuilder {
         })
             .catch(err => callback(undefined, `Unable to get nonce for ${this.sender}. Error: ${err}`))
     }
+    setNetworkNode(networkNode){
+        this.networkNode = networkNode;
+    }
     setSender() {
         let senderBuffer = this.hexStringToByte(this.sender);
         let senderPayload = this.payload.initSender(senderBuffer.byteLength);
         senderPayload.copyBuffer(senderBuffer);
-        console.log('setSender')
     }
     setNonce() {
         this.payload.setNonce(this.numberToUnit64(this.nonce));
-        console.log('setNonce')
     }
     setProcessor() {
         let processorBuffer = this.hexStringToByte(this.processor);
         let processorPayload = this.payload.initProcessor(processorBuffer.byteLength);
         processorPayload.copyBuffer(processorBuffer);
-        console.log('setProcessor')
     }
     setContract() {
         this.payload.setContractName(this.contract);
-        console.log("contract Name: ", this.payload.getContractName())
-        console.log('setContract')
     }
     setFunctionName() {
         this.payload.setFunctionName(this.func);
-        console.log('setFunctionName')
     }
     setStamps() {
         this.payload.setStampsSupplied(this.numberToUnit64(this.stamps));
-        console.log('setStamps')
     }
     makePayload(){
         this.setSender(this.sender);
@@ -205,18 +199,12 @@ export class TransactionBuilder {
         //Set the Transaction Paylaod to Uint8Array so it can be signed.
         this.makePayload();
         this.payloadBytes = new Uint8Array(this.payloadMessage.toPackedArrayBuffer());
-        console.log('setPayloadBytes')
     }
     sign(sk) {
         if (this.payloadBytes == null) this.setPayloadBytes();
         // Get signature
         this.signature = wallet.sign(sk, this.payloadBytes);
-
-        //console.log(this.byteToHexString(this.signature))
         this.transactionSigned = true;
-
-        if (wallet.verify(this.sender, this.payloadBytes, this.signature)) console.log(true)
-        else console.log(false)
     }
     setSignature() {
         // Set the signature in the transcation metadata
@@ -264,6 +252,8 @@ export class TransactionBuilder {
         return this.transactonBytes;
     }
     send(sk = undefined, callback = undefined) {
+        if (this.networkNode === '')
+            throw new Error(`No Network information set`);
         if (sk == null && !this.transactionSigned)
             throw new Error(`Transation Not Signed: Private key needed to sign transaction.`);
         
@@ -273,20 +263,18 @@ export class TransactionBuilder {
         
         const data = this.serialize();
 
-        return fetch(`http://192.168.1.82:8000`, {
+        return fetch(this.networkNode, {
             method: 'POST',
             body: data
         })
             .then(res => { console.log(res); this.transactionResponse = res; return res.json(); })
             .then(res => {
-            this.transactionResult = res;
-            if (callback != null) {
-                return callback(res);
-            }
-            ;
+                this.transactionResult = res;
+                if (callback != null) {
+                    return callback(res);
+                }
             return this.transactionResult;
         })
             .catch(err => callback(undefined, err));
-    
     }
 }

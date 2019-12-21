@@ -2,10 +2,8 @@
     //Stores
     import { breadcrumbs } from '../../js/stores/stores.js';
 
-    //Components
-    import NavLogo from './NavLogo.svelte';
-    import NavBreadcrumb from './NavBreadcrumb.svelte';
-    import NavControls from './NavControls.svelte';
+	//Components
+    import { NavLogo, NavBreadcrumb, NavControls }  from '../../js/router.js'
 
 </script>
 
@@ -38,5 +36,5 @@
             <NavBreadcrumb crumb={crumb} {index} last={($breadcrumbs.length -1) === index}/>
         {/each}
     </div>
-    <!-- To return one day <NavControls />-->
+    <!--<NavControls />-->
 </div>

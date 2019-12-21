@@ -5,9 +5,11 @@
 	import {calcRemainingStorage, 
 			coinList, 
 			CoinStore,
+			balanceTotal,
 			numberOfCoins,
 			breadcrumbs,
-			password } from '../../js/stores/stores.js';
+			password,
+			currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
@@ -41,7 +43,7 @@
 .hero-rec{
 	box-sizing: border-box;
 	display: flex;
-	align-items: flex-end;
+	flex-direction: column;
 	height: 430px;
 	border-radius: 4px;
 	margin-bottom: 18px;
@@ -82,27 +84,52 @@
 	margin-right: 28px;  
 	width: 203px;
 }
+.buttons{
+	flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+}
+.balance-words{
+	padding-left: 42px;
+	margin: 14px 0;
+}
+.balance-total{
+	padding-left: 42px;
+}
+
 </style>
 
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-		<Button id={'add-btn'}
+		<div class="balance-words text-body3">
+			{`TAU`}
+		</div>
+		<div class="balance-total text-title">
+			{`${$balanceTotal}`}
+		</div>
+		<div class="buttons">
+			<Button id={'add-btn'}
 				classes={'button__transparent button__blue'}
 				name="Add Wallet"
+				width={'150px'}
 		 		click={() => openModal('CoinAdd')} 
 				icon='plus'/>
+		</div>
 	</div>
 	<div class="header header-text divider">
 		<div class="header-name header-text">Name</div>
 		<div class="header-amount header-text">Amount</div>
 		<div class="header-percent header-text">Portfolio %</div>
 	</div>
-	{#if $CoinStore.length === 0}
-		<CoinEmpty />
-	{:else}
-		{#each $CoinStore as coin, id}
-			<Coin {coin} {id} />
-			<CoinDivider />
-		{/each}
+	{#if $currentNetwork}
+		{#if $CoinStore.length === 0}
+			<CoinEmpty />
+		{:else}
+			{#each $CoinStore as coin, id}
+				<Coin {coin} {id} />
+				<CoinDivider />
+			{/each}
+		{/if}
 	{/if}
 </div>

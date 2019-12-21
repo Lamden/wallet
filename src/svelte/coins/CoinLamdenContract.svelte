@@ -4,7 +4,7 @@
     const dispatch = createEventDispatcher();
 
 	//Stores
-    import { CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components }  from '../../js/router.js'
@@ -25,14 +25,16 @@
     let contractError = false;
     let contractMethods;
     let transaction;
-    let dataTypes = ['text', 'data', 'fixedPoint', 'bool']
+    let dataTypes = ['text', 'key', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
+        key: '',
         text: 'textarea',
         data: '',
         fixedPoint: 'number',
         bool: trueFalseList()
     }
     let defaultValues = {
+        key: '',
         text: '',
         data: '',
         fixedPoint: 0,
@@ -105,18 +107,16 @@
     }
 
     function saveArgValue(arg, e){
-        let dataFieldVaild = true;
         let selectedType = argValueTracker[contractName][methodName][arg].selectedType
-        if (selectedType === 'data'){
+        if (selectedType === 'data' || selectedType === 'key'){
             if (!isStringHex(e.detail.target.value)){
-                e.detail.target.setCustomValidity('Data fields must be hex')
+                e.detail.target.setCustomValidity('Invalid Format: Must be HEX')
                 e.detail.target.reportValidity()
             }
         }
         let argValue = selectedType === 'bool' ?  e.detail.selected.value : e.detail.target.value;
         if (selectedType === 'fixedPoint'){
             argValue = parseFloat(argValue)
-            console.log(argValue)
         }
         argValueTracker[contractName][methodName][arg][selectedType].value = argValue;
         if (selectedType !== 'bool')  argValueTracker[contractName][methodName][arg][selectedType].target = e.detail.target;
@@ -131,7 +131,7 @@
     }
 
     function getMethods(contract){
-        return fetch(`http://192.168.1.82:8000/contracts/${contract}/methods`)
+        return fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contract}/methods`)
                     .then(res => res.json())
                     .then(res => {
                         if (!res.methods) contractError = true;
@@ -175,6 +175,11 @@
             }
         })
         return validity;
+    }
+
+    function clearValidation(e){
+        e.detail.target.setCustomValidity('')
+        e.detail.target.reportValidity();
     }
 
     function packageArgs(){
@@ -268,6 +273,7 @@
                                 items={typesList(arg)}
                                 label={'Type'}
                                 width="160px"
+                                innerHeight="45px"
                                 styles="border-radius: 4px 0 0 4px;"
                                 on:selected={(e) => saveArgType(arg, e)}
                                 sideBox={true} />
@@ -288,6 +294,7 @@
                                 label={arg}
                                 inputType={typeToInputTypeMAP[argValueTracker[contractName][methodName][arg].selectedType]}
                                 on:changed={(e) => saveArgValue(arg, e)}
+                                on:keyup={(e) => clearValidation(e)}
                                 required={true} />
                         {/if}
 

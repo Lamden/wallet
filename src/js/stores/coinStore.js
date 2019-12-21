@@ -59,8 +59,16 @@ const createCoinStore = () => {
                 return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
             });
         },
-        updateBalances: (storeValue) => {
-            console.log('!! REFRESHING BALANCES !!')
+        updateBalance: (coin, balance) => {
+            CoinStore.update(coinstore => {
+                let coinToUpdate = coinstore.find( f => {
+                    return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
+                });
+                if (coinToUpdate){
+                    coinToUpdate.balance = balance;
+                };
+                return coinstore;
+            })
         },
         updateCoinTransaction: (txInfo) => {
             txInfo = JSON.parse(JSON.stringify(txInfo))
@@ -90,4 +98,13 @@ export const allTransactions = derived(CoinStore, ($CoinStore) => {
         txList = [...txList, ...coin.txList]
     })
     return txList;
+});
+
+export const balanceTotal = derived(CoinStore, ($CoinStore) => {
+    let total = 0;
+    $CoinStore.map(coin => {
+        if (!coin.balance) return
+        total  = total + coin.balance;
+    })
+    return total;
 });

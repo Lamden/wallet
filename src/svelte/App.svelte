@@ -31,7 +31,7 @@
 		//prevent lockscreen from poping up durring testing//
 		//CoinStore.setPwd('Testing0!0101')
 		///
-		calcRemainingStorage();
+		//calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
 		pageLoaded.set(true);
@@ -60,9 +60,14 @@
 	};
 
 	function openModal(modal, data){
+		console.log(arguments)
 		currentModal = modal;
 		modalData = data;
         showModal = true;
+	}
+
+	function closeModal(){
+		showModal = false;
 	}
 
 </script>
@@ -85,7 +90,7 @@
 						</div>
 						{#if showModal}
 							<Modal>
-								<svelte:component this={Modals[currentModal]} {modalData}/>
+								<svelte:component this={Modals[currentModal]} {modalData} {closeModal}/>
 							</Modal>
 						{/if}
 					</div>
