@@ -45,7 +45,7 @@
 
 <style>
 .coin-modify{
-    width: 668px;
+    width: 750px;
 }
 .cancel-button{
     display: flex;

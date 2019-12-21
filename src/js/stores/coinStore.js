@@ -70,6 +70,20 @@ const createCoinStore = () => {
                 return coinstore;
             })
         },
+        updateBalances: (network) => {
+            /*
+            CoinStore.update(coinstore => {
+                coinstore.map(coin => {
+                    fetch(`http://${network.ip}:${network.port}/contracts/currency/balances/?key=${coin.vk}`)
+                    .then(res => res.json())
+                    .then(res => {
+                        res.value ? res.value : 0;
+                        if (res.value !== balance) CoinStore.updateBalance(coin, parseFloat(res.value))
+                    })
+                    .catch(err => CoinStore.updateBalance(coin, 0))
+                })
+            })*/
+        },
         updateCoinTransaction: (txInfo) => {
             txInfo = JSON.parse(JSON.stringify(txInfo))
             CoinStore.update(coinstore => {
@@ -84,21 +98,23 @@ const createCoinStore = () => {
                 return coinstore;
             })
 
+        },
+        clearCoinTxHistory: (coin) => {
+            CoinStore.update(coinstore => {
+                let coinToUpdate = coinstore.find( f => {
+                    return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
+                });
+                if (coinToUpdate){
+                    coinToUpdate.txList = [];
+                };
+                return coinstore;
+            })
         }
     };
 }
 export const CoinStore = createCoinStore();
 
 export const password = derived(CoinStore.passwordStore, ($passwordStore) => $passwordStore);
-
-export const allTransactions = derived(CoinStore, ($CoinStore) => {
-    let txList = [];
-    $CoinStore.map(coin => {
-        if (!coin.txList) return
-        txList = [...txList, ...coin.txList]
-    })
-    return txList;
-});
 
 export const balanceTotal = derived(CoinStore, ($CoinStore) => {
     let total = 0;

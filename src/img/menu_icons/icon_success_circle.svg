@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="39.477482mm"
-   height="39.477482mm"
-   viewBox="0 0 39.477482 39.477482"
+   width="46.186562mm"
+   height="46.186562mm"
+   viewBox="0 0 46.186562 46.186562"
    version="1.1"
    id="svg823"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
@@ -26,49 +26,18 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="-66.609458"
-     inkscape:cy="62.314032"
+     inkscape:cx="65.711979"
+     inkscape:cy="85.171198"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1">
-    <sodipodi:guide
-       position="12.872727,11.503708"
-       orientation="-0.70710678,0.70710678"
-       id="guide1379"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="17.082222,9.3321485"
-       orientation="-0.70710678,0.70710678"
-       id="guide1381"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="36.592897,24.599917"
-       orientation="0.70710678,0.70710678"
-       id="guide1383"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="15.478604,11.336668"
-       orientation="0.70710678,0.70710678"
-       id="guide1385"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="10.985134,9.6161185"
-       orientation="0.70710678,0.70710678"
-       id="guide1387"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="1.5471815,16.247748"
-       orientation="-0.70710678,0.70710678"
-       id="guide1389"
-       inkscape:locked="false" />
-  </sodipodi:namedview>
+     inkscape:window-width="958"
+     inkscape:window-height="1008"
+     inkscape:window-x="-7"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata820">
     <rdf:RDF>
@@ -85,16 +54,16 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-3.998661,-107.12771)">
+     transform="translate(2.7104187,-100.41864)">
     <circle
-       style="opacity:1;fill:#89ed5b;fill-opacity:1;stroke:none;stroke-width:2.01083326;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#89ed5b;fill-opacity:1;stroke:none;stroke-width:2.35256839;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path822"
-       cx="23.737402"
-       cy="126.86645"
-       r="19.738741" />
+       cx="20.382862"
+       cy="123.51192"
+       r="23.093281" />
     <path
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 6.9490041,128.95428 3.1070099,-3.10701 8.034793,8.03479 17.188771,-17.18877 3.190529,3.19053 -20.295782,20.29578 z"
+       d="m 4.2086767,124.89103 3.1070099,-3.10701 8.0347934,8.03479 17.188771,-17.18877 3.190529,3.19053 -20.295782,20.29578 z"
        id="path1391"
        inkscape:connector-curvature="0" />
   </g>

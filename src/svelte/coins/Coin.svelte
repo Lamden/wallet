@@ -28,6 +28,7 @@
             if (res.value !== balance) CoinStore.updateBalance(coin, parseFloat(res.value))
         })
         .catch(err => CoinStore.updateBalance(coin, 0))
+        //CoinStore.updateBalances($currentNetwork)
     })
 
     function toPercentString(){

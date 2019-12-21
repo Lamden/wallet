@@ -28,6 +28,7 @@ import copyGreen from '../img/menu_icons/icon_copy_green.svg';
 import edit from '../img/menu_icons/icon_edit.svg';
 import del from '../img/menu_icons/icon_delete.svg';
 import successCircle from '../img/menu_icons/icon_success_circle.svg';
+import refresh from '../img/menu_icons/icon_refresh.svg';
 
 //Social Icons
 import twitter from '../img/menu_icons/icon_twitter.svg';

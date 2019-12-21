@@ -2,7 +2,7 @@
     import { setContext, getContext } from 'svelte';
 
 	//Stores
-    import { CoinStore, SettingsStore } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Modals, Components }  from '../../js/router.js'
@@ -104,6 +104,7 @@
             handleSuccess();
         }
         txData.resultInfo = resultInfo;
+        txData.network = $currentNetwork;
         storeTransaction();
         if (txData.result.state_changes) resultInfo.stateInfo = txData.result.state_changes;
         txData.resultInfo.buttons = buttons;
@@ -111,7 +112,7 @@
     }
 
     function storeTransaction(){
-        CoinStore.updateCoinTransaction(txData);
+        TxStore.addTx(txData);
     }
 </script>
 

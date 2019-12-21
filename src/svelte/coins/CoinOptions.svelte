@@ -24,6 +24,7 @@
     let options = [
         {id: 'modify-copy-btn', name: 'Copy', desc: 'Key to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
         {id: 'modify-edit-btn', name: 'Edit', desc: 'Wallet Nickname', icon: edit, color: 'purple', click: () => showEdit() },
+        {id: 'delete-tx-btn', name: 'Purge Transactions', desc: 'Clear Tx History', icon: del, color: 'grey', click: () => clearTxHistory() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
     ]
 
@@ -49,10 +50,14 @@
         return $CoinStore.map(c => {
             return {
                 value: c,
-                name: `${c.nickname} - ${c.vk.substring(1, 55 - c.nickname.length)}...`,
+                name: `${c.nickname} - ${c.vk.substring(0, 70 - c.nickname.length)}...`,
                 selected: coin === c ? true : false
             }
         })
+    }
+
+    function clearTxHistory(){
+        CoinStore.clearCoinTxHistory(selectedWallet)
     }
 </script>
 
@@ -69,7 +74,7 @@
     box-sizing: border-box;
     align-items: center;
     justify-content: space-between;
-    width: 215px;
+    width: 175px;
     height: 100px;
     border-radius: 8px;
     padding: 16px 0;

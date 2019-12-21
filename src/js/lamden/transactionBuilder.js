@@ -144,7 +144,7 @@ export class TransactionBuilder {
         return pointer;
     }
     getNonce(callback = undefined) {
-        return fetch(`http://192.168.1.82:8000/nonce/${this.sender}`)
+        return fetch(`${this.networkNode}/nonce/${this.sender}`)
             .then(res => { this.nonceResponse = res; return res.json(); })
             .then(res => {
             this.nonceResult = res;
@@ -262,7 +262,6 @@ export class TransactionBuilder {
             
         
         const data = this.serialize();
-
         return fetch(this.networkNode, {
             method: 'POST',
             body: data

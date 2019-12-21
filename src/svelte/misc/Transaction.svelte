@@ -14,7 +14,9 @@
     
     $: coin = txData.sender
     $: txInfo = txData.txInfo;
-    $: icon = txData.error ? handDown :  handUp;
+    $: error = txData.message.resultInfo.type === "error" ? true : false
+    $: icon = error ? handDown :  handUp;
+
 
 </script>
 
@@ -75,7 +77,7 @@
             {txInfo.contractName}
             <div>{txInfo.methodName}</div>
         </div>
-        <img class="icon-size" src={txData.error ? errorCircle : successCircle} alt={`success/failure icon`} />
+        <img class="icon-size" src={error ? errorCircle : successCircle} alt={`success/failure icon`} />
     </div>
     <div class="args flex-column text-body1">
         {#each Object.keys(txInfo.args) as arg}

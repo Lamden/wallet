@@ -52,10 +52,11 @@
     });
 
     function coinList(){
-        return $CoinStore.map(coin => {
+        return $CoinStore.map(c => {
             return {
-                value: coin,
-                name: `${coin.nickname} - ${coin.vk.substring(0, 55 - coin.nickname.length)}...`,
+                value: c,
+                name: `${c.nickname} - ${c.vk.substring(0, 55 - c.nickname.length)}...`,
+                selected: c.network === coin.network && c.symbol === coin.symbol && c.vk === coin.vk
             }
         })
     }
@@ -99,9 +100,9 @@
         methodArgs.map(arg => {
             if (!argValueTracker[contractName][methodName][arg]) {
                 argValueTracker[contractName][methodName][arg] = {};
-                argValueTracker[contractName][methodName][arg].selectedType = 'data';
-                argValueTracker[contractName][methodName][arg]['data'] = {};
-                argValueTracker[contractName][methodName][arg]['data'].value = defaultValues['data'];
+                argValueTracker[contractName][methodName][arg].selectedType = 'text';
+                argValueTracker[contractName][methodName][arg]['text'] = {};
+                argValueTracker[contractName][methodName][arg]['text'].value = defaultValues['text'];
             }
         })
     }
@@ -195,6 +196,10 @@
         })
         return argPackage;
     }
+
+    function handleSelectedWallet(e){
+        selectedWallet = e.detail.selected.value
+    }
 </script>
 
 <style>
@@ -228,7 +233,7 @@
         label={'Select Wallet to Send From'}
         styles="margin-bottom: 19px;"
         required={true}
-        on:selected={(e) => selectedWallet = e.detail.selected.value}
+        on:selected={(e) => handleSelectedWallet(e)}
     />
 
     <div class="coin-info text-subtitle3">

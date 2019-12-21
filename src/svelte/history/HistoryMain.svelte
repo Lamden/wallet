@@ -8,26 +8,18 @@
     import { Transaction }  from '../../js/router.js'
     
     //Props
-    export let filter;
-    $: txList = [...$allTransactions];
+    export let txList;
+    export let all = false;
+
+    $: sortedList = [];
     $: txByDay = txList.length > 0 ? groupByDate() : {};
   
 	onMount(() => {
-        if (!filter) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
+        if (all) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
     });
 
-    function filterTxList(){
-        if (filter && txList){
-            let filteredList = txList.filter( f => {
-                return  f.sender.network === filter.network && f.sender.symbol === filter.symbol && f.sender.vk === filter.vk;
-            });
-            return filteredList
-        }
-        return txList;
-    }
-
     function sortTxList(){
-        txList = filterTxList().sort((a, b) => new Date(b.date) - new Date(a.date));
+        sortedList = txList.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
     function groupByDate(){
@@ -58,12 +50,16 @@
 </style>
 
 <div class="history text-primary">
-    {#each Object.keys(txByDay) as day}
-        <div class="section-header text-body2">
-            {new Date(day).toDateString()}
-        </div>
-        {#each txByDay[day] as tx}
-            <Transaction txData={tx}/>
+    {#if Object.keys(txByDay).length === 0}
+        <h5>No Transaction History</h5>
+    {:else}
+        {#each Object.keys(txByDay) as day}
+            <div class="section-header text-body2">
+                {new Date(day).toDateString()}
+            </div>
+            {#each txByDay[day] as tx}
+                <Transaction txData={tx}/>
+            {/each}
         {/each}
-    {/each}
+    {/if}
 </div>
