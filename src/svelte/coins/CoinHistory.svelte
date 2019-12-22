@@ -1,33 +1,31 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
     
     //Stores
-    import { breadcrumbs, TxStore, currentNetwork } from '../../js/stores/stores.js';
+    import { breadcrumbs, TxStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Transaction }  from '../../js/router.js'
+    
+    //Props
+    export let txList;
+    export let all = false;
 
-    $: txByNetwork = () =>  {  
-  
-        let netKey = $currentNetwork.ip + $currentNetwork.port
-        let networkTxs = !$TxStore[netKey] ? [] : $TxStore[netKey];
-        let returnList = []
-        Object.keys(networkTxs).map(vks => {
-            returnList = [...returnList, ...$TxStore[netKey][vks]]
-        })
-        return returnList;
-    }
-    $: sortedList = txByNetwork().sort((a, b) => new Date(b.date) - new Date(a.date));;
-    $: txByDay = sortedList.length > 0 ? groupByDate() : {};
+    $: sortedList = [];
+    $: txByDay = txList.length > 0 ? groupByDate() : {};
   
 	onMount(() => {
-        breadcrumbs.set([{name: 'History', page: {name: ''}},]);
-        
+        if (all) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
     });
 
+    function sortTxList(){
+        sortedList = txList.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
     function groupByDate(){
+        sortTxList();
         let txDict = {};
-        sortedList.map(tx => {
+        txList.map(tx => {
             let date = new Date(tx.date).toLocaleDateString();
             if (!txDict[date]){
                 txDict[date] = [tx];

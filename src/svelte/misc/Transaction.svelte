@@ -1,4 +1,5 @@
 <script>
+    import { onMount, afterUpdate } from 'svelte' 
     //Stores
     import { CoinStore } from '../../js/stores/stores.js';
 
@@ -14,8 +15,21 @@
     
     $: coin = txData.sender
     $: txInfo = txData.txInfo;
-    $: error = txData.message.resultInfo.type === "error" ? true : false
+    $: error = txData.resultInfo.type === "error" ? true : false
+    $: errorMsg = () => {
+        if (typeof txData.resultInfo.subtitle === 'string' ) return error ? txData.resultInfo.subtitle : '';
+        if (typeof txData.resultInfo.subtitle === 'object' ) return error ? txData.resultInfo.title : '';
+        return '';
+    }
     $: icon = error ? handDown :  handUp;
+
+    onMount(() => {
+        //console.log(txData)
+    })
+
+    afterUpdate(() => {
+        console.log(error, errorMsg(), txData)
+    })
 
 
 </script>
@@ -45,9 +59,11 @@
     flex-grow: 1;
 }
 
-.details{
-    justify-content: center;
-    width: 150px;
+.error-msg{
+    display: flex;
+    align-content: center;
+    margin-left: 220px;
+    height: 20px;
 }
 
 .icon{
@@ -92,4 +108,9 @@
         <div> {new Date(txData.date).toLocaleTimeString()} </div>
     </div>
 </div>
+{#if error}
+    <div class="error-msg text-subtitle text-primary-dark">
+        {errorMsg()}
+    </div>
+{/if}
 <CoinDivider />

@@ -5,7 +5,7 @@
 .divider-box{
     display: flex;
     flex-direction: row;
-    height: 1px;
+    height: 2px;
     margin: 1px 0;
 }
 

@@ -33,6 +33,7 @@ import CoinSendingTx from '../svelte/coins/CoinSendingTx.svelte';
 import CoinEditNickname from '../svelte/coins/CoinEditNickname.svelte'; 
 import CoinDelete from '../svelte/coins/CoinDelete.svelte'; 
 import CoinDeleting from '../svelte/coins/CoinDeleting.svelte'; 
+import CoinHistory from  '../svelte/coins/CoinHistory.svelte'; 
 
 //Backup and Restore
 import Backup from '../svelte/backup_restore/Backup.svelte';
@@ -158,7 +159,7 @@ export {
     Nav, NavLogo, NavBreadcrumb, NavControls,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinEmpty,
+    Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory,
     DevToolsMain, DevToolsDocumentation, DevToolsNetworks,
     BackupMain,
     Restore,

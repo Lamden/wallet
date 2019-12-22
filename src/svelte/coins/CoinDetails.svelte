@@ -1,11 +1,11 @@
 <script> 
-    import { setContext, getContext, onMount } from 'svelte';
+    import { setContext, getContext, onMount, afterUpdate } from 'svelte';
 
     //Stores
     import { CoinStore, SettingsStore, currentNetwork, previousPage, getCoinReference, breadcrumbs, TxStore } from '../../js/stores/stores.js';
 
     //Components
-	import { HistoryMain, Modal, Modals, Components }  from '../../js/router.js'
+	import { CoinHistory, Modal, Modals, Components }  from '../../js/router.js'
 	const { Button } = Components;
 	import { backgrounds } from '../../js/images.js';
 	const { squares_bg } = backgrounds;
@@ -30,7 +30,7 @@
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
     $: sendPage = sendPages[coin.network]
-    $: txList =  [...TxStore.getTx($currentNetwork, coin.vk)]
+    $: txList =  [...$TxStore[$currentNetwork.ip + $currentNetwork.port][coin.vk]]
 
 	onMount(() => {
         breadcrumbs.set([
@@ -38,6 +38,10 @@
             {name: `${coin.name} ${symbol}`, page: {name: ''}},
         ]);
     });
+
+    afterUpdate(() => {
+        console.log(txList)
+    })
 
     function copyWalletAddress(){
         copyToClipboard(coin.vk)
@@ -131,5 +135,5 @@
 				/>
         </div>
     </div>
-    <!--<HistoryMain {txList} />-->
+    <CoinHistory {txList} />
 </div>
