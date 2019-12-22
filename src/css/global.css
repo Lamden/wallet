@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+  
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+html, body  {
+    height:100%;
+}
+
+body{
+    background-color: var(--bg-color);
+    margin: 0;
+    min-height: unset;
+    display: flex; 
+    color: #e0e0e08a;
+}
+
+.flex-column{
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row{
+    display: flex;
+    flex-direction: row;
+}
+
+.text-black{
+    color: #121212;
+}
+
+.text-purple{
+    color: var(--primary-color);
+}
+
+.text-primary{
+    color: var(--font-primary);
+}
+
+.text-primary-dark{
+    color: var(--font-primary-dark);
+}
+
+.text-primary-light{
+    color: var(--font-primary-light);
+}
+
+.text-secondary{
+    color: var(--font-secondary);
+}
+
+.text-body1{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.44px;
+}
+
+.text-body2{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+}
+.text-body3{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 25px;
+    line-height: 24px;
+    letter-spacing: 0.44px;
+}
+
+
+.text-title{
+    font-family: 'Quicksand', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 55px;
+    line-height: 69px;
+    letter-spacing: 0.25px;
+}
+
+.text-subtitle1{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.25px;
+}
+
+.text-subtitle2{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0.1px;
+}
+
+.text-subtitle3{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.44px;
+}
+
+
+.text-caption{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.4px;
+}
+
+.text-caption2{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 28px;
+    letter-spacing: 0.15px;
+}
+
+.text-button{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+}
+
+.button__solid{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    background-color: unset;
+    border: unset;
+    background: var(--bg-color-grey);
+    box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.1), 0px 2px 4px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.16);
+    border-radius: 4px;
+    color: var(--font-primary-dark);
+}
+
+.button__text{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    background-color: unset;
+    border: unset;
+    background: var(--bg-color);
+    color: var(--font-primary-dark);
+}
+
+.button__transparent{
+    display: flex;
+    align-items: center;
+    background-color: unset;
+    border: unset;
+    border: 1px solid rgb(255, 255, 255, 0.38);
+    border-radius: 4px;
+    color: #fff;
+    padding: 13px 8px 13px 12px;
+}
+
+.button__purple{
+    color: #FFFFFF;
+    background: var(--primary-color);
+}
+
+.button__blue{
+    color: #4FB8FF;
+    border: 1px solid #4FB8FF;
+}
+
+.button__red{
+    color: #FFFFFF;
+    background: red;
+}
+
+.button__transparent:hover{
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+button {
+    font-size: 10px;
+    margin: 2px;
+    padding: 3px;
+}
+
+.submit-button {
+    width: 232px;
+    padding: 13px 16px;
+}
+
+.submit-button-text{
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+}
+
+.coin-info{
+    height: 40px;
+}
+
+.error {
+    color: red;
+}
+
+.copy-link {
+    color: var(--font-primary);
+    text-decoration: none;
+}
+
+.copy-link :hover {
+    color: var(--font-primary);
+}
+
+.copy-link :visited {
+    outline: none;
+}
+
+.tx-link {
+    color: var(--font-primary);
+    
+}
+
+.tx-link :hover {
+    color: var(--font-primary);
+    text-decoration: underline;
+}
+
+.tx-link :visited {
+    outline: none;
+}
+
+.no-margin{
+    margin: 0;
+}
+
+.no-top-margin{
+    margin-top: 0px;
+}
+
+.no-bottom-margin{
+    margin-bottom: 0px;
+}
+
+.outside-link{
+    color: cyan;
+}
+
+.outside-link:hover {
+    color: var(--primary-color);
+}
+
+.outside-link:visited {
+    outline: none;
+}
