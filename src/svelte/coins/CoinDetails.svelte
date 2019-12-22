@@ -30,7 +30,11 @@
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
     $: sendPage = sendPages[coin.network]
-    $: txList =  [...$TxStore[$currentNetwork.ip + $currentNetwork.port][coin.vk]]
+    $: txList = () =>  {
+        if (!$TxStore[$currentNetwork.ip + $currentNetwork.port]) return [];
+        if (!$TxStore[$currentNetwork.ip + $currentNetwork.port][coin.vk]) return [];
+        return [...$TxStore[$currentNetwork.ip + $currentNetwork.port][coin.vk]]   
+    }
 
 	onMount(() => {
         breadcrumbs.set([
