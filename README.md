@@ -8,11 +8,6 @@ version: 9.5.0 rc1
 git clone https://github.com/Lamden/wallet.git
 cd wallet
 ```
-### Switch to RC1 branch
-```
-git checkout rc1
-```
-
 ### Install package dependancies
 ```
 sudo npm install
