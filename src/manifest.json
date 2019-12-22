@@ -1,39 +1,29 @@
 {
-  "name": "Lamden Wallet",
-  "version": "0.1.0",
-  "description": "Wallet for Lamden's Cilanto blockchain as well as a tool for taking part in Lamden's atomic swap platform",
-  "manifest_version": 2,
-  "icons": {
-    "16": "icons/lamden-16.png",
-    "32": "icons/lamden-32.png",
-    "48": "icons/lamden-48.png",
-    "128": "icons/lamden-128.png"
+  "name": "Lamden Wallet - Browser Extension",
+  "description": "A wallet made by Lamden.io",
+  "options_page": "options.html",
+  "background": {
+    "page": "background.html"
   },
-  "permissions": [
-    "storage",
-    "*://*.anarchynet.io/*",
-    "*://*.theanarchy.net/*"
+  "permissions":[
+    "storage", "tabs"
   ],
   "browser_action": {
-    "default_title": "Lamden",
-    "default_popup": "pages/popup.html",
-    "default_icon": {
-      "16": "icons/lamden-16.png",
-      "32": "icons/lamden-32.png",
-      "48": "icons/lamden-48.png",
-      "128": "icons/lamden-128.png"
+    "default_title": "Lamden Wallet",
+    "default_popup": "popup.html",
+    "default_icon": "icon-34.png"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_end",
+      "all_frames": true,
+      "js": ["content.bundle.js"]
     }
-  },
-  "background": {
-    "page": "pages/background.html"
-  },
-  "content_scripts": [{
-    "js": [
-      "js/content.js"
-    ],
-    "run_at": "document_end",
-    "matches": ["<all_urls>"],
-    "all_frames": true
-  }],
-  "content_security_policy": "script-src 'self'; object-src 'self'"
+  ],
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

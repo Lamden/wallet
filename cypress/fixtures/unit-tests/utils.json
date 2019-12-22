@@ -1,0 +1,57 @@
+{
+    "encryptStrHash":{
+        "data":{
+            "string": "This is a test string",
+            "password": "test_password"
+        }
+    },
+    "decryptStrHash":{
+        "data":{
+            "encodedString":"U2FsdGVkX192vCZeO/juy0bNSFTmXwd4h1BYGDRKC3NNoSF7p6G7cIV7v0WZQ9Em",
+            "password": "test_password",
+            "badPassword": "bad_password",
+            "badHash" : "ThisisNotSHA256"
+        },
+        "result":{
+            "string": "This is a test string"
+        }
+    },
+    "encryptObject":{
+        "data":{
+            "object": {"value" : "Encrypte This"},
+            "password": "test_password"
+        }
+    },
+    "decryptObject":{
+        "data":{
+            "encodedObject":"{\"ct\":\"auSKZQcn7TvH2UCSJtAdBzZ2h9MS/w5LkJzRfcrxjw4=\",\"iv\":\"c38d9c2a606c1a06eeea6902622b96a9\",\"s\":\"65af0fb6c84fe9d5\"}",
+            "password": "test_password",
+            "badPassword": "bad_password",
+            "badHash" : "ThisisNotSHA256"
+        },
+        "result":{
+            "objectString": {"value" : "Encrypte This"}
+        }
+    },
+    "stripCoinRef":{
+        "data":{
+            "coinList":[
+                {"is_token":false,"network":"lamden","network_symbol":"TAU","name":"Lamden","nickname":"My Lamden Wallet","symbol":"TAU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }, 
+                {"is_token":false,"network":"lamden","network_symbol":"STU","name":"Stu Bucks","nickname":"My Stu Bucks Wallet","symbol":"STU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }
+            ]
+        },
+        "result":{
+            "newCoin":{ "is_token": false, "network":"lamden","network_symbol":"TAU","name":"Lamden","nickname":"My Lamden Wallet","symbol":"TAU", "vk": "thisisapublickey", "sk": "thisisaprivatekey"},
+            "coinBeforeCopy": {"is_token":false,"network":"lamden","network_symbol":"STU","name":"Stu Bucks","nickname":"My Stu Bucks Wallet","symbol":"STU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }
+        }
+    },
+    "toCurrencyFormat":{
+        "result":{
+            "USD": "$100.00",
+            "CAD": "CA$100.00",
+            "EUR": "€100.00",
+            "JPY": "¥100"
+
+        }
+    }
+}
