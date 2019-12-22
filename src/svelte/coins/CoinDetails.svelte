@@ -44,7 +44,7 @@
     });
 
     afterUpdate(() => {
-        console.log(txList)
+        console.log(txList())
     })
 
     function copyWalletAddress(){
@@ -139,5 +139,5 @@
 				/>
         </div>
     </div>
-    <CoinHistory {txList} />
+    <CoinHistory txList={txList()} />
 </div>
