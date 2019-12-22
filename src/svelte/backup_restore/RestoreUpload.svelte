@@ -16,6 +16,7 @@
 
     let disabledButton = true;
     $: activeButton = disabledButton ? '' : ' button__purple'
+    $: dragover = '';
 
 	onMount(() => {
         if (restore){
@@ -58,6 +59,16 @@
             disabledButton = false;
         }
     }
+
+    function handleDragover(e){
+        console.log(dragover)
+        if (!dragover) dragover = true;
+    }
+
+    function handleDragleave(e){
+        console.log(dragover)
+        if (dragover) dragover = false;
+    }
     
 </script>
 
@@ -77,7 +88,7 @@
 
 .caption-box{
     display: inline;
-    margin: 16px 0 84px 0;
+    margin: 16px 0 20px 0;
 }
 
 a{
@@ -88,9 +99,23 @@ span{
     cursor: pointer;
 }
 
+.dropzone{
+    border: dashed 2px var(--font-primary-dark);
+    height: 96px;
+    margin-bottom: 50px;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.dragover{
+    background-color: var(--primary-color)
+}
+
 </style>
 
-<div class="restore-upload" on:dragover={(ev) => ev.preventDefault()} on:drop={(ev) => handleFileEvent(ev)}>
+<div class="restore-upload">
     <h6>Welcome!</h6>
     
     <div class="text-box text-body1 text-primary">
@@ -98,9 +123,16 @@ span{
     </div>
     
     <div class="caption-box text-caption text-secondary">
-        Drag and drop your file anywhere on this page. Or
-        <span class="text-purple" on:click={() => openPicker()}>click to chose a file</span>
-        to manually select.
+        <span class="text-purple" on:click={() => openPicker()}>Click here to choose a file</span>
+        or drag and drop your file below.
+    </div>
+
+    <div class={`dropzone flex-column text-primary-dark ${dragover}`}
+        class:dragover={dragover} 
+        on:dragover|preventDefault={(e) => handleDragover(e)}
+        on:dragleave|preventDefault={(e) => handleDragleave(e)}
+        on:drop={(ev) => handleFileEvent(ev)}>
+        Drop File Here
     </div>
     
     <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
