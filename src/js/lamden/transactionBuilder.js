@@ -92,7 +92,7 @@ export class TransactionBuilder {
     vaildateKwarg(key = undefined, value) {
         //Match what the user provided as the type typeof results with.
         const typeLookup = {
-            key: "string",
+            address: "string",
             bool: "boolean",
             fixedPoint: "number",
             text: "string",
@@ -126,7 +126,7 @@ export class TransactionBuilder {
         let pointer = new capnp.Message().initRoot(Value);
         const setPointerType = {
             'text': () => pointer.setText(kwargValue),
-            'key': () => pointer.setText(kwargValue),
+            'address': () => pointer.setText(kwargValue),
             'bool': () => pointer.setBool(kwargValue),
             'fixedPoint': () => pointer.setFixedPoint(kwargValue.toString()),
             'data': () => {

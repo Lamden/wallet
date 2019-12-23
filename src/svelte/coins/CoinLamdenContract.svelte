@@ -25,16 +25,16 @@
     let contractError = false;
     let contractMethods;
     let transaction;
-    let dataTypes = ['text', 'key', 'data', 'fixedPoint', 'bool']
+    let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
-        key: '',
+        address: '',
         text: 'textarea',
         data: '',
         fixedPoint: 'number',
         bool: trueFalseList()
     }
     let defaultValues = {
-        key: '',
+        address: '',
         text: '',
         data: '',
         fixedPoint: 0,
@@ -99,17 +99,31 @@
         
         methodArgs.map(arg => {
             if (!argValueTracker[contractName][methodName][arg]) {
+                let startingType = getStartingType(arg)
                 argValueTracker[contractName][methodName][arg] = {};
-                argValueTracker[contractName][methodName][arg].selectedType = 'text';
-                argValueTracker[contractName][methodName][arg]['text'] = {};
-                argValueTracker[contractName][methodName][arg]['text'].value = defaultValues['text'];
+                argValueTracker[contractName][methodName][arg].selectedType = startingType;
+                console.log(argValueTracker[contractName][methodName][arg].selectedType)
+                argValueTracker[contractName][methodName][arg][startingType] = {};
+                argValueTracker[contractName][methodName][arg][startingType].value = defaultValues[startingType];
+                console.log(argValueTracker)
             }
         })
+    }
+    function getStartingType(arg){
+        console.log(arg)
+        let type = 'text';
+        let numberArgs = ['number', 'value', 'amount', 'stamps', 'tau', 'decimal']
+        numberArgs.map(str => arg.includes(str) ? type = 'fixedPoint' : null)
+        console.log(type)
+        if (type === 'fixedPoint') return type;
+        let addressArgs = ['to', 'from', 'wallet', 'address', 'sender', 'receiver', 'public', 'private', 'key']
+        addressArgs.map(str => arg.includes(str) ? type = 'address' : null)
+        return type;
     }
 
     function saveArgValue(arg, e){
         let selectedType = argValueTracker[contractName][methodName][arg].selectedType
-        if (selectedType === 'data' || selectedType === 'key'){
+        if (selectedType === 'data' || selectedType === 'address'){
             if (!isStringHex(e.detail.target.value)){
                 e.detail.target.setCustomValidity('Invalid Format: Must be HEX')
                 e.detail.target.reportValidity()
