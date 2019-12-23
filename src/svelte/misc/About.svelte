@@ -93,11 +93,6 @@
     cursor: pointer;
 }
 </style>
-
-<div class="about text-primary">
-    <h5>About</h5>
-</div>
-
 <div class="box text-primary">
     <div class="about-box"> 
         {#each aboutLinks as cardInfo}

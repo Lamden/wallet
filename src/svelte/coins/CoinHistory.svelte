@@ -51,7 +51,7 @@
 
 <div class="history text-primary">
     {#if Object.keys(txByDay).length === 0}
-        <h5>No Transaction History</h5>
+        <h4>No Transaction History</h4>
     {:else}
         {#each Object.keys(txByDay) as day}
             <div class="section-header text-body2">
