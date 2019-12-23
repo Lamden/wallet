@@ -56,13 +56,13 @@
 
     <Button
         id={"i-understand"} 
-        classes={'button__solid'}
+        classes={'button__solid button__purple'}
         styles={'margin-bottom: 16px;'}
         name="I understand" 
         click={() => accept()} />
     <Button
         id={"go-back"}  
-        classes={'button__solid button__purple'}
+        classes={'button__solid'}
         styles={'margin-bottom: 16px;'}
         name="go back" 
         click={() => startOver()} />
