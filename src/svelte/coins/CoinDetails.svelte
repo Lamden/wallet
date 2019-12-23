@@ -1,5 +1,5 @@
 <script> 
-    import { setContext, getContext, onMount, afterUpdate } from 'svelte';
+    import { setContext, getContext, onMount } from 'svelte';
 
     //Stores
     import { CoinStore, SettingsStore, currentNetwork, previousPage, getCoinReference, breadcrumbs, TxStore } from '../../js/stores/stores.js';
@@ -42,10 +42,6 @@
             {name: `${coin.name} ${symbol}`, page: {name: ''}},
         ]);
     });
-
-    afterUpdate(() => {
-        console.log(txList())
-    })
 
     function copyWalletAddress(){
         copyToClipboard(coin.vk)

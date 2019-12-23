@@ -9,7 +9,7 @@
 
     //Components
 	import { Components }  from '../../js/router.js'
-    const { InputBox } = Components;
+    const { InputBox, StrongPW } = Components;
 
     //Context
     const { changeStep } = getContext('functions');
@@ -21,6 +21,7 @@
     export let restore = false;
 
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
+    let pwd = '';
 
     onMount(() => {
         if (restore){
@@ -69,6 +70,10 @@
 		pwdInput2.checkValidity()
 		pwdInput2.reportValidity()
     }
+
+    function strongPasswordUpdate(){
+        pwd = pwdInput1.value;
+    }
     
     function savePassword(){
         try{
@@ -99,6 +104,10 @@ form{
 .input-box{
     margin-bottom: 14px;
 }
+
+.text-box{
+    margin-bottom: 1rem;
+}
 </style>
 
 <div class="firstrun-create-pwd">
@@ -107,12 +116,15 @@ form{
         No username required. Use a strong password that you'll remember.
     </div>
 
+    <StrongPW password={pwd} charLength={10}/>
+
     <form on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
         <div class="input-box">
             <InputBox
                 id="pwd1"
                 bind:thisInput={pwdInput1}
                 on:changed={() => pwd1Validity()}
+                on:keyup={() => strongPasswordUpdate()}
                 label={"Password"}
                 placeholder={"At least 8 symbols"}
                 inputType={'password'}

@@ -61,12 +61,10 @@
     }
 
     function handleDragover(e){
-        console.log(dragover)
         if (!dragover) dragover = true;
     }
 
     function handleDragleave(e){
-        console.log(dragover)
         if (dragover) dragover = false;
     }
     

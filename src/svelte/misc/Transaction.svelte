@@ -1,5 +1,4 @@
 <script>
-    import { onMount, afterUpdate } from 'svelte' 
     //Stores
     import { CoinStore } from '../../js/stores/stores.js';
 
@@ -22,15 +21,6 @@
         return '';
     }
     $: icon = error ? handDown :  handUp;
-
-    onMount(() => {
-        //console.log(txData)
-    })
-
-    afterUpdate(() => {
-        console.log(error, errorMsg(), txData)
-    })
-
 
 </script>
 
