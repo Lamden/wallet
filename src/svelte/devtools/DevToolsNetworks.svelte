@@ -119,7 +119,7 @@
         />
         <InputBox 
             label="IP Address"
-            placeholder={"Network IP Address"}
+            placeholder={"Enter Network IP Address"}
             bind:value={ip}
             bind:thisInput={ipField}
             on:keyup={() => clearIPValidation()}
@@ -128,7 +128,7 @@
         />
         <InputBox 
             label="Port"
-            placeholder={"At least 8 symbols"}
+            placeholder={"Enter Port"}
             bind:value={port}
             on:keyup={() => clearIPValidation()}
             width="125px"

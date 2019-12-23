@@ -117,7 +117,7 @@ a{
             <InputBox
                 id={'pwd1-input'}
                 label={"Password"}
-                placeholder={"At least 8 symbols"}
+                placeholder={"At least 15 symbols"}
                 width="100%"
                 bind:thisInput={pwdInput1}
                 on:changed={() => pwd1Validity()}
@@ -128,7 +128,7 @@ a{
             <InputBox
                 id={'pwd2-input'} 
                 label={"Confirm Password"}
-                placeholder={"At least 8 symbols"}
+                placeholder={"At least 15 symbols"}
                 width="100%"
                 styles={'margin-bottom: 16px;'}
                 bind:thisInput={pwdInput2}
