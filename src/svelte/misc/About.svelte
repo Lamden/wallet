@@ -14,6 +14,7 @@
     const { Card } = Components;
 
     function openLink(url){
+        console.log(url)
         window.open(url, '_blank');
     }
     
@@ -85,21 +86,12 @@
     justify-content: space-evenly;
     width: 534px;
     margin: 70px auto;
+    
 }
 
-.footer-box{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 70px;
+.social-icon{
+    cursor: pointer;
 }
-
-.heart{
-    margin: 0 2px;
-    position: relative;
-    top: 1px;
-}
-
 </style>
 
 <div class="about text-primary">
@@ -114,12 +106,7 @@
     </div>
     <div class="social-box">
         {#each socials as social}
-            <img src={social.image} alt="{social.name}" on:click={() => openLink(social.url)}/>
+            <img class="social-icon" src={social.image} alt="{social.name}" on:click={() => openLink(social.link)}/>
         {/each}
-    </div>
-    <div class="footer-box">
-        {'Made with'}
-        <img class="heart" src={heart} alt="heart icon" />
-        {'by Lamden'}
     </div>
 </div>

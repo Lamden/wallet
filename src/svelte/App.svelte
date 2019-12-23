@@ -20,6 +20,10 @@
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from '../js/router.js'
 	const { Modal } = Components;
 
+    //Images
+    import { icons } from '../js/images.js';
+    const { heart } = icons;
+
 	let showModal = false;
 	let currentModal;
 	let modalData;
@@ -70,6 +74,7 @@
 	}
 
 </script>
+
 {#if $pageLoaded}
 	<div class="container">
 		{#if $firstRun}
@@ -84,9 +89,17 @@
 						<div class="menu-pane">
 							<Menu />
 						</div>
-						<div class="content-pane">
-							<svelte:component this={Pages[$currentPage.name]}/>
+						<div class="content-pane flex-column">
+							<div class="components">
+								<svelte:component this={Pages[$currentPage.name]}/>
+							</div>
+							<div class="footer-box">
+								{'Made with'}
+								<img class="heart" src={heart} alt="heart icon" />
+								{'by Lamden'}
+							</div>
 						</div>
+
 						{#if showModal}
 							<Modal>
 								<svelte:component this={Modals[currentModal]} {modalData} {closeModal}/>
@@ -175,5 +188,23 @@
 	.content-pane{
 		padding: 21px 61px 0;
 		flex-grow: 1;
+	}
+	.components{
+		flex-grow: 1;
+	}
+
+	.footer-box{
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		min-height: 70px;
+		align-items: flex-start;
+		margin-top: 20px;
+	}
+
+	.heart{
+		margin: 0 2px;
+		position: relative;
+		top: 1px;
 	}
 </style>
