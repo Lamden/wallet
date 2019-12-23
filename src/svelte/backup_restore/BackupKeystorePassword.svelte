@@ -6,7 +6,7 @@
 
 	//Components
 	import { Components }  from '../../js/router.js'
-    const { Button, InputBox } = Components;
+    const { Button, InputBox, StrongPW } = Components;
 
     //Context
     const { changeStep, setKeystorePW } = getContext('functions');
@@ -14,7 +14,8 @@
     //DOM Nodes
     let formField, pwdInput1, pwdInput2, hintObj;
 
-    let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
+    let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{15,}`;
+    let pwd = '';
 
     onMount(() => {
         steps.set({
@@ -60,6 +61,10 @@
         }
     }
 
+    function strongPasswordUpdate(){
+        pwd = pwdInput1.value;
+    }
+
 </script>
 
 <style>
@@ -77,11 +82,15 @@
 
 .text-box2{
     color: var(--font-primary-dark);
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
+}
+
+.inputs{
+    margin-top: 1rem;
 }
 
 .buttons{
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 a{
     text-decoration: unset;
@@ -102,7 +111,9 @@ a{
         Lamden is not responsible for lost or stolen passwords 
     </div>
 
-    <form on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
+    <StrongPW password={pwd} charLength={15}/>
+
+    <form class="inputs" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
             <InputBox
                 id={'pwd1-input'}
                 label={"Password"}
@@ -110,6 +121,7 @@ a{
                 width="100%"
                 bind:thisInput={pwdInput1}
                 on:changed={() => pwd1Validity()}
+                on:keyup={() => strongPasswordUpdate()}
                 inputType={"password"}
                 {pattern}
                 required={true}/>

@@ -75,7 +75,7 @@ import Modal from '../svelte/components/Modal.svelte';
 import DropDown from '../svelte/components/DropDown.svelte';
 import MessageBox from '../svelte/components/MessageBox.svelte';
 import ResultBox from '../svelte/components/ResultBox.svelte';
-import ContractInput from '../svelte/components/ContractInput.svelte';
+import StrongPW from '../svelte/components/StrongPW.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
@@ -136,6 +136,7 @@ export const Components = {
     Card,
     Modal,
     DropDown,
+    StrongPW
 };
 
 export const Modals = {

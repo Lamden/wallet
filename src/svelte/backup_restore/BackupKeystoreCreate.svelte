@@ -37,7 +37,6 @@
 
     function createKeystore() {
         let ksPwdInfo = getKeystorePW();
-        console.log(ksPwdInfo)
         let file = JSON.stringify({
             data: encryptObject(ksPwdInfo.pwd, {'version' : $CURRENT_KS_VERSION, keyList: decryptedKeys()}),
             w: ksPwdInfo.hint === "" ? "" : encryptStrHash(obscure, ksPwdInfo.hint),
