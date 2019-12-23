@@ -77,7 +77,7 @@ label{
     display: flex;
     align-items: center;
     letter-spacing: 0.44px;
-    color: var(--font-primary);
+    color: var(--font-primary-dark);
 }
 
 /* Chrome, Safari, Edge, Opera */
