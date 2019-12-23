@@ -27,7 +27,7 @@
         },
         {
             name: 'Email Us',
-            desc: 'Run a local Lamden testnet',
+            desc: "What's on your mind?",
             url: 'mailto:team@lamden.io',
             image: squares_bg
         }
