@@ -126,7 +126,7 @@ form{
                 on:changed={() => pwd1Validity()}
                 on:keyup={() => strongPasswordUpdate()}
                 label={"Password"}
-                placeholder={"At least 8 symbols"}
+                placeholder={"At least 10 symbols"}
                 inputType={'password'}
                 width="100%"
                 margin={"21px 0 0 0"}
@@ -139,7 +139,7 @@ form{
                 bind:thisInput={pwdInput2}
                 on:changed={() => pwd2Validity()}
                 label={"Confirm Password"}
-                placeholder={"At least 8 symbols"}
+                placeholder={"At least 10 symbols"}
                 inputType={'password'}
                 width="100%"
                 required={true}/>
