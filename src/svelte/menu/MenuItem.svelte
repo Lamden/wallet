@@ -1,5 +1,5 @@
 <script>
-    import { getContext, beforeUpdate  } from 'svelte';
+    import { getContext, onMount  } from 'svelte';
     import { icons } from '../../js/images.js';
 
     //Stores
@@ -13,7 +13,14 @@
 
     let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
 
-    $: isSelected = $currentPage.name === menuItem.page;
+    $: isSelected = $currentPage.name === menuItem.page.name;
+
+    onMount(() => {
+        console.log($currentPage)
+        console.log(menuItem)
+        console.log($currentPage.name === menuItem.page.name)
+        console.log(isSelected)
+    })
 
     function menuAction(){
         if (menuItem.page.name === "LockScreen") {
@@ -34,8 +41,13 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+    cursor: pointer;
     margin: 8px 0;
     height: 32px;
+}
+
+.notselected:hover{
+    background-color: var(--bg-color-grey);
 }
 
 .logo{
@@ -54,10 +66,11 @@
 .selected{
     background-color: #461BC2;
 }
+
 </style>
 
 
-<div id={menuItem.id} class="item" class:selected={isSelected} on:click={ () => menuAction() }>
+<div id={menuItem.id} class="item" class:selected={isSelected} class:notselected={!isSelected} on:click={ () => menuAction() }>
     <img class="logo" src={menuItem.logo} alt="menu item logo"/>
     <span class="name"> {menuItem.name} </span>
 </div>

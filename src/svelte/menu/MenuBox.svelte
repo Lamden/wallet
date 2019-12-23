@@ -25,17 +25,12 @@
     display: flex;
     flex-direction: row;
     align-content: center;
-}
-
-.header-chevron{
-    width: 12px;
-    margin: 0 9px 0 10px;
+    margin-left: 31px;
 }
 </style>
 
 <div class="box">
     <div class="header">
-        <img class="header-chevron" src={icons.chevronDown} alt="menu chevron" />
         <h3 > {heading} </h3>
     </div>
     

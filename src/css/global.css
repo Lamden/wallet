@@ -192,11 +192,13 @@ button {
     font-size: 10px;
     margin: 2px;
     padding: 3px;
+    cursor: pointer;
 }
 
 .submit-button {
     width: 232px;
     padding: 13px 16px;
+    cursor: pointer;
 }
 
 .submit-button-text{

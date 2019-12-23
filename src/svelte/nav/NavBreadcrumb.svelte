@@ -26,11 +26,15 @@
 .words {
     width: 100%;
     margin-bottom: -4px;
+    
+}
+
+.pointer{
+    cursor: pointer;
 }
 
 .link:hover{
     text-decoration: underline;
-    cursor: pointer;
 }
 
 .chevron {
@@ -44,7 +48,7 @@
 }
 </style>
 
-<div class="box" class:last={last}>
+<div class="box" class:last={last} class:pointer={!last}>
     {#if index !== 0}
         <img class="chevron" src={icons.chevronRight} alt="right chevron" />
     {/if}
