@@ -14,7 +14,7 @@
     import { isStringHex } from  '../../js/lamden/helpers.js';
 
     //DOM NODES
-    let formObj1, stampsField
+    let formObj1, stampsField, contractNameField
 
     //Props
     export let coin;
@@ -90,33 +90,31 @@
         ]
     }
 
-    function setArgs(method){
-        if (!method) return
-        methodName = method.name
-        methodArgs = [...method.arguments]
-        if (!argValueTracker[contractName]) argValueTracker[contractName] = {};
-        if (!argValueTracker[contractName][methodName]) argValueTracker[contractName][methodName] = {};
+    function setArgs(method, contract){
+        if (!method) return;
+        methodName = method.name;
+        methodArgs = [...method.arguments];
+        if (!argValueTracker[contract]) argValueTracker[contract] = {};
+        if (!argValueTracker[contract][methodName]) argValueTracker[contract][methodName] = {};
         
         methodArgs.map(arg => {
-            if (!argValueTracker[contractName][methodName][arg]) {
-                let startingType = getStartingType(arg)
-                argValueTracker[contractName][methodName][arg] = {};
-                argValueTracker[contractName][methodName][arg].selectedType = startingType;
-                console.log(argValueTracker[contractName][methodName][arg].selectedType)
-                argValueTracker[contractName][methodName][arg][startingType] = {};
-                argValueTracker[contractName][methodName][arg][startingType].value = defaultValues[startingType];
-                console.log(argValueTracker)
+            if (!argValueTracker[contract][methodName][arg]) {
+                let startingType = getStartingType(arg);
+                argValueTracker[contract][methodName][arg] = {};
+                argValueTracker[contract][methodName][arg].selectedType = startingType;
+                argValueTracker[contract][methodName][arg][startingType] = {};
+                argValueTracker[contract][methodName][arg][startingType].value = defaultValues[startingType];
             }
         })
+        contractName = contract;
     }
+
     function getStartingType(arg){
-        console.log(arg)
         let type = 'text';
         let numberArgs = ['number', 'value', 'amount', 'stamps', 'tau', 'decimal']
         numberArgs.map(str => arg.includes(str) ? type = 'fixedPoint' : null)
-        console.log(type)
         if (type === 'fixedPoint') return type;
-        let addressArgs = ['to', 'from', 'wallet', 'address', 'sender', 'receiver', 'public', 'private', 'key']
+        let addressArgs = ['to', 'from', 'wallet', 'address', 'sender', 'receiver', 'owner', 'public', 'private', 'key']
         addressArgs.map(str => arg.includes(str) ? type = 'address' : null)
         return type;
     }
@@ -149,9 +147,11 @@
         return fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contract}/methods`)
                     .then(res => res.json())
                     .then(res => {
-                        if (!res.methods) contractError = true;
-                        contractError = false;
-                        setArgs(res.methods[0])
+                        if (res.error) {
+                            contractNameField.setCustomValidity(res.error);
+                            contractNameField.reportValidity();
+                        }
+                        setArgs(res.methods[0], contract)
                         return res.methods
                     })
     }
@@ -162,7 +162,7 @@
                 sender: selectedWallet,
                 txInfo: {
                     stampLimit,
-                    contractName, 
+                    'contractName': contractNameField.value, 
                     methodName, 
                     args: packageArgs()
                     }
@@ -268,10 +268,12 @@
         />
         <InputBox
             width="100%"
-            value= {contractName}
+            value={contractName}
+            bind:thisInput={contractNameField}
             label={"Enter Contract Name"}
             styles={`margin-bottom: 17px;`}
             on:changed={(e) => contractMethods = getMethods(e.detail.target.value)}
+            on:keyup={(e) => clearValidation(e)}
             required={true}
         />
         <div class="args">
@@ -284,7 +286,7 @@
                     label={'Function Name'} 
                     styles={`margin-bottom: 40px;`}
                     required={true}
-                    on:selected={(e) => setArgs(e.detail.selected.value)} />
+                    on:selected={(e) => setArgs(e.detail.selected.value, contractNameField.value)} />
 
                 {#each methodArgs as arg, index}
                     <div class="flex-row">
