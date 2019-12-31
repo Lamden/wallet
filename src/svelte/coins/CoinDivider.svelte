@@ -31,7 +31,6 @@
 .amount:after {
     content: "";
     padding-left: 1px;
-    margin-right: 17%;
     width: 100%;
     border-bottom: 1px dashed var(--divider-color);
 }

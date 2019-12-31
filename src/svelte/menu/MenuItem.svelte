@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount  } from 'svelte';
+    import { getContext  } from 'svelte';
     import { icons } from '../../js/images.js';
 
     //Stores
@@ -14,13 +14,6 @@
     let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
 
     $: isSelected = $currentPage.name === menuItem.page.name;
-
-    onMount(() => {
-        console.log($currentPage)
-        console.log(menuItem)
-        console.log($currentPage.name === menuItem.page.name)
-        console.log(isSelected)
-    })
 
     function menuAction(){
         if (menuItem.page.name === "LockScreen") {

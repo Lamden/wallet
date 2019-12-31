@@ -33,7 +33,7 @@
 
 	onMount(() => {
 		//prevent lockscreen from poping up durring testing//
-		//CoinStore.setPwd('Testing0!0101')
+		//CoinStore.setPwd('Testing0!2')
 		///
 		//calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];

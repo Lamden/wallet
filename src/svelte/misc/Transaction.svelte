@@ -21,6 +21,7 @@
         return '';
     }
     $: icon = error ? handDown :  handUp;
+    $: stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
 
 </script>
 
@@ -47,6 +48,12 @@
 
 .args{
     flex-grow: 1;
+}
+
+.stamps{
+    justify-content: center;
+    align-items: center;
+    width: 198px;
 }
 
 .error-msg{
@@ -92,6 +99,10 @@
                 {txInfo.args[arg].type === 'fixedPoint' ? txInfo.args[arg].value.toFixed(8).toString() : txInfo.args[arg].value}
             </div>
         {/each}
+    </div>
+    <div class="flex-column stamps">
+        <div>{'Stamps Used'}</div>
+        <div class="text-primary-dark">{stampsUsed}</div>
     </div>
     <div class="time-date">
         <div> {new Date(txData.date).toLocaleDateString()} </div>

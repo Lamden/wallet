@@ -58,7 +58,7 @@
             Restoring Your Lamden Wallet is Quick & Easy
         </h5>
         <div class="subtext text-body2 text-primary-dark">
-            It only taktes a few minutes, please have your original Keystore file ready,
+            It only takes a few minutes, please have your original Keystore file ready,
             and be prepared to provide the password for it.
         </div>
         <div class="buttons">

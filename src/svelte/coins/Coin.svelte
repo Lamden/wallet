@@ -46,6 +46,10 @@
     cursor: pointer;
 }
 
+.coin-box:hover{
+    background-color: var(--bg-color-grey)
+}
+
 .logo {
     width: 32px;
     margin: 0 36px 0 16px;
