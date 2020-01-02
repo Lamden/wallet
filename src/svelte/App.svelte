@@ -32,10 +32,7 @@
 	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
-		//prevent lockscreen from poping up durring testing//
-		//CoinStore.setPwd('Testing0!2')
-		///
-		//calcRemainingStorage();
+		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
 		pageLoaded.set(true);

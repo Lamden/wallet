@@ -25,8 +25,6 @@ const createSettingsStore = (key, startValue) => {
 
         lamdenNetworks.map(network => {
             let foundNetwork = startValue.networks.find(f =>{
-                console.log(f.lamden)
-                console.log(network.name === f.name)
                 return f.lamden && network.name === f.name
             })
             if (!foundNetwork) startValue.networks.unshift(network)
