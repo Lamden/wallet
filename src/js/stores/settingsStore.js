@@ -8,7 +8,7 @@ const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
-    'version':'v9_6_0',
+    'version':'v0_9_6',
     'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
     'networks' : [...lamdenNetworks],
 }

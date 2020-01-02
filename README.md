@@ -1,5 +1,5 @@
 # Lamden Wallet
-version: 9.6.0 rc1
+version: 0.9.6 rc1
 
 ## Install
 
