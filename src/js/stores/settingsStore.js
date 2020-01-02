@@ -1,18 +1,36 @@
 import { writable, derived, get } from 'svelte/store';
 
+const lamdenNetworks = [
+    {name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, selected: true}
+]
+
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
     'version':'v9_5_0',
     'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
-    'networks' : [{name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, selected: true}]
+    'networks' : [...lamdenNetworks],
 }
 
 const createSettingsStore = (key, startValue) => {
     const json = localStorage.getItem(key);
     if (json) {
         startValue = JSON.parse(json)
+        Object.keys(defualtSettingsStore).map(m =>{
+            if (!startValue.hasOwnProperty(m)){
+                startValue[m] = defualtSettingsStore[m]
+            }
+        })
+
+        lamdenNetworks.map(network => {
+            let foundNetwork = startValue.networks.find(f =>{
+                console.log(f.lamden)
+                console.log(network.name === f.name)
+                return f.lamden && network.name === f.name
+            })
+            if (!foundNetwork) startValue.networks.unshift(network)
+        })
     }
     const SettingsStore = writable(startValue);
     SettingsStore.subscribe(current => {
