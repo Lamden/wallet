@@ -7,7 +7,7 @@
 
     //images
     import { icons } from '../../js/images.js';
-    const { handDown, handUp, errorCircle, successCircle } = icons;
+    const { errorCircle, successCircle } = icons;
     
     //Props
     export let txData;
@@ -20,7 +20,6 @@
         if (typeof txData.resultInfo.subtitle === 'object' ) return error ? txData.resultInfo.title : '';
         return '';
     }
-    $: icon = error ? handDown :  handUp;
     $: stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
 
 </script>
@@ -33,17 +32,10 @@
     padding: 12px 0;
 }
 
-.hand-icon-box {
-    display: flex;
+.icon-box {
     align-items: center;
-    justify-items: center;
+    justify-content: center;
     width: 221px;
-}
-
-.hand-icon {
-    width: 43px;
-    height: 55px;
-    margin-right: 15px;
 }
 
 .args{
@@ -70,7 +62,7 @@
 
 .icon-size{
     width: 25px;
-    margin: 0 35px;
+    margin-top: 1rem;
 }
 .time-date{
     display: flex;
@@ -84,12 +76,9 @@
 </style>
 
 <div class="tx-box text-body1">
-    <div class="hand-icon-box ">
-        <img class="hand-icon" src={icon} alt={`hand logo`} />
-        <div class="flex-column text-body1">
-            {txInfo.contractName}
-            <div>{txInfo.methodName}</div>
-        </div>
+    <div class="icon-box flex-column text-body1">
+        <div>{txInfo.contractName}</div>
+        <div>{txInfo.methodName}</div>
         <img class="icon-size" src={error ? errorCircle : successCircle} alt={`success/failure icon`} />
     </div>
     <div class="args flex-column text-body1">
