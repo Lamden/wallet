@@ -114,7 +114,7 @@
         	<Button
                 id={'send-coin-btn'} 
                 classes={'button__transparent'}
-				name="Send Coin"
+				name="Send Tx"
                 margin={'0 49px 0 0'}
 		 		click={() => openModal(sendPage, coin)} 
 				icon='arrowUp'/>

@@ -50,9 +50,10 @@
     }
 
     function handleError(){
+        let stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
         resultInfo = {
-            title: 'Transaction Failed to Send',
-            subtitle: txData.result.error,
+            title: `Transaction Failure`,
+            subtitle: `Your ${coin.symbol} transaction return an error and used ${stampsUsed} stamps`,
             message: 'Transaction Failed',
             type: 'error',
         }
@@ -98,15 +99,23 @@
     }
 
     function resultDetails(e){
+        console.log(e)
         txData.result = e.detail;
-        if (txData.result.error) {handleError()}
+        if (txData.result.error || txData.result.status_code > 0) {
+            handleError()
+        }
         else {
             handleSuccess();
         }
         txData.resultInfo = resultInfo;
         txData.network = $currentNetwork;
         storeTransaction();
-        if (txData.result.state_changes) resultInfo.stateInfo = txData.result.state_changes;
+        if (txData.result.state_changes) Object.keys(txData.result.state_changes).length > 0 ? resultInfo.stateInfo = txData.result.state_changes : null;
+        if (txData.result.status_code > 0) resultInfo.errorInfo = txData.result.result.args;
+        if (txData.result.error) {
+            if (resultInfo.errorInfo) { resultInfo.errorInfo.unshift(txData.result.error); return }
+            resultInfo.errorInfo = [txData.result.error]
+        } 
         txData.resultInfo.buttons = buttons;
         nextPage();
     }

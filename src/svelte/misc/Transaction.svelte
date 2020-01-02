@@ -14,7 +14,7 @@
     
     $: coin = txData.sender
     $: txInfo = txData.txInfo;
-    $: error = txData.resultInfo.type === "error" ? true : false
+    $: error = txData.resultInfo.type === "error" || txData.result.status_code > 0 ? true : false
     $: errorMsg = () => {
         if (typeof txData.resultInfo.subtitle === 'string' ) return error ? txData.resultInfo.subtitle : '';
         if (typeof txData.resultInfo.subtitle === 'object' ) return error ? txData.resultInfo.title : '';

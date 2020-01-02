@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+
     //Components
     import { Components } from '../../js/router.js';
     const { Button } = Components;
@@ -26,12 +28,18 @@
             info.value = result.stateInfo[i]
             return info
         }) : undefined;
+    $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
+
+    onMount(() => {
+        console.log(result)
+    })
 
 </script>
 
 <style>
 .results-box{
-    align-items: center;    
+    align-items: center;   
+    max-width: 800px; 
 }
 
 .icon{
@@ -49,14 +57,20 @@
     padding-top: 65px;
 }
 .state-info{
-
-
+    width: 100%;
+    overflow-wrap: break-word;
+}
+.error-info{
+    width: 100%; 
+    overflow-wrap: break-word;       
 }
 .title{
     margin-right: 10px;
 }
 .value-row{
     margin-bottom: 20px;
+    max-height: 100px;
+    overflow-y: auto;
 }
 </style>
 
@@ -97,6 +111,16 @@
                     </div>
                 </div>
             {/each}
+        </div>
+    {/if}
+    {#if errorInfo}
+        <div class="error-info text-body1 flex-column">
+            <h6>Error Info</h6>
+            <div class="flex-column">
+                {#each errorInfo as error}
+                    <div class="error">{error}</div>  
+                {/each}
+            </div>
         </div>
     {/if}
     <div class="buttons flex-row">
