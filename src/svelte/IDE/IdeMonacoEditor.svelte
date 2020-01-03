@@ -14,6 +14,8 @@
 	let container;
 	let editor;
 
+	$: width = '100%';
+
 	onMount(() => {
 		if (_monaco) {
 			monaco_promise.then(mod => {
@@ -42,15 +44,30 @@
 					'def first_method(value):',
 					'	return value',
 				].join('\n'),
+				automaticLayout: true,
 				language: 'python',
 				theme: 'vs-dark'
 			}
 		)
+		editor.onMouseUp(()=>{
+			console.log('mouseClick')
+		});
+
+		editor.onKeyUp((e) => {
+			if (e.keyCode === 3) console.log('enter');
+		})
+	}
+
+	function handler(e){
+		console.log(e.target.innerWidth)
+		if (e.target.innerWidth)
+		container.style.width = `${e.target.innerWidth - 402}px`;
 	}
 </script>
 
 {#await monaco_promise}
 	{'Loading Editor'}
 {:then editor}
-	<div class="monaco-container" bind:this={container} style="height: 500px; text-align: left" />
+	<div class="monaco-container" bind:this={container} style={`height: 550px; text-align: left`} />
 {/await}
+<svelte:window on:resize={handler}/>

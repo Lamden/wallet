@@ -45,6 +45,7 @@
 
 .logo{
     position: relative;
+    top: -1px;
     width: 14px;
     height: 14px;
     margin-right: 15px;
