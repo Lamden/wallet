@@ -8,7 +8,11 @@
 </script>
 
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+
+	//Store
+	import { currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'
@@ -19,6 +23,7 @@
 	let editor;
 
 	$: editorHeight = '554px';
+	$: code = () => {return !editor ? '' : editor.getValue();}
 
 	onMount(() => {
 		if (_monaco) {
@@ -54,7 +59,7 @@
 			}
 		)
 		editor.onMouseUp(()=>{
-			console.log('mouseClick')
+			//lint()
 		});
 
 		editor.onKeyUp((e) => {
@@ -64,6 +69,28 @@
 
 	function handler(e){
 		container.style.width = `${e.target.innerWidth - 402}px`;
+	}
+
+	function lint(){
+		let data = {
+			name: 'testing',
+			code: code()
+		}
+		console.log(data)
+		console.log(`http://${$currentNetwork.ip}:${$currentNetwork.port}/lint`)
+		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/lint`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json'
+			},
+            body: JSON.stringify(data)
+        })
+		.then(res => res.json())
+		.then(res => {
+			dispatch('lint', res)
+			console.log(res)
+		})
+		.catch(err => console.log(err))
 	}
 </script>
 
@@ -82,5 +109,6 @@
 	</div>
 {:then editor}
 	<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left`} />
+	<button on:click={lint} >lint</button>
 {/await}
 <svelte:window on:resize={handler}/>

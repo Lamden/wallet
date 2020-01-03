@@ -3,8 +3,19 @@
 
 </script>
 
+<style>
+.error-line{
+    color: red;
+}
+
+</style>
+
 <div class="error-box flex-column text-body1">
-    {#each errorsList as error}
-        <div class="error-line">{error}</div>
-    {/each}
+    {#if errorsList.length === 0}
+        <div class="no-errors">{'No Errors'}</div>
+    {:else}
+        {#each errorsList as error}
+            <div class="error-line">{error}</div>
+        {/each}
+    {/if}
 </div>

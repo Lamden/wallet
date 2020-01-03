@@ -1,7 +1,6 @@
 <script>
 
-    import { createEventDispatcher, getContext } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { getContext } from 'svelte';
 
     //Components
 	import { Components }  from '../../js/router.js'
