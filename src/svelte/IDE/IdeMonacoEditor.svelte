@@ -1,10 +1,10 @@
 <script context="module">
-  var monaco_promise;
-  var _monaco;
-  monaco_promise = import('../../js/monaco.js');
-  monaco_promise.then(mod => {
-    _monaco = mod.default;
-  })
+	var monaco_promise;
+	var _monaco;
+	monaco_promise = import('../../js/monaco.js');
+	monaco_promise.then(mod => {
+		_monaco = mod.default;
+	})
 </script>
 
 <script>
@@ -63,8 +63,6 @@
 	}
 
 	function handler(e){
-		console.log(e.target.innerWidth)
-		if (e.target.innerWidth)
 		container.style.width = `${e.target.innerWidth - 402}px`;
 	}
 </script>
