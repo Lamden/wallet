@@ -77,6 +77,11 @@ import MessageBox from '../svelte/components/MessageBox.svelte';
 import ResultBox from '../svelte/components/ResultBox.svelte';
 import StrongPW from '../svelte/components/StrongPW.svelte';
 
+//IDE
+import IdeMain from '../svelte/IDE/IdeMain.svelte';
+import IdeErrorsBox from '../svelte/IDE/IdeErrorsBox.svelte';
+import IdeMonacoEditor from '../svelte/IDE/IdeMonacoEditor.svelte';
+
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
@@ -122,6 +127,7 @@ export const Pages = {
     DevToolsMain, 
     HistoryMain, 
     About, 
+    IdeMain,
     ...FirstRun 
 };
 
@@ -168,7 +174,8 @@ export {
     Modal,
     HistoryMain,
     Transaction,
-    About
+    About,
+    IdeMain, IdeMonacoEditor, IdeErrorsBox
 };
 
 

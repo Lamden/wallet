@@ -6,6 +6,7 @@ var webpack = require("webpack"),
     CopyWebpackPlugin = require("copy-webpack-plugin"),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
     WriteFilePlugin = require("write-file-webpack-plugin");
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 // load the secrets
 var alias = {};
@@ -26,7 +27,8 @@ var options = {
     app: path.join(__dirname, "src", "js", "app.js"),
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
-    content: path.join(__dirname, "src", "js", "content.js")
+    content: path.join(__dirname, "src", "js", "content.js"),
+    monaco: path.join(__dirname, "src", "js", "monaco.js")
   },
   output: {
     path: path.join(__dirname, "build"),
@@ -36,8 +38,20 @@ var options = {
     rules: [
       {
         test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+        include: [
+          path.resolve(__dirname, "src", "js", "monaco.js"),
+          path.resolve(__dirname, "node_modules", "monaco-editor")
+        ],
+      },
+      {
+        test: /\.css$/,
         loader: "style-loader!css-loader",
         exclude: /node_modules/
+      },
+      {
+        test: /\.ttf$/,
+        use: ['file-loader'],
       },
       {
         test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
@@ -103,7 +117,8 @@ var options = {
       filename: "background.html",
       chunks: ["background"]
     }),
-    new WriteFilePlugin()
+    new WriteFilePlugin(),
+    new MonacoWebpackPlugin()
   ]
 };
 
