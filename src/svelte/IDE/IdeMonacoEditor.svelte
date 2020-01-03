@@ -10,11 +10,15 @@
 <script>
 	import { onMount } from 'svelte';
 
+	//Components
+	import { Components }  from '../../js/router.js'
+	const { Loading } = Components;
+
 	let monaco;
 	let container;
 	let editor;
 
-	$: width = '100%';
+	$: editorHeight = '554px';
 
 	onMount(() => {
 		if (_monaco) {
@@ -65,9 +69,20 @@
 	}
 </script>
 
+<style>
+.loading{
+	justify-content: center;
+	justify-items: center;
+	align-content: center;
+	align-items: center;
+}
+</style>
+
 {#await monaco_promise}
-	{'Loading Editor'}
+	<div class="loading" style={`width: 100%; height: ${editorHeight}`}>
+		<Loading  message={'Loading Editor'}/>
+	</div>
 {:then editor}
-	<div class="monaco-container" bind:this={container} style={`height: 550px; text-align: left`} />
+	<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left`} />
 {/await}
 <svelte:window on:resize={handler}/>

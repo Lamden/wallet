@@ -1,5 +1,5 @@
 <script>
-export let errorsList = undefined;
+    export let errorsList = undefined;
 
 </script>
 
