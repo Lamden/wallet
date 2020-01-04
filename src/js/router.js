@@ -81,6 +81,8 @@ import StrongPW from '../svelte/components/StrongPW.svelte';
 import IdeMain from '../svelte/IDE/IdeMain.svelte';
 import IdeErrorsBox from '../svelte/IDE/IdeErrorsBox.svelte';
 import IdeMonacoEditor from '../svelte/IDE/IdeMonacoEditor.svelte';
+import IdeTabs from '../svelte/IDE/IdeTabs.svelte';
+import IdeTab from '../svelte/IDE/IdeTab.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
@@ -175,7 +177,7 @@ export {
     HistoryMain,
     Transaction,
     About,
-    IdeMain, IdeMonacoEditor, IdeErrorsBox
+    IdeMain, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab
 };
 
 

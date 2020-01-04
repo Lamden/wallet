@@ -8,11 +8,11 @@
 </script>
 
 <script>
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount, createEventDispatcher, afterUpdate } from 'svelte';
 	const dispatch = createEventDispatcher();
 
 	//Store
-	import { currentNetwork } from '../../js/stores/stores.js';
+	import { currentNetwork, FilesStore, activeTab } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'
@@ -21,9 +21,11 @@
 	let monaco;
 	let container;
 	let editor;
+	let currentPositon;
 
 	$: editorHeight = '554px';
 	$: code = () => {return !editor ? '' : editor.getValue();}
+	$: activeTabCode = $activeTab.code;
 
 	onMount(() => {
 		if (_monaco) {
@@ -42,29 +44,45 @@
 		}
 	});
 
+	afterUpdate(() => {
+		if (window.monaco && editor){
+			if (editor.getValue() !== activeTabCode){
+				let model = window.monaco.editor.createModel(activeTabCode, 'python');
+				editor.setModel(model)	
+			}
+		}
+	})
+
 	function createEditor(){
 		editor = window.monaco.editor.create(
 			container,
 			{
-				value: [
-					'# Get started @ https://contracting.lamden.io/',
-					'',
-					'@export',
-					'def first_method(value):',
-					'	return value',
-				].join('\n'),
+				value: '',
 				automaticLayout: true,
 				language: 'python',
 				theme: 'vs-dark'
 			}
 		)
 		editor.onMouseUp(()=>{
-			//lint()
+			//updateCode();
 		});
 
 		editor.onKeyUp((e) => {
-			if (e.keyCode === 3) console.log('enter');
+			//if (e.keyCode === 3) updateCode();
 		})
+
+		editor.onDidChangeCursorPosition((e) => {
+			updateCode();
+		})
+		let model = window.monaco.editor.createModel($activeTab.code, 'python');
+		editor.setModel(model)
+
+		dispatch('loaded', true)
+	}
+
+	function updateCode(){
+		console.log('updating code')
+		FilesStore.updateCode(editor.getValue(), $activeTab.index);
 	}
 
 	function handler(e){
@@ -76,8 +94,6 @@
 			name: 'testing',
 			code: code()
 		}
-		console.log(data)
-		console.log(`http://${$currentNetwork.ip}:${$currentNetwork.port}/lint`)
 		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/lint`, {
 			method: 'POST',
 			headers: {
@@ -88,7 +104,6 @@
 		.then(res => res.json())
 		.then(res => {
 			dispatch('lint', res)
-			console.log(res)
 		})
 		.catch(err => console.log(err))
 	}

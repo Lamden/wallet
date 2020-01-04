@@ -1,13 +1,19 @@
 <script>
-	import { onMount } from 'svelte'
+	import { onMount, setContext } from 'svelte'
 	
     //Stores
     import { breadcrumbs } from '../../js/stores/stores.js';
 
 	//Components
-	import { IdeErrorsBox, IdeMonacoEditor }  from '../../js/router.js'
+	import { IdeErrorsBox, IdeMonacoEditor, IdeTabs }  from '../../js/router.js'
+
+	//Context
+	setContext('tab_functions', {
+        changeTab: (tab) => console.log(tab)
+	});
 
 	let errorsList = [];
+	let editorIsLoaded = false;
 
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
@@ -33,9 +39,14 @@
 		console.log(errorsList)
 	}
 
+	function editorLoaded(){
+		editorIsLoaded = true;
+	}
+
 </script>
 
 <div id="monaco_window" class="flex-column">
-	<IdeMonacoEditor on:lint={handleLint}/>
+	{#if editorIsLoaded}<IdeTabs />{/if}
+	<IdeMonacoEditor on:lint={handleLint} on:loaded={editorLoaded}/>
 	<IdeErrorsBox {errorsList} />
 </div>

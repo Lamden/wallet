@@ -6,6 +6,7 @@ export { coinMeta } from './coinMeta.js';
 export { CoinStore, password, balanceTotal } from './coinStore.js';
 export { SettingsStore, firstRun, themeStyle, currentPage, loggedIn, calcRemainingStorage, networks, currentNetwork  } from './settingsStore.js';
 export { TxStore, allTransactions }  from './txStore.js';
+export { FilesStore, activeTab }  from './filesStore.js';
 
 //MISC Stores
 export const CURRENT_KS_VERSION = writable("1.0");
