@@ -1,4 +1,6 @@
 <script>
+    import { fade } from 'svelte/transition';
+
 	//Stores
     import { FilesStore } from '../../js/stores/stores.js';
 
@@ -46,6 +48,7 @@
 }
 .icons{
     margin-left: 5px;
+    height: 14px;
 }
 .rename{
     background-color: #00000000;
@@ -53,7 +56,7 @@
 }
 </style>
 
-<div class="tab-box flex-row" class:selected={file.selected} on:click={selectTab}>
+<div in:fade="{{ duration: 100 }}" out:fade="{{ duration: 100 }}" class="tab-box flex-row" class:selected={file.selected} on:click={selectTab}>
     {#if !rename}
         <div on:dblclick={() => rename = true}>{`${file.name}`}</div>
     {:else}
