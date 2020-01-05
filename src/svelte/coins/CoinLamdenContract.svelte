@@ -202,10 +202,13 @@
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             if (arg !== 'selectedType'){
                 let argValue = argValueTracker[contractName][methodName][arg]
-                argPackage[arg] = {
-                    value: argValue[argValue.selectedType].value,
-                    type: argValue.selectedType
+                if (argValue[argValue.selectedType].value !== ""){
+                    argPackage[arg] = {
+                        value: argValue[argValue.selectedType].value,
+                        type: argValue.selectedType
+                    }
                 }
+
             }
         })
         return argPackage;

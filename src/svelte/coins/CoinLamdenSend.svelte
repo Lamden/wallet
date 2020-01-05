@@ -15,10 +15,6 @@
 	setContext('tx_functions', {
 		nextPage: () => nextPage(),
         back: () => currentStep = currentStep -1,
-        send: () => submit_tx_to_network( txData.txInfo.contractName,
-                                          txData.txInfo.methodName,
-                                          stamps,
-                                          createArgPaylod(txData.txInfo.args)),
         home: () => currentStep = 1
 	});
 
@@ -88,18 +84,7 @@
         return txDetails
     }
 
-    function createArgPaylod(args){
-        let payload = {};
-        Object.keys(txData.txInfo.args).forEach((arg) => {
-            payload[arg] = {};
-            payload[arg].value = `${txData.txInfo.args[arg]}`;
-            payload[arg].type = 'text';
-        })
-        return payload;
-    }
-
     function resultDetails(e){
-        console.log(e)
         txData.result = e.detail;
         if (txData.result.error || txData.result.status_code > 0) {
             handleError()

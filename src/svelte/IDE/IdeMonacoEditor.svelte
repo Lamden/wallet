@@ -81,7 +81,6 @@
 	}
 
 	function updateCode(){
-		console.log('updating code')
 		FilesStore.updateCode(editor.getValue(), $activeTab.index);
 	}
 

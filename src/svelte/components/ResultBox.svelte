@@ -1,6 +1,4 @@
 <script>
-    import { onMount } from 'svelte';
-
     //Components
     import { Components } from '../../js/router.js';
     const { Button } = Components;
@@ -29,10 +27,6 @@
             return info
         }) : undefined;
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
-
-    onMount(() => {
-        console.log(result)
-    })
 
 </script>
 

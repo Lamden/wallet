@@ -24,7 +24,6 @@
 
     function renameTab(){
         rename = true;
-        console.log('click')
     }
 
     function saveName(e){

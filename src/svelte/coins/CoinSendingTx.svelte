@@ -57,7 +57,6 @@
     async function sendTransaction(){
         await transaction.send(decryptStrHash($password, sendingCoin.sk), (res, err) =>{
             console.log(res)
-            console.log(res)
             let txResult = {};
             if (err) {
                 txResult.error = err;
