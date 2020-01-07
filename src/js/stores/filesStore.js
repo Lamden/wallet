@@ -42,6 +42,21 @@ const createFilesStore = (key) => {
                 return filesstore;
             })
         },
+        addExistingContract: (name, code, network) => {
+            FilesStore.update(filesstore => {
+                filesstore.map(file => file.selected = false)
+                let newFile = {
+                    name,
+                    code,
+                    type: 'online',
+                    network,
+                    selected: true
+
+                }
+                filesstore.push(newFile)
+                return filesstore;
+            })
+        },
         activeTab: (index) => {
             FilesStore.update(filesstore => {
                 filesstore.map(file => file.selected = false)

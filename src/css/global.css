@@ -1,12 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
   
-* {
-    font-family: 'Roboto', sans-serif;
+
+.monaco-editor{
+    font-family: courier, monospace!important;
 }
 
 html, body  {
     height:100%;
+    font-family: 'Roboto', sans-serif;
 }
 
 body{

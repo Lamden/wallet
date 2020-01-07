@@ -83,6 +83,9 @@ import IdeErrorsBox from '../svelte/IDE/IdeErrorsBox.svelte';
 import IdeMonacoEditor from '../svelte/IDE/IdeMonacoEditor.svelte';
 import IdeTabs from '../svelte/IDE/IdeTabs.svelte';
 import IdeTab from '../svelte/IDE/IdeTab.svelte';
+import IdeModelNewTab from '../svelte/IDE/IdeModelNewTab.svelte';
+import IdeModelSubmit from '../svelte/IDE/IdeModelSubmit.svelte';
+import IdeSubmitContract from '../svelte/IDE/IdeSubmitContract.svelte';
 
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
@@ -161,7 +164,8 @@ export const Modals = {
     ResultBox,
     MessageBox,
     CoinDeleting,
-    DevToolsDeleteNetwork
+    DevToolsDeleteNetwork,
+    IdeModelNewTab, IdeModelSubmit, IdeSubmitContract
 }
 
 export {

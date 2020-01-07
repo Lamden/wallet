@@ -30,6 +30,7 @@ import del from '../img/menu_icons/icon_delete.svg';
 import successCircle from '../img/menu_icons/icon_success_circle.svg';
 import refresh from '../img/menu_icons/icon_refresh.svg';
 import smartcontract from '../img/menu_icons/icon_smartcontract.svg';
+import connected from '../img/menu_icons/icon_connected.svg';
 
 //Social Icons
 import twitter from '../img/menu_icons/icon_twitter.svg';
@@ -68,7 +69,8 @@ export const icons = {
     copyWhite, copyGreen, edit, del,
     successCircle,
     smartcontract,
-    refresh
+    refresh,
+    connected
 }
 
 //Backgrounds

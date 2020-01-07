@@ -1,6 +1,6 @@
 <script context="module">
-	var monaco_promise;
-	var _monaco;
+	let monaco_promise;
+	let _monaco;
 	monaco_promise = import('../../js/monaco.js');
 	monaco_promise.then(mod => {
 		_monaco = mod.default;
@@ -27,40 +27,36 @@
 	$: code = () => {return !editor ? '' : editor.getValue();}
 	$: activeTabCode = $activeTab.code;
 
-	onMount(() => {
-		if (_monaco) {
-			monaco_promise.then(mod => {
-				window.monaco = _monaco;
-				createEditor();
-			});
-		} else {
-			monaco_promise.then(mod => {
-				window.monaco = mod.default;
-				createEditor();
-			});
-		}
+  	onMount(() => {
+		monaco_promise.then(async mod => {
+			monaco = mod.default;
+			createEditor();
+		});
 		return () => {
-			editor.dispose()
+			editor.dispose();
 		}
 	});
 
 	afterUpdate(() => {
-		if (window.monaco && editor){
+		if (monaco && editor){
 			if (editor.getValue() !== activeTabCode){
-				let model = window.monaco.editor.createModel(activeTabCode, 'python');
+				let model = monaco.editor.createModel(activeTabCode, 'python');
+				editor.updateOptions({ readOnly: $activeTab.type === 'local' ? false : true })
 				editor.setModel(model)	
 			}
 		}
 	})
 
 	function createEditor(){
-		editor = window.monaco.editor.create(
+		editor = monaco.editor.create(
 			container,
 			{
 				value: '',
 				automaticLayout: true,
+				fontLigatures: true,
 				language: 'python',
-				theme: 'vs-dark'
+				theme: 'vs-dark',
+				fontFamily: "courier, monospace"
 			}
 		)
 		editor.onMouseUp(()=>{
@@ -72,11 +68,8 @@
 		})
 
 		editor.onDidChangeCursorPosition((e) => {
-			updateCode();
+			if ($activeTab.type === 'local') updateCode();
 		})
-		let model = window.monaco.editor.createModel($activeTab.code, 'python');
-		editor.setModel(model)
-
 		dispatch('loaded', true)
 	}
 
@@ -86,26 +79,10 @@
 
 	function handler(e){
 		container.style.width = `${e.target.innerWidth - 402}px`;
+		container.style.fontFamily = "'Courier Prime', monospace"
+		console.log(container.style)
 	}
 
-	function lint(){
-		let data = {
-			name: 'testing',
-			code: code()
-		}
-		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/lint`, {
-			method: 'POST',
-			headers: {
-			'Content-Type': 'application/json'
-			},
-            body: JSON.stringify(data)
-        })
-		.then(res => res.json())
-		.then(res => {
-			dispatch('lint', res)
-		})
-		.catch(err => console.log(err))
-	}
 </script>
 
 <style>
@@ -123,6 +100,5 @@
 	</div>
 {:then editor}
 	<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left`} />
-	<button on:click={lint} >lint</button>
 {/await}
 <svelte:window on:resize={handler}/>

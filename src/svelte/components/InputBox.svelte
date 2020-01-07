@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Props
@@ -8,12 +8,14 @@
     export let value;
     export let label = '';
     export let placeholder = '';
-    export let inputType = '';
+    export let inputType = 'text';
     export let pattern;
     export let required = false;
     export let width = '100%';
     export let margin = 'unset';
     export let spellcheck = true;
+    export let rows = '1'
+    export let readonly = 'false'
 
     export let thisInput;
 
@@ -136,7 +138,7 @@ label{
     {#if inputType === "textarea"}
         <textarea
             id={id}
-            rows='1'
+            rows={rows}
             bind:value={value}
             bind:this={thisInput}
             on:change={(e) => dispatchChanged(e)}
@@ -145,9 +147,10 @@ label{
             style={`width: 100%; ${styles}`}
             pattern={pattern}
             placeholder={placeholder}
+            readonly={readonly}
             required={required}  />
     {/if}
-    {#if inputType === ''}
+    {#if inputType === 'text'}
         <input
             id={id}
             bind:value={value}

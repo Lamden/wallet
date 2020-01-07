@@ -1,4 +1,6 @@
 <script>
+    import { getContext } from 'svelte'
+
 	//Stores
     import { FilesStore } from '../../js/stores/stores.js';
 
@@ -9,8 +11,11 @@
     import { icons } from '../../js/images.js';
     const { plus } = icons;
 
+    //Context
+    const { openModal } = getContext('app_functions');
+
     function addTab(){
-        FilesStore.addNewTab();
+        openModal('IdeModelNewTab');
     }
 
 </script>

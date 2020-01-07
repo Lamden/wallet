@@ -4,8 +4,12 @@
 </script>
 
 <style>
+.error-box{
+    margin-top: -2rem;
+}
 .error-line{
     color: red;
+    
 }
 
 </style>

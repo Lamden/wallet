@@ -1,5 +1,6 @@
 <script>
 	import { getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
 	//Components
     import { Components }  from '../../js/router.js'
@@ -43,8 +44,8 @@
 
 </style>
 
-<div class='modal-background' on:click={() => closeModal()}></div>
-<div class='modal'>
+<div in:fade="{{ duration: 200 }}" out:fade="{{ duration: 200 }}" class='modal-background' on:click={() => closeModal()}></div>
+<div in:fade="{{ duration: 200 }}" out:fade="{{ duration: 200 }}" class='modal'>
 	<slot></slot>
 </div>
 

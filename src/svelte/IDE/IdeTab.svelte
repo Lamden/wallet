@@ -1,12 +1,11 @@
 <script>
-    import { fade } from 'svelte/transition';
 
 	//Stores
-    import { FilesStore } from '../../js/stores/stores.js';
+    import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Images
     import { icons } from '../../js/images.js';
-    const { del } = icons;
+    const { del, connected } = icons;
 
     //Props
     export let file;
@@ -23,7 +22,7 @@
     }
 
     function renameTab(){
-        rename = true;
+        if (file.type === 'local') rename = true;
     }
 
     function saveName(e){
@@ -31,6 +30,9 @@
             FilesStore.changeName(e.target.value, index);
             rename = false;
         }
+    }
+    function handleWindowClick(){
+        rename = false;
     }
 </script>
 
@@ -49,19 +51,27 @@
     margin-left: 5px;
     height: 14px;
 }
+
+.connected-icon{
+    margin-right: 5px;
+}
 .rename{
     background-color: #00000000;
     border: none;
 }
 </style>
 
-<div in:fade="{{ duration: 100 }}" out:fade="{{ duration: 100 }}" class="tab-box flex-row" class:selected={file.selected} on:click={selectTab}>
+<div class="tab-box flex-row" class:selected={file.selected} on:click={selectTab}>
+    {#if file.type === 'online'}
+        <img class="icons connected-icon" src={connected} alt="contract online" title={`Contract is on ${$currentNetwork.name}`} />
+    {/if}
     {#if !rename}
         <div on:dblclick={() => rename = true}>{`${file.name}`}</div>
     {:else}
         <input value={file.name} class="rename" type="text" on:keyup={saveName}/>
     {/if}
     {#if file.selected}
-        <img class="icons" src={del} alt="close tab" on:click={closeTab} />
+        <img class="icons" src={del} alt="close tab" title="Close Tab" on:click={closeTab} />
     {/if}
 </div>
+<svelte:window on:click={handleWindowClick} />
