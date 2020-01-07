@@ -13,6 +13,7 @@
 <style>
 .modal-background {
 	position: fixed;
+	background-size: cover;
 	top: 0;
 	left: 0;
 	width: 100%;
