@@ -5,7 +5,7 @@
     import { breadcrumbs, currentNetwork, activeTab } from '../../js/stores/stores.js';
 
 	//Components
-	import { IdeErrorsBox, IdeTabs, Components }  from '../../js/router.js';
+	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../../js/router.js';
 	const { Button } = Components;
 
     //Context
@@ -20,6 +20,7 @@
 	
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
+		console.log($activeTab)
 
 		return () => {
 			editorIsLoaded = false;
@@ -73,6 +74,10 @@
 	function submit(){
 		openModal('IdeModelSubmit')
 	}
+	
+	function handleMethodClick(e){
+		openModal('IdeModelMethodTx', e.detail)
+	}
 </script>
 
 <style>
@@ -90,7 +95,7 @@
 	{/if}
 
 	<div class="editor-row">
-		<Monaco bind:this={monaco} on:lint={handleLint} on:loaded={editorLoaded}/>
+		<Monaco bind:this={monaco} on:lint={handleLint} on:loaded={editorLoaded} on:clickMethod={handleMethodClick}/>
 		{#if editorIsLoaded}
 			<div class="buttons flex-row">
 				{#if $activeTab.type === 'local'}
@@ -115,5 +120,8 @@
 	</div>
 	{#if editorIsLoaded}
 		<IdeErrorsBox {errorsList} />
+	{/if}
+	{#if editorIsLoaded && $activeTab.methods}
+		<IdeMethods methods={$activeTab.methods} />
 	{/if}
 </div>

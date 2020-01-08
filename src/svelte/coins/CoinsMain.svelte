@@ -112,7 +112,7 @@
 			<Button id={'add-btn'}
 				classes={'button__transparent button__blue'}
 				name="Add Wallet"
-				width={'150px'}
+				width={'155px'}
 		 		click={() => openModal('CoinAdd')} 
 				icon='plus'/>
 		</div>

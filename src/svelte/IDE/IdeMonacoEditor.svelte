@@ -22,6 +22,7 @@
 	let container;
 	let editor;
 	let currentPositon;
+	let methodLines = [];
 
 	$: editorHeight = '554px';
 	$: code = () => {return !editor ? '' : editor.getValue();}
@@ -42,7 +43,12 @@
 			if (editor.getValue() !== activeTabCode){
 				let model = monaco.editor.createModel(activeTabCode, 'python');
 				editor.updateOptions({ readOnly: $activeTab.type === 'local' ? false : true })
-				editor.setModel(model)	
+				editor.setModel(model)
+				if ($activeTab.type === 'online'){
+					getMethods();
+					return;	
+				} 
+				dispatch('loaded', true)
 			}
 		}
 	})
@@ -59,8 +65,23 @@
 				fontFamily: "courier, monospace"
 			}
 		)
-		editor.onMouseUp(()=>{
-			//updateCode();
+
+		editor.onMouseUp((e)=>{
+			if ($activeTab.type === 'local') return
+			let selection = editor.getSelection();
+			if (!e.target.position) return;
+			if (!selection) return;
+			if (selection.startColumn !== selection.endColumn) return;
+			methodLines.map(lines => {
+				if (e.target.position.lineNumber === lines.lineNum) {
+					let txInfo = {
+						contractName: $activeTab.name,
+						methodName: lines.method.name,
+						args: lines.method.arguments
+					}
+ 					dispatch('clickMethod', txInfo)
+				}
+			})
 		});
 
 		editor.onKeyUp((e) => {
@@ -70,7 +91,7 @@
 		editor.onDidChangeCursorPosition((e) => {
 			if ($activeTab.type === 'local') updateCode();
 		})
-		dispatch('loaded', true)
+		container.style.width = `${window.innerWidth - 419}px`;
 	}
 
 	function updateCode(){
@@ -78,11 +99,31 @@
 	}
 
 	function handler(e){
-		container.style.width = `${e.target.innerWidth - 402}px`;
+		container.style.width = `${e.target.innerWidth - 419}px`;
 		container.style.fontFamily = "'Courier Prime', monospace"
-		console.log(container.style)
 	}
 
+	let searchText = "def transfer"
+
+	function getMethodPosition(method){
+		let model = editor.getModel()
+		let position = model.findMatches(`def ${method.name}(`);
+		position.map(pos => {
+			if (pos.range.startColumn === 1) methodLines.push({method, lineNum: pos.range.startLineNumber})
+		})
+	}
+
+	function getMethods(){
+		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${$activeTab.name}/methods`)
+			.then(res => res.json())
+			.then(res => {
+				res.methods.map(method => {
+					getMethodPosition(method)
+				})
+				dispatch('loaded', true)
+			})
+			.catch(err => console.log(err))
+	}
 </script>
 
 <style>

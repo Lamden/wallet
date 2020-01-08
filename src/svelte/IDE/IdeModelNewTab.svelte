@@ -36,14 +36,27 @@
                 contractField.reportValidity();
                 return
             }
-            FilesStore.addExistingContract(res.name, res.code, currentNetwork.name);
-            closeModal();
+            getMethods(res.name, res.code);
         })
         .catch(err => {
             console.log(err)
             contractField.setCustomValidity(`Error getting contract: ${err}`);
             contractField.reportValidity();
         })
+    }
+
+    function getMethods(contractName, contractCode){
+        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
+            .then(res => res.json())
+            .then(res => {
+                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
+                closeModal();
+            })
+            .catch(err => {
+                console.log(err)
+                contractField.setCustomValidity(`Error getting contract: ${err}`);
+                contractField.reportValidity();
+            })
     }
 
     function refreshValidity(e){

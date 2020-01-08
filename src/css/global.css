@@ -149,6 +149,10 @@ body{
     color: var(--font-primary-dark);
 }
 
+.button__hover_blue:hover{
+    background-color: #4FB8FF;
+}
+
 .button__text{
     display: flex;
     align-items: center;
@@ -174,6 +178,10 @@ body{
 .button__purple{
     color: #FFFFFF;
     background: var(--primary-color);
+}
+
+.button__purple:hover{
+    background: #5120e0;
 }
 
 .button__blue{

@@ -42,12 +42,13 @@ const createFilesStore = (key) => {
                 return filesstore;
             })
         },
-        addExistingContract: (name, code, network) => {
+        addExistingContract: (name, code, methods, network) => {
             FilesStore.update(filesstore => {
                 filesstore.map(file => file.selected = false)
                 let newFile = {
                     name,
                     code,
+                    methods,
                     type: 'online',
                     network,
                     selected: true

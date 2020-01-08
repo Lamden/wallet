@@ -27,9 +27,9 @@
     let transaction;
     let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
-        address: '',
+        address: 'text',
         text: 'textarea',
-        data: '',
+        data: 'text',
         fixedPoint: 'number',
         bool: trueFalseList()
     }

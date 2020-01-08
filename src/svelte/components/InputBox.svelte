@@ -12,10 +12,11 @@
     export let pattern;
     export let required = false;
     export let width = '100%';
+    export let height = '42px';
     export let margin = 'unset';
     export let spellcheck = true;
     export let rows = '1'
-    export let readonly = 'false'
+    export let readonly = false
 
     export let thisInput;
 
