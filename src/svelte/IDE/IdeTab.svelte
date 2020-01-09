@@ -31,9 +31,7 @@
             rename = false;
         }
     }
-    function handleWindowClick(){
-        rename = false;
-    }
+
 </script>
 
 <style>
@@ -74,4 +72,3 @@
         <img class="icons" src={del} alt="close tab" title="Close Tab" on:click={closeTab} />
     {/if}
 </div>
-<svelte:window on:click={handleWindowClick} />

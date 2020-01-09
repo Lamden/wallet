@@ -44,10 +44,6 @@
 				let model = monaco.editor.createModel(activeTabCode, 'python');
 				editor.updateOptions({ readOnly: $activeTab.type === 'local' ? false : true })
 				editor.setModel(model)
-				if ($activeTab.type === 'online'){
-					getMethods();
-					return;	
-				} 
 				dispatch('loaded', true)
 			}
 		}
@@ -101,28 +97,6 @@
 	function handler(e){
 		container.style.width = `${e.target.innerWidth - 419}px`;
 		container.style.fontFamily = "'Courier Prime', monospace"
-	}
-
-	let searchText = "def transfer"
-
-	function getMethodPosition(method){
-		let model = editor.getModel()
-		let position = model.findMatches(`def ${method.name}(`);
-		position.map(pos => {
-			if (pos.range.startColumn === 1) methodLines.push({method, lineNum: pos.range.startLineNumber})
-		})
-	}
-
-	function getMethods(){
-		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${$activeTab.name}/methods`)
-			.then(res => res.json())
-			.then(res => {
-				res.methods.map(method => {
-					getMethodPosition(method)
-				})
-				dispatch('loaded', true)
-			})
-			.catch(err => console.log(err))
 	}
 </script>
 

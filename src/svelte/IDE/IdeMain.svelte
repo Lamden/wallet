@@ -20,7 +20,6 @@
 	
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
-		console.log($activeTab)
 
 		return () => {
 			editorIsLoaded = false;
@@ -72,9 +71,22 @@
 	}
 
 	function submit(){
-		openModal('IdeModelSubmit')
+		openModal('IdeModelSubmit', {
+			'contractName': 'submission', 
+            'methodName': 'submit_contract', 
+            args: {
+				name: {
+					type: 'text',
+					value: $activeTab.name
+				},
+				code:{
+					type: 'text',
+					value: $activeTab.code
+				}
+			}
+		})
 	}
-	
+
 	function handleMethodClick(e){
 		openModal('IdeModelMethodTx', e.detail)
 	}

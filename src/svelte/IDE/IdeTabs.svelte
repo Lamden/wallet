@@ -2,7 +2,7 @@
     import { getContext } from 'svelte'
 
 	//Stores
-    import { FilesStore } from '../../js/stores/stores.js';
+    import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
     import { IdeTab }  from '../../js/router.js'
@@ -13,6 +13,8 @@
 
     //Context
     const { openModal } = getContext('app_functions');
+
+    $: files = $FilesStore.filter(f => f.network === currentNetwork.name)
 
     function addTab(){
         openModal('IdeModelNewTab');
@@ -35,7 +37,7 @@
 <div class="new-button" on:click={addTab}>
     <img class="plus-icon" src={plus} alt="new-button" />
 </div>
-{#each $FilesStore as file, index}
+{#each files as file, index}
     <IdeTab {file} {index} />
 {/each}
 </div>

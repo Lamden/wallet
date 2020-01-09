@@ -1,126 +1,236 @@
 <script>
+    import { getContext, onMount, createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+    
 	//Stores
-    import { CoinStore, activeTab } from '../../js/stores/stores.js';
+    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
-    import { Components }  from '../../js/router.js'
-    const { Button, InputBox, DropDown } = Components
+	import { Components }  from '../../js/router.js'
+    const { Button, DropDown, InputBox } = Components;
+
+    //Images
+    import { icons } from '../../js/images.js';
+    const { warning } = icons;
+
+    //Context
+    const { nextPage, close } = getContext('tx_functions');
+
+    //Props
+    export let currentPage;
+    export let txData;
+    export let txDetails;
 
     //DOM Nodes
-    let formObj, stampsField, contractField, codeField, ownerField, constructorArgsField
+    let formObj, contractNameField;
 
-    let stampLimit = 500000;
     let selectedWallet;
-    let constructorArgs = "";
+    let contractName;
+    let stampLimit = 1000000;
     let owner = "";
-
-    $: contractName = $activeTab.name
+    let constructorArgs = "";
 
     function coinList(){
-        return $CoinStore.map(c => {
-            return {
+        let returnList = [{
+                value: undefined,
+                name: `Select Wallet`,
+                selected: true
+            }]
+        $CoinStore.map(c => {
+            returnList.push({
                 value: c,
-                name: `${c.nickname} - ${c.vk.substring(0, 55 - c.nickname.length)}...`,
-            }
+                name: `${c.nickname}\n${c.vk.substring(0, 55)}...`,
+                selected: false
+            })
         })
+        return returnList
     }
 
     function handleSelectedWallet(e){
-        selectedWallet = e.detail.selected.value
+        if (!e.detail.selected.value) return;
+        selectedWallet = e.detail.selected.value;
     }
 
     function handleSubmit(){
-        if (formObj.checkValidity()){
-            console.log('submit')
+        if (contractNameField.value !== ""){
+            fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractNameField.value}`)
+            .then(res => res.json())
+            .then(res => {
+                if (res.code){
+                    contractNameField.setCustomValidity('Contract name already exists on Network.  Please choose another name.');
+                    contractNameField.reportValidity();
+                    return
+                }
+                if(formObj.checkValidity()){
+                    sendTx();
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                contractNameField.setCustomValidity(`Error getting contract: ${err}`);
+                contractNameField.reportValidity();
+            })
+        }else{
+            contractNameField.setCustomValidity('Please fill out this field');
+            contractNameField.reportValidity();  
         }
     }
+
+    function sendTx(){
+        txData.sender = selectedWallet;
+        txData.txInfo.stampLimit = stampLimit;
+        txData.txInfo.args.name.value = contractNameField.value;
+        if (owner !== "") {
+            txData.txInfo.args.owner = {type: 'text', value: owner};
+        }
+        if (constructorArgs !== "") {
+            txData.txInfo.args.owner = {type: 'text', value: constructorArgs};
+        }
+        dispatch('saveTxDetails', txData);
+    }
+
+    function clearValidation(e){
+        if (e.detail.keyCode === 13) return;
+        e.detail.target.setCustomValidity('')
+        e.detail.target.reportValidity();
+    }
+
 
 </script>
 
 <style>
-.contract-details{
+.coin-info{
+    display: flex;
+    justify-content: flex-end;
+}
+.confirm-tx{
     width: 600px;
 }
-.coin-info{
-    margin: 10px 0 2rem 13px;
+
+.content{
+    padding-left: 55px;
 }
-form{
+
+.details{
+    padding: 5px 0 40px 76px;
+    margin-left: 50px;
+    border-left: 1px solid var(--font-primary-darker)
+}
+
+.values{
+    color: var(--font-primary-dark);
+    align-items: center;
+    overflow-wrap: break-word;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.buttons{
+    flex-grow: 1;
+    display: flex;
+    padding-top: 27px;
+    justify-content: center;
     align-items: center;
 }
 
-.submit{
-    margin: 4rem 0 1rem;
+.warning{
+    color: orange
+}
+
+.warning-icon{
+    margin-right: 8px;
+    position: relative;
+    top: -1px;
+}
+.disabled{
+    background: var(--bg-color-grey);
 }
 </style>
 
-<div class="contract-details flex-column">
-    <h5> {`Submit Contract to Network`} </h5>
-    <DropDown  
-        items={coinList()} 
-        id={'mycoins'} 
-        label={'Select Wallet to Send From'}
-        required={true}
-        on:selected={(e) => handleSelectedWallet(e)}
-    />
-
-    <div class="coin-info text-subtitle3">
-        {#if selectedWallet}
-            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance} ${selectedWallet.symbol}`}
-        {/if}
+<div class="confirm-tx flex-column">
+    <div class="content flex-column">
+        <h5>{`Submit Contract`}</h5>
+        <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
+        <DropDown  
+            items={coinList()}
+            innerHeight={'70px'}
+            id={'mycoins'} 
+            label={'Select Wallet to Send From'}
+            styles="margin-bottom: 19px;"
+            required={true}
+            on:selected={(e) => handleSelectedWallet(e)}
+        />
+        <div class="coin-info text-subtitle3">
+            {#if selectedWallet}
+                {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance} ${selectedWallet.symbol}`}
+            {/if}
+        </div>
+        <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
+            <div class="details flex-column">
+                <InputBox
+                    width="100%"
+                    margin={'17px 0 0'}
+                    bind:value={stampLimit}
+                    label={"Stamp Limit"}
+                    inputType={"number"}
+                    required={true}
+                />
+                {#each txDetails as detail}
+                    {#if detail.name === 'name'}
+                        <InputBox
+                            width="100%"
+                            margin={'1.33em 0 0 0'}
+                            value={detail.value}
+                            bind:thisInput={contractNameField}
+                            label={"Contract Name"}
+                            on:keyup={clearValidation}
+                            inputType={"text"}
+                            required={true}
+                        />
+                    {:else}
+                        <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
+                        {#if detail.value === ''}
+                            <div class="values text-body1 warning flex-row">
+                                <img class="warning-icon text-body1" src={warning} alt={'warning icon'} />
+                                {'Empty Field'}
+                            </div>
+                        {:else}
+                            <div class="values text-body1">
+                                {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
+                            </div>
+                        {/if}
+                    {/if}
+                {/each}
+                <InputBox
+                    width="100%"
+                    bind:value={owner}
+                    label={"Owner (Optional)"}
+                    margin={'17px 0'}
+                    inputType={"text"}
+                />
+                <InputBox
+                    width="100%"
+                    margin={'0 0 17px'}
+                    bind:value={constructorArgs}
+                    label={"Constructor Args (Optional)"}
+                    inputType={"text"}
+                />
+            </div>
+            <div class="buttons flex-column">
+                <input  id="confirmTx-btn"
+                        value="Confirm Transaction"
+                        class="button__solid button__purple submit submit-button submit-button-text"
+                        class:disabled={selectedWallet === undefined}
+                        disabled={selectedWallet === undefined ? 'disabled' : ''}
+                        type="submit" >
+                <Button classes={'button__text text-caption'} 
+                        width={'125px'}
+                        height={'24px'}
+                        padding={0}
+                        margin={'17px 0'}
+                        name="Cancel" 
+                        click={() => close()} />
+            </div>
+        </form>
     </div>
-
-    <form class="flex-column" on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
-        <InputBox
-            width="100%"
-            bind:value={stampLimit}
-            bind:thisInput={stampsField}
-            label={"Stamp Limit"}
-            styles={`margin-bottom: 17px;`}
-            inputType={"number"}
-            required={true}
-        />
-        <InputBox
-            width="100%"
-            bind:value={contractName}
-            bind:thisInput={contractField}
-            label={"Contract Name"}
-            styles={`margin-bottom: 17px;`}
-            inputType={"text"}
-            required={true}
-        />
-        <InputBox
-            width="100%"
-            rows="10"
-            value={$activeTab.code}
-            bind:thisInput={codeField}
-            label={"Code"}
-            styles={`margin-bottom: 17px; max-width: 100%; min-width: 100%;`}
-            inputType={"textarea"}
-            readonly={true}
-            required={true}
-        />
-        <InputBox
-            width="100%"
-            rows="20"
-            bind:value={owner}
-            bind:thisInput={ownerField}
-            label={"Owner (optional)"}
-            styles={`margin-bottom: 17px;`}
-            inputType={"text"}
-        />
-        <InputBox
-            width="100%"
-            rows="20"
-            bind:value={constructorArgs}
-            bind:thisInput={constructorArgsField}
-            label={"Constructor Args (optional)"}
-            styles={`margin-bottom: 17px;`}
-            inputType={"text"}
-        />
-        <input  
-            id={'submit-contract-btn'}
-            value="Submit Contract"
-            class="button__solid button__purple submit submit-button submit-button-text" 
-            type="submit" >
-    </form>
 </div>

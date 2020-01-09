@@ -89,6 +89,7 @@ label{
     background-color: rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e03d;
     border-radius: 4px 4px 0 0;
+    overflow-x: hidden;
 }
 
 .select-selected:after {
@@ -114,6 +115,7 @@ label{
     justify-content: space-between;
     width: 100%;
     min-height: 42px;
+    overflow-x: hidden;
 
     box-sizing: border-box;
     transition: border 0.5s;

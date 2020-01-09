@@ -22,7 +22,6 @@
     export let modalData;
 
     let steps = [
-        {page: 'IdeMethodTx', back: -1, cancelButton: true},
         {page: 'CoinConfirmTx', back: 0, cancelButton: true},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
         {page: 'ResultBox', back: -1, cancelButton: false}

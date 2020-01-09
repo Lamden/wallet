@@ -28,7 +28,6 @@
             }
         })
         returnList[0].selected = true;
-        console.log(argChoices)
         return returnList;
     }
 
@@ -38,9 +37,6 @@
     }
 
     function saveArgValue(key, e){
-        console.log(e)
-        console.log(key)
-        console.log(argChoices)
         if (e.detail)
             if (e.detail.selected) argChoices[key].value = e.detail.selected.value
             if (e.detail.target) argChoices[key].value = e.detail.target.value
@@ -63,12 +59,8 @@
     }
 
     function handleRun(method){
-        console.log(method.name)
         method.arguments.map(arg =>{
             let key = `${method.name}:${arg}`
-            console.log(arg)
-            console.log(argChoices[key].type)
-            console.log(argChoices[key].value)
         })
     }
 

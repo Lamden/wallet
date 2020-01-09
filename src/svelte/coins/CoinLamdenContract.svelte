@@ -14,7 +14,7 @@
     import { isStringHex } from  '../../js/lamden/helpers.js';
 
     //DOM NODES
-    let formObj1, stampsField, contractNameField
+    let stampsField, contractNameField
 
     //Props
     export let coin;
