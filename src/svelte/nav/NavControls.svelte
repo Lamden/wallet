@@ -1,13 +1,9 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onMount } from 'svelte';
     import { themes } from '../../js/themes.js';
 
 	//Stores
-	import { SettingsStore, networks, themeStyle } from '../../js/stores/stores.js';
-
-    //Components
-    import { Components }  from '../../js/router.js';
-    const { Switch, DropDown } = Components;
+	import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -20,26 +16,44 @@
         })   
     }
 
-    function handleSelected(e){
-        SettingsStore.setNetwork(e.detail.selected.value)
+    $: currentNetworkOnline = () => {
+            return fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                let online = true;
+                if (res.status !== 'online') return false;
+                return true;
+            })
+            .catch(err => {console.log(err); return false})
     }
+
 </script>
 
 <style>
 .box{
-    display: flex;
-    justify-items: center;
+    justify-content: center;
     align-items: center;
-    padding: 0 21px 0 30px;
+        padding: 0 61px 0 30px;
+}
+.online{
+    color:green;
+}
+.offline{
+    color:red;
 }
 </style>
 
-<div class="box"><!--
-    <DropDown 
-        items={$networks}
-        width={"250px"}
-        label="Current Network"
-        on:selected={(e) => handleSelected(e)} />
-    <Switch checked={$themeStyle === 'dark'} on:toggleState={toggleTheme}  }/>
-    -->
+<div class="box text-body2 flex-column">
+    <div>{`Current Network`}</div>
+    <div class="text-primary-dark clickable" on:click={() => switchPage('DevToolsMain')}>{$currentNetwork.name}</div>
+    {#await currentNetworkOnline()}
+        <div>{'checking'}</div>
+    {:then status}
+        {#if status}
+            <div class="online">{'online'}</div>
+        {:else}
+            <div class="offline">{'offline'}</div>
+        {/if}
+    {/await}
 </div>

@@ -243,6 +243,10 @@ button {
     outline: none;
 }
 
+.clickable{
+    cursor: pointer;
+}
+
 .tx-link {
     color: var(--font-primary);
     

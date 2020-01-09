@@ -1,12 +1,20 @@
 <script>
+    import { getContext } from 'svelte';
+    
+	//Stores
+    import { activeTab } from '../../js/stores/stores.js';
+
 	//Components
     import { Components }  from '../../js/router.js';
     const { Button, InputBox, DropDown } = Components;
 
+    //Context
+    const { openModal } = getContext('app_functions');
+
     //Props
     export let methods;
 
-    $: argChoices = {}
+    $: argValues = {}
 
     let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
@@ -19,7 +27,7 @@
 
 
     function typesList(key){
-        argChoices[key] = {};
+        argValues[key] = {};
         let returnList = dataTypes.map(type => {
             return {
                 value: type,
@@ -32,16 +40,16 @@
     }
 
     function saveArgType(key, e){
-        if (!argChoices[key]) argChoices[key] = {};
-        argChoices[key].type = e.detail.selected.value
+        if (!argValues[key]) argValues[key] = {};
+        argValues[key].type = e.detail.selected.value
     }
 
     function saveArgValue(key, e){
         if (e.detail)
-            if (e.detail.selected) argChoices[key].value = e.detail.selected.value
-            if (e.detail.target) argChoices[key].value = e.detail.target.value
+            if (e.detail.selected) argValues[key].value = e.detail.selected.value
+            if (e.detail.target) argValues[key].value = e.detail.target.value
         else{
-            argChoices[key].value = e
+            argValues[key].value = e
         }
         
     }
@@ -59,9 +67,12 @@
     }
 
     function handleRun(method){
-        method.arguments.map(arg =>{
-            let key = `${method.name}:${arg}`
-        })
+        let args = {}; 
+    	openModal('IdeModelMethodTx', {
+			'contractName': $activeTab.name, 
+            'methodName': method.name, 
+            args: argValues[key]
+		})
     }
 
 </script>
@@ -98,19 +109,17 @@
             {#each method.arguments as arg, index}
                 <div class="flex-row">
                     <DropDown
-                            items={typesList(`${method.name}:${arg}`)}
-                            label={'Type'}
-                            width="160px"
-                            innerHeight="42px"
-                            styles="border-radius: 4px 0 0 4px;"
-                            on:selected={(e) => saveArgType(`${method.name}:${arg}`, e)}
-                            sideBox={true} />
-                        {#if argChoices[`${method.name}:${arg}`] === 'bool'}
+                        items={typesList(`${method.name}:${arg}`)}
+                        label={'Type'}
+                        width="160px"
+                        styles="border-radius: 4px 0 0 4px;"
+                        on:selected={(e) => saveArgType(`${method.name}:${arg}`, e)}
+                        sideBox={true} />
+                        {#if argValues[`${method.name}:${arg}`] === 'bool'}
                             <DropDown
                                 items={trueFalseList()}
                                 label={arg}
                                 width="100%"
-                                innerHeight="42px"
                                 styles={'border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
                                 on:selected={(e) => saveArgValue(`${method.name}:${arg}`, e)}
                                 required={true} />
@@ -118,10 +127,9 @@
                             <InputBox
                                 id={index}
                                 width="100%"
-                                styles={'height: 42px; max-width: 440px; border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
+                                styles={'height: 46px; max-width: 440px; border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
                                 label={arg}
-                                rows={"2"}
-                                inputType={typeToInputTypeMAP[argChoices[`${method.name}:${arg}`].type]}
+                                inputType={typeToInputTypeMAP[argValues[`${method.name}:${arg}`].type]}
                                 on:changed={(e) => saveArgValue(`${method.name}:${arg}`, e)}
                                 on:keyup={(e) => clearValidation(e)}
                                 required={true} />

@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { SettingsStore, currentNetwork, networks } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork, networks, CoinStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../../js/router.js';
@@ -66,7 +66,9 @@
     }
 
     function handleSelected(e){
+        console.log(e.detail.selected.value)
         SettingsStore.setNetwork(e.detail.selected.value)
+        CoinStore.updateAllBalances(e.detail.selected.value)
     }
 
 </script>

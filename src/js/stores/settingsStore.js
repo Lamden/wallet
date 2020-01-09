@@ -1,7 +1,7 @@
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 const lamdenNetworks = [
-    {name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, selected: true}
+    {name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, online: false, selected: true}
 ]
 
 const defualtSettingsStore = {
@@ -16,7 +16,16 @@ const defualtSettingsStore = {
 const createSettingsStore = (key, startValue) => {
     const json = localStorage.getItem(key);
     if (json) {
-        startValue = JSON.parse(json)
+        if (json === "undefined"){
+            startValue = startValue;
+            let coinStore = localStorage.getItem('coins');
+            if (coinStore){
+                startValue.firstRun = false;
+                startValue.currentPage = {'name': 'CoinsMain', 'data' : {}}
+            }
+        }else{
+            startValue = JSON.parse(json);
+        }
         Object.keys(defualtSettingsStore).map(m =>{
             if (!startValue.hasOwnProperty(m)){
                 startValue[m] = defualtSettingsStore[m]
@@ -30,10 +39,12 @@ const createSettingsStore = (key, startValue) => {
             if (!foundNetwork) startValue.networks.unshift(network)
         })
     }
+
     const SettingsStore = writable(startValue);
     SettingsStore.subscribe(current => {
         localStorage.setItem(key, JSON.stringify(current));
     });
+
     let subscribe = SettingsStore.subscribe;
     let update = SettingsStore.update;
     let set = SettingsStore.set;
@@ -61,6 +72,15 @@ const createSettingsStore = (key, startValue) => {
                 settingsStore.networks.push(networkInfo);
                 return settingsStore;
             }) 
+        },
+        setNetworkStatus: (networkInfo, status) => {
+            if (!networkInfo) return;
+            SettingsStore.update(settingsStore => {
+                settingsStore.networks.map(network => {
+                    if (network.ip === networkInfo.ip && network.port === networkInfo.port) network.online = status
+                })
+                return settingsStore;
+            })
         },
         deleteNetwork: (networkInfo) => {
             if (!networkInfo) return;

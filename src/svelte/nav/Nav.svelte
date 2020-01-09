@@ -25,7 +25,7 @@
 
 .breadcrumbs{
     display: flex;
-    width: 75%;
+    flex-grow: 1;
 }
 </style>
 
@@ -36,5 +36,5 @@
             <NavBreadcrumb crumb={crumb} {index} last={($breadcrumbs.length -1) === index}/>
         {/each}
     </div>
-    <!--<NavControls />-->
+    <NavControls />
 </div>

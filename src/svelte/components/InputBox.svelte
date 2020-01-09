@@ -12,7 +12,7 @@
     export let pattern;
     export let required = false;
     export let width = '100%';
-    export let height = '42px';
+    export let height = '46px';
     export let margin = 'unset';
     export let spellcheck = true;
     export let rows = '1'

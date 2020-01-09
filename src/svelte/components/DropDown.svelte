@@ -115,7 +115,6 @@ label{
     justify-content: space-between;
     width: 100%;
     min-height: 42px;
-    overflow-x: hidden;
 
     box-sizing: border-box;
     transition: border 0.5s;

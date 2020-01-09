@@ -14,8 +14,9 @@
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
 	const { Button } = Components;
-	import { backgrounds } from '../../js/images.js';
+	import { backgrounds, icons } from '../../js/images.js';
 	const { squares_bg } = backgrounds;
+	const { refresh } = icons;
 
 	//Utils
 	import { updateBalances, decryptObject } from '../../js/utils.js';
@@ -26,11 +27,21 @@
 	//Props
 	export let name
 
+	let refreshing = false;
+
 	onMount(() => {
-		//CoinStore.updateBalances($CoinStore);
 		calcRemainingStorage();
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
+
+	function handleRefresh(){
+		CoinStore.updateAllBalances($currentNetwork)
+		refreshing = true
+		setTimeout(() => {
+			refreshing = false
+		}, 1000);
+	}
+
 
 </script>
 
@@ -50,6 +61,11 @@
     padding: 40px;
     background-size: cover;
     background-repeat: no-repeat;
+}
+
+.refresh-icon{
+	margin-left: 10px;
+	width: 40px;
 }
 
 .header{
@@ -96,6 +112,20 @@
 }
 .balance-total{
 	padding-left: 42px;
+	align-items: center;
+}
+
+.spinner{
+	animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
 }
 
 </style>
@@ -105,8 +135,14 @@
 		<div class="balance-words text-body3">
 			{`TAU`}
 		</div>
-		<div class="balance-total text-title">
+		<div class="flex-row balance-total text-title">
 			{`${$balanceTotal}`}
+			<img on:click={handleRefresh} 
+				 class="refresh-icon clickable" 
+				 class:spinner={refreshing}
+				 src={refresh} 
+				 title="Refresh Balances" 
+				 alt={'refresh icon'} >
 		</div>
 		<div class="buttons">
 			<Button id={'add-btn'}

@@ -4,7 +4,15 @@ import { coin, pubkey } from './defaults.js';
 export { obscure, supportedCoins } from './defaults.js';
 export { coinMeta } from './coinMeta.js';
 export { CoinStore, password, balanceTotal } from './coinStore.js';
-export { SettingsStore, firstRun, themeStyle, currentPage, loggedIn, calcRemainingStorage, networks, currentNetwork  } from './settingsStore.js';
+export { 
+    SettingsStore, 
+    firstRun, 
+    themeStyle, 
+    currentPage, 
+    loggedIn, 
+    calcRemainingStorage, 
+    networks, 
+    currentNetwork  } from './settingsStore.js';
 export { TxStore, allTransactions }  from './txStore.js';
 export { FilesStore, activeTab }  from './filesStore.js';
 
