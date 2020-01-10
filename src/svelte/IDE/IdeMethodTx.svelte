@@ -136,16 +136,9 @@
                 />
                 {#each txDetails as detail}
                     <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
-                    {#if detail.value === ''}
-                        <div class="values text-body1 warning flex-row">
-                            <img class="warning-icon text-body1" src={warning} alt={'warning icon'} />
-                            {'Empty Field'}
-                        </div>
-                    {:else}
-                        <div class="values text-body1">
-                            {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
-                        </div>
-                    {/if}
+                    <div class="values text-body1">
+                        {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
+                    </div>
                 {/each}
             </div>
             <div class="buttons flex-column">

@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher, afterUpdate } from 'svelte';
     const dispatch = createEventDispatcher();
 
     //Props
@@ -27,6 +27,10 @@
     function dispatchKeyUp(e){
         dispatch('keyup', e);
     }
+
+    afterUpdate(() => {
+        console.log(inputType)
+    })
 
 </script>
 

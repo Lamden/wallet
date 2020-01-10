@@ -87,6 +87,16 @@
 		})
 	}
 
+	function reformatMethodObject(methods){
+        methods.map(method => {
+            if (!method.args) method.args = {};
+            method.arguments.map((arg, index) => {
+               if (!method.args[arg]) method.args[arg] = {type: "text", value: 'testing'}
+            })
+        })
+        return [...methods]
+	}
+
 	function handleMethodClick(e){
 		openModal('IdeModelMethodTx', e.detail)
 	}
@@ -134,6 +144,6 @@
 		<IdeErrorsBox {errorsList} />
 	{/if}
 	{#if editorIsLoaded && $activeTab.methods}
-		<IdeMethods methods={$activeTab.methods} />
+		<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
 	{/if}
 </div>

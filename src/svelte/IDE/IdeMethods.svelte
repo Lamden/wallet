@@ -14,8 +14,6 @@
     //Props
     export let methods;
 
-    $: argValues = {}
-
     let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
         address: 'text',
@@ -24,35 +22,41 @@
         fixedPoint: 'number',
         bool: trueFalseList()
     }
+    let defaultValues = {
+        address: '',
+        text: '',
+        data: '',
+        fixedPoint: 0,
+        bool: true 
+    }
 
+    $: argValues = {}
+    $: newMethods = [...methods]
 
-    function typesList(key){
-        argValues[key] = {};
+    function typesList(argValue){
         let returnList = dataTypes.map(type => {
             return {
                 value: type,
                 name: type,
-                selected: false
+                selected: type === argValue.type
             }
         })
-        returnList[0].selected = true;
         return returnList;
     }
 
-    function saveArgType(key, e){
-        if (!argValues[key]) argValues[key] = {};
-        argValues[key].type = e.detail.selected.value
+    function saveArgType(index, arg, e){
+        methods[index].args[arg].type = e;
+        methods[index].args[arg].value = defaultValues[e]
     }
 
-    function saveArgValue(key, e){
-        console.log(e)
-        if (e.detail)
-            if (e.detail.selected) {argValues[key].value = e.detail.selected.value; return}
-            if (e.detail.target) {argValues[key].value = e.detail.target.value; return}
+    function saveArgValue(index, arg, e){
+        let newValue;
+        if (!e.detail)
+            newValue = e;
         else{
-            argValues[key].value = e
+            if (e.detail.target) newValue = e.detail.target.value;
         }
-        
+        methods[index].args[arg].value = newValue;
     }
 
     function trueFalseList(){
@@ -67,24 +71,19 @@
         e.detail.target.reportValidity();
     }
 
-    function handleRun(method){
+    function handleRun(index){
         let args = {};
-        method.arguments.map(arg => {
-            let key = createKey(method.name, arg)
-            if (argValues[key].value) args[arg] = {...argValues[key]};
+        Object.keys(methods[index].args).map(arg => {
+            let argValue = methods[index].args[arg]
+            if (argValue.value !== '') args[arg] = {type: argValue.type, value: argValue.value };
         })
-        console.log(args)
     	openModal('IdeModelMethodTx', {
 			'contractName': $activeTab.name, 
-            'methodName': method.name, 
+            'methodName': methods[index].name, 
             args
-		})
-    }
+        })
 
-    function createKey(method, arg){
-        return `${method}:${arg}`
     }
-
 </script>
 
 <style>
@@ -103,7 +102,7 @@
 
 <div class="flex-column">
     <h5 class="heading">Contract Methods</h5>
-    {#each methods as method}
+    {#each newMethods as method, index}
         {#if method.name !== '____'}
             <div class="method" >
                 <div class="flex-row name-row">
@@ -114,37 +113,39 @@
                         margin={'0 0 0 10px'}
                         padding={'0 5px'}
                         classes={'button__solid button__purple'}
-                        click={() => handleRun(method)}/>
+                        click={() => handleRun(index)}/>
                 </div>
 
-                {#each method.arguments as arg, index}
+                {#each Object.keys(method.args) as argKey}
                     <div class="flex-row">
                         <DropDown
-                            items={typesList(createKey(method.name, arg))}
+                            items={typesList(method.args[argKey])}
                             label={'Type'}
                             width="160px"
                             styles="border-radius: 4px 0 0 4px;"
-                            on:selected={(e) => saveArgType(createKey(method.name, arg), e)}
+                            on:selected={(e) => saveArgType(index, argKey, e.detail.selected.value)}
                             sideBox={true} />
-                            {#if argValues[createKey(method.name, arg)].type === 'bool'}
-                                <DropDown
-                                    items={trueFalseList()}
-                                    label={arg}
-                                    width="100%"
-                                    styles={'border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
-                                    on:selected={(e) => saveArgValue(createKey(method.name, arg), e)}
-                                    required={true} />
-                            {:else}
-                                <InputBox
-                                    id={index}
-                                    width="100%"
-                                    styles={'height: 46px; max-width: 440px; border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
-                                    label={arg}
-                                    inputType={typeToInputTypeMAP[argValues[createKey(method.name, arg)].type]}
-                                    on:changed={(e) => saveArgValue(createKey(method.name, arg), e)}
-                                    on:keyup={(e) => clearValidation(e)}
-                                    required={true} />
-                            {/if}
+                        
+                        {#if method.args[argKey].type === 'bool'}
+                            <DropDown
+                                items={trueFalseList()}
+                                label={argKey}
+                                width="100%"
+                                styles={'border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
+                                on:selected={(e) => saveArgValue(index, argKey, e.detail.selected.value)}
+                                required={true} />
+                        {:else}
+                            <InputBox
+                                id={index}
+                                bind:value={methods[index].args[argKey].value}
+                                width="100%"
+                                styles={'height: 46px; max-width: 440px; border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
+                                label={argKey}
+                                inputType={typeToInputTypeMAP[method.args[argKey].type]}
+                                on:changed={(e) => saveArgValue(index, argKey, e)}
+                                on:keyup={(e) => clearValidation(e)}
+                                required={true} />
+                        {/if}
                     </div>  
                 {/each}
             </div>
