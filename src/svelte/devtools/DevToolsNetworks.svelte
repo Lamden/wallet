@@ -85,6 +85,9 @@
 .delete-heading{
     margin-bottom: 27px;
 }
+.submit{
+    height: 46px;
+}
 </style>
 
 <div class="edit-networks flex-row">
@@ -106,7 +109,6 @@
                 disabled={$currentNetwork.lamden} /> 
         {/if} 
     </div>
-    <!--<Switch checked={$themeStyle === 'dark'} on:toggleState={toggleTheme}  }/>-->
     <form class="add-network" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
         <h5>Add Network</h5>
         <InputBox 
@@ -140,7 +142,7 @@
             id="add-network"
             on:click={() => formValidation()}
             bind:value={buttonName}
-            class={`button__solid ${addButtonColor} submit submit-button submit-button-text`}
+            class={`button__solid ${addButtonColor} submit submit-button submit-button-text submit`}
             type="submit"
         />
         
