@@ -27,6 +27,11 @@
             return info
         }) : undefined;
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
+    $: returnValue = () => {
+        if (!result.returnValue) return null;
+        if (!Array.isArray(result.returnValue)) return [result.returnValue]
+        return result.returnValue;
+    }
 
 </script>
 
@@ -48,7 +53,7 @@
 
 .message{
     align-items: center;
-    padding-top: 65px;
+    padding-top: 2rem;
 }
 .state-info{
     width: 100%;
@@ -60,6 +65,9 @@
 }
 .title{
     margin-right: 10px;
+}
+.return-value{
+    width: 100%;
 }
 .value-row{
     margin-bottom: 20px;
@@ -77,6 +85,15 @@
         <img class="icon" src={icon} alt={`${result.type} icon`} />
         <h6 id={'results-message'}>{result.message}</h6>
     </div>
+
+    {#if result.returnValue}
+        <div class="flex-column return-value ">
+            <h6>Return Value</h6>
+            {#each returnValue() as value}
+                <div class="text-body1 text-primary-dark">{value}</div>
+            {/each}
+        </div>
+    {/if}
 
     {#if stateInfo}
         <div class="state-info text-body1 flex-column">

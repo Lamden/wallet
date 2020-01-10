@@ -95,6 +95,7 @@
         storeTransaction();
         if (txData.result.state_changes) Object.keys(txData.result.state_changes).length > 0 ? resultInfo.stateInfo = txData.result.state_changes : null;
         if (txData.result.status_code > 0) resultInfo.errorInfo = txData.result.result.args;
+        else if (txData.result.result !== null) txData.resultInfo.returnValue = txData.result.result;
         if (txData.result.error) {
             if (resultInfo.errorInfo) { resultInfo.errorInfo.unshift(txData.result.error); return }
             resultInfo.errorInfo = [txData.result.error]

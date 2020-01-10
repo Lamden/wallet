@@ -94,14 +94,13 @@ label{
 }
 
 .select-selected:after {
-    display: flex;
-    align-items: center;
     margin-top: 3px;
     content: "";
-    width: 0px;
-    height: 0;
     border: 6px solid transparent;
     border-color: var(--font-primary-dark) transparent transparent transparent;
+    position: absolute;
+    top: 45%;
+    right: 20px;
 }
 
 .select-selected.select-arrow-active:after {

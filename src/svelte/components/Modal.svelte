@@ -1,5 +1,5 @@
 <script>
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
     import { fade } from 'svelte/transition';
 
 	//Components
@@ -8,6 +8,18 @@
 
 	//Context
 	const { closeModal } = getContext('app_functions');
+
+	let previousScrollSpot = {x: 0, y: 0};
+
+	onMount(() => {
+		previousScrollSpot.x = window.pageXOffset
+		previousScrollSpot.y = window.pageYOffset
+		window.scrollTo(0,0);
+
+		return () => {
+			window.scrollTo(previousScrollSpot.x, previousScrollSpot.y);
+		}
+	})
 
 </script>
 

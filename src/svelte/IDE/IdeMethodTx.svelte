@@ -32,7 +32,7 @@
         $CoinStore.map(c => {
             returnList.push({
                 value: c,
-                name: `${c.nickname}\n${c.vk.substring(0, 55)}...`,
+                name: `${c.nickname}\n${c.vk.substring(0, 52)}...`,
                 selected: false
             })
         })

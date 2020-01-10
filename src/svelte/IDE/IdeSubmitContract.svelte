@@ -39,7 +39,7 @@
         $CoinStore.map(c => {
             returnList.push({
                 value: c,
-                name: `${c.nickname}\n${c.vk.substring(0, 55)}...`,
+                name: `${c.nickname}\n${c.vk.substring(0, 52)}...`,
                 selected: false
             })
         })
@@ -150,12 +150,13 @@
 <div class="confirm-tx flex-column">
     <div class="content flex-column">
         <h5>{`Submit Contract`}</h5>
+        <div>* signifies manditory field</div>
         <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
         <DropDown  
             items={coinList()}
             innerHeight={'70px'}
             id={'mycoins'} 
-            label={'Select Wallet to Send From'}
+            label={'* Select Sending Wallet'}
             styles="margin-bottom: 19px;"
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
@@ -171,7 +172,7 @@
                     width="100%"
                     margin={'17px 0 0'}
                     bind:value={stampLimit}
-                    label={"Stamp Limit"}
+                    label={"* Stamp Limit"}
                     inputType={"number"}
                     required={true}
                 />
@@ -182,7 +183,7 @@
                             margin={'1.33em 0 0 0'}
                             value={detail.value}
                             bind:thisInput={contractNameField}
-                            label={"Contract Name"}
+                            label={"* Contract Name"}
                             on:keyup={clearValidation}
                             inputType={"text"}
                             required={true}
