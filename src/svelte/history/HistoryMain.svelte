@@ -24,9 +24,6 @@
     $: txByDay = sortedList.length > 0 ? groupByDate() : {};
     $: txPerPage = 10;
     $: maxPages = () => {
-        console.log(txByDay,txPerPage)
-        console.log(txByDay.length % txPerPage)
-        console.log(txByDay.length % txPerPage > 0 ? 1 : 0)
         return (txByDay.length / txPerPage) + (txByDay.length % txPerPage > 0 ? 1 : 0)
     }
   
