@@ -95,8 +95,6 @@
         txData.resultInfo = resultInfo;
         txData.network = $currentNetwork;
         storeTransaction();
-        console.log(txData.result.result)
-        console.log(txData.result.result !== null)
         if (txData.result.result !== null) txData.resultInfo.returnValue = txData.result.result;
         if (txData.result.state_changes) Object.keys(txData.result.state_changes).length > 0 ? resultInfo.stateInfo = txData.result.state_changes : null;
         if (txData.result.status_code > 0) resultInfo.errorInfo = txData.result.result.args;
