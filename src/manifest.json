@@ -6,7 +6,7 @@
     "page": "background.html"
   },
   "permissions":[
-    "storage", "tabs"
+    "storage", "activeTab"
   ],
   "browser_action": {
     "default_title": "Lamden Wallet",

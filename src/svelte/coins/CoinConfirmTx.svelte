@@ -1,7 +1,6 @@
 <script>
 
-    import { createEventDispatcher, getContext } from 'svelte';
-    const dispatch = createEventDispatcher();
+    import { getContext } from 'svelte';
 
     //Components
 	import { Components }  from '../../js/router.js'
@@ -44,6 +43,8 @@
 .values{
     align-items: center;
     overflow-wrap: break-word;
+    max-height: 100px;
+    overflow-y: auto;
 }
 
 

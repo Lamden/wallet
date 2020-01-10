@@ -70,19 +70,18 @@ const createCoinStore = () => {
                 return coinstore;
             })
         },
-        updateBalances: (network) => {
-            /*
+        updateAllBalances: (network) => {
             CoinStore.update(coinstore => {
                 coinstore.map(coin => {
                     fetch(`http://${network.ip}:${network.port}/contracts/currency/balances/?key=${coin.vk}`)
                     .then(res => res.json())
                     .then(res => {
-                        res.value ? res.value : 0;
-                        if (res.value !== balance) CoinStore.updateBalance(coin, parseFloat(res.value))
+                        coin.balance = res.value ? parseFloat(res.value) : 0;
                     })
-                    .catch(err => CoinStore.updateBalance(coin, 0))
+                    .catch(err => {console.log(err); coin.balance = 0})
                 })
-            })*/
+                return coinstore;
+            })
         },
         updateCoinTransaction: (txInfo) => {
             txInfo = JSON.parse(JSON.stringify(txInfo))

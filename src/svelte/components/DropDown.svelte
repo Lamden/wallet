@@ -24,6 +24,7 @@
     $: selctedBoxTop = `${parseInt(innerHeight.split('px')[0]) + 15}px`;
 
     onMount(()=>{
+        console.log(items)
         if (selectElm.options){
             items.forEach((item, index) => {
                 selectElm.options[index].selected = item.selected;
@@ -89,17 +90,17 @@ label{
     background-color: rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e03d;
     border-radius: 4px 4px 0 0;
+    overflow-x: hidden;
 }
 
 .select-selected:after {
-    display: flex;
-    align-items: center;
     margin-top: 3px;
     content: "";
-    width: 0px;
-    height: 0;
     border: 6px solid transparent;
     border-color: var(--font-primary-dark) transparent transparent transparent;
+    position: absolute;
+    top: 45%;
+    right: 20px;
 }
 
 .select-selected.select-arrow-active:after {

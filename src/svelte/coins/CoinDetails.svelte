@@ -108,13 +108,13 @@
         <div class="amount-box">
             <div class="nickname text-body3">{coin.nickname}</div>
             <div class="text-body1"> {symbol} </div>
-            <div class="amount"> {balance} </div>
+            <div class="amount"> {balance.toLocaleString('en')} </div>
         </div>
         <div class="buttons">
         	<Button
                 id={'send-coin-btn'} 
                 classes={'button__transparent'}
-				name="Send Coin"
+				name="Send Tx"
                 margin={'0 49px 0 0'}
 		 		click={() => openModal(sendPage, coin)} 
 				icon='arrowUp'/>

@@ -28,7 +28,6 @@
             if (res.value !== balance) CoinStore.updateBalance(coin, parseFloat(res.value))
         })
         .catch(err => CoinStore.updateBalance(coin, 0))
-        //CoinStore.updateBalances($currentNetwork)
     })
 
     function toPercentString(){
@@ -97,7 +96,7 @@
     </div>
 
     <div class="amount  flex-column">
-        <div class="text-body1">{`${ balance } ${ symbol }`}</div>
+        <div class="text-body1">{`${ balance.toLocaleString('en') } ${ symbol }`}</div>
         {#if watching}
             <div class="text-body2 text-primary-dark">{"Watching Wallet"}</div>
         {/if}

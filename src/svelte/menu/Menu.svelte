@@ -12,6 +12,7 @@
                 {id:"holdings", logo: icons.holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
                 {id:"history", logo: icons.history, name: 'History', page: {name: 'HistoryMain'}},
                 {id:"devtools", logo: icons.devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
+                {id:"smart-contracts", logo: icons.smartcontract, name: 'Smart Contracts', page: {name: 'IdeMain'}},
             ]
         },
         {

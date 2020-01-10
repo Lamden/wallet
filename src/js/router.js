@@ -77,6 +77,19 @@ import MessageBox from '../svelte/components/MessageBox.svelte';
 import ResultBox from '../svelte/components/ResultBox.svelte';
 import StrongPW from '../svelte/components/StrongPW.svelte';
 
+//IDE
+import IdeMain from '../svelte/IDE/IdeMain.svelte';
+import IdeErrorsBox from '../svelte/IDE/IdeErrorsBox.svelte';
+import IdeMethods from '../svelte/IDE/IdeMethods.svelte';
+import IdeMonacoEditor from '../svelte/IDE/IdeMonacoEditor.svelte';
+import IdeTabs from '../svelte/IDE/IdeTabs.svelte';
+import IdeTab from '../svelte/IDE/IdeTab.svelte';
+import IdeModelNewTab from '../svelte/IDE/IdeModelNewTab.svelte';
+import IdeModelSubmit from '../svelte/IDE/IdeModelSubmit.svelte';
+import IdeSubmitContract from '../svelte/IDE/IdeSubmitContract.svelte';
+import IdeModelMethodTx from '../svelte/IDE/IdeModelMethodTx.svelte';
+import IdeMethodTx from '../svelte/IDE/IdeMethodTx.svelte';
+
 //Misc
 import LockScreen from '../svelte/misc/LockScreen.svelte';
 import Transaction from '../svelte/misc/Transaction.svelte';
@@ -122,6 +135,7 @@ export const Pages = {
     DevToolsMain, 
     HistoryMain, 
     About, 
+    IdeMain,
     ...FirstRun 
 };
 
@@ -153,7 +167,8 @@ export const Modals = {
     ResultBox,
     MessageBox,
     CoinDeleting,
-    DevToolsDeleteNetwork
+    DevToolsDeleteNetwork,
+    IdeModelNewTab, IdeModelSubmit, IdeSubmitContract, IdeModelMethodTx, IdeMethodTx
 }
 
 export {
@@ -168,7 +183,8 @@ export {
     Modal,
     HistoryMain,
     Transaction,
-    About
+    About,
+    IdeMain, IdeMethods, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
 };
 
 

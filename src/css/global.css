@@ -1,12 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
   
-* {
-    font-family: 'Roboto', sans-serif;
+
+.monaco-editor{
+    font-family: courier, monospace!important;
 }
 
-html, body  {
+html, body, input  {
     height:100%;
+    font-family: 'Roboto', sans-serif;
 }
 
 body{
@@ -147,6 +149,28 @@ body{
     color: var(--font-primary-dark);
 }
 
+.buttonGroup__left{
+    box-shadow: unset;
+    border-radius: 5px 0 0 5px;
+}
+
+.buttonGroup__right{
+    box-shadow: unset;
+    border-radius: 0 5px 5px 0;
+}
+
+.buttonGroup__center{
+    box-shadow: unset;
+    border-radius: 0;
+    border-left: 1px solid var(--font-primary-darker);
+    border-right: 1px solid var(--font-primary-darker);
+}
+
+
+.button__hover_blue:hover{
+    background-color: #4FB8FF;
+}
+
 .button__text{
     display: flex;
     align-items: center;
@@ -172,6 +196,10 @@ body{
 .button__purple{
     color: #FFFFFF;
     background: var(--primary-color);
+}
+
+.button__purple:hover{
+    background: #5120e0;
 }
 
 .button__blue{
@@ -231,6 +259,10 @@ button {
 
 .copy-link :visited {
     outline: none;
+}
+
+.clickable{
+    cursor: pointer;
 }
 
 .tx-link {

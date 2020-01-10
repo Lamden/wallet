@@ -7,6 +7,9 @@
 	//Components
     import { Transaction }  from '../../js/router.js'
 
+    let page = 1;
+    
+
     $: txByNetwork = () =>  {  
   
         let netKey = $currentNetwork.ip + $currentNetwork.port
@@ -19,6 +22,13 @@
     }
     $: sortedList = txByNetwork().sort((a, b) => new Date(b.date) - new Date(a.date));;
     $: txByDay = sortedList.length > 0 ? groupByDate() : {};
+    $: txPerPage = 10;
+    $: maxPages = () => {
+        console.log(txByDay,txPerPage)
+        console.log(txByDay.length % txPerPage)
+        console.log(txByDay.length % txPerPage > 0 ? 1 : 0)
+        return (txByDay.length / txPerPage) + (txByDay.length % txPerPage > 0 ? 1 : 0)
+    }
   
 	onMount(() => {
         breadcrumbs.set([{name: 'History', page: {name: ''}},]);

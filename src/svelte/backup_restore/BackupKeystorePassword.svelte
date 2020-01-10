@@ -73,7 +73,7 @@
     display: flex;
     flex-direction: column;
     width: 498px;
-    padding: 123px 24px 0 242px;
+    padding:10px 24px 0 242px;
 }
 
 .text-box{

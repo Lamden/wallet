@@ -113,7 +113,7 @@
         {#if selectedWallet}
             {selectedWallet.name}
             <strong>
-                {`${selectedWallet.symbol} - ${!selectedWallet.balance ? 0 : selectedWallet.balance} ${selectedWallet.symbol}`}
+                {`${selectedWallet.symbol} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
             </strong> 
         {/if}
     </div>
@@ -141,7 +141,7 @@
         <Button classes={'button__solid'} 
             width={'232px'}
             margin={'0 0 0 0'}
-            name="Home" 
+            name="Back" 
             click={() => close()} />    
     </div>
 

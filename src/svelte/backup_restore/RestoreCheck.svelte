@@ -64,17 +64,13 @@
     
 }
 
-.loading-padding{
-    padding-top: 359px;
-}
-
 .error-padding{
     padding-top: 320px;
 }
 
 </style>
 
-<div class="page" class:loading-padding={error === ''} class:error-padding={error !== ''}>
+<div class="page" class:error-padding={error !== ''}>
     {#if error === ''}
         <Loading message={'Checking Keystore'} />
     {:else}

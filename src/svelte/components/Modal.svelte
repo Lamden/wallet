@@ -1,5 +1,6 @@
 <script>
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
 
 	//Components
     import { Components }  from '../../js/router.js'
@@ -8,11 +9,24 @@
 	//Context
 	const { closeModal } = getContext('app_functions');
 
+	let previousScrollSpot = {x: 0, y: 0};
+
+	onMount(() => {
+		previousScrollSpot.x = window.pageXOffset
+		previousScrollSpot.y = window.pageYOffset
+		window.scrollTo(0,0);
+
+		return () => {
+			window.scrollTo(previousScrollSpot.x, previousScrollSpot.y);
+		}
+	})
+
 </script>
 
 <style>
 .modal-background {
 	position: fixed;
+	background-size: cover;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -42,8 +56,8 @@
 
 </style>
 
-<div class='modal-background' on:click={() => closeModal()}></div>
-<div class='modal'>
+<div in:fade="{{ duration: 200 }}" out:fade="{{ duration: 200 }}" class='modal-background' on:click={() => closeModal()}></div>
+<div in:fade="{{ duration: 200 }}" out:fade="{{ duration: 200 }}" class='modal'>
 	<slot></slot>
 </div>
 

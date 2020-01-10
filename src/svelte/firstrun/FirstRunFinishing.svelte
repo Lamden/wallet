@@ -57,7 +57,6 @@
     display: flex;
     flex-grow: 1;
     justify-content: center;
-    padding-top: 359px;
 }
 
 </style>

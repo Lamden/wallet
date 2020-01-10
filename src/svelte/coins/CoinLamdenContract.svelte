@@ -14,7 +14,7 @@
     import { isStringHex } from  '../../js/lamden/helpers.js';
 
     //DOM NODES
-    let formObj1, stampsField, contractNameField
+    let stampsField, contractNameField
 
     //Props
     export let coin;
@@ -27,9 +27,9 @@
     let transaction;
     let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
-        address: '',
+        address: 'text',
         text: 'textarea',
-        data: '',
+        data: 'text',
         fixedPoint: 'number',
         bool: trueFalseList()
     }
@@ -202,10 +202,13 @@
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             if (arg !== 'selectedType'){
                 let argValue = argValueTracker[contractName][methodName][arg]
-                argPackage[arg] = {
-                    value: argValue[argValue.selectedType].value,
-                    type: argValue.selectedType
+                if (argValue[argValue.selectedType].value !== ""){
+                    argPackage[arg] = {
+                        value: argValue[argValue.selectedType].value,
+                        type: argValue.selectedType
+                    }
                 }
+
             }
         })
         return argPackage;
@@ -252,7 +255,7 @@
 
     <div class="coin-info text-subtitle3">
         {#if selectedWallet}
-            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance} ${selectedWallet.symbol}`}
+            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
         {/if}
     </div>
 
@@ -294,7 +297,7 @@
                                 items={typesList(arg)}
                                 label={'Type'}
                                 width="160px"
-                                innerHeight="45px"
+                                innerHeight="46px"
                                 styles="border-radius: 4px 0 0 4px;"
                                 on:selected={(e) => saveArgType(arg, e)}
                                 sideBox={true} />
@@ -303,6 +306,7 @@
                                 items={trueFalseList(arg)}
                                 label={arg}
                                 width="380px"
+                                innerHeight={'46px'}
                                 styles={'border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
                                 on:selected={(e) => saveArgValue(arg, e)}
                                 required={true} />
@@ -311,7 +315,7 @@
                                 id={index}
                                 bind:value={argValueTracker[contractName][methodName][arg][argValueTracker[contractName][methodName][arg].selectedType].value}
                                 width="380px"
-                                styles={'border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
+                                styles={'height: 46px; border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
                                 label={arg}
                                 inputType={typeToInputTypeMAP[argValueTracker[contractName][methodName][arg].selectedType]}
                                 on:changed={(e) => saveArgValue(arg, e)}

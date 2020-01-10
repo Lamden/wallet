@@ -35,8 +35,10 @@
     justify-content: flex-end;
     align-items: center;
     cursor: pointer;
-    margin: 8px 0;
+    margin: 2px 0;
     height: 32px;
+    padding: 6px 0;
+    border-radius: 3px;
 }
 
 .notselected:hover{
@@ -45,6 +47,7 @@
 
 .logo{
     position: relative;
+    top: -1px;
     width: 14px;
     height: 14px;
     margin-right: 15px;

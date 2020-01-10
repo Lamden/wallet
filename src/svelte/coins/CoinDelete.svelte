@@ -93,6 +93,10 @@
 .icon{
     margin-right: 10px;
 }
+
+.submit{
+    width: 260px;
+}
 </style>
 
 <div class="coin-delete">
@@ -127,7 +131,7 @@
             {/if}
         </div>
         <div class="buttons flex-column">
-            <input  class="button__solid submit submit-button submit-button-text submit-button-size"
+            <input  class="button__solid submit submit-button submit-button-text submit"
                     class:button-red={passwordOkay}
                     class:button-purple={!passwordOkay}
                     type="submit" 
@@ -135,7 +139,7 @@
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__purple'} 
-                    width={'232px'}
+                    width={'260px'}
                     margin={'10px 0 0 0'}
                     name="Back" 
                     click={() => home()} />  

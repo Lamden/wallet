@@ -32,10 +32,6 @@
     margin-bottom: 6px;
 }
 
-.clickable{
-    cursor: pointer;
-}
-
 .logo {
     width: 32px;
     margin-right: 15.5px;

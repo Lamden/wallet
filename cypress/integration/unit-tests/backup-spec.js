@@ -10,7 +10,7 @@ describe('Backup Wallet Process', () => {
             'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
             'firstRun': true,
             'themeStyle':'dark',
-            'version':'v9_5_0',
+            'version':'v0_9_6',
             'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
             'networks' : [{name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, selected: true}]
         }
@@ -64,7 +64,7 @@ describe('Backup Wallet Process', () => {
     })
 
     it('Second Password Input Throws validations error when empty', () => {
-        cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!0101')
+        cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!234567')
         cy.get('[type="submit"]').focus().click()
         cy.get('#pwd2-input').then(($input) => {
             expect($input[0].validationMessage).to.eq("Please fill in this field.")
@@ -80,8 +80,8 @@ describe('Backup Wallet Process', () => {
     })
 
     it('Second Password Input Throws validations when passwords do not match', () => {
-        cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!0101')
-        cy.get('#pwd2-input').focus().invoke('attr', 'value', 'testing0!0101')
+        cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!234567')
+        cy.get('#pwd2-input').focus().invoke('attr', 'value', 'testing0!234567')
         cy.get('[type="submit"]').focus().click()
         cy.get('#pwd2-input').then(($input) => {
             expect($input[0].validationMessage).to.eq("Passwords do not match")
@@ -89,8 +89,8 @@ describe('Backup Wallet Process', () => {
     })
 
     it('Accpets Matching Strong passwords', () => {
-        cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!0101')
-        cy.get('#pwd2-input').focus().invoke('attr', 'value', 'Testing0!0101')
+        cy.get('#pwd1-input').focus().invoke('attr', 'value', 'Testing0!234567')
+        cy.get('#pwd2-input').focus().invoke('attr', 'value', 'Testing0!234567')
         cy.get('[type="submit"]').focus().click()
     })
 
