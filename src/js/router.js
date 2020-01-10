@@ -85,7 +85,6 @@ import IdeMonacoEditor from '../svelte/IDE/IdeMonacoEditor.svelte';
 import IdeTabs from '../svelte/IDE/IdeTabs.svelte';
 import IdeTab from '../svelte/IDE/IdeTab.svelte';
 import IdeModelNewTab from '../svelte/IDE/IdeModelNewTab.svelte';
-import IdeNewTabOptions from '../svelte/IDE/IdeNewTabOptions.svelte';
 import IdeModelSubmit from '../svelte/IDE/IdeModelSubmit.svelte';
 import IdeSubmitContract from '../svelte/IDE/IdeSubmitContract.svelte';
 import IdeModelMethodTx from '../svelte/IDE/IdeModelMethodTx.svelte';
@@ -169,7 +168,7 @@ export const Modals = {
     MessageBox,
     CoinDeleting,
     DevToolsDeleteNetwork,
-    IdeModelNewTab, IdeNewTabOptions, 
+    IdeModelNewTab, 
     IdeModelSubmit, IdeSubmitContract, 
     IdeModelMethodTx, IdeMethodTx
 }
