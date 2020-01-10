@@ -141,7 +141,7 @@
         <Button classes={'button__solid'} 
             width={'232px'}
             margin={'0 0 0 0'}
-            name="Home" 
+            name="Back" 
             click={() => close()} />    
     </div>
 
