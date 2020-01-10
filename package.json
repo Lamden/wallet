@@ -1,7 +1,7 @@
 {
   "name": "Lamden_Wallet",
-  "version": "0.9.6",
-  "description": "A wallet for interacting with the Lamden blockchain",
+  "version": "0.9.7",
+  "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "scripts": {
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
