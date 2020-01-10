@@ -108,7 +108,7 @@
         <div class="amount-box">
             <div class="nickname text-body3">{coin.nickname}</div>
             <div class="text-body1"> {symbol} </div>
-            <div class="amount"> {balance} </div>
+            <div class="amount"> {balance.toLocaleString('en')} </div>
         </div>
         <div class="buttons">
         	<Button

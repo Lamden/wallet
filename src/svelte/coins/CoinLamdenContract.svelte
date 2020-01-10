@@ -255,7 +255,7 @@
 
     <div class="coin-info text-subtitle3">
         {#if selectedWallet}
-            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance} ${selectedWallet.symbol}`}
+            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
         {/if}
     </div>
 

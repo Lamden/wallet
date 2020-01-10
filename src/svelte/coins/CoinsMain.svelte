@@ -136,7 +136,7 @@
 			{`TAU`}
 		</div>
 		<div class="flex-row balance-total text-title">
-			{`${$balanceTotal}`}
+			{`${$balanceTotal.toLocaleString('en')}`}
 			<img on:click={handleRefresh} 
 				 class="refresh-icon clickable" 
 				 class:spinner={refreshing}
