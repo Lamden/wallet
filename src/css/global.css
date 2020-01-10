@@ -149,6 +149,24 @@ body{
     color: var(--font-primary-dark);
 }
 
+.buttonGroup__left{
+    box-shadow: unset;
+    border-radius: 5px 0 0 5px;
+}
+
+.buttonGroup__right{
+    box-shadow: unset;
+    border-radius: 0 5px 5px 0;
+}
+
+.buttonGroup__center{
+    box-shadow: unset;
+    border-radius: 0;
+    border-left: 1px solid var(--font-primary-darker);
+    border-right: 1px solid var(--font-primary-darker);
+}
+
+
 .button__hover_blue:hover{
     background-color: #4FB8FF;
 }

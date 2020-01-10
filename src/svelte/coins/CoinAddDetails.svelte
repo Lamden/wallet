@@ -30,9 +30,9 @@
         ]
 
     $: buttonGroup = [
-            {id:"create-new-btn", name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__purple ' : '' },
-            {id:"add-existing-btn", name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__purple ' : '' },
-            {id:"track-address-btn", name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__purple ' : '' }
+            {id:"create-new-btn", name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__purple buttonGroup__left' : 'buttonGroup__left' },
+            {id:"add-existing-btn", name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__purple buttonGroup__center' : 'buttonGroup__center' },
+            {id:"track-address-btn", name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__purple buttonGroup__right' : 'buttonGroup__right' }
         ]
 
     $: supportedCoinsList = createCoinList();

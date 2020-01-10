@@ -24,6 +24,7 @@
 <style>
 .message-box{
     align-items: center;
+    min-width: 500px;
 }
 
 .message{
