@@ -7,10 +7,12 @@
     export let charLength;
 
     let capTest = /[A-Z]/;
+    let lowerTest = /[a-z]/;
     let symbolTest = /[ ~!@#$%^&?*_<>,.?/+=`(){}[:;"\-\|\\\]\']/;
     let numTest = /[0-9]/;
 
     $: capital = capTest.test(password);
+    $: lower = lowerTest.test(password);
     $: symbol = symbolTest.test(password);
     $: number = numTest.test(password);
     $: length = password.length >= charLength;
@@ -34,18 +36,23 @@
         {#if length}<img class="icon" src={successCircle} alt={'success'}>{/if}
         {`${charLength} or more characters`}
     </div>
+    <div class={`${!lower ? 'text-primary-dark filler' : ''}`}>
+        {#if lower}<img class="icon" src={successCircle} alt={'success'}>{/if}
+        {'1 Lowercase Letter'}
+    </div>
+    <div class={`${!capital ? 'text-primary-dark filler' : ''}`}>
+        {#if capital}<img class="icon" src={successCircle} alt={'success'}>{/if}
+        {'1 Capital Letter'}
+    </div>
+    <div class={`${!number ? 'text-primary-dark filler' : ''}`}>
+        {#if number}<img class="icon" src={successCircle} alt={'success'}>{/if}
+        {'1 Number'}
+    </div>
     <div class={`${!symbol ? 'text-primary-dark filler' : ''}`}>
         {#if symbol}<img class="icon" src={successCircle} alt={'success'}>{/if}
         {'1 Special Character'}
     </div> 
-    <div class={`${!number ? 'text-primary-dark filler' : ''}`}>
-        {#if number}<img class="icon" src={successCircle} alt={'success'}>{/if}
-        {'1 Number'}
-    </div> 
-    <div class={`${!capital ? 'text-primary-dark filler' : ''}`}>
-        {#if capital}<img class="icon" src={successCircle} alt={'success'}>{/if}
-        {'1 Capital'}
-    </div> 
+
 </div>
 
 
