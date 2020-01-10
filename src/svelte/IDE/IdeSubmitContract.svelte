@@ -183,13 +183,13 @@
                             margin={'1.33em 0 0 0'}
                             value={detail.value}
                             bind:thisInput={contractNameField}
-                            label={"* Contract Name"}
+                            label={"* Name"}
                             on:keyup={clearValidation}
                             inputType={"text"}
                             required={true}
                         />
                     {:else}
-                        <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
+                        <h4 class="detail-name no-bottom-margin">{detail.name}{detail.type ? ` (${detail.type})` : ''}</h4>
                         {#if detail.value === ''}
                             <div class="values text-body1 warning flex-row">
                                 <img class="warning-icon text-body1" src={warning} alt={'warning icon'} />
