@@ -6,7 +6,7 @@
     font-family: courier, monospace!important;
 }
 
-html, body  {
+html, body, input  {
     height:100%;
     font-family: 'Roboto', sans-serif;
 }

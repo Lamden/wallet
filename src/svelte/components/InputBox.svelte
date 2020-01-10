@@ -31,7 +31,6 @@
 </script>
 
 <style>
-
 label{
     position: relative;
     top: 8px;
@@ -145,7 +144,7 @@ label{
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
             class="mainbox textarea:required:invalid textarea:focus:invalid"
-            style={`width: 100%; ${styles}`}
+            style={`width: 100%; font-family: 'Roboto', sans-serif; ${styles}`}
             pattern={pattern}
             placeholder={placeholder}
             readonly={readonly}

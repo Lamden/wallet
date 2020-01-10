@@ -115,7 +115,7 @@
                         styles="border-radius: 4px 0 0 4px;"
                         on:selected={(e) => saveArgType(`${method.name}:${arg}`, e)}
                         sideBox={true} />
-                        {#if argValues[`${method.name}:${arg}`] === 'bool'}
+                        {#if argValues[`${method.name}:${arg}`].type === 'bool'}
                             <DropDown
                                 items={trueFalseList()}
                                 label={arg}

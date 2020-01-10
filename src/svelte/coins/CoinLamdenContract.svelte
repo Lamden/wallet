@@ -297,7 +297,7 @@
                                 items={typesList(arg)}
                                 label={'Type'}
                                 width="160px"
-                                innerHeight="45px"
+                                innerHeight="46px"
                                 styles="border-radius: 4px 0 0 4px;"
                                 on:selected={(e) => saveArgType(arg, e)}
                                 sideBox={true} />
@@ -306,6 +306,7 @@
                                 items={trueFalseList(arg)}
                                 label={arg}
                                 width="380px"
+                                innerHeight={'46px'}
                                 styles={'border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
                                 on:selected={(e) => saveArgValue(arg, e)}
                                 required={true} />
@@ -314,7 +315,7 @@
                                 id={index}
                                 bind:value={argValueTracker[contractName][methodName][arg][argValueTracker[contractName][methodName][arg].selectedType].value}
                                 width="380px"
-                                styles={'border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
+                                styles={'height: 46px; border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
                                 label={arg}
                                 inputType={typeToInputTypeMAP[argValueTracker[contractName][methodName][arg].selectedType]}
                                 on:changed={(e) => saveArgValue(arg, e)}
