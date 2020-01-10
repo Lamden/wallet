@@ -20,7 +20,6 @@
             return fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
             .then(res => res.json())
             .then(res => {
-                console.log(res)
                 let online = true;
                 if (res.status !== 'online') return false;
                 return true;
@@ -33,8 +32,8 @@
 <style>
 .box{
     justify-content: center;
-    align-items: center;
-        padding: 0 61px 0 30px;
+    align-items: flex-end;
+    padding: 0 61px 0 30px;
 }
 .online{
     color:green;
@@ -55,5 +54,7 @@
         {:else}
             <div class="offline">{'offline'}</div>
         {/if}
+    {:catch error}
+        <div class="offline">{'offline'}</div>
     {/await}
 </div>
