@@ -102,7 +102,7 @@
 </style>
 
 <div class="flex-column">
-    <h5 class="heading">Contact Methods</h5>
+    <h5 class="heading">Contract Methods</h5>
     {#each methods as method}
         {#if method.name !== '____'}
             <div class="method" >
