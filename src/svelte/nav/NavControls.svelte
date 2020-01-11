@@ -3,10 +3,19 @@
     import { themes } from '../../js/themes.js';
 
 	//Stores
-	import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
+    
+	//Components
+    import { NavStatus }  from '../../js/router.js'
 
     //Context
     const { switchPage } = getContext('app_functions');
+
+    let status = 'checking';
+
+    onMount(() => {
+        currentNetworkOnline();
+    })
 
     function toggleTheme(event) {
 		SettingsStore.update(current => {
@@ -16,15 +25,16 @@
         })   
     }
 
-    $: currentNetworkOnline = () => {
-            return fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
+    function currentNetworkOnline(){
+        status = 'checking';
+        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
             .then(res => res.json())
             .then(res => {
-                let online = true;
-                if (res.status !== 'online') return false;
-                return true;
+                let result = 'online';
+                if (res.status !== 'online') result = 'offline';
+                status = result;
             })
-            .catch(err => {console.log(err); return false})
+            .catch(err => {console.log(err); status = 'offline'})
     }
 
 </script>
@@ -35,26 +45,10 @@
     align-items: flex-end;
     padding: 0 61px 0 30px;
 }
-.online{
-    color:green;
-}
-.offline{
-    color:red;
-}
 </style>
 
 <div class="box text-body2 flex-column">
     <div>{`Current Network`}</div>
     <div class="text-primary-dark clickable" on:click={() => switchPage('DevToolsMain')}>{$currentNetwork.name}</div>
-    {#await currentNetworkOnline()}
-        <div>{'checking'}</div>
-    {:then status}
-        {#if status}
-            <div class="online">{'online'}</div>
-        {:else}
-            <div class="offline">{'offline'}</div>
-        {/if}
-    {:catch error}
-        <div class="offline">{'offline'}</div>
-    {/await}
+    <NavStatus {status} />
 </div>

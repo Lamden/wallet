@@ -3,6 +3,7 @@ import Nav from '../svelte/nav/Nav.svelte';
 import NavLogo from '../svelte/nav/NavLogo.svelte';
 import NavBreadcrumb from '../svelte/nav/NavBreadcrumb.svelte';
 import NavControls from '../svelte/nav/NavControls.svelte';
+import NavStatus from '../svelte/nav/NavStatus.svelte';
 import Menu from '../svelte/menu/Menu.svelte';
 import MenuBox from '../svelte/menu/MenuBox.svelte';
 import MenuItem from '../svelte/menu/MenuItem.svelte';
@@ -174,7 +175,7 @@ export const Modals = {
 }
 
 export {
-    Nav, NavLogo, NavBreadcrumb, NavControls,
+    Nav, NavLogo, NavBreadcrumb, NavControls, NavStatus,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
     Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory,

@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
     
 	//Stores
-    import { CoinStore, coinMeta, password, supportedCoins } from '../../js/stores/stores.js';
+    import { CoinStore, coinMeta, password, supportedCoins, SettingsStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components, Modals } from '../../js/router.js';
@@ -130,6 +130,7 @@
             console.log(e)
             returnMessage = {type:'error', text: e}
         }
+        mintMockchainCoins();
     }
 
     function createCoinList(){
@@ -141,6 +142,29 @@
         })
         return coinList
     }
+
+    function mintMockchainCoins(){
+        let mockchain = $SettingsStore.networks.find(f => f.name === "Lamden Public Testnet")
+        if (mockchain){
+            let body = JSON.stringify({
+                "vk" : keyPair.vk,
+                "amount" : 1000000,
+            })
+            fetch(`http://${mockchain.ip}:${mockchain.port}/mint`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (currentNetwork.ip === mockchain.ip && currentNetwork.port === mockchain.port) CoinStore.updateAllBalances(currentNetwork);
+            })
+            .catch(err => console.log(err))
+        }
+    }
+
 
 </script>
 <style>
@@ -165,6 +189,7 @@
 
 .submit-button-size{
     width: 232px;
+    height: 46px;
 }
 </style>
 
@@ -204,7 +229,7 @@
                 bind:thisInput={privateKeyObj}
                 label={"Enter Private Key"}
                 placeholder={`Private Key`}
-                styles={`margin-bottom: 17px;`}
+                styles={`height: 46px; margin-bottom: 17px;`}
                 on:changed={refreshValidity}
                 on:keyup={refreshValidityKeyup}
                 spellcheck={false}
@@ -219,7 +244,7 @@
                 bind:thisInput={publicKeyObj}
                 label={"Enter Public Key"}
                 placeholder={`Public Key`}
-                styles={`margin-bottom: 17px;`}
+                styles={`height: 46px; margin-bottom: 17px;`}
                 on:changed={refreshValidity}
                 on:keyup={refreshValidityKeyup}
                 spellcheck={false}
@@ -233,7 +258,7 @@
             bind:thisInput={nicknameObj}
             placeholder={`Wallet Nickname`}
             label={"Wallet Nickname (Optional)"}
-            styles={`margin-bottom: 17px;`}
+            styles={`height: 46px; margin-bottom: 17px;`}
         />
 
         <div class={"submit-button-box flex-column"}>

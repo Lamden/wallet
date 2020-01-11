@@ -39,9 +39,8 @@
 <style>
 .deleting-coin{
     height: 224px;
-    width: 668px;
+    justify-content: center;
     align-items: center;
-    justify-content: space-around;
 }
 </style>
 
