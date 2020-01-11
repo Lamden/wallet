@@ -4,9 +4,6 @@
 </script>
 
 <style>
-.error-box{
-    margin-top: -2rem;
-}
 .error-line{
     color: red;
     
@@ -14,7 +11,7 @@
 
 </style>
 
-<div class="error-box flex-column text-body1">
+<div class="flex-column text-body1">
     {#if errorsList.length === 0}
         <div class="no-errors">{'No Errors'}</div>
     {:else}

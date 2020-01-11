@@ -104,9 +104,8 @@
 
 <style>
 .buttons{
-	position: relative;
-    top: -62px;
-    left: 20px;
+    background: var(--bg-color-grey);
+    padding: 17px;
 }
 
 </style>
