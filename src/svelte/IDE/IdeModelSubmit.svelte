@@ -79,7 +79,6 @@
             txDetails.push({name: arg, value: argValue.value, type: argValue.type})
             return arg;
         })
-        console.log(txDetails)
         return txDetails
     }
 
