@@ -11,7 +11,7 @@
     //Context
     const { openModal } = getContext('app_functions');
 
-	let errorsList = [];
+	let lintErrors = undefined;
 	let editorIsLoaded = false;
 
 	import Monaco from './IdeMonacoEditor.svelte';
@@ -44,30 +44,12 @@
         })
 		.then(res => res.json())
 		.then(res => {
-			handleLint(res)
-			if (errorsList.length === 0 && callback) callback();
+			console.log(res)
+			lintErrors = res;
+			console.log(lintErrors)
+			//if (errorsList.length === 0 && callback) callback();
 		})
 		.catch(err => console.log(err))
-	}
-
-	function handleLint(res){
-		if (res.violations === null){
-			errorsList = [];
-			return;
-		}
-		if (res.violations === undefined){
-			errorsList = [res];
-			return;
-		}
-		if (res.violations.args !== undefined){
-			if (res.violations.lineno){
-				errorsList = [`Line[${res.violations.lineno}:${res.violations.offset}]: ${res.violations.msg}`];
-			}else{
-				errorsList = res.violations.args;
-			}
-			return
-		}
-		errorsList = res.violations;
 	}
 
 	function submit(){
@@ -100,6 +82,10 @@
 	function handleMethodClick(e){
 		openModal('IdeModelMethodTx', e.detail)
 	}
+
+	function openNewTab(e){
+		console.log(e)
+	}
 </script>
 
 <style>
@@ -116,7 +102,13 @@
 	{/if}
 
 	<div class="editor-row">
-		<Monaco bind:this={monaco} on:lint={handleLint} on:loaded={editorLoaded} on:clickMethod={handleMethodClick}/>
+		<Monaco 
+			bind:this={monaco} 
+			on:loaded={editorLoaded}
+			on:openTab={openNewTab}
+			on:clickMethod={handleMethodClick}
+			{lintErrors}
+		/>
 		{#if editorIsLoaded}
 			<div class="buttons flex-row">
 				{#if $activeTab.type === 'local'}
@@ -140,7 +132,7 @@
 		{/if}
 	</div>
 	{#if editorIsLoaded}
-		<IdeErrorsBox {errorsList} />
+		<IdeErrorsBox {lintErrors} />
 	{/if}
 	{#if editorIsLoaded && $activeTab.methods}
 		<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
