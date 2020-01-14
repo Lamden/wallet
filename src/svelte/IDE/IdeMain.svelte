@@ -113,7 +113,7 @@
 <style>
 .buttons{
     background: var(--bg-color-grey);
-    padding: 17px;
+    padding: 10px 17px;
 }
 
 </style>
