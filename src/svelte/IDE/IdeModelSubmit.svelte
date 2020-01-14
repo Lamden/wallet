@@ -109,9 +109,8 @@
     }
 
     function finish(){
-        if (txData.txInfo.args.name){
+        if (!txData.resultInfo.type === 'error'){
             getContract();
-            return;
         }
         closeModal();
     }

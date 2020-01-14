@@ -15,6 +15,7 @@ export {
     currentNetwork  } from './settingsStore.js';
 export { TxStore, allTransactions }  from './txStore.js';
 export { FilesStore, activeTab }  from './filesStore.js';
+export { CacheStore }  from './CacheStore.js';
 
 //MISC Stores
 export const CURRENT_KS_VERSION = writable("1.0");

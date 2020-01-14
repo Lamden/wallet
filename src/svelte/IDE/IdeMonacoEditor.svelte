@@ -8,15 +8,18 @@
 </script>
 
 <script>
-	import { onMount, createEventDispatcher, afterUpdate } from 'svelte';
+	import { onMount, getContext, createEventDispatcher, afterUpdate } from 'svelte';
 	const dispatch = createEventDispatcher();
 
 	//Store
-	import { currentNetwork, FilesStore, activeTab } from '../../js/stores/stores.js';
+	import { CacheStore, currentNetwork, FilesStore, activeTab } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../../js/router.js'
 	const { Loading } = Components;
+
+	//Context
+	const { checkContractExists, addContractTab } = getContext('editor_functions');
 
 	//Props
 	export let lintErrors = undefined;
@@ -24,17 +27,15 @@
 	let monaco;
 	let container;
 	let editor;
-	let currentPositon;
-	let methodLines = [];
 	let errorList = [];
 	let importList = [];
+	let importErrors = [];
 	let decorations = [];
 	let crtlDown = false;
+	let checkedContracts = {}
 
 	$: editorHeight = '554px';
-	$: code = () => {return !editor ? '' : editor.getValue();}
 	$: activeTabCode = $activeTab.code;
-	$: formatting = [...errorList, ...importList];
 
   	onMount(() => {
 		monaco_promise.then(async mod => {
@@ -49,16 +50,14 @@
 	afterUpdate(() => {
 		if (monaco && editor){
 			if (editor.getValue() !== activeTabCode){
-				
 				let model = monaco.editor.createModel(activeTabCode, 'python');
 				editor.updateOptions({ readOnly: $activeTab.type === 'local' ? false : true })
 				editor.setModel(model)
-				//if ($activeTab.type === 'online') highlightImports();
 				highlightImports();
 				dispatch('loaded', true)
 			}
 			if (lintErrors) showErrors();
-			decorations = editor.deltaDecorations(decorations, [...errorList, ...importList])
+			decorations = editor.deltaDecorations(decorations, [...errorList, ...importList, ...importErrors])
 		}
 	})
 
@@ -78,37 +77,46 @@
 
 		editor.onMouseUp((e)=>{
 			if (e.target.element.className.includes("import-contract")  && crtlDown) {
-				dispatch('openTab', e.target.element.innerText)
+				let contractName = e.target.element.innerText;
+				checkContractExists(contractName, {callback: addTab})
 			}
-			
-			if ($activeTab.type === 'local') return
-			let selection = editor.getSelection();
-			if (!e.target.position) return;
-			if (!selection) return;
-			if (selection.startColumn !== selection.endColumn) return;
-			methodLines.map(lines => {
-				if (e.target.position.lineNumber === lines.lineNum) {
-					let txInfo = {
-						contractName: $activeTab.name,
-						methodName: lines.method.name,
-						args: lines.method.arguments
+			if (e.target.element){
+				if (e.target.element.className.includes("cursor")){
+					let positionInfo = editor.getModel().getWordAtPosition(e.target.position).word;
+					if (positionInfo){
+						let contractName = positionInfo.word;
+						let lineContent = editor.getModel().getLineContent(e.target.position.lineNumber);
+						let regex = new RegExp(`import\\s*${contractName}\\s*`);
+						let matches = editor.getModel().findMatches(regex, true, true, true, null, true);
+						if (matches.length > 0){
+							matches.map(match =>{
+								if (match.range.startColumn = e.target.position.lineNumber){
+									checkContractExists(contractName, {callback: addTab})
+								}
+							})
+						}
 					}
- 					dispatch('clickMethod', txInfo)
+
 				}
-			})
+			}
+			highlightImports()
 		});
 
 		editor.onKeyDown((e) => {
-			if (e.keyCode === 5) crtlDown = true;
+			if (e.browserEvent.key === 'Control') crtlDown = true;
 		})
 
 		editor.onKeyUp((e) => {
-			if (e.keyCode === 5) crtlDown = false;
+			if (e.browserEvent.key === 'Control') crtlDown = false;
+			if (e.code === 'Space' || e.code === 'Enter'){
+				if (e.target.value.includes("import")){
+					highlightImports()
+				}
+			}
 		})
 
 		editor.onDidChangeCursorPosition((e) => {
 			if (editor.getValue() !== activeTabCode){
-				highlightImports()
 				if ($activeTab.type === 'local') updateCode();
 			}
 		})
@@ -145,7 +153,6 @@
 			if (Array.isArray(lintErrors.violations)){
 				lintErrors.violations.map(error =>{
 					let errorInfo = parseErrorString(error)
-					console.log(errorInfo)
 					if (errorInfo.lineNo !== 0) {
 						errorList.push({
 							range: new monaco.Range(errorInfo.lineNo,1,errorInfo.lineNo,10), 
@@ -174,46 +181,71 @@
 
 	function highlightImports(){
 		importList = [];
+		importErrors = [];
+		if (!checkedContracts[$currentNetwork.name]) checkedContracts[$currentNetwork.name] = {};
 		const position = editor.getModel().findMatches(/import\s*(\w*)/, true, true, true, null, true);
 		position.map(match =>{
-			checkContractExists(match)
+			let contractName = match.matches[1]
+			if (!CacheStore.contractExists(contractName, $currentNetwork.name)){
+				if (!checkedContracts[$currentNetwork.name][contractName]){
+					if (contractName.replace(/\s/g, "") !== ""){
+						checkContractExists(contractName, {callback: handleContractExists, data: match});
+					}
+				} else {
+					pushErrorDecoration(match, "Contract does not exist on the network");
+				}
+			}else{
+				pushInputDecoration(match);
+			}
 		})
 	}
 
-	function checkContractExists(match){
-		console.log(match)
-		let contractName = match.matches[1]
-		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
-			.then(res => res.json())
-			.then(res => {
-				let lineNumber = match.range.startLineNumber;
-				let startColumn = match.range.startColumn + 7;
-				let endColumn = match.range.endColumn;
-				importList.push({
-					range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn), 
-					options: { 
-						hoverMessage: {
-							value: "Open Contract in Editor (ctrl + click)", 
-							isTrusted: true
-						},
-						inlineClassName: 'import-contract'
-					}
-				})
-				decorations = editor.deltaDecorations(decorations, [...errorList, ...importList])
-				//getMethods(res.name, res.code);
-			})
-			.catch(err => console.log(err))
-    }
+	function pushInputDecoration(match){
+		let lineNumber = match.range.startLineNumber;
+		let startColumn = match.range.startColumn + 7;
+		let endColumn = match.range.endColumn;
+		importList.push({
+			range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn), 
+			options: { 
+				hoverMessage: {
+					value: "Open Contract in Editor (ctrl + click)", 
+					isTrusted: true
+				},
+				inlineClassName: 'import-contract'
+			}
+		})
+		decorations = editor.deltaDecorations(decorations, [...errorList, ...importList, ...importErrors])
+	}
 
-    function getMethods(contractName, contractCode){
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
-            .then(res => res.json())
-            .then(res => {
-                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
-            })
-            .catch(err => console.log(err))
-    }
+	function pushErrorDecoration(match, errorText){
+		let lineNumber = match.range.startLineNumber;
+		let startColumn = match.range.startColumn + 7;
+		let endColumn = match.range.endColumn;
+		importErrors.push({
+			range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn), 
+			options: { 
+				hoverMessage: {value: errorText},
+				inlineClassName: 'input-error'
+			}
+		});
+		decorations = editor.deltaDecorations(decorations, [...errorList, ...importList, ...importErrors])
+	}
 
+	function handleContractExists(res, match){
+		if (!res.code) {
+			if (match.matches[1] !== "") {
+				checkedContracts[$currentNetwork.name][match.matches[1]] = true;
+				pushErrorDecoration(match, "Contract does not exist on the network");
+				return;
+			}
+		}
+		CacheStore.addContract(res.name, $currentNetwork.name)
+		pushInputDecoration(match);
+	}
+
+	function addTab(res){
+		addContractTab(res.name, res.code)
+	}
 </script>
 
 <style>
@@ -223,8 +255,14 @@
 	align-content: center;
 	align-items: center;
 }
+:global(.input-error){
+	background: #ff000054;
+	padding: 1px 3px;
+    cursor: pointer;
+    border-radius: 3px;
+}
 :global(.ide-errorline){
-	background: #ff00004f;
+	background: #ff000054;
 }
 :global(.import-contract){
     background: #2d2d2d;

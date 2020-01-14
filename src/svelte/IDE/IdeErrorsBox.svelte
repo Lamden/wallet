@@ -2,12 +2,9 @@
     export let lintErrors;
 
 	function reformatErrorList(errors){
-        let errorsList = [];
-        if (errors === undefined) {return errorsList;}
-		if (errors.violations === null){
-			errorsList = [];
-			return errorsList;
-		}
+        let errorsList = ['Contract is Okay'];
+        if (errors === undefined) return errorsList;
+		if (errors.violations === null) return errorsList;
 		if (errors.violations === undefined){
 			errorsList = [errors];
 			return errorsList;
@@ -26,19 +23,17 @@
 </script>
 
 <style>
+.errors-box{
+	padding: 17px;
+}
 .error-line{
     color: red;
-    
 }
 
 </style>
 
-<div class="flex-column text-body1">
-    {#if reformatErrorList(lintErrors).length === 0}
-        <div class="no-errors">{'No Errors'}</div>
-    {:else}
-        {#each reformatErrorList(lintErrors) as error}
-            <div class="error-line">{error}</div>
-        {/each}
-    {/if}
+<div class="errors-box flex-column text-body2">
+	{#each reformatErrorList(lintErrors) as error}
+		<div class:error-line={reformatErrorList(lintErrors)[0] !== 'Contract is Okay'}>{error}</div>
+	{/each}
 </div>
