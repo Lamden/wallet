@@ -1,17 +1,21 @@
 <script>
-	import { onMount, getContext } from 'svelte'
+	import { onMount, getContext, setContext } from 'svelte'
 	
     //Stores
-    import { breadcrumbs, currentNetwork, activeTab } from '../../js/stores/stores.js';
+    import { breadcrumbs, currentNetwork, activeTab, FilesStore } from '../../js/stores/stores.js';
 
 	//Components
 	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../../js/router.js';
 	const { Button } = Components;
 
     //Context
-    const { openModal } = getContext('app_functions');
+	const { openModal } = getContext('app_functions');
+	setContext('editor_functions', {
+		checkContractExists: (contractName, options) => checkContractExists(contractName, options),
+		addContractTab: (contractName, contractCode) => getMethods(contractName, contractCode)
+    });
 
-	let errorsList = [];
+	let lintErrors = undefined;
 	let editorIsLoaded = false;
 
 	import Monaco from './IdeMonacoEditor.svelte';
@@ -28,6 +32,7 @@
 
 	function editorLoaded(){
 		editorIsLoaded = true;
+		if ($activeTab.type === 'local') lint();
 	}
 
 	function lint(callback){
@@ -44,30 +49,11 @@
         })
 		.then(res => res.json())
 		.then(res => {
-			handleLint(res)
-			if (errorsList.length === 0 && callback) callback();
+			lintErrors = res;
+			if (!callback) return;
+			callback(res);
 		})
 		.catch(err => console.log(err))
-	}
-
-	function handleLint(res){
-		if (res.violations === null){
-			errorsList = [];
-			return;
-		}
-		if (res.violations === undefined){
-			errorsList = [res];
-			return;
-		}
-		if (res.violations.args !== undefined){
-			if (res.violations.lineno){
-				errorsList = [`Line[${res.violations.lineno}:${res.violations.offset}]: ${res.violations.msg}`];
-			}else{
-				errorsList = res.violations.args;
-			}
-			return
-		}
-		errorsList = res.violations;
 	}
 
 	function submit(){
@@ -100,30 +86,58 @@
 	function handleMethodClick(e){
 		openModal('IdeModelMethodTx', e.detail)
 	}
+
+	function checkContractExists(contractName, options){
+		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
+			.then(res => res.json())
+			.then(res => {
+				try{
+					options.callback(res, !options.data ? undefined : options.data);
+				} catch (e) {
+					return false;
+				}
+			})
+			.catch(err => console.log(err))
+	}
+	
+    function getMethods(contractName, contractCode){
+        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
+            .then(res => res.json())
+            .then(res => {
+                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
+            })
+            .catch(err => console.log(err))
+    }
 </script>
 
 <style>
 .buttons{
     background: var(--bg-color-grey);
-    padding: 17px;
+    padding: 10px 17px;
 }
 
 </style>
 
 <div id="monaco_window" class="flex-column">
 	{#if editorIsLoaded}
-		<IdeTabs />
+		<IdeTabs {checkContractExists}/>
 	{/if}
 
 	<div class="editor-row">
-		<Monaco bind:this={monaco} on:lint={handleLint} on:loaded={editorLoaded} on:clickMethod={handleMethodClick}/>
-		{#if editorIsLoaded}
+		<Monaco 
+			bind:this={monaco} 
+			on:loaded={editorLoaded}
+			{checkContractExists}
+			on:clickMethod={handleMethodClick}
+			{lintErrors}
+		/>
+		{#if editorIsLoaded && $activeTab.type === 'local'}
 			<div class="buttons flex-row">
 				{#if $activeTab.type === 'local'}
 					<Button 
 						id={'contractTab-btn'} 
 						classes={'button__transparent'}
-						name="Check Errors"
+						name="Check Contract"
 						margin={'0 10px 3px 0'}
 						height={'42px'}
 						click={() => lint()}
@@ -139,8 +153,8 @@
 			</div>
 		{/if}
 	</div>
-	{#if editorIsLoaded}
-		<IdeErrorsBox {errorsList} />
+	{#if editorIsLoaded && $activeTab.type === 'local'}
+		<IdeErrorsBox {lintErrors} />
 	{/if}
 	{#if editorIsLoaded && $activeTab.methods}
 		<IdeMethods methods={reformatMethodObject($activeTab.methods)} />

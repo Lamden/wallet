@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { SettingsStore, currentNetwork, networks, CoinStore } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork, networks, CoinStore, CacheStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../../js/router.js';
@@ -70,6 +70,10 @@
         CoinStore.updateAllBalances(e.detail.selected.value)
     }
 
+    function clearCache(){
+        CacheStore.refreshNetwork($currentNetwork.name)
+    }
+
 </script>
 
 <style>
@@ -98,6 +102,14 @@
             width={"250px"}
             label="Current Network"
             on:selected={(e) => handleSelected(e)} />  
+        <Button 
+            id="clear-cache-network"
+            name={"Clear Network Cache"}
+            classes={`button__solid`}
+            width={'100%'}
+            margin={'20px 0 0 0'}
+            click={clearCache}
+        /> 
         {#if !$currentNetwork.lamden}
             <Button 
                 id="del-network"
@@ -106,8 +118,11 @@
                 width={'232px'}
                 margin={'20px 0 0 0'}
                 click={() => openModal('DevToolsDeleteNetwork')}
-                disabled={$currentNetwork.lamden} /> 
+                disabled={$currentNetwork.lamden} />
         {/if} 
+    </div>
+    <div>
+
     </div>
     <form class="add-network" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
         <h5>Add Network</h5>

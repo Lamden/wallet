@@ -17,12 +17,4 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 import 'monaco-editor/esm/vs/basic-languages/python/python.contribution.js';
 
-
-
-self.MonacoEnvironment = {
-	getWorkerUrl: function (moduleId, label) {
-		return './editor.worker.bundle.js';
-	}
-}
-
 export default monaco;
