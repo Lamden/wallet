@@ -149,6 +149,11 @@ body{
     color: var(--font-primary-dark);
 }
 
+.button__solid:hover{
+    color: #FFFFFF;
+    background: #3a3a3a;
+}
+
 .buttonGroup__left{
     box-shadow: unset;
     border-radius: 5px 0 0 5px;
