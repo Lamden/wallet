@@ -82,7 +82,7 @@
 			}
 			if (e.target.element){
 				if (e.target.element.className.includes("cursor")){
-					let positionInfo = editor.getModel().getWordAtPosition(e.target.position).word;
+					let positionInfo = editor.getModel().getWordAtPosition(e.target.position);
 					if (positionInfo){
 						let contractName = positionInfo.word;
 						let lineContent = editor.getModel().getLineContent(e.target.position.lineNumber);
@@ -244,7 +244,7 @@
 	}
 
 	function addTab(res){
-		addContractTab(res.name, res.code)
+		if (!res.error) addContractTab(res.name, res.code)
 	}
 </script>
 
