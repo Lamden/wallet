@@ -121,7 +121,7 @@
 			}
 		})
 
-		container.style.width = `${window.innerWidth - 419}px`;
+		container.style.width = `${window.innerWidth - 402}px`;
 	}
 
 	function updateCode(){
@@ -129,7 +129,7 @@
 	}
 
 	function handler(e){
-		container.style.width = `${e.target.innerWidth - 419}px`;
+		container.style.width = `${e.target.innerWidth - 402}px`;
 		container.style.fontFamily = "'Courier Prime', monospace"
 	}
 

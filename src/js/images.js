@@ -27,6 +27,7 @@ import copyWhite from '../img/menu_icons/icon_copy_white.svg';
 import copyGreen from '../img/menu_icons/icon_copy_green.svg';
 import edit from '../img/menu_icons/icon_edit.svg';
 import del from '../img/menu_icons/icon_delete.svg';
+import close from '../img/menu_icons/icon_close.svg';
 import successCircle from '../img/menu_icons/icon_success_circle.svg';
 import refresh from '../img/menu_icons/icon_refresh.svg';
 import smartcontract from '../img/menu_icons/icon_smartcontract.svg';
@@ -70,7 +71,8 @@ export const icons = {
     successCircle,
     smartcontract,
     refresh,
-    connected
+    connected,
+    close
 }
 
 //Backgrounds
