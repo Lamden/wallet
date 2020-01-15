@@ -56,21 +56,23 @@
 		.catch(err => console.log(err))
 	}
 
-	function submit(){
-		openModal('IdeModelSubmit', {
-			'contractName': 'submission', 
-            'methodName': 'submit_contract', 
-            args: {
-				name: {
-					type: 'text',
-					value: $activeTab.name
-				},
-				code:{
-					type: 'text',
-					value: $activeTab.code
+	function submit(res){
+		if (res.violations === null){
+			openModal('IdeModelSubmit', {
+				'contractName': 'submission', 
+				'methodName': 'submit_contract', 
+				args: {
+					name: {
+						type: 'text',
+						value: $activeTab.name
+					},
+					code:{
+						type: 'text',
+						value: $activeTab.code
+					}
 				}
-			}
-		})
+			})
+		}
 	}
 
 	function reformatMethodObject(methods){
