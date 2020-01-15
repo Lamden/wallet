@@ -15,7 +15,7 @@
 		addContractTab: (contractName, contractCode) => getMethods(contractName, contractCode)
     });
 
-	let lintErrors = undefined;
+	let lintErrors = {validations: null};
 	let editorIsLoaded = false;
 
 	import Monaco from './IdeMonacoEditor.svelte';

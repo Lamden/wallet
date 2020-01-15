@@ -1,5 +1,5 @@
 <script>
-    export let lintErrors;
+	export let lintErrors;
 
 	function reformatErrorList(errors){
         let errorsList = ['Contract is Okay'];
@@ -24,16 +24,24 @@
 
 <style>
 .errors-box{
-	padding: 17px;
+	padding: 4px 17px;
+	color: black;
 }
-.error-line{
-    color: red;
+.no-errors{
+    background: #52ff52;
+    border: 2px solid green;
+}
+.errors{
+    background: #fd3b3b;
+    border: 2px solid red;
 }
 
 </style>
 
-<div class="errors-box flex-column text-body2">
+<div class="errors-box flex-column text-body2"
+	class:no-errors={lintErrors.violations === null}
+	class:errors={lintErrors.violations !== null}>
 	{#each reformatErrorList(lintErrors) as error}
-		<div class:error-line={reformatErrorList(lintErrors)[0] !== 'Contract is Okay'}>{error}</div>
+		<div>{error}</div>
 	{/each}
 </div>
