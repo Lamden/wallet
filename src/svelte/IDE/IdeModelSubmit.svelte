@@ -116,7 +116,7 @@
     }
     
     function getContract(){
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${txData.txInfo.args.name.value}`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${txData.txInfo.args.name.value}`)
         .then(res => res.json())
         .then(res => {
             if (!res.code) closeModal();
@@ -129,7 +129,7 @@
     }
 
     function getMethods(contractName, contractCode){
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
             .then(res => res.json())
             .then(res => {
                 if (!res.methods) closeModal();

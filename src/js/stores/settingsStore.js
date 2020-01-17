@@ -1,14 +1,14 @@
 import { writable, derived } from 'svelte/store';
 
 const lamdenNetworks = [
-    {name: 'Lamden Public Testnet', ip:'167.71.159.131', port: '8000', lamden: true, online: false, selected: true}
+    {name: 'Lamden Public Testnet', ip:'https://testnet.lamden.io', port: '443', lamden: true, online: false, selected: true}
 ]
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
-    'version':'v0_9_6',
+    'version':'v0_9_8',
     'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
     'networks' : [...lamdenNetworks],
 }
@@ -37,6 +37,12 @@ const createSettingsStore = (key, startValue) => {
                 return f.lamden && network.name === f.name
             })
             if (!foundNetwork) startValue.networks.unshift(network)
+            if (foundNetwork){
+                if (foundNetwork.lamden){
+                    foundNetwork.ip = network.ip;
+                    foundNetwork.port = network.port;
+                }
+            }
         })
     }
 

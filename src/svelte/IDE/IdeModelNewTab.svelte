@@ -28,7 +28,7 @@
             return
         }
 
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
         .then(res => res.json())
         .then(res => {
             if (!res.code){
@@ -46,7 +46,7 @@
     }
 
     function getMethods(contractName, contractCode){
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
             .then(res => res.json())
             .then(res => {
                 FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);

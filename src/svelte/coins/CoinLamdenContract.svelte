@@ -144,7 +144,7 @@
     }
 
     function getMethods(contract){
-        return fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contract}/methods`)
+        return fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contract}/methods`)
                     .then(res => res.json())
                     .then(res => {
                         if (res.error) {

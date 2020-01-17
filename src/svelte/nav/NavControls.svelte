@@ -27,7 +27,7 @@
 
     function currentNetworkOnline(){
         status = 'checking';
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
             .then(res => res.json())
             .then(res => {
                 let result = 'online';

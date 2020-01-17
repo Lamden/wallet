@@ -150,7 +150,7 @@
                 "vk" : keyPair.vk,
                 "amount" : 1000000,
             })
-            fetch(`http://${mockchain.ip}:${mockchain.port}/mint`, {
+            fetch(`${mockchain.ip}:${mockchain.port}/mint`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json'

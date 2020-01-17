@@ -53,7 +53,7 @@
 
     function handleSubmit(){
         if (contractNameField.value !== ""){
-            fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractNameField.value}`)
+            fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractNameField.value}`)
             .then(res => res.json())
             .then(res => {
                 if (res.code){

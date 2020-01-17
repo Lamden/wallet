@@ -21,7 +21,7 @@
     $: percent = $balanceTotal === undefined ? "" : toPercentString();
 
     onMount(() => {
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/currency/balances/?key=${coin.vk}`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/currency/balances/?key=${coin.vk}`)
         .then(res => res.json())
         .then(res => {
             res.value ? res.value : 0;

@@ -40,7 +40,7 @@
 			name: $activeTab.name,
 			code: $activeTab.code
 		}
-		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/lint`, {
+		fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/lint`, {
 			method: 'POST',
 			headers: {
 			'Content-Type': 'application/json'
@@ -90,7 +90,7 @@
 	}
 
 	function checkContractExists(contractName, options){
-		fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
+		fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
 			.then(res => res.json())
 			.then(res => {
 				try{
@@ -103,7 +103,7 @@
 	}
 	
     function getMethods(contractName, contractCode){
-        fetch(`http://${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
+        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
             .then(res => res.json())
             .then(res => {
                 FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);

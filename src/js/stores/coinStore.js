@@ -73,7 +73,7 @@ const createCoinStore = () => {
         updateAllBalances: (network) => {
             CoinStore.update(coinstore => {
                 coinstore.map(coin => {
-                    fetch(`http://${network.ip}:${network.port}/contracts/currency/balances/?key=${coin.vk}`)
+                    fetch(`${network.ip}:${network.port}/contracts/currency/balances/?key=${coin.vk}`)
                     .then(res => res.json())
                     .then(res => {
                         coin.balance = res.value ? parseFloat(res.value) : 0;

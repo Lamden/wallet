@@ -25,7 +25,7 @@
 
     function testNetork(){
         ipField.setCustomValidity('')
-        return fetch(`http://${ip}:${port}/ping`)
+        return fetch(`${ip}:${port}/ping`)
             .then(res => res.json())
             .then(res => {
                 checking = false;
@@ -137,7 +137,7 @@
         />
         <InputBox 
             label="IP Address"
-            placeholder={"Enter Network IP Address"}
+            placeholder={"http://<your host>"}
             bind:value={ip}
             bind:thisInput={ipField}
             on:keyup={() => clearIPValidation()}

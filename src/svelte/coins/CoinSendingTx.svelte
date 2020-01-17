@@ -35,7 +35,7 @@
 
     async function createTransaction(){
         let txb = new TransactionBuilder(
-            `http://${$currentNetwork.ip}:${$currentNetwork.port}`, 
+            `${$currentNetwork.ip}:${$currentNetwork.port}`, 
             sendingCoin.vk, 
             contractName, 
             methodName, 
