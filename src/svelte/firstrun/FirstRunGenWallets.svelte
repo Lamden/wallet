@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, password, steps } from '../../js/stores/stores.js';
+    import { CoinStore, password, steps, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../../js/router.js'
@@ -61,6 +61,29 @@
             current.push(coinInfo);
             return current;
         })
+        mintMockchainCoins(keyPair.vk)
+    }
+
+    function mintMockchainCoins(vk){
+        let mockchain = $SettingsStore.networks.find(f => f.name === "Lamden Public Testnet")
+        if (mockchain){
+            let body = JSON.stringify({
+                "vk" : vk,
+                "amount" : 1000000,
+            })
+            fetch(`${mockchain.ip}:${mockchain.port}/mint`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (currentNetwork.ip === mockchain.ip && currentNetwork.port === mockchain.port) CoinStore.updateAllBalances(currentNetwork);
+            })
+            .catch(err => console.log(err))
+        }
     }
 
 </script>
