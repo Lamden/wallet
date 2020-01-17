@@ -243,7 +243,7 @@
 </style>
 
 <div class="send-lamden flex-column" class:hide={currentPage !== 'CoinLamdenContract'}>
-    <h5> {`Send Lamden ${coin.name}`} </h5>
+    <h5> {`Send ${coin.name}`} </h5>
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
