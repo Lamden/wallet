@@ -47,11 +47,14 @@
 }
 .icons{
     margin-left: 5px;
-    height: 14px;
+    width: 14px;
+    position: relative;
+    top: 1px;
 }
 
 .connected-icon{
     margin-right: 5px;
+    margin-left: 0;
 }
 .rename{
     background-color: #00000000;
@@ -61,7 +64,7 @@
 
 <div class="tab-box flex-row" class:selected={file.selected} on:click={selectTab}>
     {#if file.type === 'online'}
-        <img class="icons connected-icon" src={connected} alt="contract online" title={`Contract is on ${$currentNetwork.name}`} />
+        <div class="icons connected-icon" title={`Contract is on ${$currentNetwork.name}`}>{@html connected}</div>
     {/if}
     {#if !rename}
         <div on:dblclick={() => rename = true}>{`${file.name}`}</div>
@@ -69,6 +72,6 @@
         <input value={file.name} class="rename" type="text" on:keyup={saveName}/>
     {/if}
     {#if file.selected}
-        <img class="icons" src={del} alt="close tab" title="Close Tab" on:click={closeTab} />
+        <div class="icons" on:click={closeTab} title="Close Tab">{@html del}</div>
     {/if}
 </div>

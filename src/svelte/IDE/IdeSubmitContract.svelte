@@ -141,6 +141,7 @@
     margin-right: 8px;
     position: relative;
     top: -1px;
+    width: 20px;
 }
 .disabled{
     background: var(--bg-color-grey);
@@ -190,16 +191,9 @@
                         />
                     {:else}
                         <h4 class="detail-name no-bottom-margin">{detail.name}{detail.type ? ` (${detail.type})` : ''}</h4>
-                        {#if detail.value === ''}
-                            <div class="values text-body1 warning flex-row">
-                                <img class="warning-icon text-body1" src={warning} alt={'warning icon'} />
-                                {'Empty Field'}
-                            </div>
-                        {:else}
-                            <div class="values text-body1">
-                                {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
-                            </div>
-                        {/if}
+                        <div class="values text-body1">
+                            {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
+                        </div>
                     {/if}
                 {/each}
                 <InputBox

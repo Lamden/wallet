@@ -28,14 +28,14 @@
     align-items: center;
 }
 .plus-icon{
-    height: 20px;
+    width: 20px;
     margin: 0 5px;
 }
 </style>
 
 <div class="flex-row">
 <div class="new-button" on:click={addTab}>
-    <img class="plus-icon" src={plus} alt="new-button" />
+    <div class="plus-icon" >{@html plus}</div>
 </div>
 {#each files as file, index}
     <IdeTab {file} {index} />

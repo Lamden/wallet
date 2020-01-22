@@ -23,10 +23,11 @@
     flex-direction: column;
     margin-right: 20px;
     margin-bottom: 20px;
+    min-width: 23%;
 }
 
 .image{
-    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
     border-radius: 4px;
     height: 232px;
@@ -44,6 +45,7 @@
 
 .logo{
     margin-right: 20px;
+    width: 32px;
 }
 </style>
 
@@ -53,7 +55,7 @@
         style="background-image: url({cardInfo.image});">
     </div>
     <div class="content">
-        <img class="logo" src={doco} alt="doco logo" />
+        <div class="logo" >{@html doco}</div>
         <div>
             <h6 class="no-margin">{cardInfo.name}</h6>
             <div class="text-body2 text-primary-dark">{cardInfo.desc}</div>

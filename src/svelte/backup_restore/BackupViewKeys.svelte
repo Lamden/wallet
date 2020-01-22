@@ -101,6 +101,7 @@
 
 .logo{
     margin-right: 21px;
+    width: 20px;
 }
 
 .key-row{
@@ -156,8 +157,8 @@ a{
 
         {#each coins as coin}
             <div class="key-row">
-                <div class="logo"> 
-                    <img src={getLogo(coin)} alt={`${coin.symbol} logo`} />
+                <div> 
+                    <div class="logo" >{@html getLogo(coin)}</div>
                 </div>
                 <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
                 <div class="keys text-body2">

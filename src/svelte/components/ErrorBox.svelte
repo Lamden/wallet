@@ -50,7 +50,7 @@
 
 <div class="errorbox">
     <div class="header-box">
-        <img class="icon" src={icons.error} alt="error icon" />
+        <div class="icon" >{@html icons.error}</div>
         <h6 class="header">{header}</h6>
     </div>
     <div class="message">

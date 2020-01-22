@@ -6,7 +6,7 @@
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
     "unit-test": "./node_modules/.bin/cypress run --config integrationFolder=cypress/unit-tests",
-    "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-create-spec.js --headed --no-exit",
+    "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-create-spec.js",
     "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-restore-spec.js  --headed --no-exit",
     "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js  --headed --no-exit",
     "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js  --headed --no-exit",
@@ -29,6 +29,7 @@
     "style-loader": "^0.23.1",
     "svelte": "^3.12.1",
     "svelte-loader": "^2.13.4",
+    "svg-inline-loader": "^0.8.0",
     "webpack": "4.33.0",
     "webpack-dev-server": "3.7.1",
     "write-file-webpack-plugin": "4.5.0"

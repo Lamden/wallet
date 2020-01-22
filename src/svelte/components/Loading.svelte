@@ -45,6 +45,6 @@
 </style>
 
 <div class="loading">
-    <img class:svg-black={$themeStyle === 'light'} class="spinner" src={spinner} alt="spinner icon" />
+    <div class:svg-black={$themeStyle === 'light'} class="spinner" >{@html spinner}</div>
     {#if message !== ''}<h6 class="message text-primary">{message}</h6>{/if}
 </div>

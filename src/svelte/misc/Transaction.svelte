@@ -79,7 +79,7 @@
     <div class="icon-box flex-column text-body1">
         <div>{txInfo.contractName}</div>
         <div>{txInfo.methodName}</div>
-        <img class="icon-size" src={error ? errorCircle : successCircle} alt={`success/failure icon`} />
+        <div class="icon-size">{@html error ? errorCircle : successCircle}</div>
     </div>
     <div class="args flex-column text-body1">
         {#each Object.keys(txInfo.args) as arg}

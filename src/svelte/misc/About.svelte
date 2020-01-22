@@ -85,11 +85,15 @@
     justify-content: space-evenly;
     width: 534px;
     margin: 70px auto;
-    
+    align-items: center;
 }
 
 .social-icon{
     cursor: pointer;
+    width: 45px;
+}
+.facebook{
+    width: 22px;
 }
 </style>
 <div class="box text-primary">
@@ -100,7 +104,7 @@
     </div>
     <div class="social-box">
         {#each socials as social}
-            <img class="social-icon" src={social.image} alt="{social.name}" on:click={() => openLink(social.link)}/>
+            <div class="social-icon" class:facebook={social.name === 'Facebook'} on:click={() => openLink(social.link)}>{@html social.image}</div>
         {/each}
     </div>
 </div>

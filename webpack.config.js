@@ -13,7 +13,7 @@ var alias = {};
 
 var secretsPath = path.join(__dirname, ("secrets." + env.NODE_ENV + ".js"));
 
-var fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
+var fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "ttf", "woff", "woff2"];
 
 if (fileSystem.existsSync(secretsPath)) {
   alias["secrets"] = secretsPath;
@@ -57,6 +57,13 @@ var options = {
         test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
         loader: "file-loader?name=[name].[ext]",
         exclude: /node_modules/
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
+        options: {
+          removeSVGTagAttrs: true
+        }
       },
       {
         test: /\.html$/,

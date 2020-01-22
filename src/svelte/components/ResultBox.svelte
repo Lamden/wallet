@@ -82,7 +82,7 @@
     <div id={'results-subtitle'} class="text-body1">{result.subtitle}</div>
 
     <div class="message flex-row">
-        <img class="icon" src={icon} alt={`${result.type} icon`} />
+        <div class="icon">{@html icon}</div>
         <h6 id={'results-message'}>{result.message}</h6>
     </div>
 

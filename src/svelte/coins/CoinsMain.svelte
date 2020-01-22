@@ -137,12 +137,11 @@
 		</div>
 		<div class="flex-row balance-total text-title">
 			{`${$balanceTotal.toLocaleString('en')}`}
-			<img on:click={handleRefresh} 
+			<div on:click={handleRefresh} 
 				 class="refresh-icon clickable" 
-				 class:spinner={refreshing}
-				 src={refresh} 
-				 title="Refresh Balances" 
-				 alt={'refresh icon'} >
+				 class:spinner={refreshing}>
+				 {@html refresh} 
+			</div>
 		</div>
 		<div class="buttons">
 			<Button id={'add-btn'}

@@ -39,18 +39,19 @@
 
 .chevron {
     width: 12px;
-    min-height: 17px;
     margin-left: 18px;
+    margin-top: 5px;
 }
 
 .last{
     border-bottom: 4px solid var(--accent-color);
+    margin-top: 4px;
 }
 </style>
 
 <div class="box" class:last={last} class:pointer={!last}>
     {#if index !== 0}
-        <img class="chevron" src={icons.chevronRight} alt="right chevron" />
+        <div class="chevron">{@html icons.chevronRight}</div>
     {/if}
     {#if crumb.page.name !== ''}
         <span class="words link text-body1" on:click={() => switchPage(crumb.page.name, crumb.page.data)}> {crumb.name} </span>

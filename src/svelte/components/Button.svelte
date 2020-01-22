@@ -44,11 +44,11 @@
 }
 
 .icon-left {
-    margin: -2px 8px 0 0;   
+    margin: 0 8px 0 0;   
 }
 
 .icon-right {
-    margin: -2px 0 0 8px;
+    margin: 0 0 0 8px;
 }
 
 .icon-after{
@@ -67,7 +67,7 @@
     >
 
     {#if icon !== ''}
-        <img class="icon" class:icon-left={!iconAfter} class:icon-right={iconAfter} src={icons[icon]} alt='button logo' />
+        <div class="icon" class:icon-left={!iconAfter} class:icon-right={iconAfter}>{@html icons[icon]}</div>
     {/if}
 
     <div class="text-button" class:lable-left={iconAfter} class:lable-right={!iconAfter}> {name} </div>

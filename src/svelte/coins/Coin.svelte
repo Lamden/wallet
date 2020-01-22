@@ -84,7 +84,7 @@
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
     <div class="name text text-body1">
-        <img class="logo" class:svg-black={$themeStyle === 'light'} src={logo} alt={`${coin.name} logo`} />
+        <div class="logo" class:svg-black={$themeStyle === 'light'}>{@html logo}</div>
         <div class="name-box">
             <div class="text-body1">
                 {`${coin.name}`} 

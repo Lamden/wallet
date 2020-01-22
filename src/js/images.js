@@ -77,7 +77,7 @@ export const icons = {
 
 //Backgrounds
 import squares_bg from '../img/backgrounds/squares_bg.png';
-import github_bg from '../img/backgrounds/github_bg.svg';
+import github_bg from '../img/backgrounds/github_bg.png';
 
 export const backgrounds = {
     squares_bg,

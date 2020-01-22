@@ -32,6 +32,7 @@
 	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
+		CoinStore.setPwd('Testing0!2')
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
@@ -92,7 +93,7 @@
 							</div>
 							<div class="footer-box">
 								{'Made with'}
-								<img class="heart" src={heart} alt="heart icon" />
+								<div class="heart">{@html heart}</div>
 								{'by Lamden'}
 							</div>
 						</div>
@@ -202,6 +203,7 @@
 	.heart{
 		margin: 0 2px;
 		position: relative;
+		width: 13px;
 		top: 1px;
 	}
 </style>

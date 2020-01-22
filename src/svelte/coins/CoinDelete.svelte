@@ -92,6 +92,7 @@
 
 .icon{
     margin-right: 10px;
+    width: 20px;
 }
 
 .submit{
@@ -124,7 +125,7 @@
                     required={true}/>
             {:else}
                 <div id={'warning-msg'} class="warning-message flex-row">
-                    <img class="icon" src={warning} alt="warning icon" />
+                    <div class="icon" >{@html warning}</div>
                     <h6>Please Confirm Wallet Deletion</h6>
                 </div>
                 
