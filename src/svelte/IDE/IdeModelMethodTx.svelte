@@ -44,7 +44,7 @@
         let stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
         resultInfo = {
             title: `Transaction Failure`,
-            subtitle: `Your ${txData.sender.symbol} transaction returnd an error and used ${stampsUsed} stamps`,
+            subtitle: `Your ${txData.sender.symbol} transaction returned an error and used ${stampsUsed} stamps`,
             message: 'Transaction Failed',
             type: 'error',
         }
