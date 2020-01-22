@@ -1,7 +1,9 @@
 {
-  "name": "Lamden_Wallet",
+  "name": "lamden-wallet",
   "version": "0.9.8",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
+  "author": "Jeff Scott <jeff@lamden.io>",
+  "license" : "",
   "scripts": {
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
@@ -13,6 +15,10 @@
     "test-modify-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/modify-wallet-spec.js  --headed --no-exit",
     "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js  --headed --no-exit",
     "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js  --headed --no-exit"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/Lamden/wallet.git"
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.0",
