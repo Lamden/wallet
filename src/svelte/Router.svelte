@@ -10,13 +10,13 @@ import MenuBox from './menu/MenuBox.svelte';
 import MenuItem from './menu/MenuItem.svelte';
 
 //FirstRun
-import FirstRunMain from './firstRun/FirstRunMain.svelte';
-import FirstRunIntro from './firstRun/FirstRunIntro.svelte';
-import FirstRunRestoreMain from './firstRun/FirstRunRestoreMain.svelte';
-import FirstRunCreatePW from './firstRun/FirstRunCreatePW.svelte';
-import FirstRunTOS from './firstRun/FirstRunTOS.svelte';
-import FirstRunGenWallets from './firstRun/FirstRunGenWallets.svelte';
-import FirstRunFinishing from './firstRun/FirstRunFinishing.svelte';
+import FirstRunMain from './firstrun/FirstRunMain.svelte';
+import FirstRunIntro from './firstrun/FirstRunIntro.svelte';
+import FirstRunRestoreMain from './firstrun/FirstRunRestoreMain.svelte';
+import FirstRunCreatePW from './firstrun/FirstRunCreatePW.svelte';
+import FirstRunTOS from './firstrun/FirstRunTOS.svelte';
+import FirstRunGenWallets from './firstrun/FirstRunGenWallets.svelte';
+import FirstRunFinishing from './firstrun/FirstRunFinishing.svelte';
 
 //Coins
 import CoinsMain from './coins/CoinsMain.svelte';
