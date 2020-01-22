@@ -6,7 +6,8 @@
 
 	//Components
 	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../Router.svelte';
-	const { Button } = Components;
+	const { Button, Loading } = Components;
+	import { Monaco } from '../components/Monaco.svelte'
 
     //Context
 	const { openModal } = getContext('app_functions');
@@ -18,13 +19,19 @@
 	let lintErrors = {validations: null};
 	let editorIsLoaded = false;
 
-	import Monaco from './IdeMonacoEditor.svelte';
+	import MonacoWindow from './IdeMonacoEditor.svelte';
   
 	let monaco;
-	
+	let monacoComponent;
+
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
-
+		Monaco.then(mod => {
+			if (mod){
+				monaco = mod;
+				editorIsLoaded = true;
+			}
+		})
 		return () => {
 			editorIsLoaded = false;
 		}
@@ -109,7 +116,11 @@
                 FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
             })
             .catch(err => console.log(err))
-    }
+	}
+	
+	function loaded(){
+		console.log('loaded')
+	}
 </script>
 
 <style>
@@ -120,45 +131,53 @@
 
 </style>
 
-<div id="monaco_window" class="flex-column">
-	{#if editorIsLoaded}
-		<IdeTabs {checkContractExists}/>
-	{/if}
+{#if editorIsLoaded}
+	<div id="monaco_window" class="flex-column">
+		
+			<IdeTabs {checkContractExists}/>
 
-	<div class="editor-row">
-		<Monaco 
-			bind:this={monaco} 
-			on:loaded={editorLoaded}
-			{checkContractExists}
-			on:clickMethod={handleMethodClick}
-			{lintErrors}
-		/>
+		<div class="editor-row">
+
+			<MonacoWindow 
+				bind:this={monacoComponent}
+				{monaco}
+				on:loaded={editorLoaded}
+				{checkContractExists}
+				on:clickMethod={handleMethodClick}
+				{lintErrors}
+			/>
+
+			{#if editorIsLoaded && $activeTab.type === 'local'}
+				<div class="buttons flex-row">
+					{#if $activeTab.type === 'local'}
+						<Button 
+							id={'contractTab-btn'} 
+							classes={'button__transparent'}
+							name="Check Contract"
+							margin={'0 10px 3px 0'}
+							height={'42px'}
+							click={() => lint()}
+						/>
+						<Button 
+							id={'contractTab-btn'} 
+							classes={'button__transparent button__blue'}
+							name="Submit to Network"
+							height={'42px'}
+							click={() => lint(submit)}
+						/>
+					{/if}
+				</div>
+			{/if}
+		</div>
 		{#if editorIsLoaded && $activeTab.type === 'local'}
-			<div class="buttons flex-row">
-				{#if $activeTab.type === 'local'}
-					<Button 
-						id={'contractTab-btn'} 
-						classes={'button__transparent'}
-						name="Check Contract"
-						margin={'0 10px 3px 0'}
-						height={'42px'}
-						click={() => lint()}
-					/>
-					<Button 
-						id={'contractTab-btn'} 
-						classes={'button__transparent button__blue'}
-						name="Submit to Network"
-						height={'42px'}
-						click={() => lint(submit)}
-					/>
-				{/if}
-			</div>
+			<IdeErrorsBox {lintErrors} />
+		{/if}
+		{#if editorIsLoaded && $activeTab.methods}
+			<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
 		{/if}
 	</div>
-	{#if editorIsLoaded && $activeTab.type === 'local'}
-		<IdeErrorsBox {lintErrors} />
-	{/if}
-	{#if editorIsLoaded && $activeTab.methods}
-		<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
-	{/if}
-</div>
+{:else}
+	<div class="loading" style={`width: 100%; height: 500px;`}>
+		<Loading  message={'Loading Editor'}/>
+	</div>
+{/if}

@@ -1,12 +1,3 @@
-<script context="module">
-	let monaco_promise;
-	let _monaco;
-	monaco_promise = import('../../js/monaco.js');
-	monaco_promise.then(mod => {
-		_monaco = mod.default;
-	})
-</script>
-
 <script>
 	import { onMount, getContext, createEventDispatcher, afterUpdate } from 'svelte';
 	const dispatch = createEventDispatcher();
@@ -14,17 +5,13 @@
 	//Store
 	import { CacheStore, currentNetwork, FilesStore, activeTab } from '../../js/stores/stores.js';
 
-	//Components
-	import { Components }  from '../Router.svelte'
-	const { Loading } = Components;
-
 	//Context
 	const { checkContractExists, addContractTab } = getContext('editor_functions');
 
 	//Props
 	export let lintErrors = undefined;
+	export let monaco;
 
-	let monaco;
 	let container;
 	let editor;
 	let errorList = [];
@@ -38,10 +25,7 @@
 	$: activeTabCode = $activeTab.code;
 
   	onMount(() => {
-		monaco_promise.then(async mod => {
-			monaco = mod.default;
-			createEditor();
-		});
+		createEditor();
 		return () => {
 			editor.dispose();
 		}
@@ -276,11 +260,7 @@
 }
 </style>
 
-{#await monaco_promise}
-	<div class="loading" style={`width: 100%; height: ${editorHeight}`}>
-		<Loading  message={'Loading Editor'}/>
-	</div>
-{:then editor}
-	<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left`} />
-{/await}
+
+<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left`} />
 <svelte:window on:resize={handler}/>
+
