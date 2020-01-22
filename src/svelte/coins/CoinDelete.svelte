@@ -5,12 +5,11 @@
     import { CoinStore } from '../../js/stores/stores.js';
 
     //Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { warning } = icons;
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -92,6 +91,7 @@
 
 .icon{
     margin-right: 10px;
+    width: 20px;
 }
 
 .submit{
@@ -124,7 +124,7 @@
                     required={true}/>
             {:else}
                 <div id={'warning-msg'} class="warning-message flex-row">
-                    <img class="icon" src={warning} alt="warning icon" />
+                    <div class="icon" >{@html warning}</div>
                     <h6>Please Confirm Wallet Deletion</h6>
                 </div>
                 

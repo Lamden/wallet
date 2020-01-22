@@ -1,7 +1,6 @@
 <script>
 	//Images
-    import { icons } from '../../js/images.js';
-	const { close } = icons;
+    import close from '../../img/menu_icons/icon_close.svg';
 	
 	//Props
 	export let lintErrors;
@@ -48,9 +47,12 @@
     border: 2px solid red;
 }
 .close{
-	cursor: pointer;
-	position: absolute;
-    right: 67px;
+    cursor: pointer;
+    position: relative;
+    left: calc(100% - 6px);
+    width: 18px;
+    top: 2px;
+    margin-bottom: -22px;
 }
 
 </style>
@@ -60,11 +62,7 @@
 		 class:no-errors={lintErrors.violations === null}
 		 class:errors={lintErrors.violations !== null}
 	>
-		<img class="close" 
-			src={close} 
-			alt="close errors box" 
-			title="dismiss"
-			on:click={closeBox} />
+		<div class="close" on:click={closeBox}>{@html close}</div>
 		{#each errors as error}
 			<div>{error}</div>
 		{/each}

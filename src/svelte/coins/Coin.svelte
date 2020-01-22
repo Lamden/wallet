@@ -4,8 +4,8 @@
     //Stores
     import { SettingsStore, currentNetwork, themeStyle, CoinStore, balanceTotal } from '../../js/stores/stores.js';
 
-    //Utils
-    import { logos } from '../../js/crypto/logos.js';
+    //Components
+    import CryptoLogos from '../components/CryptoLogos.svelte';
 
     // Props
     export let coin;
@@ -15,7 +15,6 @@
     const { switchPage } = getContext('app_functions');
     
     $: watching = coin.sk === 'watchOnly';
-    $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
     $: percent = $balanceTotal === undefined ? "" : toPercentString();
@@ -49,11 +48,6 @@
     background-color: var(--bg-color-grey)
 }
 
-.logo {
-    width: 32px;
-    margin: 0 36px 0 16px;
-}
-
 .text{
     display: flex;
     align-items: center;
@@ -77,14 +71,11 @@
 	width: 203px;
 }
 
-.svg-black{
-    filter: invert(1);
-}
 </style>
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
     <div class="name text text-body1">
-        <img class="logo" class:svg-black={$themeStyle === 'light'} src={logo} alt={`${coin.name} logo`} />
+        <CryptoLogos {coin} black={true} styles={`width: 32px; margin: 0 36px 0 16px;`}/>
         <div class="name-box">
             <div class="text-body1">
                 {`${coin.name}`} 

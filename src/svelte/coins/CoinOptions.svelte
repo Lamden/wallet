@@ -8,12 +8,14 @@
     import { CoinStore } from '../../js/stores/stores.js';
 
     //Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button, DropDown } = Components;
     
     //Images
-    import { icons } from '../../js/images.js';
-    const { copyWhite, copyGreen, del, edit } = icons;
+    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
+    import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
+    import edit from '../../img/menu_icons/icon_edit.svg';
+    import del from '../../img/menu_icons/icon_delete.svg';
 
 	//Context
     const { getModalData } = getContext('app_functions');
@@ -62,9 +64,6 @@
 </script>
 
 <style>
-.coin-options{
-    
-}
 .options-box{
     justify-content: space-between;
     margin-top: 13px;
@@ -96,10 +95,14 @@
 }
 .copy-message-icon{
     margin-right: 11px;
+    width: 12px;
+}
+.icon{
+    width: 20px;
 }
 </style>
 
-<div class="coin-options text-primary">
+<div class="text-primary">
     <h5> {`Recieve ${coin.name} ${coin.symbol}`} </h5>
     <DropDown
         id={'wallets-dd'}
@@ -123,7 +126,7 @@
                 class:grey={ option.color === 'grey'}
                 class:purple={ option.color === 'purple'}
                 on:click={option.click}>
-                <img src={option.icon} alt={`${option.name} icon`} />
+                <div class="icon" >{@html option.icon}</div>
                 <div class="option-name text-subtitle2">{option.name}</div>
                 <div class="option-desc text-caption">{option.desc}</div>
             </div>
@@ -132,7 +135,7 @@
     <div class="results">
         {#if copySuccessful}
             <div id={"copy-address"} class="copy-message flex-row text-caption2">
-                <img class="copy-message-icon" src={copyGreen} alt="copy icon" />
+                <div class="copy-message-icon" >{@html copyGreen}</div>
                 Wallet Address Copied
             </div>
         {/if}

@@ -2,12 +2,13 @@
     import { getContext } from 'svelte'
 
     //Components
-    import { Components } from '../../js/router.js';
+    import { Components } from '../Router.svelte';
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { errorCircle, warning, successCircle } = icons;
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
+    import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
     //Context
     const { getModalData } = getContext('app_functions');
@@ -33,7 +34,8 @@
 }
 
 .icon{
-    margin-right: 10px;
+    margin-right: 14px;
+    width: 22px;
 }
 
 .checkmark{
@@ -48,9 +50,9 @@
 
 <div class="message-box flex-column">
     <div class="message flex-row">
-        {#if type === 'error'}<img id={"error"} class="icon" src={errorCircle} alt="error icon" />{/if}   
-        {#if type === 'warning'}<img id={"warning"} class="icon" src={warning} alt="warning icon" />{/if}
-        {#if type === 'success'}<img id={"success"} class="icon checkmark" src={successCircle} alt="checkmark icon" />{/if}
+        {#if type === 'error'}<div id={"error"} class="icon">{@html errorCircle}</div>{/if}  
+        {#if type === 'warning'}<div id={"warning"} class="icon">{@html warning}</div>{/if}
+        {#if type === 'success'}<div id={"success"} class="icon checkmark">{@html successCircle}</div>{/if}
         <h5 id={'message-text'}>{text}</h5>
     </div>
     <div class="buttons flex-row">

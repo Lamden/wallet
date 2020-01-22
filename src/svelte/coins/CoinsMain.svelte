@@ -12,11 +12,13 @@
 			currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
-	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
+	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
 	const { Button } = Components;
-	import { backgrounds, icons } from '../../js/images.js';
-	const { squares_bg } = backgrounds;
-	const { refresh } = icons;
+
+	//Images
+	import squares_bg from '../../img/backgrounds/squares_bg.png';
+	import refresh from '../../img/menu_icons/icon_refresh.svg';
+	import plus from '../../img/menu_icons/icon_plus.svg';
 
 	//Utils
 	import { updateBalances, decryptObject } from '../../js/utils.js';
@@ -137,12 +139,11 @@
 		</div>
 		<div class="flex-row balance-total text-title">
 			{`${$balanceTotal.toLocaleString('en')}`}
-			<img on:click={handleRefresh} 
+			<div on:click={handleRefresh} 
 				 class="refresh-icon clickable" 
-				 class:spinner={refreshing}
-				 src={refresh} 
-				 title="Refresh Balances" 
-				 alt={'refresh icon'} >
+				 class:spinner={refreshing}>
+				 {@html refresh} 
+			</div>
 		</div>
 		<div class="buttons">
 			<Button id={'add-btn'}
@@ -150,7 +151,7 @@
 				name="Add Wallet"
 				width={'155px'}
 		 		click={() => openModal('CoinAdd')} 
-				icon='plus'/>
+				icon={plus}/>
 		</div>
 	</div>
 	<div class="header header-text divider">

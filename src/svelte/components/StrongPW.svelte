@@ -1,7 +1,6 @@
 <script>
     //images
-    import { icons } from '../../js/images.js';
-    const { successCircle } = icons;
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
 
     export let password;
     export let charLength;
@@ -26,30 +25,30 @@
     margin-left: 21px;
 }
 .icon{
-    height: 11px;
+    width: 11px;
     margin-right: 6px;
 }
 </style>
 
 <div class="strong-pw text-body2">
-    <div class={`${!length ? 'text-primary-dark filler' : ''}`}>
-        {#if length}<img class="icon" src={successCircle} alt={'success'}>{/if}
+    <div class={`${!length ? 'text-primary-dark filler' : 'flex-row'}`}>
+        {#if length}<div class="icon">{@html successCircle}</div>{/if}
         {`${charLength} or more characters`}
     </div>
-    <div class={`${!lower ? 'text-primary-dark filler' : ''}`}>
-        {#if lower}<img class="icon" src={successCircle} alt={'success'}>{/if}
+    <div class={`${!lower ? 'text-primary-dark filler' : 'flex-row'}`}>
+        {#if lower}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Lowercase Letter'}
     </div>
-    <div class={`${!capital ? 'text-primary-dark filler' : ''}`}>
-        {#if capital}<img class="icon" src={successCircle} alt={'success'}>{/if}
+    <div class={`${!capital ? 'text-primary-dark filler' : 'flex-row'}`}>
+        {#if capital}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Capital Letter'}
     </div>
-    <div class={`${!number ? 'text-primary-dark filler' : ''}`}>
-        {#if number}<img class="icon" src={successCircle} alt={'success'}>{/if}
+    <div class={`${!number ? 'text-primary-dark filler' : 'flex-row'}`}>
+        {#if number}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Number'}
     </div>
-    <div class={`${!symbol ? 'text-primary-dark filler' : ''}`}>
-        {#if symbol}<img class="icon" src={successCircle} alt={'success'}>{/if}
+    <div class={`${!symbol ? 'text-primary-dark filler' : 'flex-row'}`}>
+        {#if symbol}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Special Character'}
     </div> 
 

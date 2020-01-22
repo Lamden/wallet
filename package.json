@@ -1,12 +1,14 @@
 {
-  "name": "Lamden_Wallet",
+  "name": "lamden-wallet",
   "version": "0.9.8",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
+  "author": "Jeff Scott <jeff@lamden.io>",
+  "license": "",
   "scripts": {
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
     "unit-test": "./node_modules/.bin/cypress run --config integrationFolder=cypress/unit-tests",
-    "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-create-spec.js --headed --no-exit",
+    "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-create-spec.js",
     "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-restore-spec.js  --headed --no-exit",
     "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js  --headed --no-exit",
     "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js  --headed --no-exit",
@@ -14,10 +16,14 @@
     "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js  --headed --no-exit",
     "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js  --headed --no-exit"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lamden/wallet.git"
+  },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.0",
     "clean-webpack-plugin": "^1.0.0",
-    "copy-webpack-plugin": "^4.6.0",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",
     "cypress": "^3.8.1",
     "cypress-file-upload": "^3.5.0",
@@ -29,6 +35,7 @@
     "style-loader": "^0.23.1",
     "svelte": "^3.12.1",
     "svelte-loader": "^2.13.4",
+    "svg-inline-loader": "^0.8.0",
     "webpack": "4.33.0",
     "webpack-dev-server": "3.7.1",
     "write-file-webpack-plugin": "4.5.0"

@@ -5,10 +5,12 @@
     import { breadcrumbs } from '../../js/stores/stores.js';
 
     //Components
-	import { Components }  from '../../js/router.js'
-	const { Button } = Components;
-	import { backgrounds } from '../../js/images.js';
-	const { squares_bg } = backgrounds;
+	import { Components }  from '../Router.svelte'
+    const { Button } = Components;
+    
+    //Images
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -69,7 +71,7 @@
 				name="Backup Wallet"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('BackupMain')} 
-				icon='arrowRight'
+				icon={arrowRight}
                 iconPosition='after'/>
         </div>
 	</div>

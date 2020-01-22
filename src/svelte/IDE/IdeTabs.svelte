@@ -5,11 +5,10 @@
     import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
-    import { IdeTab }  from '../../js/router.js'
+    import { IdeTab }  from '../Router.svelte'
     
     //Images
-    import { icons } from '../../js/images.js';
-    const { plus } = icons;
+    import plus from '../../img/menu_icons/icon_plus.svg';
 
     //Context
     const { openModal } = getContext('app_functions');
@@ -28,14 +27,14 @@
     align-items: center;
 }
 .plus-icon{
-    height: 20px;
+    width: 20px;
     margin: 0 5px;
 }
 </style>
 
 <div class="flex-row">
 <div class="new-button" on:click={addTab}>
-    <img class="plus-icon" src={plus} alt="new-button" />
+    <div class="plus-icon" >{@html plus}</div>
 </div>
 {#each files as file, index}
     <IdeTab {file} {index} />

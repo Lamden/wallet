@@ -1,33 +1,41 @@
 <script>
     //Components
-    import { MenuBox }  from '../../js/router.js'
+    import { MenuBox }  from '../Router.svelte'
     
     //Images
-    import { icons } from '../../js/images.js';
+    import about from '../../img/menu_icons/icon_about.svg';
+    import backup from '../../img/menu_icons/icon_backup.svg';
+    import devtools from '../../img/menu_icons/icon_devtools.svg';
+    import feedback from '../../img/menu_icons/icon_feedback.svg';
+    import history from '../../img/menu_icons/icon_history.svg';
+    import holdings from '../../img/menu_icons/icon_holdings.svg';
+    import restore from '../../img/menu_icons/icon_restore.svg';
+    import signout from '../../img/menu_icons/icon_signout.svg';
+    import smartcontract from '../../img/menu_icons/icon_smartcontract.svg';
 
     let menus = [
         {
             heading: 'Wallet',
             items:[
-                {id:"holdings", logo: icons.holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
-                {id:"history", logo: icons.history, name: 'History', page: {name: 'HistoryMain'}},
-                {id:"devtools", logo: icons.devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
-                {id:"smart-contracts", logo: icons.smartcontract, name: 'Smart Contracts', page: {name: 'IdeMain'}},
+                {id:"holdings", logo: holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
+                {id:"history", logo: history, name: 'History', page: {name: 'HistoryMain'}},
+                {id:"devtools", logo: devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
+                {id:"smart-contracts", logo: smartcontract, name: 'Smart Contracts', page: {name: 'IdeMain'}},
             ]
         },
         {
             heading: 'Safety & Security',
             items:[
-                {id:"backup", logo: icons.backup, name: 'Backup Wallet', page: {name: 'Backup'}},
-                {id:"restore", logo: icons.restore, name: 'Restore Wallet', page: {name: 'Restore'}},
-                {id:"lock", logo: icons.signout, name: 'Sign out & Lock', page: {name: 'LockScreen'}},
+                {id:"backup", logo: backup, name: 'Backup Wallet', page: {name: 'Backup'}},
+                {id:"restore", logo: restore, name: 'Restore Wallet', page: {name: 'Restore'}},
+                {id:"lock", logo: signout, name: 'Sign out & Lock', page: {name: 'LockScreen'}},
             ]
         },
         {
             heading: 'About & Info',
             items:[
-                {id:"about", logo: icons.about, name: 'About', page: {name: 'About'}},
-                {id:"feedback", logo: icons.feedback, name: 'Give Feedback', page: {name: 'Feedback'}},
+                {id:"about", logo: about, name: 'About', page: {name: 'About'}},
+                {id:"feedback", logo: feedback, name: 'Give Feedback', page: {name: 'Feedback'}},
             ]
         },
     ]
@@ -46,5 +54,4 @@
     {#each menus as menu}
         <MenuBox heading={menu.heading} menuItems={menu.items} />
     {/each}
-
 </div>

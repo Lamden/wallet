@@ -5,7 +5,7 @@
     import { CoinStore, loggedIn, SettingsStore, password,steps } from '../../js/stores/stores.js';
 
     //Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button } = Components;
 
 	//Utils

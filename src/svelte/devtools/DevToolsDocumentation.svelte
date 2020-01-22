@@ -1,10 +1,10 @@
 <script>
     //Images
-    import { backgrounds, icons } from '../../js/images.js';
-    const { github_bg, squares_bg } = backgrounds;
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import github_bg from '../../img/backgrounds/github_bg.png';
 
 	//Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Card } = Components;
     
     let docoLinks = [
@@ -46,7 +46,7 @@
 <div class="box text-primary">
     <div class="doco-box"> 
         {#each docoLinks as cardInfo}
-            <Card {cardInfo} width={'530px'}/>
+            <Card {cardInfo} width={'350px'}/>
         {/each}
     </div>
 </div>

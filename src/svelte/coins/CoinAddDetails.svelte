@@ -5,7 +5,7 @@
     import { CoinStore, coinMeta, password, supportedCoins, SettingsStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
-    import { Components, Modals } from '../../js/router.js';
+    import { Components, Modals } from '../Router.svelte';
     const { Button, InputBox, DropDown, MessageBox } = Components;
     
 	//Utils

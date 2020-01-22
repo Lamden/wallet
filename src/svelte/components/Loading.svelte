@@ -3,8 +3,7 @@
     import { themeStyle } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { spinner } = icons;
+    import spinner from '../../img/menu_icons/icon_spinner.svg';
     
 
     export let message = '';
@@ -45,6 +44,6 @@
 </style>
 
 <div class="loading">
-    <img class:svg-black={$themeStyle === 'light'} class="spinner" src={spinner} alt="spinner icon" />
+    <div class:svg-black={$themeStyle === 'light'} class="spinner" >{@html spinner}</div>
     {#if message !== ''}<h6 class="message text-primary">{message}</h6>{/if}
 </div>

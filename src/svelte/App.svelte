@@ -17,12 +17,11 @@
 			pageLoaded} from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from '../js/router.js'
+	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
 	const { Modal } = Components;
 
-    //Images
-    import { icons } from '../js/images.js';
-    const { heart } = icons;
+	//Images
+	import heart from '../img/menu_icons/icon_heart.svg';
 
 	let showModal = false;
 	let currentModal;
@@ -92,7 +91,7 @@
 							</div>
 							<div class="footer-box">
 								{'Made with'}
-								<img class="heart" src={heart} alt="heart icon" />
+								<div class="heart">{@html heart}</div>
 								{'by Lamden'}
 							</div>
 						</div>
@@ -202,6 +201,7 @@
 	.heart{
 		margin: 0 2px;
 		position: relative;
+		width: 13px;
 		top: 1px;
 	}
 </style>

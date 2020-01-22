@@ -1,11 +1,12 @@
 <script>
     //Components
-    import { Components } from '../../js/router.js';
+    import { Components } from '../Router.svelte';
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { errorCircle, successCircle, warning } = icons;
+    import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
     //Props
     export let result;
@@ -82,7 +83,7 @@
     <div id={'results-subtitle'} class="text-body1">{result.subtitle}</div>
 
     <div class="message flex-row">
-        <img class="icon" src={icon} alt={`${result.type} icon`} />
+        <div class="icon">{@html icon}</div>
         <h6 id={'results-message'}>{result.message}</h6>
     </div>
 

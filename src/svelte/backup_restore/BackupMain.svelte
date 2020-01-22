@@ -2,7 +2,7 @@
     import { setContext, getContext } from 'svelte';
 
 	//Components
-    import { Components, BackupPages }  from '../../js/router.js'
+    import { Components, BackupPages }  from '../Router.svelte'
     const { Steps, Step } = Components;
     import NavLogo from '../nav/NavLogo.svelte';
 

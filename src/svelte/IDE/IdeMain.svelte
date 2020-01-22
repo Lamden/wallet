@@ -5,7 +5,7 @@
     import { breadcrumbs, currentNetwork, activeTab, FilesStore } from '../../js/stores/stores.js';
 
 	//Components
-	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../../js/router.js';
+	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../Router.svelte';
 	const { Button } = Components;
 
     //Context

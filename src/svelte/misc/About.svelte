@@ -5,12 +5,19 @@
     import { breadcrumbs } from '../../js/stores/stores.js';
 
     //Images
-    import { backgrounds, icons } from '../../js/images.js';
-    const { github_bg, squares_bg } = backgrounds;
-    const { twitter, facebook, medium, telegram, reddit, github, heart } = icons;
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import github_bg from '../../img/backgrounds/github_bg.png';
+
+    //Social Icons
+    import twitter from '../../img/menu_icons/icon_twitter.svg';
+    import facebook from '../../img/menu_icons/icon_facebook.svg';
+    import medium from '../../img/menu_icons/icon_medium.svg';
+    import telegram from '../../img/menu_icons/icon_telegram.svg';
+    import reddit from '../../img/menu_icons/icon_reddit.svg';
+    import github from '../../img/menu_icons/icon_github.svg';
 
 	//Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Card } = Components;
 
     function openLink(url){
@@ -85,11 +92,15 @@
     justify-content: space-evenly;
     width: 534px;
     margin: 70px auto;
-    
+    align-items: center;
 }
 
 .social-icon{
     cursor: pointer;
+    width: 45px;
+}
+.facebook{
+    width: 22px;
 }
 </style>
 <div class="box text-primary">
@@ -100,7 +111,7 @@
     </div>
     <div class="social-box">
         {#each socials as social}
-            <img class="social-icon" src={social.image} alt="{social.name}" on:click={() => openLink(social.link)}/>
+            <div class="social-icon" class:facebook={social.name === 'Facebook'} on:click={() => openLink(social.link)}>{@html social.image}</div>
         {/each}
     </div>
 </div>

@@ -5,12 +5,11 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { checkmarkWhite } = icons;
+    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg';
 
     //Context
     const { switchPage } = getContext('app_functions');

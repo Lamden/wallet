@@ -3,8 +3,7 @@
     import { steps } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { checkmark } = icons;
+    import checkmark from '../../img/menu_icons/icon_checkmark.svg';
 
     //Props
     export let stepInfo
@@ -81,31 +80,28 @@
 }
 
 .checkmark{
-    margin-top: 5px;
+    margin-top: 3px;
+    width: 16px;
 }
 
 .current{
     background: #E0E0E0;
 }
 
-.name{
-
-}
-
-.desc{
-
+.done{
+    background: #3fa23f
 }
 
 </style>
 
 <div class="step" class:middle={!first && !last} class:first={first} class:last={last}>
-    <div class="number-box" class:current={current || complete}>
-        <div class="number text-subtitle2 text-black" >
-            {#if complete}<img class="checkmark" src={checkmark} alt="checkmark icon" />
+    <div class="number-box" class:current={current || complete} class:done={complete}>
+        <div class="number text-subtitle2 text-black">
+            {#if complete}<div class="checkmark">{@html checkmark}</div>
             {:else}{stepInfo.number}
             {/if}
         </div>
     </div>
-    <div class="name text-body1 text-primary">{stepInfo.name}</div>
-    <div class="desc text-body2 text-primary-dark">{stepInfo.desc}</div>
+    <div class="text-body1 text-primary">{stepInfo.name}</div>
+    <div class="text-body2 text-primary-dark">{stepInfo.desc}</div>
 </div>

@@ -1,7 +1,7 @@
 <script>
     //Components
     import NavLogo from '../nav/NavLogo.svelte';
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { InputBox } = Components;
     
     //Stores

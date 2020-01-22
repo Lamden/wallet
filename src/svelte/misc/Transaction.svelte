@@ -3,11 +3,11 @@
     import { CoinStore } from '../../js/stores/stores.js';
 
     //Router
-    import { CoinDivider } from '../../js/router.js';
+    import { CoinDivider } from '../Router.svelte';
 
     //images
-    import { icons } from '../../js/images.js';
-    const { errorCircle, successCircle } = icons;
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
+    import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
     
     //Props
     export let txData;
@@ -79,7 +79,7 @@
     <div class="icon-box flex-column text-body1">
         <div>{txInfo.contractName}</div>
         <div>{txInfo.methodName}</div>
-        <img class="icon-size" src={error ? errorCircle : successCircle} alt={`success/failure icon`} />
+        <div class="icon-size">{@html error ? errorCircle : successCircle}</div>
     </div>
     <div class="args flex-column text-body1">
         {#each Object.keys(txInfo.args) as arg}

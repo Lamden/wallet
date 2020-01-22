@@ -2,15 +2,14 @@
     import { onMount, getContext } from 'svelte';
 
 	//Components
-    import { Components }  from '../../js/router.js'
+    import { Components }  from '../Router.svelte'
     const { Step } = Components;
 
     //Stores
     import { steps } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { chevronRight } = icons;
+    import chevronRight from '../../img/menu_icons/icon_chevron-right.svg';
 
     //Context
     const { changeStep } = getContext('functions');
@@ -60,7 +59,7 @@
 </style>
 <div class="steps" class:hide={noSteps}>
     <div class="back-box" class:hide={$steps.currentStep >= $steps.stepList.length }>
-        <img class="back-arrow" src={chevronRight} alt="back icon" />
+        <div class="back-arrow">{@html chevronRight}</div>
         <div class="back-button text-button" on:click={() => goBack()}>{'BACK'}</div>
     </div>
     {#each $steps.stepList as stepInfo, index}

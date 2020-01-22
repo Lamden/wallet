@@ -3,12 +3,11 @@
     import { getContext } from 'svelte';
 
     //Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { warning } = icons;
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
     //Context
     const { nextPage, back } = getContext('tx_functions');
@@ -77,7 +76,7 @@
                 <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
                 {#if detail.value === ''}
                     <div class="values text-body1 warning flex-row">
-                        <img class="warning-icon text-body1" src={warning} alt={'warning icon'} />
+                        <div class="warning-icon text-body1" >{@html warning}</div>
                         {'Empty Field'}
                     </div>
                 {:else}

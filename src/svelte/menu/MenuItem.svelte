@@ -1,6 +1,5 @@
 <script>
     import { getContext  } from 'svelte';
-    import { icons } from '../../js/images.js';
 
     //Stores
 	import { currentPage, CoinStore } from '../../js/stores/stores.js';
@@ -67,6 +66,6 @@
 
 
 <div id={menuItem.id} class="item" class:selected={isSelected} class:notselected={!isSelected} on:click={ () => menuAction() }>
-    <img class="logo" src={menuItem.logo} alt="menu item logo"/>
+    <div class="logo">{@html menuItem.logo}</div>
     <span class="name"> {menuItem.name} </span>
 </div>
