@@ -5,9 +5,16 @@
     import { breadcrumbs } from '../../js/stores/stores.js';
 
     //Images
-    import { backgrounds, icons } from '../../js/images.js';
-    const { github_bg, squares_bg } = backgrounds;
-    const { twitter, facebook, medium, telegram, reddit, github, heart } = icons;
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import github_bg from '../../img/backgrounds/github_bg.png';
+
+    //Social Icons
+    import twitter from '../../img/menu_icons/icon_twitter.svg';
+    import facebook from '../../img/menu_icons/icon_facebook.svg';
+    import medium from '../../img/menu_icons/icon_medium.svg';
+    import telegram from '../../img/menu_icons/icon_telegram.svg';
+    import reddit from '../../img/menu_icons/icon_reddit.svg';
+    import github from '../../img/menu_icons/icon_github.svg';
 
 	//Components
 	import { Components }  from '../../js/router.js'

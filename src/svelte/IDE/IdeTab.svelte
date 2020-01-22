@@ -4,8 +4,8 @@
     import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { del, connected } = icons;
+    import del from '../../img/menu_icons/icon_delete.svg';
+    import connected from '../../img/menu_icons/icon_connected.svg';
 
     //Props
     export let file;

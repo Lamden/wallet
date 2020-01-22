@@ -1,11 +1,10 @@
 <script>
-    import { icons } from '../../js/images.js';
-
     //Props
     export let id;
     export let name;
     export let click;
     export let icon = '';
+    export let iconWidth = '14px';
     export let iconPosition = 'before';
     export let width = 'unset';
     export let height = 'unset';
@@ -67,7 +66,7 @@
     >
 
     {#if icon !== ''}
-        <div class="icon" class:icon-left={!iconAfter} class:icon-right={iconAfter}>{@html icons[icon]}</div>
+        <div class="icon" style={`width: ${iconWidth};`} class:icon-left={!iconAfter} class:icon-right={iconAfter}>{@html icon}</div>
     {/if}
 
     <div class="text-button" class:lable-left={iconAfter} class:lable-right={!iconAfter}> {name} </div>

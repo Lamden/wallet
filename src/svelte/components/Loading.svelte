@@ -3,8 +3,7 @@
     import { themeStyle } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { spinner } = icons;
+    import spinner from '../../img/menu_icons/icon_spinner.svg';
     
 
     export let message = '';

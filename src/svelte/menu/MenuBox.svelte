@@ -1,7 +1,4 @@
 <script>
-    import { getContext  } from 'svelte';
-    import { icons } from '../../js/images.js';
-
     //Components
 	import { MenuItem }  from '../../js/router.js'
 

@@ -7,8 +7,7 @@
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { warning } = icons;
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
     //Context
     const { nextPage, back } = getContext('tx_functions');

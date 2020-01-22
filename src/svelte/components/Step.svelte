@@ -3,8 +3,7 @@
     import { steps } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { checkmark } = icons;
+    import checkmark from '../../img/menu_icons/icon_checkmark.svg';
 
     //Props
     export let stepInfo

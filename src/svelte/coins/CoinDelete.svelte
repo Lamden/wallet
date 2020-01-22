@@ -9,8 +9,7 @@
     const { Button, InputBox } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { warning } = icons;
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
 	//Context
     const { switchPage } = getContext('app_functions');

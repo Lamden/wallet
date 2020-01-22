@@ -9,8 +9,7 @@
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { checkmarkWhite } = icons;
+    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg';
 
     //Context
     const { switchPage } = getContext('app_functions');

@@ -1,8 +1,7 @@
 
 <script>
     //Images
-    import { icons } from '../../js/images.js';
-    const { doco } = icons;
+    import doco from '../../img/menu_icons/icon_doco.svg';
 
     export let cardInfo;
     export let width = 'unset';

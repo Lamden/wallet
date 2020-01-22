@@ -1,7 +1,6 @@
 <script>
 	//Images
-    import { icons } from '../../js/images.js';
-	const { close } = icons;
+    import close from '../../img/menu_icons/icon_close.svg';
 	
 	//Props
 	export let lintErrors;

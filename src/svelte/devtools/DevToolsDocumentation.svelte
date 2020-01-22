@@ -1,7 +1,7 @@
 <script>
     //Images
-    import { backgrounds, icons } from '../../js/images.js';
-    const { github_bg, squares_bg } = backgrounds;
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import github_bg from '../../img/backgrounds/github_bg.png';
 
 	//Components
 	import { Components }  from '../../js/router.js'

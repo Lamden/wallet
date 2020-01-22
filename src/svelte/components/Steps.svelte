@@ -9,8 +9,7 @@
     import { steps } from '../../js/stores/stores.js';
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { chevronRight } = icons;
+    import chevronRight from '../../img/menu_icons/icon_chevron-right.svg';
 
     //Context
     const { changeStep } = getContext('functions');

@@ -4,8 +4,8 @@
     //Stores
     import { currentPage } from '../../js/stores/stores.js';
     
-    //Misc
-    import { icons } from '../../js/images.js';
+    //Images
+    import chevronRight from '../../img/menu_icons/icon_chevron-right.svg';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -51,7 +51,7 @@
 
 <div class="box" class:last={last} class:pointer={!last}>
     {#if index !== 0}
-        <div class="chevron">{@html icons.chevronRight}</div>
+        <div class="chevron">{@html chevronRight}</div>
     {/if}
     {#if crumb.page.name !== ''}
         <span class="words link text-body1" on:click={() => switchPage(crumb.page.name, crumb.page.data)}> {crumb.name} </span>

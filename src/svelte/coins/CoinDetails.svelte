@@ -6,13 +6,15 @@
 
     //Components
 	import { CoinHistory, Modal, Modals, Components }  from '../../js/router.js'
-	const { Button } = Components;
-	import { backgrounds } from '../../js/images.js';
-	const { squares_bg } = backgrounds;
+    const { Button } = Components;
+    
+    //Images
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
+    import arrowDown from '../../img/menu_icons/icon_arrow-down.svg';
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js'
-    import { logos } from '../../js/crypto/logos.js';
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
@@ -26,7 +28,6 @@
     ]
 
     $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
-    $: logo = coin.logo ? coin.logo : logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     $: symbol = coin.symbol;
     $: balance = coin.balance ? coin.balance : 0;
     $: sendPage = sendPages[coin.network]
@@ -117,14 +118,14 @@
 				name="Send Tx"
                 margin={'0 49px 0 0'}
 		 		click={() => openModal(sendPage, coin)} 
-				icon='arrowUp'/>
+				icon={arrowUp}/>
             <Button
                 id={'send-coin-btn'} 
                 classes={'button__transparent button__blue'}
                 name="Receive Coin"
                 margin={'0 49px 0 0'}
 		 		click={() => copyWalletAddress()} 
-				icon='arrowDown'/>
+				icon={arrowDown}/>
 
 		    <Button 
                 id={'modify-coin-btn'} 

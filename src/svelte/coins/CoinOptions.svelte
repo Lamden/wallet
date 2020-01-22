@@ -12,8 +12,10 @@
     const { Button, DropDown } = Components;
     
     //Images
-    import { icons } from '../../js/images.js';
-    const { copyWhite, copyGreen, del, edit } = icons;
+    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
+    import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
+    import edit from '../../img/menu_icons/icon_edit.svg';
+    import del from '../../img/menu_icons/icon_delete.svg';
 
 	//Context
     const { getModalData } = getContext('app_functions');

@@ -4,12 +4,12 @@
     //Stores
     import { CoinStore, steps, password } from '../../js/stores/stores.js';
 
-	//Components
+    //Components
+    import CryptoLogos from '../components/CryptoLogos.svelte';
 	import { Components }  from '../../js/router.js'
     const { Button, InputBox } = Components;
 
     //Utils
-    import { logos } from '../../js/crypto/logos.js';
     import { decryptStrHash } from '../../js/utils.js';
 
     //Context
@@ -157,8 +157,8 @@ a{
 
         {#each coins as coin}
             <div class="key-row">
-                <div> 
-                    <div class="logo" >{@html getLogo(coin)}</div>
+                <div>
+                    <CryptoLogos {coin} black={true} styles={`margin-right: 21px; width: 20px;`}/>
                 </div>
                 <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
                 <div class="keys text-body2">

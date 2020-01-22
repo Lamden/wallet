@@ -1,6 +1,6 @@
 <script>
     //Images
-    import { icons } from '../../js/images.js';
+    import errorIcon from '../../img/menu_icons/icon_error.svg';
 
     export let error, header, buttonText, buttonAction;
 
@@ -50,7 +50,7 @@
 
 <div class="errorbox">
     <div class="header-box">
-        <div class="icon" >{@html icons.error}</div>
+        <div class="icon" >{@html errorIcon}</div>
         <h6 class="header">{header}</h6>
     </div>
     <div class="message">

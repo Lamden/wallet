@@ -1,7 +1,6 @@
 <script>
     //images
-    import { icons } from '../../js/images.js';
-    const { successCircle } = icons;
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
 
     export let password;
     export let charLength;

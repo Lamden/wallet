@@ -6,8 +6,9 @@
     const { Button } = Components;
 
     //Images
-    import { icons } from '../../js/images.js';
-    const { errorCircle, warning, successCircle } = icons;
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
+    import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
+    import warning from '../../img/menu_icons/icon_warning.svg';
 
     //Context
     const { getModalData } = getContext('app_functions');

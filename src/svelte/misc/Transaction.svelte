@@ -6,8 +6,8 @@
     import { CoinDivider } from '../../js/router.js';
 
     //images
-    import { icons } from '../../js/images.js';
-    const { errorCircle, successCircle } = icons;
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
+    import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
     
     //Props
     export let txData;

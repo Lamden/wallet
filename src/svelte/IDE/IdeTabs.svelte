@@ -8,8 +8,7 @@
     import { IdeTab }  from '../../js/router.js'
     
     //Images
-    import { icons } from '../../js/images.js';
-    const { plus } = icons;
+    import plus from '../../img/menu_icons/icon_plus.svg';
 
     //Context
     const { openModal } = getContext('app_functions');

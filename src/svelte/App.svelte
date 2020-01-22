@@ -20,9 +20,8 @@
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from '../js/router.js'
 	const { Modal } = Components;
 
-    //Images
-    import { icons } from '../js/images.js';
-    const { heart } = icons;
+	//Images
+	import heart from '../img/menu_icons/icon_heart.svg';
 
 	let showModal = false;
 	let currentModal;
@@ -32,7 +31,6 @@
 	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
-		CoinStore.setPwd('Testing0!2')
 		calcRemainingStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
