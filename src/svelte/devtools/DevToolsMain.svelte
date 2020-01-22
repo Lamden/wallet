@@ -5,7 +5,7 @@
     import { breadcrumbs } from '../../js/stores/stores.js';
     
     //Components
-	import { DevToolsDocumentation, DevToolsNetworks }  from '../../js/router.js'
+	import { DevToolsDocumentation, DevToolsNetworks }  from '../Router.svelte'
             
 	onMount(() => {
 		breadcrumbs.set([{name: 'Developer Tools', page: {name: ''}}]);

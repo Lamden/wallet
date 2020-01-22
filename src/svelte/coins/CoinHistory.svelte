@@ -5,7 +5,7 @@
     import { breadcrumbs, TxStore } from '../../js/stores/stores.js';
 
 	//Components
-    import { Transaction }  from '../../js/router.js'
+    import { Transaction }  from '../Router.svelte'
     
     //Props
     export let txList;

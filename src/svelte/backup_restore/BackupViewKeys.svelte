@@ -6,7 +6,7 @@
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
     //Utils

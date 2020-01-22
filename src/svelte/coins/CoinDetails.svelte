@@ -5,7 +5,7 @@
     import { CoinStore, SettingsStore, currentNetwork, previousPage, getCoinReference, breadcrumbs, TxStore } from '../../js/stores/stores.js';
 
     //Components
-	import { CoinHistory, Modal, Modals, Components }  from '../../js/router.js'
+	import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
     const { Button } = Components;
     
     //Images

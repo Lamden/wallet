@@ -12,7 +12,7 @@
 			currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
-	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../../js/router.js'
+	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
 	const { Button } = Components;
 
 	//Images

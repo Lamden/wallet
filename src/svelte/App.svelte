@@ -17,7 +17,7 @@
 			pageLoaded} from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from '../js/router.js'
+	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
 	const { Modal } = Components;
 
 	//Images

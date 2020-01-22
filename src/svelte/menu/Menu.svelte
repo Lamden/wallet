@@ -1,6 +1,6 @@
 <script>
     //Components
-    import { MenuBox }  from '../../js/router.js'
+    import { MenuBox }  from '../Router.svelte'
     
     //Images
     import about from '../../img/menu_icons/icon_about.svg';

@@ -3,7 +3,7 @@
     import { breadcrumbs } from '../../js/stores/stores.js';
 
 	//Components
-    import { NavLogo, NavBreadcrumb, NavControls }  from '../../js/router.js'
+    import { NavLogo, NavBreadcrumb, NavControls }  from '../Router.svelte'
 
 </script>
 

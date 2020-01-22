@@ -1,6 +1,6 @@
 <script>
     //Components
-	import { MenuItem }  from '../../js/router.js'
+	import { MenuItem }  from '../Router.svelte'
 
     //Props
     export let menuItems;

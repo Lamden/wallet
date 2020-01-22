@@ -5,7 +5,7 @@
     import { breadcrumbs, TxStore, currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
-    import { Transaction }  from '../../js/router.js'
+    import { Transaction }  from '../Router.svelte'
 
     let page = 1;
     

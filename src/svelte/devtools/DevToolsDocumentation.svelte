@@ -4,7 +4,7 @@
     import github_bg from '../../img/backgrounds/github_bg.png';
 
 	//Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Card } = Components;
     
     let docoLinks = [

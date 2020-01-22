@@ -3,7 +3,7 @@
     import { getContext } from 'svelte';
 
     //Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Button } = Components;
 
     //Images

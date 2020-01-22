@@ -6,7 +6,7 @@
     import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
     
 	//Components
-    import { NavStatus }  from '../../js/router.js'
+    import { NavStatus }  from '../Router.svelte'
 
     //Context
     const { switchPage } = getContext('app_functions');

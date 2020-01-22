@@ -17,7 +17,7 @@
     import github from '../../img/menu_icons/icon_github.svg';
 
 	//Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { Card } = Components;
 
     function openLink(url){

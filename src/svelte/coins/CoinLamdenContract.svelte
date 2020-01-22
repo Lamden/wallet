@@ -7,7 +7,7 @@
     import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
-    import { Components }  from '../../js/router.js'
+    import { Components }  from '../Router.svelte'
     const { DropDown, InputBox, Button } = Components;
 
     //Utils

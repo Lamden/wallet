@@ -3,7 +3,7 @@
     import { CoinStore } from '../../js/stores/stores.js';
 
     //Router
-    import { CoinDivider } from '../../js/router.js';
+    import { CoinDivider } from '../Router.svelte';
 
     //images
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';

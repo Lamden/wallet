@@ -3,7 +3,7 @@
     import { fade } from 'svelte/transition';
 
 	//Components
-    import { Components }  from '../../js/router.js'
+    import { Components }  from '../Router.svelte'
     const { Button } = Components;
 
 	//Context

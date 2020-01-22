@@ -5,7 +5,7 @@
     import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
-    import { IdeTab }  from '../../js/router.js'
+    import { IdeTab }  from '../Router.svelte'
     
     //Images
     import plus from '../../img/menu_icons/icon_plus.svg';

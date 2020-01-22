@@ -8,7 +8,7 @@
     import { encryptObject } from '../../js/utils.js';
 
     //Components
-	import { Components }  from '../../js/router.js'
+	import { Components }  from '../Router.svelte'
     const { InputBox, StrongPW } = Components;
 
     //Context

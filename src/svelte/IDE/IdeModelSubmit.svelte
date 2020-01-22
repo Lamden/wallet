@@ -5,7 +5,7 @@
     import { CoinStore, FilesStore, SettingsStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
-    import { Modals, Components }  from '../../js/router.js';
+    import { Modals, Components }  from '../Router.svelte';
     const { Button } = Components
 
     //Context
