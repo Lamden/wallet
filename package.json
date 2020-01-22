@@ -7,15 +7,17 @@
   "scripts": {
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
+    "all-tests" : "npm run test-firstrun-create && npm run test-firstrun-restore && npm run test-lockscreen && npm run test-add-wallet && npm run test-modify-wallet && npm run test-restore && npm run test-backup",
     "unit-test": "./node_modules/.bin/cypress run --config integrationFolder=cypress/unit-tests",
     "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-create-spec.js",
-    "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-restore-spec.js  --headed --no-exit",
-    "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js  --headed --no-exit",
-    "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js  --headed --no-exit",
-    "test-modify-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/modify-wallet-spec.js  --headed --no-exit",
-    "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js  --headed --no-exit",
-    "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js  --headed --no-exit",
-    "cypress-open": "./node_modules/.bin/cypress open"
+    "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/firstrun-restore-spec.js",
+    "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/lockscreen-spec.js",
+    "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js",
+    "test-modify-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/modify-wallet-spec.js",
+    "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js",
+    "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js",
+    "cypress-open": "./node_modules/.bin/cypress open",
+    "test-settings-store" : "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/settings-store-spec.js --headed --no-exit"
   },
   "repository": {
     "type": "git",

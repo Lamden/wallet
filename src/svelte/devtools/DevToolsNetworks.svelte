@@ -21,7 +21,7 @@
 
     $: addButtonColor = checking ? '' : 'button__purple';
     $: buttonName = checking ? 'Checking For Network' : 'Add Network';
-    $: network = {name, ip, port, selected: false}
+    $: network = {name, ip, port, lamden: false, selected: false}
 
     function testNetork(){
         ipField.setCustomValidity('')

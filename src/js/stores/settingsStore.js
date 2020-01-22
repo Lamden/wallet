@@ -73,16 +73,33 @@ const createSettingsStore = (key, startValue) => {
                 return settingsStore;
             })
         },
+        //Add a new network into the Networks Array
         addNetwork: (networkInfo) => {
+            //Reject undefined or missing info
+            if (!networkInfo || typeof networkInfo === 'undefined') return;
+            if (!networkInfo.name || !networkInfo.ip || !networkInfo.port) return;
+
+            //Set Defaults if they weren't passed
+            if (!networkInfo.lamden) networkInfo.lamden = false;
+            if (!networkInfo.selected) networkInfo.selected = false;
+            if (!networkInfo.online) networkInfo.online = false;
+
             SettingsStore.update(settingsStore => {
+                //Push new network to the networks Array
                 settingsStore.networks.push(networkInfo);
                 return settingsStore;
             }) 
         },
+        //Change the online status of network to true/false
         setNetworkStatus: (networkInfo, status) => {
-            if (!networkInfo) return;
+            //Reject undefined or missing info
+            if (!networkInfo || typeof networkInfo === 'undefined') return;
+            if (typeof status !== 'boolean') return;
+            if (!networkInfo.ip || !networkInfo.port) return;
+
             SettingsStore.update(settingsStore => {
                 settingsStore.networks.map(network => {
+                    //change the Status to the networks that match the IP and Port
                     if (network.ip === networkInfo.ip && network.port === networkInfo.port) network.online = status
                 })
                 return settingsStore;
