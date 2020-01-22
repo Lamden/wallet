@@ -14,7 +14,8 @@
     "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/add-wallet-spec.js  --headed --no-exit",
     "test-modify-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/modify-wallet-spec.js  --headed --no-exit",
     "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js  --headed --no-exit",
-    "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js  --headed --no-exit"
+    "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js  --headed --no-exit",
+    "cypress-open": "./node_modules/.bin/cypress open"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "cypress": "^3.8.1",
     "cypress-file-upload": "^3.5.0",
     "cypress-localstorage-commands": "^1.1.0",
+    "cypress-log-to-output": "^1.0.7",
     "file-loader": "3.0.1",
     "fs-extra": "7.0.1",
     "html-loader": "0.5.5",

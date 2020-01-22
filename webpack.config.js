@@ -6,6 +6,7 @@ var webpack = require("webpack"),
     CopyWebpackPlugin = require("copy-webpack-plugin"),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
     WriteFilePlugin = require("write-file-webpack-plugin");
+    
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 // load the secrets
@@ -27,8 +28,7 @@ var options = {
     app: path.join(__dirname, "src", "js", "app.js"),
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
-    content: path.join(__dirname, "src", "js", "content.js"),
-    monaco: path.join(__dirname, "src", "js", "monaco.js")
+    content: path.join(__dirname, "src", "js", "content.js")
   },
   output: {
     path: path.join(__dirname, "build"),

@@ -7,7 +7,7 @@ module.exports = (on) => {
 		// as your app's code
 		webpackOptions: require('../../webpack.config.js')
 	}
-
+	require('cypress-log-to-output').install(on)
 	on('file:preprocessor', webpack(options))
 }
 
