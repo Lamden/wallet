@@ -2,7 +2,7 @@
 	import { onMount, getContext } from 'svelte';
 
 	//Stores
-	import {calcRemainingStorage, 
+	import {SettingsStore, 
 			coinList, 
 			CoinStore,
 			balanceTotal,
@@ -32,7 +32,7 @@
 	let refreshing = false;
 
 	onMount(() => {
-		calcRemainingStorage();
+		SettingsStore.calcStorage();
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
 

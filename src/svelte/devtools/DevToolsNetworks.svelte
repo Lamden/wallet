@@ -66,7 +66,7 @@
     }
 
     function handleSelected(e){
-        SettingsStore.setNetwork(e.detail.selected.value)
+        SettingsStore.setCurrentNetwork(e.detail.selected.value)
         CoinStore.updateAllBalances(e.detail.selected.value)
     }
 

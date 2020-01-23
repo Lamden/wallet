@@ -3,7 +3,7 @@
     import { themes } from '../../js/themes.js';
 
 	//Stores
-    import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork, themeStyle } from '../../js/stores/stores.js';
     
 	//Components
     import { NavStatus }  from '../Router.svelte'
@@ -18,11 +18,8 @@
     })
 
     function toggleTheme(event) {
-		SettingsStore.update(current => {
-            current.themeStyle = event.detail ? 'light' : 'dark';
-            document.querySelector("html").style = themes[current.themeStyle];
-            return current;
-        })   
+        SettingsStore.changeTheme(event.detail ? 'light' : 'dark')
+        document.querySelector("html").style = themes[$themeStyle];
     }
 
     function currentNetworkOnline(){

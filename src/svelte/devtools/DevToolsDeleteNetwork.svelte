@@ -13,7 +13,7 @@
 
     function deleteNetwork(){
         SettingsStore.deleteNetwork($currentNetwork)
-        //SettingsStore.setNetwork($networks[0])
+        //SettingsStore.setCurrentNetwork($networks[0])
         closeModal();
     }
 

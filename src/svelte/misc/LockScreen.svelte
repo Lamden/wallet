@@ -5,7 +5,7 @@
     const { InputBox } = Components;
     
     //Stores
-    import { loggedIn, CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore } from '../../js/stores/stores.js';
     
     //DOM nodes
     let formObj, pwdObj;

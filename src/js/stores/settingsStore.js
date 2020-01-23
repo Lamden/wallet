@@ -48,7 +48,13 @@ const createSettingsStore = (key, startValue) => {
 
     const SettingsStore = writable(startValue);
     SettingsStore.subscribe(current => {
-        localStorage.setItem(key, JSON.stringify(current));
+        if (current && Object.keys(current).length > 0) {
+            localStorage.setItem(key, JSON.stringify(current));
+            return;
+        }else{
+            let json = localStorage.getItem("settings")
+            if (json) SettingsStore.set(JSON.parse(json))
+        }
     });
 
     let subscribe = SettingsStore.subscribe;
@@ -63,13 +69,62 @@ const createSettingsStore = (key, startValue) => {
         reset: () => {
             set(startValue)
         },
-        setNetwork: (network) => {
-            if (!network) return;
+        //Store that the first run setup has been completed
+        firstRunComplete: () => {
             SettingsStore.update(settingsStore => {
-                settingsStore.networks.map(item => {
-                    item.selected = false;
-                    if(item.name === network.name && item.ip === network.ip && item.port === network.port) item.selected = true;
-                })
+                settingsStore.firstRun = false;
+                settingsStore.currentPage = {name: 'CoinsMain', data: {}};
+                return settingsStore;
+            })
+        },
+        //Change the current page of the app
+        //an also accept a data package the new page may need;
+        changePage: (pageInfo) => {
+            //Reject undefined or missing info.
+            if (!pageInfo || typeof pageInfo === 'undefined') return;
+            if (!pageInfo.name) return;
+            //Default data to empty object
+            if (!pageInfo.data) pageInfo.data = {};
+            SettingsStore.update(settingsStore => {
+                //Set name and data in Settings store
+                settingsStore.currentPage = pageInfo;
+                return settingsStore;
+            })
+        },
+        //Set a new theme in the setting store
+        changeTheme: (theme) => {
+            //Reject undefined or missing info.
+            if (!theme || typeof theme === 'undefined') return;
+            SettingsStore.update(settingsStore => {
+                //Set theme in Settings store
+                settingsStore.themeStyle = theme;
+                return settingsStore;
+            })
+        },
+        //Make a network the current selected network
+        //This sets the value of the derived "currentNetwork" store
+        setCurrentNetwork: (networkInfo) => {
+            //Reject undefined or missing info
+            if (!networkInfo || typeof networkInfo === 'undefined') return;
+            if (!networkInfo.name || !networkInfo.ip || !networkInfo.port) return;
+            SettingsStore.update(settingsStore => {
+                let foundNetwork = settingsStore.networks.find(f => 
+                    f.name === networkInfo.name && 
+                    f.ip === networkInfo.ip && 
+                    f.port === networkInfo.port
+                )
+                //If the network exixts in the list then switch it to active
+                if (foundNetwork){
+                    settingsStore.networks.map(item => {
+                        //Default all unmatched networks to false
+                        item.selected = false;
+                        //Change the matched network to true
+                        if(item.name === networkInfo.name && 
+                            item.ip === networkInfo.ip && 
+                            item.port === networkInfo.port
+                        ) item.selected = true;
+                    })
+                }
                 return settingsStore;
             })
         },
@@ -81,8 +136,9 @@ const createSettingsStore = (key, startValue) => {
 
             //Set Defaults if they weren't passed
             if (!networkInfo.lamden) networkInfo.lamden = false;
-            if (!networkInfo.selected) networkInfo.selected = false;
             if (!networkInfo.online) networkInfo.online = false;
+            //Default to not selected.  Networks can only be selected using "setNetworkStatus"
+            networkInfo.selected = false;
 
             SettingsStore.update(settingsStore => {
                 //Push new network to the networks Array
@@ -94,9 +150,10 @@ const createSettingsStore = (key, startValue) => {
         setNetworkStatus: (networkInfo, status) => {
             //Reject undefined or missing info
             if (!networkInfo || typeof networkInfo === 'undefined') return;
-            if (typeof status !== 'boolean') return;
             if (!networkInfo.ip || !networkInfo.port) return;
-
+            //Status should be true of false
+            if (typeof status !== 'boolean') return;
+            
             SettingsStore.update(settingsStore => {
                 settingsStore.networks.map(network => {
                     //change the Status to the networks that match the IP and Port
@@ -105,20 +162,35 @@ const createSettingsStore = (key, startValue) => {
                 return settingsStore;
             })
         },
+        //Delete a network from the network list
         deleteNetwork: (networkInfo) => {
-            if (!networkInfo) return;
+            //Reject undefined or missing info
+            if (!networkInfo || typeof networkInfo === 'undefined') return;
+            if (!networkInfo.name || !networkInfo.ip || !networkInfo.port) return;
+            //Reject if the network passed in is a default lamden netowrk
+            if (networkInfo.lamden) return;
             SettingsStore.update(settingsStore => {
+                //Filter out the matching network.
                 let newNetworks = settingsStore.networks.filter(f => {
                     if (f.name === networkInfo.name && f.ip === networkInfo.ip && f.port === networkInfo.port) return false
                     return true;
                 })
-                
+                //Make another network in the list "selected"
                 newNetworks.map((network, index) => {
                     network.selected = index === 0 ? true : false;
                 })
+                //Set the network list into the settings store
                 settingsStore.networks = newNetworks;
                 return settingsStore;
             })
+        },
+        //Calculates the amount of local storage used and remaining
+        calcStorage: () => {
+            SettingsStore.update(settings => {
+                settings.storage.used = new Blob(Object.values(localStorage)).size;
+                settings.storage.remaining = settings.storage.max - settings.storage.used;
+                return settings;
+            })   
         }
     };
 }
@@ -126,22 +198,39 @@ const createSettingsStore = (key, startValue) => {
 //Settings Stores
 export const SettingsStore = createSettingsStore('settings', defualtSettingsStore);
 
-export const loggedIn = writable(true);
-
 export const currentPage = derived(
 	SettingsStore,
-	$SettingsStore => loggedIn ? $SettingsStore.currentPage : {'name' : 'LockScreen', 'data' : {} }
+	$SettingsStore => {
+        try{
+            return $SettingsStore.currentPage;
+        }
+        catch (e){
+            return defualtSettingsStore.currentPage;
+        }
+    }
 );
 
 export const firstRun = derived(
 	SettingsStore,
-	$SettingsStore => $SettingsStore.firstRun
+	$SettingsStore => {
+        try{
+            return $SettingsStore.firstRun;
+        }
+        catch (e){
+            return defualtSettingsStore.firstRun;
+        }
+    }
 );
 
 export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => {
-        return $SettingsStore.themeStyle;
+        try{
+            return $SettingsStore.themeStyle;
+        }
+        catch (e){
+            return defualtSettingsStore.themeStyle;
+        }
     }
 );
 
@@ -149,13 +238,24 @@ export const networks = derived(
 	SettingsStore,
 	$SettingsStore => {
         let networks = [];
-        $SettingsStore.networks.map(network => {
-            networks.push({
-                name: network.name,
-                value: network,
-                selected: network.selected
+        try{
+            $SettingsStore.networks.map(network => {
+                networks.push({
+                    name: network.name,
+                    value: network,
+                    selected: network.selected
+                })
             })
-        })
+        }
+        catch (e){
+            defualtSettingsStore.networks.map(network => {
+                networks.push({
+                    name: network.name,
+                    value: network,
+                    selected: network.selected
+                })
+            })
+        }
         return networks;
     }
 );
@@ -163,14 +263,23 @@ export const networks = derived(
 export const currentNetwork = derived(
 	SettingsStore,
 	$SettingsStore => {
-        return $SettingsStore.networks.find(network => network.selected === true)
+        try{
+            return $SettingsStore.networks.find(network => network.selected === true)
+        }
+        catch (e){
+            return defualtSettingsStore.networks[0];
+        }
     }
 );
 
-export function calcRemainingStorage(){
-    SettingsStore.update(settings => {
-        settings.storage.used = new Blob(Object.values(localStorage)).size;
-        settings.storage.remaining = settings.storage.max - settings.storage.used;
-        return settings;
-    })
-}
+export const storageInfo = derived(
+	SettingsStore,
+	$SettingsStore => {
+        try{
+            return $SettingsStore.storage;
+        }
+        catch (e){
+            return defualtSettingsStore.storage;
+        }
+    }
+);

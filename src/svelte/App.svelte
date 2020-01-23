@@ -13,7 +13,6 @@
 			themeStyle, 
 			firstRun,
 			password,
-			calcRemainingStorage,
 			pageLoaded} from '../js/stores/stores.js';
 
 	//Components
@@ -31,9 +30,9 @@
 	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
-		calcRemainingStorage();
+		SettingsStore.calcStorage();
 		document.querySelector("html").style = themes[$themeStyle];
-		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
+		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
 		pageLoaded.set(true);
 	});
 
@@ -50,9 +49,8 @@
 	}
 
 	function switchPage(name, data) {
-		data = data || {};
 		showModal = false;
-		$SettingsStore.currentPage = {name, data};
+		SettingsStore.changePage({name, data});
 	}
 
 	function getUsedLocalStorageSpace() {
