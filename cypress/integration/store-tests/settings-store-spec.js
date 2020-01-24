@@ -4,9 +4,11 @@ import mount from 'cypress-svelte-unit-test'
 import "cypress-localstorage-commands"
 
 describe('Test the Settings Store', () => {
-    it('Loads default values', () => {
-        cy.viewport(1920, 1080)
+    before(function() {
         mount(App)
+        cy.viewport(1920, 1080);
+    })
+    it('Loads default values', () => {
         cy.get('#currentPage-name').should('exist').then(($div) => {
             expect($div[0].textContent).to.eq("FirstRunMain")
         })

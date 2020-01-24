@@ -50,10 +50,10 @@ const createSettingsStore = (key, startValue) => {
     SettingsStore.subscribe(current => {
         if (current && Object.keys(current).length > 0) {
             localStorage.setItem(key, JSON.stringify(current));
-            return;
         }else{
             let json = localStorage.getItem("settings")
             if (json) SettingsStore.set(JSON.parse(json))
+            console.log('Recovered from bad Settings Store Value')
         }
     });
 

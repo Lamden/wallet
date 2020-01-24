@@ -17,7 +17,9 @@
     "test-restore": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/restore-spec.js",
     "test-backup": "./node_modules/.bin/cypress run --spec cypress/integration/unit-tests/backup-spec.js",
     "cypress-open": "./node_modules/.bin/cypress open",
-    "test-settings-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/settings-store-spec.js --headed --no-exit"
+    "test-stores" : "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/*.js  --headed --no-exit",
+    "test-settings-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/settings-store-spec.js --headed --no-exit",
+    "test-cache-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/cache-store-spec.js --headed --no-exit"
   },
   "repository": {
     "type": "git",
@@ -28,7 +30,7 @@
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",
-    "cypress": "^3.8.1",
+    "cypress": "^3.8.2",
     "cypress-file-upload": "^3.5.0",
     "cypress-localstorage-commands": "^1.1.4",
     "cypress-log-to-output": "^1.0.7",
