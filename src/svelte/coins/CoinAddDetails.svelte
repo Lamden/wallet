@@ -62,10 +62,6 @@
     }
 
     function sendMessage(){
-        if (returnMessage.type !== 'error' && returnMessage.type !== 'warning') {
-            returnMessage.type = 'success';
-            returnMessage.text = `${selected.name} (${selected.symbol}) Wallet Added Successfully`;
-        }
         returnMessage.buttons = returnMessageButtons
         setMessage(returnMessage)
     }
@@ -94,32 +90,34 @@
     }
 
     function saveKeys(){
-        if ($CoinStore.filter(f =>  f.network === selected.network &&
-                                    f.symbol === selected.symbol &&
-                                    f.vk === keyPair.vk).length > 0){
-            returnMessage = {type:'warning', text: "Coin already exists in wallet"}
-            return;
+        let nickname = nicknameObj.value === '' ? `New ${selected.name} Wallet` : nicknameObj.value;
+        let coinInfo = {
+            'network': selected.network,
+            'name': selected.name,
+            'nickname' : nickname,
+            'symbol': selected.symbol,
+            'vk': keyPair.vk
+        }
+        if (addType !== 3) coinInfo.sk = encryptStrHash($password, keyPair.sk);
+        
+        let response = CoinStore.addCoin(coinInfo);
+        if (!response.added){
+            console.log(response);
+            if (response.reason === "duplicate") {
+                returnMessage = {type:'warning', text: "Coin already exists in wallet"} 
+            }
+            if (response.reason === "missingArg") {
+                returnMessage = {type:'error', text: "Coin definition missing information"}
+            }
+        } else {
+            if (response.reason === "new") {
+                returnMessage = {type:'success', text: `${selected.name} (${selected.symbol}) New Wallet Added`} 
+            }
+            if (response.reason.includes('Private Key Updated')) {
+                returnMessage = {type:'success', text: response.reason} 
+            }
         }
 
-        CoinStore.update(coinstore => {
-            let nickname = nicknameObj.value === '' ? `New ${selected.name} Wallet` : nicknameObj.value;
-            let coinInfo = {
-                'network': selected.network,
-                'name': selected.name,
-                'nickname' : nickname,
-                'symbol': selected.symbol,
-                'vk': keyPair.vk,
-                'sk': addType === 3 ? 'watchOnly' : encryptStrHash($password, keyPair.sk),
-            }
-
-            if (coinInfo.vk === "") {
-                returnMessage = {type:'warning', text: "VK was left blank"}
-            }else{
-                coinstore.push(coinInfo);
-            }
-
-            return coinstore;
-        });
     }
 
     function createAndSaveKeys(){

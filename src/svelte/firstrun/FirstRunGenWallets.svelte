@@ -49,17 +49,13 @@
 
     function createStartingWallets(){
         let keyPair = keysFromNew('lamden', 'TAU');
-        CoinStore.update(current => {
-            let coinInfo = {
+        CoinStore.addCoin({
                 'network': 'lamden',
                 'name': 'Lamden',
                 'nickname' : 'My TAU Address',
                 'symbol': 'TAU',
                 'vk': keyPair.vk,
-                'sk': encryptStrHash($password, keyPair.sk),
-            }
-            current.push(coinInfo);
-            return current;
+                'sk': encryptStrHash($password, keyPair.sk)
         })
         mintMockchainCoins(keyPair.vk)
     }

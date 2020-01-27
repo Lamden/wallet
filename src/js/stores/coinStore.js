@@ -47,65 +47,106 @@ const createCoinStore = () => {
         update,
         setPwd,
         passwordStore,
-        password: () => {return get(passwordStore)},
+        //This function will attempt to decrypt the localstorage value with an installed password
+        //and return true of false depending on the result
         validatePassword: (pwd) => {
-            if (typeof pwd  !== "undefined" && !pwd && pwd === '') return false;
+            if (!pwd || typeof pwd === 'undefined') return false;
             if (!localStorage.getItem('coins')) return false;
             if(decryptObject( pwd, JSON.parse(localStorage.getItem('coins'))) === false) return false;
             return true;
         },
-        getCoin: (coin) => {
+        //Add a coin to the internal coin storage
+        addCoin: (coinInfo) => {
+            //Reject missing or undefined arguments
+            if (!coinInfo || typeof coinInfo === 'undefined') return {added: false, reason: 'undefinedObject'};
+            if (!coinInfo.network || !coinInfo.name || !coinInfo.nickname || !coinInfo.symbol || !coinInfo.vk){
+                return {added: false, reason: 'missingArg'};
+            }
+            //Set the coin to watch only if no private key supplied
+            if (!coinInfo.sk) coinInfo.sk = 'watchOnly'
+            
+            //Check if the coin already exists in coinstore
+            let coinFound = get(CoinStore).find( f => {
+                return f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
+            });
+            if (!coinFound){
+                //If the coin doesn't exists then push it to the array
+                CoinStore.update(coinstore => {
+                    coinstore.push(coinInfo)
+                    return coinstore;
+                })
+                return {added: true, reason: 'new'}
+            } else {
+                //Check if we need to update the sk of a previously added "watch only" coin
+                if (coinFound.sk === "watchOnly" && coinInfo.sk !== "watchOnly"){
+                    CoinStore.update(coinstore => {
+                        coinstore.map( coin => {
+                            if(coin.network === coinInfo.network && coin.symbol === coinInfo.symbol && coin.vk === coinInfo.vk){
+                                coin.sk = coinInfo.sk;
+                            }
+                        });
+                        return coinstore;
+                    })
+                    return {added: true, reason: `${coinFound.nickname}'s Private Key Updated`}
+                } else {
+                    //Reject adding a dupliate Coin
+                    return {added: false, reason: 'duplicate'}
+                }
+            }
+        },
+        //Retrive a specific coin from the Coin Store
+        getCoin: (coinInfo) => {
+            //Return if object is undefined
+            if (!coinInfo || typeof coinInfo === 'undefined') return;
+            //Return if needed info was not provided
+            if (!coinInfo.network || !coinInfo.symbol || !coinInfo.vk) return;
+            //Return the matching coin (will be undefined if not matched)
             return get(CoinStore).find( f => {
-                return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
+                return  f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
             });
         },
-        updateBalance: (coin, balance) => {
+        //Update the balance of a coin
+        updateBalance: (coinInfo, balance) => {
+            //Return if object is undefined
+            if (!coinInfo || typeof coinInfo === 'undefined') return;
+            if (Object.prototype.toString.call(coinInfo) !== "[object Object]") return;
+            //Return if needed info was not provided
+            if (!coinInfo.network || !coinInfo.symbol || !coinInfo.vk) return;
+            //Return if balance is undefiend
+            if (!balance || typeof balance === 'undefined') return;
+            //Return if balance is Not a Number
+            if (isNaN(balance)) return;
+        
             CoinStore.update(coinstore => {
+                //Find the coin to update in the store
                 let coinToUpdate = coinstore.find( f => {
-                    return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
+                    return  f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
                 });
+                //If the coin was matched then update the balance to the one provided
                 if (coinToUpdate){
                     coinToUpdate.balance = balance;
                 };
                 return coinstore;
             })
         },
-        updateAllBalances: (network) => {
+        //Update the balances for all keys in the store
+        //This may be refractored out of here.
+        updateAllBalances: (networkInfo) => {
+            //Returns if networkInfo is undefined
+            if (!networkInfo || typeof networkInfo === 'undefined') return;
+            //Returns if the networkInfo object doesn't contain ip or port
+            if (!networkInfo.ip || !networkInfo.port) return;
             CoinStore.update(coinstore => {
+                //Ask the masternode for the balance of each vk in the store
                 coinstore.map(coin => {
-                    fetch(`${network.ip}:${network.port}/contracts/currency/balances/?key=${coin.vk}`)
+                    fetch(`${networkInfo.ip}:${networkInfo.port}/contracts/currency/balances/?key=${coin.vk}`)
                     .then(res => res.json())
                     .then(res => {
+                        //Set the balance of the coin
                         coin.balance = res.value ? parseFloat(res.value) : 0;
                     })
                     .catch(err => {console.log(err); coin.balance = 0})
                 })
-                return coinstore;
-            })
-        },
-        updateCoinTransaction: (txInfo) => {
-            txInfo = JSON.parse(JSON.stringify(txInfo))
-            CoinStore.update(coinstore => {
-                let coinToUpdate = coinstore.find( f => {
-                    return  f.network === txInfo.sender.network && f.symbol === txInfo.sender.symbol && f.vk === txInfo.sender.vk;
-                });
-                if (coinToUpdate){
-                    txInfo.date = new Date().toUTCString();
-                    if (!coinToUpdate.txList) coinToUpdate.txList = [txInfo];
-                    else coinToUpdate.txList.push(txInfo);
-                };
-                return coinstore;
-            })
-
-        },
-        clearCoinTxHistory: (coin) => {
-            CoinStore.update(coinstore => {
-                let coinToUpdate = coinstore.find( f => {
-                    return  f.network === coin.network && f.symbol === coin.symbol && f.vk === coin.vk;
-                });
-                if (coinToUpdate){
-                    coinToUpdate.txList = [];
-                };
                 return coinstore;
             })
         }
