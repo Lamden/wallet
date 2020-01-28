@@ -3,7 +3,7 @@
 
     $: storeExists = !$CoinStore ? false : true;
     $: numOfCoins = !$CoinStore ? 0 : $CoinStore.length;
-    $: coinBalance = numOfCoins > 0 ? $CoinStore[0].balance ? $CoinStore[0].balance : 'undefined' : 'no coins'
+    $: coinBalance = numOfCoins > 1 ? $CoinStore[1].balance ? $CoinStore[1].balance : 'undefined' : 'no coins'
 
     $: response = {};
     $: returnedCoin = undefined;
@@ -56,9 +56,9 @@
     function addCoin(coinInfo){ response = CoinStore.addCoin(coinInfo) }
     function getCoin(coinInfo){ returnedCoin = CoinStore.getCoin(coinInfo) }
     function updateBalance(coinInfo, balance){ CoinStore.updateBalance(coinInfo, balance) }
-    function updateAllBalances(networkInfo){ CoinStore.updateAllBalances(networkInfo) }
-    function setPassword(password){ CoinStore.setPwd(password)} 
+    function setPassword(password){ CoinStore.setPwd(password) }
     function validatePassword(password){ passwordOkay = CoinStore.validatePassword(password) }
+    
 </script>
 
 <h3> Store Meta </h3>
@@ -110,15 +110,9 @@
 <button id="update-balance-NaN-balance" on:click={() => updateBalance(updateCoinInfo, 'five')}>update-balance-NaN-balance</button>
 
 <h3>Set Password Buttons</h3>
-<button id="set-password" on:click={() => setPassword('testing')}>set-password</button>
-<button id="validate-password" on:click={() => validatePassword('testing')}>validate-password</button>
-
-<h3> Update All Balances (call API) </h3>
-<button id="update-balances-undefined-network" on:click={() => updateAllBalances(undefined)}>update-balances-undefined-network</button>
-<button id="update-balances-missing-networkInfo" on:click={() => updateAllBalances(badNetwork)}>update-balances-missing-networkInfo</button>
-<!--
-<button id="update-balances" on:click={() => updateAllBalances(lamdenNetwork)}>update-balances</button>
--->
+<button id="set-password" on:click={() => setPassword('Testing0!2')}>set-password</button>
+<button id="validate-password-correct" on:click={() => validatePassword('Testing0!2')}>validate-password-correct</button>
+<button id="validate-password-incorrect" on:click={() => validatePassword('testing0!2')}>validate-password-incorrect</button>
 
 <h3>Store Object Value</h3>
 <div>{JSON.stringify($CoinStore)}</div>

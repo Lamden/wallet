@@ -3,33 +3,48 @@ import { encryptObject, decryptObject } from '../../js/utils.js';
 
 const createCoinStore = () => {
     let startValue;
+    //Create intial password as empty string
     const passwordStore = writable('');
 
+    //If password hasn't beeen set then set the CoinStore inital value to an empty array
+    //because we don't have a password to decrypt it yet (Wallet is locked)
     if ( get(passwordStore) === '' ) startValue = [];
     const CoinStore = writable(startValue);
 
+    //This is called everytime the CoinStore updated
     CoinStore.subscribe(current => {
+        //Make sure we have a password value before encrypting the store
         if ( get(passwordStore) !== '' ){
             localStorage.setItem('coins', JSON.stringify( encryptObject( get(passwordStore), current)));
         }
     });
 
+    //This is called everytime the password Store is updated
     passwordStore.subscribe(currPwd => {
+        //Do this only if the password being send in isn't an empty string
         if (currPwd !== ''){
+            
             CoinStore.update(curr => {
+                //Get the CoinStore from local storage
                 const encryptedStorage = localStorage.getItem('coins');
-
+                
+                //throw new Error(localStorage.getItem('coins'))
                 if (encryptedStorage) {
+                    //Try and decrypt it with the passwordStore Value
                     let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
                     startValue = decryptedStorage;
+                    //If decryption was valid then save the store as a backup (incase the main store gets corrupted)
                     if (decryptedStorage) localStorage.setItem('backup', encryptedStorage);
+                    //If there was an issue decrypting the store then try to use the backup
                     else if(localStorage.getItem('backup')) {
                         const encryptedBackupStorage = localStorage.getItem('backup');
                         startValue = decryptObject( get(passwordStore), JSON.parse(encryptedBackupStorage))
                     }
                 }
 
+                //Return the CoinStore value from localstorage if one was decrypted
                 if (startValue) return startValue;
+                //Return an empty array if decryption was unsuccessful.
                 return [];
             })
         }
@@ -152,10 +167,13 @@ const createCoinStore = () => {
         }
     };
 }
+//Create CoinStore instance
 export const CoinStore = createCoinStore();
 
+//Create a derived store to share password to components
 export const password = derived(CoinStore.passwordStore, ($passwordStore) => $passwordStore);
 
+//Create a derived store to total all wallets
 export const balanceTotal = derived(CoinStore, ($CoinStore) => {
     let total = 0;
     $CoinStore.map(coin => {
