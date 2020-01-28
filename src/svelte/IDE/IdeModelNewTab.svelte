@@ -17,7 +17,7 @@
     let contractName = "";
 
     function newTab(){
-        FilesStore.addNewTab();
+        FilesStore.addNewFile();
         closeModal();
     }
 
