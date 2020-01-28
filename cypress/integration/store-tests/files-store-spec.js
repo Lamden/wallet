@@ -249,6 +249,8 @@ describe('Test the Files Store', () => {
         FilesStore.set(null)
         FilesStore.set({})
         FilesStore.set('')
+        FilesStore.set(true)
+        FilesStore.set(5)
 
         //Get the new value of the localstorage
         let afterLs = window.localStorage.getItem("files");

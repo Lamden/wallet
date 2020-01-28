@@ -1,5 +1,10 @@
 import { writable, get } from 'svelte/store';
 
+function isString(value){
+    if(Object.prototype.toString.call(value) === "[object String]") return true;
+    return false;
+}
+
 const createStore = (key, startValue) => {
     const json = localStorage.getItem(key);
     if (json) {
@@ -27,8 +32,8 @@ const createStore = (key, startValue) => {
         //Stores a network/contract pair so that we don't call the API again to check it
         addContract: (contractName, networkName) =>{
             //Reject missing or undefined arguments
-            if (!contractName || typeof contractName === 'undefined') return;
-            if (!networkName || typeof networkName === 'undefined') return;
+            if (!contractName || typeof contractName === 'undefined' || !isString(contractName)) return;
+            if (!networkName || typeof networkName === 'undefined' || !isString(networkName)) return;
             CacheStore.update(cacheStore => {
                 //Store network / contract pair under the contracts key in the cash
                 if (!cacheStore['contracts']) cacheStore['contracts'] = {};
@@ -40,8 +45,8 @@ const createStore = (key, startValue) => {
         //Check if we have already called the API to check this contract name
         contractExists: (contractName, networkName) => {
             //Reject missing or undefined arguments
-            if (!contractName || typeof contractName === 'undefined') return false;
-            if (!networkName || typeof networkName === 'undefined') return false;
+            if (!contractName || typeof contractName === 'undefined' || !isString(contractName)) return false;
+            if (!networkName || typeof networkName === 'undefined' || !isString(networkName)) return false;
             let cacheStore = get(CacheStore);
             if (!cacheStore['contracts']) return false;
             if (!cacheStore['contracts'][networkName]) return false;
@@ -51,7 +56,7 @@ const createStore = (key, startValue) => {
         //Remove all contracts under a network so that the API will cheeck them again
         refreshNetwork: (networkName) => {
             //Reject missing or undefined arguments
-            if (!networkName || typeof networkName === 'undefined') return;
+            if (!networkName || typeof networkName === 'undefined' || !isString(networkName)) return false;
             //Clear all contracts under the supplied network
             CacheStore.update(cacheStore => {
                 if (!cacheStore['contracts']) return;
@@ -63,4 +68,4 @@ const createStore = (key, startValue) => {
 }
 
 //Create Cache Stores
-export const CacheStore = createStore('contracts', {});
+export const CacheStore = createStore('cache', {});
