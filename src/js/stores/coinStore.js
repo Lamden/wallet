@@ -28,7 +28,6 @@ const createCoinStore = () => {
                 //Get the CoinStore from local storage
                 const encryptedStorage = localStorage.getItem('coins');
                 
-                //throw new Error(localStorage.getItem('coins'))
                 if (encryptedStorage) {
                     //Try and decrypt it with the passwordStore Value
                     let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
