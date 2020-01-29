@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -59,7 +59,7 @@
     }
 
     function clearTxHistory(){
-        CoinStore.clearCoinTxHistory(selectedWallet)
+        TxStore.clearTx($currentNetwork, selectedWallet.vk)
     }
 </script>
 

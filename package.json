@@ -21,7 +21,8 @@
     "test-settings-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/settings-store-spec.js --headed --no-exit",
     "test-cache-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/cache-store-spec.js --headed --no-exit",
     "test-coin-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/coin-store-spec.js --headed --no-exit",
-    "test-files-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/files-store-spec.js --headed --no-exit"
+    "test-files-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/files-store-spec.js --headed --no-exit",
+    "test-tx-store": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/tx-store-spec.js --headed --no-exit"
   },
   "repository": {
     "type": "git",

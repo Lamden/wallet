@@ -15,7 +15,15 @@ const storeSpys = {
     'deleteTab': (index) => {
         return FilesStore.deleteTab(index);
     },
+    'set': (value) => {
+        return FilesStore.set(value);
+    }
 }
+
+const badNameValues = [undefined, null, [], {}, true, 10, '']
+const badCodeValues = [undefined, null, [], {}, true, 10]
+const badIndexValues = [undefined, null, [], {}, true, '', 0.01]
+const badSetValues = [undefined, null, {}, true, '', 0.01]
 
 describe('Test the Files Store', () => {
     before(function() {
@@ -105,10 +113,7 @@ describe('Test the Files Store', () => {
         let maxIndex = get(FilesStore).length - 1
         FilesStore.activeTab(maxIndex)
         try {
-            storeSpys.activeTab(undefined)
-            storeSpys.activeTab(null)
-            storeSpys.activeTab(0.01)
-            storeSpys.activeTab('')
+            badIndexValues.map(value => storeSpys.activeTab(value))
         } catch (e) {}
         cy.expect(storeSpys.activeTab).to.not.have.thrown(Error)
         let storeValue = get(FilesStore)[maxIndex]
@@ -139,10 +144,8 @@ describe('Test the Files Store', () => {
     it('changeName: Rejects bad arguements values and does not cause errors', () => {
         let maxIndex = get(FilesStore).length - 1
         try {
-            storeSpys.changeName(undefined, maxIndex)
-            storeSpys.changeName({}, maxIndex)
-            storeSpys.changeName('Should not be this', undefined)
-            storeSpys.changeName('Should not be this', 0.01)
+            badNameValues.map(value => storeSpys.changeName(value, maxIndex))
+            badIndexValues.map(value => storeSpys.changeName('Should not be this', value))
         } catch (e) {}
         //Makes sure the bad values didn't cause an error
         cy.expect(storeSpys.changeName).to.not.have.thrown(Error)
@@ -166,10 +169,8 @@ describe('Test the Files Store', () => {
     it('updateCode: Rejects bad argument values and does not error', () => {
         let maxIndex = get(FilesStore).length - 1
         try {
-            storeSpys.updateCode(undefined, maxIndex)
-            storeSpys.updateCode({}, maxIndex)
-            storeSpys.updateCode('Should not be this', undefined)
-            storeSpys.updateCode('Should not be this', 0.01)
+            badCodeValues.map(value => storeSpys.updateCode(value, maxIndex))
+            badIndexValues.map(value => storeSpys.updateCode('Should not be this', value))
         } catch (e) {}
         //Makes sure the bad values didn't cause an error
         cy.expect(storeSpys.updateCode).to.not.have.thrown(Error)
@@ -205,11 +206,7 @@ describe('Test the Files Store', () => {
         let beforeStoreSize = get(FilesStore).length
         //Try a bunch of bad values
         try {
-            storeSpys.deleteTab('')
-            storeSpys.deleteTab(null)
-            storeSpys.deleteTab(undefined)
-            storeSpys.deleteTab(0.01)
-            storeSpys.deleteTab(10)
+            badIndexValues.map(value => storeSpys.deleteTab(value))
         } catch (e) {}
         //Makes sure the bad values didn't cause an error
         cy.expect(storeSpys.deleteTab).to.not.have.thrown(Error)
@@ -245,15 +242,16 @@ describe('Test the Files Store', () => {
         let beforeLs = window.localStorage.getItem("files");
 
         //Attempt to set the Store Value to corrupt values
-        FilesStore.set(undefined)
-        FilesStore.set(null)
-        FilesStore.set({})
-        FilesStore.set('')
-        FilesStore.set(true)
-        FilesStore.set(5)
+        try {
+            badSetValues.map(value => storeSpys.set(value))
+        } catch (e) {}
 
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.set).to.not.have.thrown(Error)
+        
         //Get the new value of the localstorage
         let afterLs = window.localStorage.getItem("files");
+        
         //Expect the local storage to not have been overwritten and still contain the file
         cy.expect(beforeLs).to.eq(afterLs)
     })

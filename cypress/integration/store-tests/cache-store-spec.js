@@ -11,8 +11,14 @@ const storeSpys = {
     },
     'refreshNetwork': (networkName) => {
         return CacheStore.refreshNetwork(networkName);
+    },
+    'set': (value) => {
+        return CacheStore.set(value);
     }
 }
+
+const badNameValues = [undefined, null, [], {}, true, 10, '']
+const badSetValues = [undefined, null, [], true, '', 0.01]
 
 describe('Test the Cache Store', () => {
     before(function() {
@@ -61,20 +67,8 @@ describe('Test the Cache Store', () => {
         let keySizeBefore = Object.keys(get(CacheStore)['contracts']).length
         //Try a bunch of bad values
         try {
-            storeSpys.addContract(undefined, 'Public TestNet')
-            storeSpys.addContract(null, 'Public TestNet')
-            storeSpys.addContract('', 'Public TestNet')
-            storeSpys.addContract([], 'Public TestNet')
-            storeSpys.addContract({}, 'Public TestNet')
-            storeSpys.addContract(false, 'Public TestNet')
-            storeSpys.addContract(5, 'Public TestNet')
-            storeSpys.addContract('should-not-exist')
-            storeSpys.addContract('should-not-exist', null)
-            storeSpys.addContract('should-not-exist', '')
-            storeSpys.addContract('should-not-exist', [])
-            storeSpys.addContract('should-not-exist', {})
-            storeSpys.addContract('should-not-exist', true)
-            storeSpys.addContract('should-not-exist', 5)
+            badNameValues.map(value => storeSpys.addContract(value, 'Public TestNet'))
+            badNameValues.map(value => storeSpys.addContract('should-not-exist', value))
         } catch (e) {}
         //Makes sure the bad values didn't cause an error
         cy.expect(storeSpys.addContract).to.not.have.thrown(Error)
@@ -102,20 +96,8 @@ describe('Test the Cache Store', () => {
             cy.expect(storeSpys.contractExists).to.not.have.thrown(Error)
         }
         //Try a bunch of bad values
-        testContractExists(undefined, 'Public TestNet')
-        testContractExists(null, 'Public TestNet')
-        testContractExists('', 'Public TestNet')
-        testContractExists([], 'Public TestNet')
-        testContractExists({}, 'Public TestNet')
-        testContractExists(true, 'Public TestNet')
-        testContractExists(5, 'Public TestNet')
-        testContractExists('should-not-exist')
-        testContractExists('should-not-exist', null)
-        testContractExists('should-not-exist', '')
-        testContractExists('should-not-exist', [])
-        testContractExists('should-not-exist', {})
-        testContractExists('should-not-exist', true)
-        testContractExists('should-not-exist', 5)
+        badNameValues.map(value => testContractExists(value, 'Public TestNet'))
+        badNameValues.map(value => testContractExists('should-not-exist', value))
     })
 
     //Test if the store will refresh the cache of a network
@@ -138,13 +120,7 @@ describe('Test the Cache Store', () => {
     it('refreshNetwork: Rejects bad arguments and does not error', () => {
         //Try a bunch of bad values
         try {
-            storeSpys.refreshNetwork(undefined)
-            storeSpys.refreshNetwork(null)
-            storeSpys.refreshNetwork('')
-            storeSpys.refreshNetwork([])
-            storeSpys.refreshNetwork({})
-            storeSpys.refreshNetwork(true)
-            storeSpys.refreshNetwork(5)
+            badNameValues.map(value => storeSpys.refreshNetwork(value))
         } catch (e) {}
         //Makes sure the bad values didn't cause an error
         cy.expect(storeSpys.refreshNetwork).to.not.have.thrown(Error)
@@ -152,22 +128,20 @@ describe('Test the Cache Store', () => {
 
     //Test Store Corruptability
     it('set: Cannot set a non Object Value', () => {
-        storeSpys.addContract('contract-5', 'Set Testing')
-        storeSpys.addContract('contract-6', 'Set Testing')
-        storeSpys.addContract('contract-7', 'Set Testing')
         //Get the current value of the localstorage
         let beforeLs = window.localStorage.getItem("cache");
 
         //Attempt to set the Store Value to corrupt values
-        CacheStore.set(undefined)
-        CacheStore.set(null)
-        CacheStore.set([])
-        CacheStore.set('')
-        CacheStore.set(true)
-        CacheStore.set(5)
+        try {
+            badSetValues.map(value => storeSpys.set(value))
+        } catch (e) {}
+
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.set).to.not.have.thrown(Error)
 
         //Get the new value of the localstorage
         let afterLs = window.localStorage.getItem("cache");
+
         //Expect the local storage to not have been overwritten and still contain the file
         cy.expect(beforeLs).to.eq(afterLs)
     })
