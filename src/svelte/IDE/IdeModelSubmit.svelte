@@ -133,7 +133,7 @@
             .then(res => res.json())
             .then(res => {
                 if (!res.methods) closeModal();
-                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
+                FilesStore.addFile(contractName, contractCode, res.methods, currentNetwork);
                 closeModal();
             })
             .catch(err => {

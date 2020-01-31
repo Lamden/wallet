@@ -113,7 +113,7 @@
         fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
             .then(res => res.json())
             .then(res => {
-                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
+                FilesStore.addFile(contractName, contractCode, res.methods, currentNetwork);
             })
             .catch(err => console.log(err))
 	}

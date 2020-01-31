@@ -1,9 +1,5 @@
-import { writable, derived, get } from 'svelte/store';
-
-function isString(value){
-    if(Object.prototype.toString.call(value) === "[object String]") return true;
-    return false;
-}
+import { writable, derived } from 'svelte/store';
+import { isArray, isStringWithValue, isFileObj, isString, isInteger, networkKey } from './stores.js';
 
 const createFilesStore = (key) => {
     //Default File Content that will be created
@@ -35,7 +31,7 @@ const createFilesStore = (key) => {
     //This funtion gets call everytime the FileStore is updated
     FilesStore.subscribe(current => {
         //Check to make sure the value we just updated in memory is an Array
-        if (Array.isArray(current)) {
+        if (isArray(current)) {
             localStorage.setItem(key, JSON.stringify(current));
         }else{
             //If the value was not an array then set the memory value back to the previous localstorage value
@@ -56,7 +52,7 @@ const createFilesStore = (key) => {
         set,
         update,
         //Add a new default file to the internal store
-        addNewFile: () => {
+        addDefaultFile: () => {
             FilesStore.update(filesstore => {
                 //Make all files unselected
                 filesstore.map(file => file.selected = false)
@@ -67,12 +63,9 @@ const createFilesStore = (key) => {
             })
         },
         //Add a file to the file store by specifying the information
-        addExistingContract: (name, code, methods, network) => {
+        addFile: (name, code, methods, networkObj) => {
             //Return if arguments are undefined and incorrect types
-            if (!name || typeof name === 'undefined' || !isString(name)) return;
-            if (typeof methods === 'undefined' || !isString(code)) return;
-            if (!methods || typeof methods === 'undefined' || !Array.isArray(methods)) return;
-            if (!network || typeof network === 'undefined' || !isString(network)) return;
+            if (!isFileObj(name, code, methods, networkObj)) return;
 
             //Add new files to the files store
             FilesStore.update(filesstore => {
@@ -82,7 +75,8 @@ const createFilesStore = (key) => {
                     code,
                     methods,
                     type: 'online',
-                    network,
+                    networkKey: networkKey(networkObj),
+                    network: networkObj.name,
                     selected: true
 
                 }
@@ -93,7 +87,8 @@ const createFilesStore = (key) => {
         //Change the current file to be active in the IDE
         activeTab: (index) => {
             //Return if index is undefined or not a an Integer
-            if (typeof index === 'undefined' || !Number.isInteger(index)) return;
+            if (!isInteger(index)) return;
+
             FilesStore.update(filesstore => {
                 //Set all files in store as unselected
                 filesstore.map(file => file.selected = false)
@@ -105,8 +100,7 @@ const createFilesStore = (key) => {
         //Change the name of a file
         changeName:(newName, index) => {
             //Return if arguments are undefined or incorrect types
-            if (!newName || typeof newName === 'undefined' || !isString(newName)) return;
-            if (typeof index === 'undefined' || !Number.isInteger(index)) return;
+            if (!isStringWithValue(newName) || !isInteger(index)) return;
             
             FilesStore.update(filesstore => {
                 //Set new name of file
@@ -116,8 +110,8 @@ const createFilesStore = (key) => {
         },
         updateCode:(code, index) => {
             //Return if arguments are undefined or incorrect types
-            if (typeof code === 'undefined' || !isString(code)) return;
-            if (typeof index === 'undefined' || !Number.isInteger(index)) return;
+            if (!isString(code) || !isInteger(index)) return;
+
             FilesStore.update(filesstore => {
                 //Set new code in file
                 filesstore[index].code = code;
@@ -126,7 +120,8 @@ const createFilesStore = (key) => {
         },
         deleteTab: (index) => {
             //Return if index is undefined or not an integer
-            if (typeof index === 'undefined' || !Number.isInteger(index)) return;
+            if (!isInteger(index)) return;
+
             FilesStore.update(filesstore => {
                 //remove index from array
                 filesstore.splice(index, 1);

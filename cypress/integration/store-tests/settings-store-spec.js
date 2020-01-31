@@ -1,283 +1,208 @@
-import App from '../../components/SettingsStore.svelte'
-import { tick } from 'svelte';
-import mount from 'cypress-svelte-unit-test'
-import "cypress-localstorage-commands"
+import { get } from 'svelte/store';
+import { SettingsStore, firstRun, themeStyle, currentPage, storageInfo } from '../../../src/js/stores/settingsStore.js';
+import "cypress-localstorage-commands";
+
+function isBoolean(value){
+    if(Object.prototype.toString.call(value) === "[object Boolean]") return true;
+    return false;
+}
+
+const storeSpys = {
+    'firstRunComplete': () => {
+        return SettingsStore.firstRunComplete();
+    },
+    'changePage': (pageInfo) => {
+        return SettingsStore.changePage(pageInfo);
+    },
+    'changeTheme': (theme) => {
+        return SettingsStore.changeTheme(theme);
+    },
+    'calcStorage': () => {
+        return SettingsStore.calcStorage();
+    },
+    'set': (value) => {
+        return SettingsStore.set(value);
+    }
+}
+const badValues = [undefined, null, [], {}, true, '', 0.01]
+
+const defualtStore = {
+    'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
+    'firstRun': true,
+    'themeStyle':'dark',
+    'version':'v0_9_8',
+    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000}
+}
 
 describe('Test the Settings Store', () => {
     before(function() {
-        mount(App)
-        cy.viewport(1920, 1080);
+        window.localStorage.setItem("settings", JSON.stringify(get(SettingsStore)))
+        cy.saveLocalStorage();
     })
-    it('Loads default values', () => {
-        cy.get('#currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("FirstRunMain")
+
+    beforeEach(function() {
+        cy.restoreLocalStorage();
+        Object.keys(storeSpys).map(func => {
+            cy.spy(storeSpys, func)
         })
-        cy.get('#currentPage-data').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("[object Object]")
-        })
-        cy.get('#firstRun').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-        cy.get('#themeStyle').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('dark')
-        })
-        cy.get('#version').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('v0_9_8')
-        })
-        cy.get('#storage-used').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(0)
-        })
-        cy.get('#storage-remaining').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(5000000)
-        })
-        cy.get('#storage-max').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(5000000)
-        })
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(1)
-        })       
+    })
+
+    afterEach(function() {
+        cy.saveLocalStorage();
+    })
+
+    it('Store: Loads default settings object and values', () => {
+        let store = get(SettingsStore)
+        let storeJSON = JSON.stringify(store)
+        let defaultsJSON = JSON.stringify(defualtStore)
+        cy.expect(storeJSON).to.eq(defaultsJSON)
+        cy.log(storeJSON)
+    })
+
+    it('Store: Saves updates to local storage', () => {
+        //Store values should match
+        let ls = window.localStorage.getItem("settings") 
+        let storeString = JSON.stringify(get(SettingsStore))
+        cy.expect(ls).to.eq(storeString)
+        cy.log(ls)
+        cy.log(storeString)
     })
 
     //Testing Default Derived Stores
-    it('Default Derived Store Values are correct', () => {
-        cy.get('#derived-currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("FirstRunMain")
-        })
-        cy.get('#derived-currentPage-data').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("[object Object]")
-        })
-        cy.get('#derived-firstRun').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("true")
-        })
-        cy.get('#numOfDerivedNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(1)
-        })
-        cy.get('#derived-currentNetwork-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("Lamden Public Testnet")
-        })
-        cy.get('#derived-currentNetwork-ip').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("https://testnet.lamden.io")
-        })
-        cy.get('#derived-currentNetwork-port').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("443")
-        })
-        cy.get('#derived-currentNetwork-lamden').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("true")
-        })
-        cy.get('#derived-currentNetwork-online').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("false")
-        })
-        cy.get('#derived-currentNetwork-selected').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("true")
-        })
+    it('Derived Stores: Default Derived Store Values are correct', () => {
+        cy.expect(get(currentPage).name).to.eq('FirstRunMain')
+        cy.expect(get(firstRun)).to.eq(true)
+        cy.expect(get(themeStyle)).to.eq('dark')
+        cy.expect(JSON.stringify(get(storageInfo))).to.eq(JSON.stringify(defualtStore.storage))
+
     })
 
-    //Testing First Run
-    it('Can set first run complete', () => {
-        cy.get('#firstrun-complete').click()
-        cy.get('#firstRun').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("false")
-        })
+    //Testing Completing First Run
+    it('firstRunComplete: Can set first run complete', () => {
+        let store = get(SettingsStore);
+        storeSpys.firstRunComplete();
+        cy.expect(store.firstRun).to.eq(false);
+        cy.expect(store.currentPage.name).to.eq('CoinsMain');
+        
     })
 
-    it('Derived firstRun store updated', () => {
-        cy.get('#derived-firstRun').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("false")
-        })
+    it('firstRunComplete: Derived firstRun store updated', () => {
+        cy.expect(get(firstRun)).to.eq(false)
+    })
+
+    it('firstRunComplete: Derived currentPage store updated', () => {
+        cy.expect(get(currentPage).name).to.eq('CoinsMain')
     })
 
 
     //Testing Change Page
-    it('Can store New Page', () => {
-        cy.get('#change-page').click()
-        cy.get('#currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("Testing")
-        })
-        cy.get('#currentPage-data').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("page data")
-        })
+    it('changePage: Can store new page value', () => {
+        //Change Page
+        storeSpys.changePage({name: 'BackupMain'});
+        //Check Store Value
+        cy.expect(get(SettingsStore).currentPage.name).to.eq('BackupMain');
     })
 
-    it('Rejects blank page', () => {
-        cy.get('#change-blank-page').click()
-        cy.get('#currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("Testing")
-        })
+    it('changePage: Derived currentPage store updated', () => {
+        cy.expect(get(currentPage).name).to.eq('BackupMain')
     })
 
-    it('Rejects undefined page', () => {
-        cy.get('#change-undefined-page').click()
-        cy.get('#currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("Testing")
-        })
+    it('changePage: Rejects bad and undefined values and doesn\'t error', () => {
+        let beforeValue = JSON.stringify(get(SettingsStore).currentPage);
+
+        //Try a bunch of bad values
+        try{
+            badValues.map(value => storeSpys.changePage(value))
+            badValues.map(value => storeSpys.changePage({name: value}))
+        } catch (e){}
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.changePage).to.not.have.thrown(Error)
+
+        //The values of the current page should not have changed
+        let afterValue = JSON.stringify(get(SettingsStore).currentPage);
+        cy.expect(afterValue).to.eq(beforeValue)
     })
 
-    it('Accepts undefined data', () => {
-        cy.get('#change-undefined-data').click()
-        cy.get('#currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("New Page")
-        })
-        cy.get('#currentPage-data').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("[object Object]")
-        })
-    })
-
-    it('Derived store updated with currentPage Values', () => {
-        cy.get('#derived-currentPage-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("New Page")
-        })
-        cy.get('#derived-currentPage-data').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("[object Object]")
-        })
-    })
 
     //Testing Change Theme
-    it('Can change Theme', () => {
-        cy.get('#change-theme').click()
-        cy.get('#themeStyle').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("light")
-        })
+    it('changeTheme: Can change Theme', () => {
+        //Change Theme
+        storeSpys.changeTheme('light');
+        //Check store value
+        cy.expect(get(SettingsStore).themeStyle).to.eq('light');
     })
 
-    it('Rejects undefined Theme', () => {
-        cy.get('#change-theme-undefined').click()
-        cy.get('#themeStyle').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("light")
-        })
+    it('changeTheme: Derived themeStyle store updated', () => {
+        cy.expect(get(themeStyle)).to.eq('light')
     })
 
-    //Testing Networks
-    it('Can Add a network and sets proper defaults', () => {
-        cy.get('#add-network').click()
-        tick();
-        cy.get('#1-network-name').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("New Testing Network")
-        })
-        cy.get('#1-network-ip').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("http://127.0.0.1")
-        })
-        cy.get('#1-network-port').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("8080")
-        })
-        cy.get('#1-network-lamden').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("false")
-        })
-        cy.get('#1-network-online').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("false")
-        })
-        cy.get('#1-network-selected').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("false")
-        })
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(2)
-        })
+    it('changeTheme: Rejects bad and undefined values and doesn\'t error', () => {
+        let beforeValue = get(SettingsStore).themeStyle;
+
+        //Try a bunch of bad values
+        try{
+            badValues.map(value => storeSpys.changeTheme(value))
+        } catch (e){}
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.changeTheme).to.not.have.thrown(Error)
+
+        //The values of the current page should not have changed
+        let afterValue = get(SettingsStore).themeStyle;
+        cy.expect(afterValue).to.eq(beforeValue)
     })
 
-    it('Rejects undefined network object', () => {
-        cy.get('#add-undefined-network').click()
-        tick();
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(2)
-        })
+    //Test Store Corruptability
+    it('set: Cannot set a non SettingsStore Object Value into Local Storage', () => {
+        //Get the current value of the localstorage
+        let beforeLs = window.localStorage.getItem("settings");
+        //Attempt to set the Store Value to corrupt values
+        let firstRun = true
+        let version = 'v1'
+        let themeStyle = 'dark'
+        let currentPage = {name: 'TestPage'}
+        let storage = {used:0, remaining:0,max:0}
+        try {
+            badValues.map(value => storeSpys.set(value))
+            badValues.map(value => storeSpys.set({'currentPage': value, firstRun, themeStyle, version, storage}))
+            badValues.map(value => {
+                //firstRun can be boolean
+                if (!isBoolean(value)){
+                    storeSpys.set({currentPage, 'firstRun': value, themeStyle, version, storage})
+                }
+            })
+            badValues.map(value => storeSpys.set({currentPage, firstRun, 'themeStyle': value, version, storage}))
+            badValues.map(value => storeSpys.set({currentPage, firstRun, themeStyle, 'version': value, storage}))
+            badValues.map(value => storeSpys.set({currentPage, firstRun, themeStyle, version, 'storage': value}))
+            
+        } catch (e) {}
+
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.set).to.not.have.thrown(Error)
+
+        //Get the new value of the localstorage
+        let afterLs = window.localStorage.getItem("settings");
+
+        //Expect the local storage to not have been overwritten and still contain the file
+        cy.expect(beforeLs).to.eq(afterLs)
+        cy.expect(afterLs).to.eq(JSON.stringify(get(SettingsStore)))
     })
 
-    it('Rejects bad/missing network info', () => {
-        cy.get('#add-bad-network').click()
-        tick();
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(2)
-        })
-    })
+    it('set: Can set a proper Value', () => {
+        //Get the current value of the localstorage
+        let beforeLs = window.localStorage.getItem("settings");
+        //Attempt to set the Store Value to corrupt values
+        try {
+            storeSpys.set(defualtStore)
+        } catch (e) {}
 
-    it('Can Change network status', () => {
-        cy.get('#change-network-status').click()
-        tick();
-        cy.get('#1-network-online').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-    })
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.set).to.not.have.thrown(Error)
 
-    it('Rejects non-boolen network status', () => {
-        cy.get('#change-network-status-bad').click()
-        tick();
-        cy.get('#1-network-online').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-    })
+        //Get the new value of the localstorage
+        let afterLs = window.localStorage.getItem("settings");
 
-    it('Can delete a network', () => {
-        cy.get('#delete-network').click()
-        tick();
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(1)
-        })
-    })
-
-    it('Rejects Deleteing undefined network', () => {
-        cy.get('#add-network-lamden').click()
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(2)
-        })
-        cy.get('#delete-undefined-network').click()
-        tick();
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(2)
-        })
-    })
-
-    it('Rejects deleting lamden network', () => {
-        cy.get('#delete-lamden-network').click()
-        tick();
-        cy.get('#numOfNetworks').should('exist').then(($div) => {
-            expect(parseInt($div[0].textContent)).to.eq(2)
-        })
-    })
-
-    it('Rejects setting undefiend network', () => {
-        cy.get('#set-current-network-undefined').click()
-        tick();
-        cy.get('#1-network-selected').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('false')
-        })
-    })
-
-    it('Sets a network as current', () => {
-        cy.get('#set-current-network').click()
-        tick();
-        cy.get('#1-network-selected').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-    })
-
-    it('Reject setting network with missing info', () => {
-        cy.get('#set-current-network-badnetwork').click()
-        tick();
-        cy.get('#1-network-selected').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-    })
-
-    it('Reject setting network that doesn\'t exists', () => {
-        cy.get('#set-current-network-doesntexist').click()
-        tick();
-        cy.get('#1-network-selected').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-    })
-
-    it('Cannot save an undefined value to the localstorage', () => {
-        cy.get('#set-undefiened-store-value').click()
-        tick();
-        cy.get('#store-exists').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
-    })
-
-    it('Cannot save an empty object to the localstorage', () => {
-        cy.get('#set-empty-store-value').click()
-        tick()
-        cy.get('#store-exists').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq('true')
-        })
+        //Expect the local storage to not have been overwritten and still contain the file
+        cy.expect(beforeLs).to.not.eq(afterLs)
+        cy.expect(afterLs).to.eq(JSON.stringify(get(SettingsStore)))
     })
 })

@@ -2,19 +2,29 @@ import { get } from 'svelte/store';
 import { CacheStore } from '../../../src/js/stores/CacheStore.js';
 import "cypress-localstorage-commands";
 
+function networkKey(networkObj){
+    return `${networkObj.ip}:${networkObj.port}`
+}
+
 const storeSpys = {
-    'addContract': (contractName, networkName) => {
-        return CacheStore.addContract(contractName, networkName);
+    'addContract': (contractName, networkObj) => {
+        return CacheStore.addContract(contractName, networkObj);
     },
-    'contractExists': (contractName, networkName) => {
-        return CacheStore.contractExists(contractName, networkName);
+    'contractExists': (contractName, networkObj) => {
+        return CacheStore.contractExists(contractName, networkObj);
     },
-    'refreshNetwork': (networkName) => {
-        return CacheStore.refreshNetwork(networkName);
+    'refreshNetwork': (networkObj) => {
+        return CacheStore.refreshNetwork(networkObj);
     },
     'set': (value) => {
         return CacheStore.set(value);
     }
+}
+
+let newNetwork = {
+    name: 'Public TestNet', 
+    ip: '1.1.1.1', 
+    port: '5555'
 }
 
 const badNameValues = [undefined, null, [], {}, true, 10, '']
@@ -44,9 +54,10 @@ describe('Test the Cache Store', () => {
 
     it('Store: Saves updates to local storage', () => {
         //Add a contract to the Store
-        storeSpys.addContract('save-to-ls', 'Public TestNet')
+        storeSpys.addContract('save-to-ls', newNetwork)
+        cy.log(storeSpys.addContract)
         //Contract exist in store
-        storeSpys.contractExists('save-to-ls', 'Public TestNet')
+        storeSpys.contractExists('save-to-ls', newNetwork)
         cy.expect(storeSpys.contractExists).to.have.returned(true);
         //Localstorage matches store in memory
         let ls = window.localStorage.getItem("cache");
@@ -57,9 +68,9 @@ describe('Test the Cache Store', () => {
     //Testing Adding a contract to cache
     it('addContract: Can cache a contract on a network', () => {
         //Add a contract to the Store
-        storeSpys.addContract('add-new-contract', 'Public TestNet')
+        storeSpys.addContract('add-new-contract', newNetwork)
         //Contract exist in store
-        storeSpys.contractExists('add-new-contract', 'Public TestNet')
+        storeSpys.contractExists('add-new-contract', newNetwork)
         cy.expect(storeSpys.contractExists).to.have.returned(true);
     })
 
@@ -67,7 +78,7 @@ describe('Test the Cache Store', () => {
         let keySizeBefore = Object.keys(get(CacheStore)['contracts']).length
         //Try a bunch of bad values
         try {
-            badNameValues.map(value => storeSpys.addContract(value, 'Public TestNet'))
+            badNameValues.map(value => storeSpys.addContract(value, newNetwork))
             badNameValues.map(value => storeSpys.addContract('should-not-exist', value))
         } catch (e) {}
         //Makes sure the bad values didn't cause an error
@@ -79,10 +90,15 @@ describe('Test the Cache Store', () => {
 
     //Testing checking if a contract exists in cache
     it('contractExists: Returns if a contract exists in cache', () => {
+        //Create network
+        let existsNetwork = JSON.parse(JSON.stringify(newNetwork))
+        existsNetwork.name = 'Should Exist'
+        existsNetwork.ip = '2.2.2.2'
+
         //Add a contract to the Store
-        storeSpys.addContract('should-exist', 'Public TestNet')
+        storeSpys.addContract('should-exist', existsNetwork)
         //Contract exist in store
-        storeSpys.contractExists('should-exist', 'Public TestNet')
+        storeSpys.contractExists('should-exist', existsNetwork)
         cy.expect(storeSpys.contractExists).to.have.returned(true);
     })
 
@@ -102,17 +118,26 @@ describe('Test the Cache Store', () => {
 
     //Test if the store will refresh the cache of a network
     it('refreshNetwork: Will remove all contracts from a network\'s cache', () => {
+        let refreshNetwork = JSON.parse(JSON.stringify(newNetwork))
+        refreshNetwork.name = 'Network To Refresh'
+        refreshNetwork.ip = '3.3.3.3'
+
+        let netKey = networkKey(refreshNetwork)
+
         //Add some contracts to a network
-        storeSpys.addContract('contract-1', 'Network To Refresh')
-        storeSpys.addContract('contract-2', 'Network To Refresh')
-        storeSpys.addContract('contract-3', 'Network To Refresh')
+        storeSpys.addContract('contract-1', refreshNetwork)
+        storeSpys.addContract('contract-2', refreshNetwork)
+        storeSpys.addContract('contract-3', refreshNetwork)
+
         //Get the key size of the network key before refresh
-        let keySizeBefore = Object.keys(get(CacheStore)['contracts']['Network To Refresh']).length
+        let keySizeBefore = Object.keys(get(CacheStore)['contracts'][netKey]).length
         cy.expect(keySizeBefore).to.be.greaterThan(0)
+
         //Refresh Network key
-        storeSpys.refreshNetwork('Network To Refresh')
+        storeSpys.refreshNetwork(refreshNetwork)
+
         //Should be nothing under the key
-        let keySizeAfter = Object.keys(get(CacheStore)['contracts']['Network To Refresh']).length
+        let keySizeAfter = Object.keys(get(CacheStore)['contracts'][netKey]).length
         cy.expect(keySizeAfter).to.eq(0)
     })
 
@@ -144,5 +169,31 @@ describe('Test the Cache Store', () => {
 
         //Expect the local storage to not have been overwritten and still contain the file
         cy.expect(beforeLs).to.eq(afterLs)
+        cy.expect(afterLs).to.eq(JSON.stringify(get(CacheStore)))
+    })
+
+    it('set: Can set a proper Value', () => {
+        //Add a contract so the store isn't empty
+        storeSpys.addContract('contract-1', newNetwork)
+
+        //Get the current value of the localstorage
+        let beforeLs = window.localStorage.getItem("cache");
+
+        //Attempt to set the Store Value to corrupt values
+        try {
+            storeSpys.set({})
+        } catch (e) {}
+
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.set).to.not.have.thrown(Error)
+
+        //Get the new value of the localstorage
+        let afterLs = window.localStorage.getItem("cache");
+
+        //Expect the local storage to not have been overwritten and still contain the file
+        cy.expect(beforeLs).to.not.eq(afterLs)
+        cy.expect(afterLs).to.eq(JSON.stringify(get(CacheStore)))
+        cy.log(JSON.stringify(get(CacheStore)))
+        
     })
 })

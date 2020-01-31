@@ -1,10 +1,12 @@
 import { writable, get, derived } from 'svelte/store';
 import { encryptObject, decryptObject } from '../../js/utils.js';
+import { isStringWithValue, copyItem, isCoinInfoObj, isNumber, isArray } from './stores.js';
 
 const createCoinStore = () => {
     let startValue;
     //Create intial password as empty string
     const passwordStore = writable('');
+    const lockedStore = writable(true);
 
     //If password hasn't beeen set then set the CoinStore inital value to an empty array
     //because we don't have a password to decrypt it yet (Wallet is locked)
@@ -14,8 +16,20 @@ const createCoinStore = () => {
     //This is called everytime the CoinStore updated
     CoinStore.subscribe(current => {
         //Make sure we have a password value before encrypting the store
-        if ( get(passwordStore) !== '' ){
-            localStorage.setItem('coins', JSON.stringify( encryptObject( get(passwordStore), current)));
+        if ( !get(lockedStore) ){
+            //Only accept object to be saved to the localstorage
+            if (isArray(current)) {
+                localStorage.setItem('coins', JSON.stringify( encryptObject( get(passwordStore), current)));
+            }else{
+                //Get the CoinStore from local storage
+                const encryptedStorage = localStorage.getItem('coins');
+                if (encryptedStorage) {
+                    //Try and decrypt it with the passwordStore Value
+                    let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
+                    if (decryptedStorage) CoinStore.set(decryptedStorage)
+                    console.log('Recovered from bad Coin Store Value')
+                }                
+            }
         }
     });
 
@@ -23,11 +37,11 @@ const createCoinStore = () => {
     passwordStore.subscribe(currPwd => {
         //Do this only if the password being send in isn't an empty string
         if (currPwd !== ''){
-            
+
             CoinStore.update(curr => {
                 //Get the CoinStore from local storage
                 const encryptedStorage = localStorage.getItem('coins');
-                
+
                 if (encryptedStorage) {
                     //Try and decrypt it with the passwordStore Value
                     let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
@@ -42,10 +56,16 @@ const createCoinStore = () => {
                 }
 
                 //Return the CoinStore value from localstorage if one was decrypted
-                if (startValue) return startValue;
+                if (startValue) {
+                    lockedStore.set(false);
+                    return startValue;
+                } 
                 //Return an empty array if decryption was unsuccessful.
                 return [];
             })
+        }else{
+            lockedStore.set(true);
+            CoinStore.set([]);
         }
     });
 
@@ -61,10 +81,16 @@ const createCoinStore = () => {
         update,
         setPwd,
         passwordStore,
+        lockedStore,
+        //Set the password to an empty string with will force the store
+        //to return an empty array
+        lockCoinStore: () =>{
+            setPwd('')
+        },
         //This function will attempt to decrypt the localstorage value with an installed password
         //and return true of false depending on the result
         validatePassword: (pwd) => {
-            if (!pwd || typeof pwd === 'undefined') return false;
+            if (!isStringWithValue(pwd)) return false;
             if (!localStorage.getItem('coins')) return false;
             if(decryptObject( pwd, JSON.parse(localStorage.getItem('coins'))) === false) return false;
             return true;
@@ -72,13 +98,12 @@ const createCoinStore = () => {
         //Add a coin to the internal coin storage
         addCoin: (coinInfo) => {
             //Reject missing or undefined arguments
-            if (!coinInfo || typeof coinInfo === 'undefined') return {added: false, reason: 'undefinedObject'};
-            if (!coinInfo.network || !coinInfo.name || !coinInfo.nickname || !coinInfo.symbol || !coinInfo.vk){
-                return {added: false, reason: 'missingArg'};
-            }
+            if (!isCoinInfoObj(coinInfo)) return {added: false, reason: 'badArg'};
+
             //Set the coin to watch only if no private key supplied
             if (!coinInfo.sk) coinInfo.sk = 'watchOnly'
             
+            coinInfo = copyItem(coinInfo);
             //Check if the coin already exists in coinstore
             let coinFound = get(CoinStore).find( f => {
                 return f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
@@ -110,10 +135,9 @@ const createCoinStore = () => {
         },
         //Retrive a specific coin from the Coin Store
         getCoin: (coinInfo) => {
-            //Return if object is undefined
-            if (!coinInfo || typeof coinInfo === 'undefined') return;
-            //Return if needed info was not provided
-            if (!coinInfo.network || !coinInfo.symbol || !coinInfo.vk) return;
+            //Reject missing or undefined arguments
+            if (!isCoinInfoObj(coinInfo)) return;
+
             //Return the matching coin (will be undefined if not matched)
             return get(CoinStore).find( f => {
                 return  f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
@@ -121,21 +145,15 @@ const createCoinStore = () => {
         },
         //Update the balance of a coin
         updateBalance: (coinInfo, balance) => {
-            //Return if object is undefined
-            if (!coinInfo || typeof coinInfo === 'undefined') return;
-            if (Object.prototype.toString.call(coinInfo) !== "[object Object]") return;
-            //Return if needed info was not provided
-            if (!coinInfo.network || !coinInfo.symbol || !coinInfo.vk) return;
-            //Return if balance is undefiend
-            if (!balance || typeof balance === 'undefined') return;
-            //Return if balance is Not a Number
-            if (isNaN(balance)) return;
-        
+            //Reject missing or undefined arguments
+            if (!isCoinInfoObj(coinInfo) || !isNumber(balance)) return;
+            
             CoinStore.update(coinstore => {
                 //Find the coin to update in the store
                 let coinToUpdate = coinstore.find( f => {
                     return  f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
                 });
+                
                 //If the coin was matched then update the balance to the one provided
                 if (coinToUpdate){
                     coinToUpdate.balance = balance;
@@ -168,6 +186,9 @@ const createCoinStore = () => {
 }
 //Create CoinStore instance
 export const CoinStore = createCoinStore();
+
+//Create a derived store to show if the store us locked
+export const lockedStorage = derived(CoinStore.lockedStore, ($lockedStore) => $lockedStore);
 
 //Create a derived store to share password to components
 export const password = derived(CoinStore.passwordStore, ($passwordStore) => $passwordStore);

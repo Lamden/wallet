@@ -170,7 +170,7 @@
 		const position = editor.getModel().findMatches(/import\s*(\w*)/, true, true, true, null, true);
 		position.map(match =>{
 			let contractName = match.matches[1]
-			if (!CacheStore.contractExists(contractName, $currentNetwork.name)){
+			if (!CacheStore.contractExists(contractName, $currentNetwork)){
 				if (!checkedContracts[$currentNetwork.name][contractName]){
 					if (contractName.replace(/\s/g, "") !== ""){
 						checkContractExists(contractName, {callback: handleContractExists, data: match});
@@ -223,7 +223,7 @@
 				return;
 			}
 		}
-		CacheStore.addContract(res.name, $currentNetwork.name)
+		CacheStore.addContract(res.name, $currentNetwork)
 		pushInputDecoration(match);
 	}
 

@@ -3,6 +3,12 @@ import { FilesStore, activeTab } from '../../../src/js/stores/filesStore.js';
 import "cypress-localstorage-commands";
 
 const storeSpys = {
+    'addDefaultFile': () => {
+        return FilesStore.addDefaultFile();
+    },
+    'addFile': (name, code, methods, networkObj) => {
+        return FilesStore.addFile(name, code, methods, networkObj);
+    },
     'activeTab': (index) => {
         return FilesStore.activeTab(index);
     },
@@ -20,10 +26,25 @@ const storeSpys = {
     }
 }
 
+const badValues = [undefined, null, [], {}, true, '', 0.01]
+
 const badNameValues = [undefined, null, [], {}, true, 10, '']
 const badCodeValues = [undefined, null, [], {}, true, 10]
 const badIndexValues = [undefined, null, [], {}, true, '', 0.01]
 const badSetValues = [undefined, null, {}, true, '', 0.01]
+
+let newNetwork = {
+    name: 'Public Test Network', 
+    ip: '1.1.1.1', 
+    port: '5555'
+}
+
+const setThisFile = {
+    name: 'Should Set this file',
+    code: '',
+    type: 'good stuff',
+    selected: false
+}
 
 describe('Test the Files Store', () => {
     before(function() {
@@ -42,24 +63,24 @@ describe('Test the Files Store', () => {
     })
 
     //Test adding new default files to the store
-    it('addNewFile: Store can add new default file', () => {
+    it('addDefaultFile: Store can add new default file', () => {
         let currentStoreLength = get(FilesStore).length
-        FilesStore.addNewFile()
+        storeSpys.addDefaultFile()
         cy.expect(get(FilesStore).length).to.eq(currentStoreLength + 1)
     })
 
-    it('addNewFile: Saves new file to local storeage', () => {
+    it('addDefaultFile: Saves new file to local storeage', () => {
         let ls = JSON.parse(window.localStorage.getItem("files"));
         cy.expect(ls.length).to.eq(2)
     })
 
-    it('addExistingContract: Can Store a file with provided details', () => {
+    it('addFile: Can Store a file with provided details', () => {
         let currentStoreLength = get(FilesStore).length
         let name = 'New Test Contract'
         let code = 'Testing Code'
         let methods = ['testing-1', 'testing-2']
-        let network = "Public Test Network"
-        FilesStore.addExistingContract(name, code, methods, network)
+        let network = newNetwork
+        storeSpys.addFile(name, code, methods, network)
         let newFile = get(FilesStore)[currentStoreLength]
         cy.expect(get(FilesStore).length).to.eq(3)
         cy.expect(newFile.name).to.eq('New Test Contract')
@@ -71,27 +92,37 @@ describe('Test the Files Store', () => {
     })
 
     //Test adding new files to the store
-    it('addExistingContract: Rejects undefined/bad arguments ', () => {
-        let currentStoreLength = get(FilesStore).length
+    it('addFile: Rejects undefined/bad arguments and does not error', () => {
+        //Get the current value of the localstorage
+        let beforeLs = window.localStorage.getItem("files");
+
+        //Good value placeholders
         let name = 'New Test Contract'
         let code = 'Testing Code'
         let methods = ['testing-1', 'testing-2']
-        let network = "Public Test Network"
-        //undefined name
-        FilesStore.addExistingContract(undefined, code, methods, network)
-        cy.expect(get(FilesStore).length).to.not.eq(currentStoreLength + 1)
-        //undefined code
-        FilesStore.addExistingContract(name, undefined, methods, network)
-        cy.expect(get(FilesStore).length).to.not.eq(currentStoreLength + 1)
-        //undefined methods
-        FilesStore.addExistingContract(name, code, undefined, network)
-        cy.expect(get(FilesStore).length).to.not.eq(currentStoreLength + 1)
-        //undefined network
-        FilesStore.addExistingContract(name, code, methods, undefined)
-        cy.expect(get(FilesStore).length).to.not.eq(currentStoreLength + 1)
-        //methods is not an array
-        FilesStore.addExistingContract(name, code, {}, network)
-        cy.expect(get(FilesStore).length).to.not.eq(currentStoreLength + 1)
+        let network = newNetwork
+        //Try bad values
+        try {
+            badValues.map(value => storeSpys.addFile(value, code, methods, network))
+            badValues.map(value => {
+                //Empty strings are okay for code
+                if (value !== '') storeSpys.addFile(name, value, methods, network)
+            })
+            badValues.map(value => {
+                //Empty arrays are okay for methods
+                if (JOSN.stringify(value) !== '[]') storeSpys.addFile(name, code, value, network)
+            })
+            badValues.map(value => storeSpys.addFile(name, code, methods, value))
+        } catch (e) {}
+
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.addFile).to.not.have.thrown(Error)
+
+        //Get the new value of the localstorage
+        let afterLs = window.localStorage.getItem("files");
+
+        //Expect the local storage to not have been overwritten and still contain the file
+        cy.expect(beforeLs).to.eq(afterLs)
     })
 
     //Test setting files as "active" for the IDE interface
@@ -185,7 +216,7 @@ describe('Test the Files Store', () => {
     //Test deleting files
     it('deleteTab: deletes a file from the file Store', () => {
         //Add an item that will be deleted
-        FilesStore.addExistingContract('Delete This', '', [], 'a network')
+        FilesStore.addFile('Delete This', '', [], newNetwork)
         let storeValue = get(FilesStore)
         let maxIndex = get(FilesStore).length - 1
         //Validate the item exists
@@ -254,6 +285,25 @@ describe('Test the Files Store', () => {
         
         //Expect the local storage to not have been overwritten and still contain the file
         cy.expect(beforeLs).to.eq(afterLs)
+        cy.expect(afterLs).to.eq(JSON.stringify(get(FilesStore)))
     })
-    
+
+    it('set: Can set a proper Value', () => {
+        //Get the current value of the localstorage
+        let beforeLs = window.localStorage.getItem("files");
+        //Attempt to set the Store Value to corrupt values
+        try {
+            FilesStore.set([setThisFile])
+        } catch (e) {}
+
+        //Makes sure the bad values didn't cause an error
+        cy.expect(storeSpys.set).to.not.have.thrown(Error)
+
+        //Get the new value of the localstorage
+        let afterLs = window.localStorage.getItem("files");
+
+        //Expect the local storage to not have been overwritten and still contain the file
+        cy.expect(beforeLs).to.not.eq(afterLs)
+        cy.expect(afterLs).to.eq(JSON.stringify(get(FilesStore)))
+    })
 })

@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { SettingsStore, currentNetwork, networks, CoinStore, CacheStore } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork, networksDropDownList, CoinStore, CacheStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte';
@@ -44,18 +44,12 @@
     }
 
     async function formValidation(){
-        //if ($networks.find(f => {return f.value.ip === network.ip && f.value.port === network.port})){
-        //    ipField.setCustomValidity("Network already added");
-        //    ipField.reportValidity();
-        //    return;
-       // }
         if (formField.checkValidity()){
             checking = true;
             let networkActive = await testNetork();
             checking = false;
             if (networkActive){
-
-                SettingsStore.addNetwork(network);
+                NetworksStore.addNetwork(network);
             }
         }
     }
@@ -66,7 +60,7 @@
     }
 
     function handleSelected(e){
-        SettingsStore.setCurrentNetwork(e.detail.selected.value)
+        NetworksStore.setCurrentNetwork(e.detail.selected.value)
         CoinStore.updateAllBalances(e.detail.selected.value)
     }
 
@@ -98,7 +92,7 @@
     <div class="current-network">
         <h5>Current Network</h5>
         <DropDown 
-            items={$networks}
+            items={$networksDropDownList}
             width={"250px"}
             label="Current Network"
             on:selected={(e) => handleSelected(e)} />  
@@ -110,12 +104,12 @@
             margin={'20px 0 0 0'}
             click={clearCache}
         /> 
-        {#if !$currentNetwork.lamden}
+        {#if !$currentNetwork}
             <Button 
                 id="del-network"
-                name={`delete ${$currentNetwork.name}`}
+                name={`delete current network`}
                 classes={`button__solid`}
-                width={'232px'}
+                width={'100%'}
                 margin={'20px 0 0 0'}
                 click={() => openModal('DevToolsDeleteNetwork')}
                 disabled={$currentNetwork.lamden} />

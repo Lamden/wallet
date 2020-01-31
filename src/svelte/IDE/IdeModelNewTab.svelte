@@ -17,7 +17,7 @@
     let contractName = "";
 
     function newTab(){
-        FilesStore.addNewFile();
+        FilesStore.addDefaultFile();
         closeModal();
     }
 
@@ -49,7 +49,7 @@
         fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
             .then(res => res.json())
             .then(res => {
-                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
+                FilesStore.addFile(contractName, contractCode, res.methods, currentNetwork);
                 closeModal();
             })
             .catch(err => {

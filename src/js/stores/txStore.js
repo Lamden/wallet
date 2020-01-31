@@ -1,14 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
-
-function isObject(value){
-    if(Object.prototype.toString.call(value) === "[object Object]") return true;
-    return false;
-}
-
-function isString(value){
-    if(Object.prototype.toString.call(value) === "[object String]") return true;
-    return false;
-}
+import { isTxDataObj, isNetworkObj, isObject, isStringWithValue, networkKey } from './stores.js';
 
 const createTxStore = (key, startValue) => {
     //Get store value from localstorate
@@ -20,25 +11,22 @@ const createTxStore = (key, startValue) => {
     //Create TxStore with the inital value
     const TxStore = writable(startValue);
 
+    //This is called everytime the value of the store changes
     TxStore.subscribe(current => {
         //Only accept object to be saved to the localstorage
-        if (Object.prototype.toString.call(current) === "[object Object]") {
+        if (isObject(current)) {
             localStorage.setItem(key, JSON.stringify(current));
         }else{
             //If non-object found then set the store back to the previous local store value
             let json = localStorage.getItem(key)
-            if (json) CacheStore.set(JSON.parse(json))
+            if (json) TxStore.set(JSON.parse(json))
             console.log('Recovered from bad Transaction Store Value')
         }
     });
+    
     let subscribe = TxStore.subscribe;
     let update = TxStore.update;
     let set = TxStore.set;
-
-    //Network Key used to store transactions
-    const networkKey = (networkObj) => {
-        return networkObj.ip + networkObj.port
-    }
 
     //Remove sensitive info from being stored in the txData.sender (sk, etc)
     const cleanSender = (sender) => {
@@ -60,47 +48,56 @@ const createTxStore = (key, startValue) => {
         //Network Key is a concat of ip and port
         addTx: (txData) => {
             //Return if arguments are undefined and incorrect types
-            if (!txData || typeof txData === 'undefined' || !isObject(txData)) return;
-            if (!txData.network || !txData.sender ) return;
-            if (!txData.network.ip || !txData.network.port || !txData.sender.vk) return;
+            if (!isTxDataObj(txData)) return;
+
+            //Create Network Key
+            let netKey = networkKey(txData.network);
+
             TxStore.update(txstore => {
-                //Create networkKey
-                let netKey = networkKey(txData.network)
+                //instantiate keys
                 if (!txstore[netKey]) txstore[netKey] = {}
                 if (!txstore[netKey][txData.sender.vk]) txstore[netKey][txData.sender.vk] = [];
-                //Clear sender sensitive info
+
+                //Clear sender sensitive info (sk etc)
                 txData.sender = cleanSender(txData.sender);
+
+                //Add Date to transaction
                 txData.date = new Date().toUTCString();
-                //Add tx to List
+
+                //Add tx to Store List
                 txstore[netKey][txData.sender.vk].push(txData);
                 return txstore;
             })
         },
-        getTx: (networkObj, vk) => {
+        getTxList: (networkObj, vk) => {
             //Return if arguments are undefined and incorrect types
-            if (!vk || typeof vk === 'undefined' || !isString(vk)) return;
-            if (!networkObj || typeof networkObj === 'undefined' || !isObject(networkObj)) return;
-            if (!networkObj.ip || !networkObj.port) return;
-            //Get Network Key
-            let netKey = networkKey(networkObj)
+            if (!isNetworkObj(networkObj) || !isStringWithValue(vk)) return;
+
+            //Create Network Key
+            let netKey = networkKey(networkObj);
+
+            //Get the txStore Value
             let txstore = get(TxStore);
+
             //Return empty lists if the keys can't be found
             if (!txstore[netKey]) return [];
             if (!txstore[netKey][vk]) return [];
+
             //List is found so return it
             return txstore[netKey][vk]
         },
         clearTx: (networkObj, vk) => {
             //Return if arguments are undefined and incorrect types
-            if (!vk || typeof vk === 'undefined' || !isString(vk)) return;
-            if (!networkObj || typeof networkObj === 'undefined' || !isObject(networkObj)) return;
-            if (!networkObj.ip || !networkObj.port) return;
+            if (!isNetworkObj(networkObj) || !isStringWithValue(vk)) return;
+
+            //Create network Key
+            let netKey = networkKey(networkObj)
 
             TxStore.update(txstore => {
-                let netKey = networkKey(networkObj)
                 //If the key paths don't exists then just return
                 if (!txstore[netKey]) return;
                 if (!txstore[netKey][vk]) return;
+
                 //Set key to an empty Array
                 txstore[netKey][vk] = [];
                 return txstore;
