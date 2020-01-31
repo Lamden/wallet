@@ -1,8 +1,6 @@
 //import TestUtils from '../../src/svelte/test_components/TestUtils.svelte'
 import {encryptStrHash, decryptStrHash,
         encryptObject, decryptObject,
-        decryptFile,
-        stripCoinRef,
         vailidateString} from '../../../src/js/utils'
     
 describe('Utils Testing Svelte Store Functions', function () {
@@ -95,21 +93,6 @@ describe('Utils Testing Svelte Store Functions', function () {
             cy.fixture('unit-tests/utils.json').then(( f_wallets) => {
                 const fdata = f_wallets.decryptObject.data
                 expect( decryptObject( fdata.badPassword, fdata.badHash ) ).to.eq( false )
-            })
-        })
-    })
-
-    context('stripCoinRef: Returns an unreferenced copy of a Coin Object', function () {
-        it('can be modified without altering the parent', function () {
-            cy.fixture('unit-tests/utils.json').then(( f_wallets) => {
-                const fdata = f_wallets.stripCoinRef.data
-                const fresult = f_wallets.stripCoinRef.result
-                let coin = fdata.coinList[1];
-                cy.wrap(stripCoinRef( coin ))
-                    .then( newCoin => {
-                        expect( newCoin ).to.deep.equal( fresult.newCoin )
-                        expect( coin ).to.deep.equal( fresult.coinBeforeCopy )
-                    })
             })
         })
     })

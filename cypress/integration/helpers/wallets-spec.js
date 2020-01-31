@@ -23,7 +23,7 @@ describe('Unit Test Crypto Wallet functions', function () {
         it('Rejects unrecognized network ', function () {
             cy.fixture('unit-tests/wallets.json').then(( f_wallets) => {
                 const fdata = f_wallets.pubFromPriv_lamden.data
-                expect(() => pubFromPriv('testing', 'STU', fdata.sk) ).to.throw(Error, 'testing is not a supported network');
+                expect(() => pubFromPriv('testing', 'STU', fdata.sk) ).to.throw(Error,'testing is not a supported network');
             })
         })
 

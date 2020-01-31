@@ -10,7 +10,7 @@
     
 	//Utils
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
-    import { encryptStrHash, decryptStrHash, stripCoinRef } from '../../js/utils.js';
+    import { encryptStrHash, decryptStrHash } from '../../js/utils.js';
 
 	//Context
     const { closeModal } = getContext('app_functions');

@@ -33,18 +33,6 @@
             "objectString": {"value" : "Encrypte This"}
         }
     },
-    "stripCoinRef":{
-        "data":{
-            "coinList":[
-                {"is_token":false,"network":"lamden","network_symbol":"TAU","name":"Lamden","nickname":"My Lamden Wallet","symbol":"TAU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }, 
-                {"is_token":false,"network":"lamden","network_symbol":"STU","name":"Stu Bucks","nickname":"My Stu Bucks Wallet","symbol":"STU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }
-            ]
-        },
-        "result":{
-            "newCoin":{ "is_token": false, "network":"lamden","network_symbol":"TAU","name":"Lamden","nickname":"My Lamden Wallet","symbol":"TAU", "vk": "thisisapublickey", "sk": "thisisaprivatekey"},
-            "coinBeforeCopy": {"is_token":false,"network":"lamden","network_symbol":"STU","name":"Stu Bucks","nickname":"My Stu Bucks Wallet","symbol":"STU","vk":"thisisapublickey","sk":"thisisaprivatekey","balance":"0.00000000", "txList": [] }
-        }
-    },
     "toCurrencyFormat":{
         "result":{
             "USD": "$100.00",

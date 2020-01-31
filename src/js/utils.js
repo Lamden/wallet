@@ -78,17 +78,6 @@ const decryptObject = typedFunction( [ String, String ],  ( password, objString 
 });
 
 /*
-    Creates a copy of a Coin Object that strips all references.
-    Return: Coin Object (ojb)
-*/
-const stripCoinRef = typedFunction( [ Object ],  (coin )=>{
-    let newCoin = JSON.parse(JSON.stringify(coin));
-    if (newCoin.txList) delete newCoin.txList;
-    if (newCoin.balance) delete newCoin.balance;
-    return newCoin;
-});
-
-/*
     Validates a string proprty isn't empty, and also trims leading and trailing whitespace
     Return: Trimmed String (str)
 */
@@ -104,6 +93,5 @@ module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject,
-    stripCoinRef,
     vailidateString
   }
