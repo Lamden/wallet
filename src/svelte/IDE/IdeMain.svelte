@@ -26,7 +26,9 @@
 
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
+		//console.log(Monaco)
 		Monaco.then(mod => {
+			//console.log(mod)
 			if (mod){
 				monaco = mod;
 				editorIsLoaded = true;

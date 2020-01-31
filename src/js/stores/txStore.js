@@ -108,12 +108,3 @@ const createTxStore = (key, startValue) => {
 
 //Create TxStore
 export const TxStore = createTxStore('txs', {});
-
-//Returns a derived store that has a list of all transactions
-export const allTransactions = derived(TxStore, ($TxStore) => {
-    let txList = [];
-    Object.keys($TxStore).map(key => {
-        txList = [...txList, ...key]
-    })
-    return txList;
-});

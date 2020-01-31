@@ -1,10 +1,6 @@
 <script>
     export let status
-
-    $: online = status;
 </script>
-
-
 
 <style>
 .checking{
@@ -18,4 +14,8 @@
 }
 </style>
 
-<div class="online" class:checking={status=== 'checking'} class:online={status=== 'online'} class:offline={status=== 'offline'}>{online}</div>
+{#await status}
+    <div class="checking">{'checking'}</div>
+{:then online}
+    <div class="online" class:online={online=== 'online'} class:offline={online=== 'offline'}>{online}</div>
+{/await}

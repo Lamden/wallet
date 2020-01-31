@@ -272,8 +272,8 @@ export class TransactionBuilder {
                 if (callback != null) {
                     return callback(res);
                 }
-            return this.transactionResult;
-        })
-            .catch(err => callback(undefined, err));
+                return this.transactionResult;
+            })
+            .catch(err => { return callback(undefined, err) });
     }
 }

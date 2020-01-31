@@ -9,7 +9,7 @@
     "dev": "node utils/webserver.js",
     "all-tests": "npm run test-firstrun-create && npm run test-firstrun-restore && npm run test-lockscreen && npm run test-add-wallet && npm run test-modify-wallet && npm run test-restore && npm run test-backup",
     "cypress-open": "./node_modules/.bin/cypress open",
-    "test-workflows": "./node_modules/.bin/cypress run --config integrationFolder=cypress/integration/workflows",
+    "test-workflows": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/*.js",
       "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/firstrun-create-spec.js",
       "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/firstrun-restore-spec.js",
       "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/lockscreen-spec.js",

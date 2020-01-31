@@ -17,6 +17,7 @@
     export let spellcheck = true;
     export let rows = '1'
     export let readonly = false
+    export let autofocus = false;
 
     export let thisInput;
 
@@ -118,7 +119,8 @@ label{
             type="password"
             pattern={pattern}
             placeholder={placeholder}
-            required={required}  />
+            required={required}
+            autofocus={autofocus}  />
     {/if}
     {#if inputType === "number"}
         <input
@@ -133,7 +135,8 @@ label{
             min="0.000000001"
             step="0.000000001"
             placeholder={placeholder}
-            required={required}  />
+            required={required}
+            autofocus={autofocus}  />
     {/if}
     {#if inputType === "textarea"}
         <textarea
@@ -148,7 +151,8 @@ label{
             pattern={pattern}
             placeholder={placeholder}
             readonly={readonly}
-            required={required}  />
+            required={required}
+            autofocus={autofocus}  />
     {/if}
     {#if inputType === 'text'}
         <input
@@ -162,6 +166,7 @@ label{
             pattern={pattern}
             placeholder={placeholder}
             required={required}
-            spellcheck={spellcheck}  />
+            spellcheck={spellcheck}
+            autofocus={autofocus}  />
     {/if}
 </div>

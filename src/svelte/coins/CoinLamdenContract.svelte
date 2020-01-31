@@ -20,7 +20,6 @@
     export let coin;
     export let currentPage;
 
-    let txData = {};
     let selectedWallet;
     let contractError = false;
     let contractMethods;

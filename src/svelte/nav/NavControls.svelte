@@ -8,30 +8,20 @@
 	//Components
     import { NavStatus }  from '../Router.svelte'
 
+    //Utils
+    import { masternodeAPI  } from '../../js/lamden/masternode-api.js';
+
     //Context
     const { switchPage } = getContext('app_functions');
 
-    let status = 'checking';
-
-    onMount(() => {
-        currentNetworkOnline();
-    })
+    $: status = masternodeAPI($currentNetwork, 'ping', {}, (res, err) => {
+                    try { return res.status; } 
+                    catch (e) {return 'offline';}
+                })
 
     function toggleTheme(event) {
         SettingsStore.changeTheme(event.detail ? 'light' : 'dark')
         document.querySelector("html").style = themes[$themeStyle];
-    }
-
-    function currentNetworkOnline(){
-        status = 'checking';
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/ping`)
-            .then(res => res.json())
-            .then(res => {
-                let result = 'online';
-                if (res.status !== 'online') result = 'offline';
-                status = result;
-            })
-            .catch(err => {console.log(err); status = 'offline'})
     }
 
 </script>
