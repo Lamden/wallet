@@ -1,10 +1,13 @@
 import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
 
 describe('Test that the Lockscreen Loads and has functionality', () => {
     before(function (){
         cy.viewport(1920, 1080)
-        mount(App)
+        mount(App, {props: {loaded}})
         cy.get('#create-wallet').focus().should('exist').click();
         cy.get('input#pwd1').focus().invoke('attr', 'value', 'Testing0!0101')
         cy.get('input#pwd2').focus().invoke('attr', 'value', 'Testing0!0101')

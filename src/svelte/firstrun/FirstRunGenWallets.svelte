@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, password, steps, SettingsStore } from '../../js/stores/stores.js';
+    import { CoinStore, password, steps, allNetworks } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -61,7 +61,7 @@
     }
 
     function mintMockchainCoins(vk){
-        let mockchain = $SettingsStore.networks.find(f => f.name === "Lamden Public Testnet")
+        let mockchain = $allNetworks.find(f => f.name === "Lamden Public Testnet")
         if (mockchain){
             let body = JSON.stringify({
                 "vk" : vk,

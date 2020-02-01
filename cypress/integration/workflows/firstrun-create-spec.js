@@ -1,11 +1,14 @@
 import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
 
 
 describe('First Run Create Wallet Process', () => {
     it('Loads FirstRunInto to start', () => {
         cy.viewport(1920, 1080)
-        mount(App)
+        mount(App, {props: {loaded}})
 
         //Renders FirstRunIntro.svelte and two buttons
         cy.get('#create-wallet').should('exist')      

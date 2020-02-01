@@ -12,8 +12,7 @@
 			currentPage, 
 			themeStyle, 
 			firstRun,
-			password,
-			pageLoaded} from '../js/stores/stores.js';
+			password} from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
@@ -21,6 +20,8 @@
 
 	//Images
 	import heart from '../img/menu_icons/icon_heart.svg';
+
+	export let loaded;
 
 	let showModal = false;
 	let currentModal;
@@ -33,7 +34,6 @@
 		SettingsStore.calcStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
-		pageLoaded.set(true);
 	});
 
 	setContext('app_functions', {
@@ -43,10 +43,6 @@
 		closeModal: () => showModal = false,
 		appHome: () => switchPage('CoinsMain')
 	});
-
-	function pageIsLoaded(){
-		return pageLoaded;
-	}
 
 	function switchPage(name, data) {
 		showModal = false;
@@ -69,7 +65,7 @@
 
 </script>
 
-{#if $pageLoaded}
+{#if $loaded}
 	<div class="container">
 		{#if $firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
@@ -103,7 +99,7 @@
 				{/if}
 			{/if}
 			{#if !pwdIsCorrect}
-				<svelte:component this={Pages['LockScreen']}/>
+				<svelte:component this={Pages['LockScreen']} {loaded}/>
 			{/if}
 		{/if}
 

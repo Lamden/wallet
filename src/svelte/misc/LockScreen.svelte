@@ -12,14 +12,8 @@
     //DOM nodes
     let formObj, pwdObj;
 
-    $: loaded = false;
-    window.addEventListener('load', (event) => {
-        try{
-            loaded = true
-        } catch (e) {
-            console.log(e)
-        }
-    });
+    export let loaded;
+ 
 
     function handleSubmit(){
         if (!CoinStore.validatePassword(pwdObj.value)) {
@@ -111,7 +105,7 @@ form{
     <div class="header text-primary">
         <NavLogo />
     </div>
-    {#if loaded}
+    {#if $loaded}
         <div class="content text-primary">
             <div class="lockscreen">
                 <h6 class="heading">Sign In</h6>

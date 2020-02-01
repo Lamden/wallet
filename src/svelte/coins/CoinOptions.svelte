@@ -102,7 +102,7 @@
 }
 </style>
 
-<div class="text-primary">
+<div id="coin-options" class="text-primary">
     <h5> {`Recieve ${coin.name} ${coin.symbol}`} </h5>
     <DropDown
         id={'wallets-dd'}

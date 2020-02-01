@@ -2,12 +2,16 @@ import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
 import 'cypress-file-upload';
 
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
+
 const fileName = 'files/Testing.keystore'
 
 describe('Restore Wallet Process', () => {
     before(function (){
         cy.viewport(1920, 1080)
-        mount(App)
+        mount(App, {props: {loaded}})
         
         cy.get('#create-wallet').focus().should('exist').click();
 

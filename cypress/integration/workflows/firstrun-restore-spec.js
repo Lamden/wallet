@@ -1,6 +1,9 @@
 import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
 import 'cypress-file-upload';
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
 
 const fileName = 'files/Testing.keystore'
 
@@ -11,7 +14,7 @@ describe('First Run Restore Wallet Process', () => {
             //
             cy.log('Renders FirstRunIntro.svelte and two buttons')
             cy.viewport(1920, 1080)
-            mount(App)
+            mount(App, {props: {loaded}})
 
             cy.get('#create-wallet').should('exist')      
             cy.get('#restore-wallet').should('exist')

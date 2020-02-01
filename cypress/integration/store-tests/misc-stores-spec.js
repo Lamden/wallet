@@ -43,11 +43,6 @@ describe('Test Misc Stores', () => {
         let initalValue = jsonStr({current:0, stepList:[]})
         cy.expect(jsonStr(store)).to.eq(initalValue)
     })
-
-    it('pageLoaded: test inital value', () => {
-        let store = get(Stores.pageLoaded)
-        cy.expect(store).to.eq(false)
-    })
 })
 
 describe('Test Store Utility Functions', () => {
