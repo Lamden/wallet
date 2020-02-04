@@ -2,7 +2,7 @@
     import { getContext } from 'svelte'
 
 	//Stores
-    import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
+    import { FilesStore, currentNetwork, networkKey } from '../../js/stores/stores.js';
 
 	//Components
     import { IdeTab }  from '../Router.svelte'
@@ -13,7 +13,7 @@
     //Context
     const { openModal } = getContext('app_functions');
 
-    $: files = $FilesStore.filter(f => f.network === currentNetwork.name)
+    $: files = $FilesStore.filter(f => f.networkKey === networkKey($currentNetwork) || f.type === 'local')
 
     function addTab(){
         openModal('IdeModelNewTab');

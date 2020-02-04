@@ -35,7 +35,7 @@ describe('Test that all Modify Wallet Options and screens', () => {
             $input[0].value = "Testing Nickname"
         })   
         cy.get('#modify-edit-info').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("Lamden TAU - 0 TAU")
+            expect($div[0].textContent).to.contain("Lamden TAU")
         })
         cy.get('#save-btn').should('exist').focus().click()
 

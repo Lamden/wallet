@@ -11,6 +11,7 @@
 	//Utils
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
     import { encryptStrHash, decryptStrHash } from '../../js/utils.js';
+    import { mintTestNetCoins, updateAllBalances } from '../../js/lamden/masternode-api.js';
 
 	//Context
     const { closeModal } = getContext('app_functions');
@@ -102,7 +103,6 @@
         
         let response = CoinStore.addCoin(coinInfo);
         if (!response.added){
-            console.log(response);
             if (response.reason === "duplicate") {
                 returnMessage = {type:'warning', text: "Coin already exists in wallet"} 
             }
@@ -111,7 +111,8 @@
             }
         } else {
             if (response.reason === "new") {
-                returnMessage = {type:'success', text: `${selected.name} (${selected.symbol}) New Wallet Added`} 
+                returnMessage = {type:'success', text: `${selected.name} (${selected.symbol}) New Wallet Added`}
+                if (addType === 1) mintTestCoins(coinInfo);
             }
             if (response.reason.includes('Private Key Updated')) {
                 returnMessage = {type:'success', text: response.reason} 
@@ -128,7 +129,7 @@
             console.log(e)
             returnMessage = {type:'error', text: e}
         }
-        mintMockchainCoins();
+        
     }
 
     function createCoinList(){
@@ -141,29 +142,10 @@
         return coinList
     }
 
-    function mintMockchainCoins(){
-        let mockchain = $allNetworks.find(f => f.name === "Lamden Public Testnet")
-        if (mockchain){
-            let body = JSON.stringify({
-                "vk" : keyPair.vk,
-                "amount" : 1000000,
-            })
-            fetch(`${mockchain.ip}:${mockchain.port}/mint`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (currentNetwork.ip === mockchain.ip && currentNetwork.port === mockchain.port) CoinStore.updateAllBalances(currentNetwork);
-            })
-            .catch(err => console.log(err))
-        }
+    async function mintTestCoins(coin){
+        let mintOkay = await mintTestNetCoins($currentNetwork, coin.vk, 1000000);
+        if (mintOkay) CoinStore.updateBalance(coin, 1000000)
     }
-
-
 </script>
 <style>
 .coin-add-details{

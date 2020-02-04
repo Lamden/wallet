@@ -160,27 +160,6 @@ const createCoinStore = () => {
                 };
                 return coinstore;
             })
-        },
-        //Update the balances for all keys in the store
-        //This may be refractored out of here.
-        updateAllBalances: (networkInfo) => {
-            //Returns if networkInfo is undefined
-            if (!networkInfo || typeof networkInfo === 'undefined') return;
-            //Returns if the networkInfo object doesn't contain ip or port
-            if (!networkInfo.ip || !networkInfo.port) return;
-            CoinStore.update(coinstore => {
-                //Ask the masternode for the balance of each vk in the store
-                coinstore.map(coin => {
-                    fetch(`${networkInfo.ip}:${networkInfo.port}/contracts/currency/balances/?key=${coin.vk}`)
-                    .then(res => res.json())
-                    .then(res => {
-                        //Set the balance of the coin
-                        coin.balance = res.value ? parseFloat(res.value) : 0;
-                    })
-                    .catch(err => {console.log(err); coin.balance = 0})
-                })
-                return coinstore;
-            })
         }
     };
 }

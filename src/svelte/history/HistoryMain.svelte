@@ -39,7 +39,6 @@
         Object.keys(txList).map(vk => {
             flatList.push(...txList[vk])
         })
-        console.log(flatList)
         return flatList
     }
 

@@ -12,6 +12,7 @@
 
     //Utils
     import { isStringHex } from  '../../js/lamden/helpers.js';
+    import { getContractMethods  } from '../../js/lamden/masternode-api.js';
 
     //DOM NODES
     let stampsField, contractNameField
@@ -142,17 +143,9 @@
         }
     }
 
-    function getMethods(contract){
-        return fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contract}/methods`)
-                    .then(res => res.json())
-                    .then(res => {
-                        if (res.error) {
-                            contractNameField.setCustomValidity(res.error);
-                            contractNameField.reportValidity();
-                        }
-                        setArgs(res.methods[0], contract)
-                        return res.methods
-                    })
+    async function getMethods(contract){
+        contractMethods = await getContractMethods($currentNetwork, contract)
+        if (contractMethods.length > 0) setArgs(contractMethods[0], contract)
     }
 
     function handleNext(){

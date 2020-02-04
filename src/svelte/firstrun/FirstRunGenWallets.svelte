@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, password, steps, allNetworks } from '../../js/stores/stores.js';
+    import { CoinStore, password, steps, allNetworks, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -11,6 +11,7 @@
 	//Utils
     import { keysFromNew } from '../../js/crypto/wallets.js';
     import { encryptStrHash, encryptObject } from '../../js/utils.js';
+    import { mintTestNetCoins } from '../../js/lamden/masternode-api.js';
     
     //Context
     const { changeStep } = getContext('functions');
@@ -49,38 +50,24 @@
 
     function createStartingWallets(){
         let keyPair = keysFromNew('lamden', 'TAU');
-        CoinStore.addCoin({
-                'network': 'lamden',
-                'name': 'Lamden',
-                'nickname' : 'My TAU Address',
-                'symbol': 'TAU',
-                'vk': keyPair.vk,
-                'sk': encryptStrHash($password, keyPair.sk)
-        })
-        mintMockchainCoins(keyPair.vk)
+        let newCoin = {
+            'network': 'lamden',
+            'name': 'Lamden',
+            'nickname' : 'My TAU Address',
+            'symbol': 'TAU',
+            'vk': keyPair.vk,
+            'sk': encryptStrHash($password, keyPair.sk)
+        }
+        CoinStore.addCoin(newCoin)
+        mintTestCoins(newCoin)
     }
 
-    function mintMockchainCoins(vk){
-        let mockchain = $allNetworks.find(f => f.name === "Lamden Public Testnet")
-        if (mockchain){
-            let body = JSON.stringify({
-                "vk" : vk,
-                "amount" : 1000000,
-            })
-            fetch(`${mockchain.ip}:${mockchain.port}/mint`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (currentNetwork.ip === mockchain.ip && currentNetwork.port === mockchain.port) CoinStore.updateAllBalances(currentNetwork);
-            })
-            .catch(err => console.log(err))
-        }
+    async function mintTestCoins(coin){
+        let mintOkay = await mintTestNetCoins($currentNetwork, coin.vk, 1000000);
+        if (mintOkay) CoinStore.updateBalance(coin, 1000000)
     }
+
+
 
 </script>
 

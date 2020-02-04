@@ -7,6 +7,9 @@
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
+    //Utils
+    import { getTauBalance  } from '../../js/lamden/masternode-api.js';
+
     // Props
     export let coin;
     export let id;
@@ -20,14 +23,13 @@
     $: percent = $balanceTotal === undefined ? "" : toPercentString();
 
     onMount(() => {
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/currency/balances/?key=${coin.vk}`)
-        .then(res => res.json())
-        .then(res => {
-            res.value ? res.value : 0;
-            if (res.value !== balance) CoinStore.updateBalance(coin, parseFloat(res.value))
-        })
-        .catch(err => CoinStore.updateBalance(coin, 0))
+        getBalance();
     })
+
+    async function getBalance(){
+        let balanceRes = await getTauBalance($currentNetwork, coin.vk)
+        CoinStore.updateBalance(coin, balanceRes)
+    }
 
     function toPercentString(){
         if (isNaN((coin.balance / $balanceTotal))) return '0 %'

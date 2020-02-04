@@ -9,7 +9,7 @@
     const { InputBox, Button, DropDown } = Components;
 
     //Utils
-    import { masternodeAPI  } from '../../js/lamden/masternode-api.js';
+    import { pingServer, getTauBalance  } from '../../js/lamden/masternode-api.js';
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
@@ -27,20 +27,10 @@
     $: buttonName = checking ? 'Checking For Network' : added ? 'Added!' : 'Add Network';
     $: network = {name, ip, port, lamden: false, selected: false}
 
-    function testNetork(res, err){
-        try { 
-            if (res.status === 'online') return true;
-        } 
-        catch (e) {
-            reportValidityMessage(ipField, "Cannot contact network")
-            return false;
-        }
-    }
-
     async function formValidation(){
         if (formField.checkValidity()){
             checking = true;
-            let networkActive = await masternodeAPI({ip, port}, 'ping', {}, testNetork)
+            let networkActive = await pingServer({ip, port})
             checking = false;
             if (networkActive){
                 let response = NetworksStore.addNetwork(network);
@@ -51,8 +41,11 @@
                         reportValidityMessage(ipField, "Network ip/port already exists")
                     }
                 }
+            }else{
+                reportValidityMessage(ipField, "Cannot contact network")
             }
         }
+        
     }
 
     function clearFields(){
@@ -67,7 +60,11 @@
 
     function handleSelected(e){
         NetworksStore.setCurrentNetwork(e.detail.selected.value)
-        CoinStore.updateAllBalances(e.detail.selected.value)
+        $CoinStore.map(async (coin) => {
+            let balance = await getTauBalance($currentNetwork, coin.vk);
+            if (!coin.balance) CoinStore.updateBalance(balance)
+            if (balance !== coin.balance) CoinStore.updateBalance(balance)
+        })
     }
 
     function clearCache(){

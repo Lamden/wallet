@@ -22,6 +22,7 @@
 
 	//Utils
 	import { updateBalances, decryptObject } from '../../js/utils.js';
+	import { getTauBalance } from '../../js/lamden/masternode-api.js';
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
@@ -37,7 +38,11 @@
 	});
 
 	function handleRefresh(){
-		CoinStore.updateAllBalances($currentNetwork)
+		$CoinStore.map(async (coin) => {
+            let balance = await getTauBalance($currentNetwork, coin.vk);
+            if (!coin.balance) CoinStore.updateBalance(balance)
+            if (balance !== coin.balance) CoinStore.updateBalance(balance)
+        })
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false

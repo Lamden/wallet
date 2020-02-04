@@ -5,13 +5,18 @@ import * as wallet from './wallet';
 import * as pow from './pow';
 export class TransactionBuilder {
     constructor(networkNode, sender, contract, func, kwargs, stamps, nonce = undefined, processor = undefined) {
-        this.networkNode = networkNode;
+        function checkUndefined(value, name){
+            if (typeof value !== 'undefined') return value;
+            throw new Error(`${name} is undefined`)
+        }
+
         //Stores variables in self for convenience
-        this.sender = sender;
-        this.stamps = stamps;
-        this.contract = contract;
-        this.func = func;
-        this.kwargs = kwargs;
+        this.networkNode = checkUndefined(networkNode, 'networkNode')
+        this.sender = checkUndefined(sender, 'sender')
+        this.stamps = checkUndefined(stamps, 'stamps');
+        this.contract = checkUndefined(contract, 'contract');;
+        this.func = checkUndefined(func, 'func');
+        this.kwargs = checkUndefined(kwargs, 'kwargs');
         this.nonce = nonce;
         this.processor = processor;
         this.proofGenerated = false;
@@ -266,7 +271,7 @@ export class TransactionBuilder {
             method: 'POST',
             body: data
         })
-            .then(res => { console.log(res); this.transactionResponse = res; return res.json(); })
+            .then(res => { this.transactionResponse = res; return res.json(); })
             .then(res => {
                 this.transactionResult = res;
                 if (callback != null) {

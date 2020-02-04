@@ -8,27 +8,26 @@
 	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../Router.svelte';
 	const { Button, Loading } = Components;
 	import { Monaco } from '../components/Monaco.svelte'
+	import MonacoWindow from './IdeMonacoEditor.svelte';
+
+    //Utils
+    import { getContractInfo, getContractMethods, lintCode  } from '../../js/lamden/masternode-api.js';
 
     //Context
 	const { openModal } = getContext('app_functions');
 	setContext('editor_functions', {
-		checkContractExists: (contractName, options) => checkContractExists(contractName, options),
-		addContractTab: (contractName, contractCode) => getMethods(contractName, contractCode)
+		checkContractExists: async (contractName, options) => await getContract(contractName, options),
+		addContractTab: async (contractName, contractCode) => await addFileToStore(contractName, contractCode)
     });
 
-	let lintErrors = {validations: null};
-	let editorIsLoaded = false;
-
-	import MonacoWindow from './IdeMonacoEditor.svelte';
-  
+	let lintErrors = {violations: null};
+	let editorIsLoaded = false;  
 	let monaco;
 	let monacoComponent;
 
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
-		//console.log(Monaco)
 		Monaco.then(mod => {
-			//console.log(mod)
 			if (mod){
 				monaco = mod;
 				editorIsLoaded = true;
@@ -44,25 +43,11 @@
 		if ($activeTab.type === 'local') lint();
 	}
 
-	function lint(callback){
-		let data = {
-			name: $activeTab.name,
-			code: $activeTab.code
-		}
-		fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/lint`, {
-			method: 'POST',
-			headers: {
-			'Content-Type': 'application/json'
-			},
-            body: JSON.stringify(data)
-        })
-		.then(res => res.json())
-		.then(res => {
-			lintErrors = res;
-			if (!callback) return;
-			callback(res);
-		})
-		.catch(err => console.log(err))
+	async function lint(callback){
+		lintErrors = await lintCode($currentNetwork, $activeTab.name, $activeTab.code)
+		try {
+			callback(lintErrors);
+		} catch (e){}
 	}
 
 	function submit(res){
@@ -98,30 +83,14 @@
 		openModal('IdeModelMethodTx', e.detail)
 	}
 
-	function checkContractExists(contractName, options){
-		fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
-			.then(res => res.json())
-			.then(res => {
-				try{
-					options.callback(res, !options.data ? undefined : options.data);
-				} catch (e) {
-					return false;
-				}
-			})
-			.catch(err => console.log(err))
+	async function getContract(contractName, options){
+		let contractInfo = await getContractInfo($currentNetwork, contractName)
+		if (contractInfo) options.callback(contractInfo, !options.data ? undefined : options.data);
 	}
 	
-    function getMethods(contractName, contractCode){
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
-            .then(res => res.json())
-            .then(res => {
-                FilesStore.addFile(contractName, contractCode, res.methods, currentNetwork);
-            })
-            .catch(err => console.log(err))
-	}
-	
-	function loaded(){
-		console.log('loaded')
+    async function addFileToStore(contractName, contractCode){
+		let methods =  await getContractMethods($currentNetwork, contractName)
+		FilesStore.addFile(contractName, contractCode, methods, $currentNetwork);
 	}
 </script>
 
@@ -136,7 +105,7 @@
 {#if editorIsLoaded}
 	<div id="monaco_window" class="flex-column">
 		
-			<IdeTabs {checkContractExists}/>
+			<IdeTabs />
 
 		<div class="editor-row">
 
@@ -144,7 +113,6 @@
 				bind:this={monacoComponent}
 				{monaco}
 				on:loaded={editorLoaded}
-				{checkContractExists}
 				on:clickMethod={handleMethodClick}
 				{lintErrors}
 			/>
@@ -158,7 +126,7 @@
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
 							height={'42px'}
-							click={() => lint()}
+							click={lint}
 						/>
 						<Button 
 							id={'contractTab-btn'} 

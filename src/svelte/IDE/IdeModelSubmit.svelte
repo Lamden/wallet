@@ -8,6 +8,9 @@
     import { Modals, Components }  from '../Router.svelte';
     const { Button } = Components
 
+    //Utils
+    import { getContractInfo, getContractMethods } from '../../js/lamden/masternode-api.js';
+
     //Context
 	const { closeModal } = getContext('app_functions');
 
@@ -25,7 +28,7 @@
         {page: 'ResultBox', back: -1, cancelButton: false}
     ]
     let buttons = [
-            {name: 'Close', click: () => finish(), class: 'button__solid button__purple'},
+            {name: 'Close', click: () => closeModal(), class: 'button__solid button__purple'},
         ]
     let currentStep = 0;
     
@@ -89,6 +92,7 @@
         }
         else {
             handleSuccess();
+            addFile();
         }
         txData.resultInfo = resultInfo;
         txData.network = $currentNetwork;
@@ -108,38 +112,16 @@
         TxStore.addTx(txData);
     }
 
-    function finish(){
-        if (!txData.resultInfo.type === 'error'){
-            getContract();
+    async function addFile(){
+        if (txData.txInfo.args.name){
+            let contractInfo = await getContractInfo($currentNetwork, txData.txInfo.args.name.value);
+            try {
+                let methods = await getContractMethods($currentNetwork, contractInfo.name, contractInfo.code)
+                FilesStore.addFile(contractInfo.name, contractInfo.code, methods, $currentNetwork);
+            } catch (e) {
+               console.log(e)
+            }
         }
-        closeModal();
-    }
-    
-    function getContract(){
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${txData.txInfo.args.name.value}`)
-        .then(res => res.json())
-        .then(res => {
-            if (!res.code) closeModal();
-            getMethods(res.name, res.code);
-        })
-        .catch(err => {
-            console.log(err)
-            closeModal();
-        })
-    }
-
-    function getMethods(contractName, contractCode){
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
-            .then(res => res.json())
-            .then(res => {
-                if (!res.methods) closeModal();
-                FilesStore.addFile(contractName, contractCode, res.methods, currentNetwork);
-                closeModal();
-            })
-            .catch(err => {
-                console.log(err)
-                closeModal();
-            })
     }
 </script>
 
