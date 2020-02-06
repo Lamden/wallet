@@ -106,8 +106,10 @@ label{
 
 </style>
 <div class="inputbox" style={`margin: ${margin}; width: ${width};`}>
+
     <label> {label} </label>
     {#if inputType === "password"}
+        <!-- svelte-ignore a11y-autofocus -->
         <input
             id={id}
             bind:value={value}
@@ -123,6 +125,7 @@ label{
             autofocus={autofocus}  />
     {/if}
     {#if inputType === "number"}
+        <!-- svelte-ignore a11y-autofocus -->
         <input
             id={id}
             bind:value={value}
@@ -139,6 +142,7 @@ label{
             autofocus={autofocus}  />
     {/if}
     {#if inputType === "textarea"}
+        <!-- svelte-ignore a11y-autofocus -->
         <textarea
             id={id}
             rows={rows}
@@ -155,6 +159,7 @@ label{
             autofocus={autofocus}  />
     {/if}
     {#if inputType === 'text'}
+        <!-- svelte-ignore a11y-autofocus -->
         <input
             id={id}
             bind:value={value}

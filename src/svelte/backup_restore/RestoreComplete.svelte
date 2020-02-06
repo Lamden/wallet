@@ -51,6 +51,7 @@
     flex-direction: column;
     padding: 0px 24px 0 242px;
     width: 498px;
+    justify-content: center;
 }
 
 .spacer{
