@@ -1,4 +1,5 @@
-import * as masternodeAPI from '../../../src/js/lamden/masternode-api.js'
+import * as API from '../../../src/js/lamden/masternode-api.js'
+import {  TransactionBuilder } from '../../../src/js/lamden/transactionBuilder.js'
 import { new_wallet } from '../../../src/js/lamden/wallet.js'
 
 let goodNetwork = {
@@ -31,21 +32,26 @@ describe('Test Masternode API returns', () => {
             defaultCommandTimeout: 60000
         })
     })
+
+    context('masternodeAPI', () => {
+        it('throws error on missing ip or port in the network Object', () => {
+            try{
+                API.masternodeAPI(invalidNetwork)
+            } catch (e) {
+                cy.expect(e.message).to.eq('Cannot get ip:port from network object.');
+            }
+        })
+    })
+
     context('pingServer', () => {
         it('returns true if the server is online', () => {
-            cy.wrap(masternodeAPI.pingServer(goodNetwork))
+            cy.wrap(API.pingServer(goodNetwork))
             .then((res) => {
                 cy.expect(res).to.eq(true);
             })
         })
-        it('returns false if the server is not reachable', () => {
-            cy.wrap(masternodeAPI.pingServer(badNetwork))
-            .then((res) => {
-                cy.expect(res).to.eq(false);
-            })
-        })
-        it('returns false on fetch error due to bad url', () => {
-            cy.wrap(masternodeAPI.pingServer(invalidNetwork))
+        it('returns false if provided network is unresponsive', () => {
+            cy.wrap(API.pingServer(badNetwork))
             .then((res) => {
                 cy.expect(res).to.eq(false);
             })
@@ -54,32 +60,26 @@ describe('Test Masternode API returns', () => {
 
     context('mintTestNetCoins', () => {
         it('returns true if mint is successful', () => {
-            cy.wrap(masternodeAPI.mintTestNetCoins(goodNetwork, keyPair.vk, 123456789))
+            cy.wrap(API.mintTestNetCoins(goodNetwork, keyPair.vk, 123456789))
             .then((res) => {
                 cy.log(JSON.stringify(keyPair))
                 cy.expect(res).to.eq(true);
             })
         })
         it('returns false if bad vk is undefined', () => {
-            cy.wrap(masternodeAPI.mintTestNetCoins(goodNetwork, undefined, 123456789))
+            cy.wrap(API.mintTestNetCoins(goodNetwork, undefined, 123456789))
             .then((res) => {
                 cy.expect(res).to.eq(false);
             })
         })
         it('returns false if balance is undefined', () => {
-            cy.wrap(masternodeAPI.mintTestNetCoins(goodNetwork, keyPair.vk, undefined))
+            cy.wrap(API.mintTestNetCoins(goodNetwork, keyPair.vk, undefined))
             .then((res) => {
                 cy.expect(res).to.eq(false);
             })
         })
-        it('returns false if network was not accessable', () => {
-            cy.wrap(masternodeAPI.mintTestNetCoins(badNetwork, keyPair.vk, 123456789))
-            .then((res) => {
-                cy.expect(res).to.eq(false);
-            })
-        })
-        it('returns false on fetch error due to bad url', () => {
-            cy.wrap(masternodeAPI.mintTestNetCoins(invalidNetwork, keyPair.vk, 123456789))
+        it('returns false if provided network is unresponsive', () => {
+            cy.wrap(API.mintTestNetCoins(badNetwork, keyPair.vk, 123456789))
             .then((res) => {
                 cy.expect(res).to.eq(false);
             })
@@ -88,25 +88,19 @@ describe('Test Masternode API returns', () => {
 
     context('getTauBalance', () => {
         it('returns the balance for a vk', () => {
-            cy.wrap(masternodeAPI.getTauBalance(goodNetwork, keyPair.vk))
+            cy.wrap(API.getTauBalance(goodNetwork, keyPair.vk))
             .then((res) => {
                 cy.expect(res).to.eq(123456789);
             })
         })
         it('returns 0 if the vk does not exist yet', () => {
-            cy.wrap(masternodeAPI.getTauBalance(goodNetwork, new_wallet().vk))
+            cy.wrap(API.getTauBalance(goodNetwork, new_wallet().vk))
             .then((res) => {
                 cy.expect(res).to.eq(0);
             })
         })
-        it('returns 0 if the network is bad', () => {
-            cy.wrap(masternodeAPI.getTauBalance(badNetwork))
-            .then((res) => {
-                cy.expect(res).to.eq(0);
-            })
-        })
-        it('returns 0 on fetch error due to bad url', () => {
-            cy.wrap(masternodeAPI.getTauBalance(invalidNetwork))
+        it('returns 0 if provided network is unresponsive', () => {
+            cy.wrap(API.getTauBalance(badNetwork))
             .then((res) => {
                 cy.expect(res).to.eq(0);
             })
@@ -115,25 +109,19 @@ describe('Test Masternode API returns', () => {
 
     context('contractExists', () => {
         it('returns true if a contract exists on the blockchain', () => {
-            cy.wrap(masternodeAPI.contractExists(goodNetwork, 'currency'))
+            cy.wrap(API.contractExists(goodNetwork, 'currency'))
             .then((res) => {
                 cy.expect(res).to.eq(true);
             })
         })
         it('returns false if a contract does not exist on the blockchain', () => {
-            cy.wrap(masternodeAPI.contractExists(goodNetwork, new_wallet().vk))
+            cy.wrap(API.contractExists(goodNetwork, new_wallet().vk))
             .then((res) => {
                 cy.expect(res).to.eq(false);
             })
         })
-        it('returns false if the provided network is bad', () => {
-            cy.wrap(masternodeAPI.contractExists(badNetwork, 'currency'))
-            .then((res) => {
-                cy.expect(res).to.eq(false);
-            })
-        })
-        it('returns false on fetch error due to bad url', () => {
-            cy.wrap(masternodeAPI.contractExists(invalidNetwork, 'currency'))
+        it('returns false if provided network is unresponsive', () => {
+            cy.wrap(API.contractExists(badNetwork, 'currency'))
             .then((res) => {
                 cy.expect(res).to.eq(false);
             })
@@ -142,29 +130,22 @@ describe('Test Masternode API returns', () => {
 
     context('getContractMethods', () => {
         it('returns an array if a contract exists on the blockchain', () => {
-            cy.wrap(masternodeAPI.getContractMethods(goodNetwork, 'currency'))
+            cy.wrap(API.getContractMethods(goodNetwork, 'currency'))
             .then((res) => {
                 cy.expect(Array.isArray(res)).to.eq(true);
                 cy.expect(res.length > 0).to.eq(true);
             })
         })
         it('returns an empty array if a contract does not exist on the blockchain', () => {
-            cy.wrap(masternodeAPI.getContractMethods(goodNetwork, new_wallet().vk))
+            cy.wrap(API.getContractMethods(goodNetwork, new_wallet().vk))
             .then((res) => {
                 cy.log(JSON.stringify(res))
-                //cy.expect(Array.isArray(res)).to.eq(true);
-                //cy.expect(res.length === 0).to.eq(true);
-            })
-        })
-        it('returns false if the provided network is bad', () => {
-            cy.wrap(masternodeAPI.getContractMethods(badNetwork, 'currency'))
-            .then((res) => {
                 cy.expect(Array.isArray(res)).to.eq(true);
                 cy.expect(res.length === 0).to.eq(true);
             })
         })
-        it('returns false on fetch error due to bad url', () => {
-            cy.wrap(masternodeAPI.getContractMethods(invalidNetwork, 'currency'))
+        it('returns empty array if provided network is unresponsive', () => {
+            cy.wrap(API.getContractMethods(badNetwork, 'currency'))
             .then((res) => {
                 cy.expect(Array.isArray(res)).to.eq(true);
                 cy.expect(res.length === 0).to.eq(true);
@@ -175,42 +156,35 @@ describe('Test Masternode API returns', () => {
     context('getVariable', () => {
         it('returns the value of the variable if the key exists', () => {
             let parms = {key: keyPair.vk};
-            cy.wrap(masternodeAPI.getVariable(goodNetwork, 'currency', 'balances', {parms}))
+            cy.wrap(API.getVariable(goodNetwork, 'currency', 'balances', {parms}))
             .then((res) => {
                 cy.expect(res).to.eq('123456789');
             })
         })
         it('returns null if the key does not exist in the variable', () => {
             let parms = {key: new_wallet().vk};
-            cy.wrap(masternodeAPI.getVariable(goodNetwork, 'currency', 'balances', {parms}))
+            cy.wrap(API.getVariable(goodNetwork, 'currency', 'balances', {parms}))
             .then((res) => {
                 cy.expect(res).to.eq('null');
             })
         })
         it('returns undefined if the contract does not exist', () => {
             let parms = {key: keyPair.vk};
-            cy.wrap(masternodeAPI.getVariable(goodNetwork, new_wallet().vk, 'balances', {parms}))
+            cy.wrap(API.getVariable(goodNetwork, new_wallet().vk, 'balances', {parms}))
             .then((res) => {
                 cy.expect(res).to.eq(undefined);
             })
         })
         it('returns null if the variable does not exist', () => {
             let parms = {key: keyPair.vk};
-            cy.wrap(masternodeAPI.getVariable(goodNetwork, 'currency',  new_wallet().vk, {parms}))
+            cy.wrap(API.getVariable(goodNetwork, 'currency',  new_wallet().vk, {parms}))
             .then((res) => {
                 cy.expect(res).to.eq('null');
             })
         })
-        it('returns undefined if the provided network is bad', () => {
+        it('returns undefined if provided network is unresponsive', () => {
             let parms = {key: keyPair.vk};
-            cy.wrap(masternodeAPI.getVariable(badNetwork, 'currency', 'balances', {parms}))
-            .then((res) => {
-                cy.expect(res).to.eq(undefined);
-            })
-        })
-        it('returns undefined on fetch error due to bad url', () => {
-            let parms = {key: keyPair.vk};
-            cy.wrap(masternodeAPI.getVariable(invalidNetwork, 'currency', 'balances', {parms}))
+            cy.wrap(API.getVariable(badNetwork, 'currency', 'balances', {parms}))
             .then((res) => {
                 cy.expect(res).to.eq(undefined);
             })
@@ -219,20 +193,14 @@ describe('Test Masternode API returns', () => {
 
     context('getContractInfo', () => {
         it('returns a contract info object', () => {
-            cy.wrap(masternodeAPI.getContractInfo(goodNetwork, 'currency'))
+            cy.wrap(API.getContractInfo(goodNetwork, 'currency'))
             .then((res) => {
                 cy.expect(res.name).to.eq('currency');
                 cy.expect(res.code.length > 0).to.eq(true);
             })
         })
-        it('returns undefined if the provided network is bad', () => {
-            cy.wrap(masternodeAPI.getContractInfo(badNetwork, 'currency'))
-            .then((res) => {
-                cy.expect(res).to.eq(undefined);
-            })
-        })
-        it('returns undefined on fetch error due to bad url', () => {
-            cy.wrap(masternodeAPI.getContractInfo(invalidNetwork, 'currency'))
+        it('returns undefined if provided network is unresponsive', () => {
+            cy.wrap(API.getContractInfo(badNetwork, 'currency'))
             .then((res) => {
                 cy.expect(res).to.eq(undefined);
             })
@@ -240,29 +208,84 @@ describe('Test Masternode API returns', () => {
     })
     context('lintCode', () => {
         it('returns null when no vilations exist', () => {
-            cy.wrap(masternodeAPI.lintCode(goodNetwork, 'testing', goodCode))
+            cy.wrap(API.lintCode(goodNetwork, 'testing', goodCode))
             .then((res) => {
                 cy.expect(res.violations).to.eq(null);
             })
         })
         it('returns python syntax errors', () => {
-            cy.wrap(masternodeAPI.lintCode(goodNetwork, 'testing', syntaxErrors))
+            cy.wrap(API.lintCode(goodNetwork, 'testing', syntaxErrors))
             .then((res) => {
                 cy.expect(res.violations.msg).to.eq('invalid syntax');
             })
         })
         it('returns lamden contracting errors errors', () => {
-            cy.wrap(masternodeAPI.lintCode(goodNetwork, 'testing', lamdenErrors))
+            cy.wrap(API.lintCode(goodNetwork, 'testing', lamdenErrors))
             .then((res) => {
                 cy.expect(res.violations.length > 0).to.eq(true);
                 cy.expect(res.violations[0]).to.eq('Line 0: S13- No valid contracting decorator found');
             })
         })
-        it('returns Errors from fetch when bad network info is supplied', () => {
-            cy.wrap(masternodeAPI.lintCode(badNetwork, 'testing', goodCode))
+        it('returns an error message if provided network is unresponsive', () => {
+            cy.wrap(API.lintCode(badNetwork, 'testing', goodCode))
             .then((res) => {
                 cy.expect(res).to.eq('TypeError: Failed to fetch');
             })
         })
     })
-})    
+    context('getNonce', () => {
+        it('returns a nonce and processor value for a vk', () => {
+            cy.wrap(API.getNonce(goodNetwork, keyPair.vk))
+            .then((res) => {
+                cy.expect(res.nonce).to.exist
+                cy.expect(res.processor).to.exist
+                cy.expect(res.sender).to.eq(keyPair.vk)
+            })
+        })
+        it('returns an error message if vk is not a hex string', () => {
+            cy.wrap(API.getNonce(goodNetwork, 'this-is-not-a-vk'))
+            .then((err) => {
+                cy.expect(err).to.eq(`this-is-not-a-vk is not a hex string.`)
+            })
+        })
+        it('returns an error message if provided network is unresponsive', () => {
+            cy.wrap(API.getNonce(badNetwork, keyPair.vk))
+            .then((err) => {
+                cy.expect(err).to.eq(`Unable to get nonce for "${keyPair.vk}". TypeError: Failed to fetch`)
+            })
+        })
+    })
+    context('sendTransaction', () => {
+        it('can send a transaction and has the proper return object', () => {
+            let newWallet = new_wallet()
+            let kwargs = {}
+            kwargs.to = {type: "address", value: newWallet.vk}
+            kwargs.amount = {type: "fixedPoint", value: 1000}
+
+            cy.wrap(API.getNonce(goodNetwork, keyPair.vk))
+            .then((res) => {
+                let newTx = new TransactionBuilder(
+                    goodNetwork,
+                    keyPair.vk,
+                    'currency',
+                    'transfer',
+                    kwargs,
+                    50000,
+                    res.nonce,
+                    res.processor
+                )
+                newTx.sign(keyPair.sk)
+                const data = newTx.serialize();
+                cy.wrap(API.sendTransaction(goodNetwork, data))
+                .then((res) => {
+                    cy.log(JSON.stringify(res))
+                    cy.expect(res.state_changes).to.exist
+                    cy.expect(Object.keys(res.state_changes).length).to.eq(2)
+                    cy.expect(res.status_code).to.eq(0)
+                    cy.expect(res.result).to.eq(null)
+                    cy.expect(res.stamps_used).to.be.greaterThan(0)
+                })
+            })
+        })
+    })
+})

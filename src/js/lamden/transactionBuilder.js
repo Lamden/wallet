@@ -1,7 +1,8 @@
 import * as capnp from 'capnp-ts';
 import { TransactionPayload, Transaction } from './transaction.capnp';
 import { Value } from './values.capnp';
-import * as wallet from './wallet';
+import * as lamdenWallet from './wallet';
+import * as masternodeAPI from './masternode-api.js'
 import * as pow from './pow';
 export class TransactionBuilder {
     constructor(networkNode, sender, contract, func, kwargs, stamps, nonce = undefined, processor = undefined) {
@@ -9,6 +10,9 @@ export class TransactionBuilder {
             if (typeof value !== 'undefined') return value;
             throw new Error(`${name} is undefined`)
         }
+        //Masternode API
+        this.API = masternodeAPI;
+        this.wallet = lamdenWallet;
 
         //Stores variables in self for convenience
         this.networkNode = checkUndefined(networkNode, 'networkNode')
@@ -21,6 +25,7 @@ export class TransactionBuilder {
         this.processor = processor;
         this.proofGenerated = false;
         this.transactionSigned = false;
+
         //Create Capnp messages and transactionMessages
         this.payloadMessage = new capnp.Message();
         this.payload = this.payloadMessage.initRoot(TransactionPayload);
@@ -30,10 +35,6 @@ export class TransactionBuilder {
         this.transaction.initPayload();
         //Start creating Payload by setting the values in the capnp message
         //Set Nonce will need to called externally to compelte the Payload
-
-        //If Nonce or Processor are not provided then getNonce can be called to set both from the masternode
-        if (this.nonce != null) this.nonce = nonce;
-        if (this.processor != null) this.processor = processor;
     }
     numberToUnit64(number) {
         if (number == null)
@@ -44,6 +45,14 @@ export class TransactionBuilder {
         let hexRegEx = /([0-9]|[a-f])/gim;
         return typeof string === 'string' &&
             (string.match(hexRegEx) || []).length === string.length;
+    }
+    isString(value){
+        if(Object.prototype.toString.call(value) === "[object String]") return true;
+        return false;
+    }
+    isStringWithValue(value){
+        if (this.isString(value) && value !== '') return true;
+        return false;
     }
     hexStringToByte(string = '') {
         let a = [];
@@ -148,20 +157,6 @@ export class TransactionBuilder {
         }
         return pointer;
     }
-    getNonce(callback = undefined) {
-        return fetch(`${this.networkNode}/nonce/${this.sender}`)
-            .then(res => { this.nonceResponse = res; return res.json(); })
-            .then(res => {
-            this.nonceResult = res;
-            this.nonce = this.nonceResult.nonce;
-            this.processor = this.nonceResult.processor;
-            if (callback != null) {
-                return callback(res);
-            }
-            return this.nonceResult;
-        })
-            .catch(err => callback(undefined, `Unable to get nonce for ${this.sender}. Error: ${err}`))
-    }
     setNetworkNode(networkNode){
         this.networkNode = networkNode;
     }
@@ -188,6 +183,7 @@ export class TransactionBuilder {
         this.payload.setStampsSupplied(this.numberToUnit64(this.stamps));
     }
     makePayload(){
+        //Add values to the capnp structures
         this.setSender(this.sender);
         this.setProcessor(this.processor);
         this.setNonce(this.processor);
@@ -208,12 +204,17 @@ export class TransactionBuilder {
     sign(sk) {
         if (this.payloadBytes == null) this.setPayloadBytes();
         // Get signature
-        this.signature = wallet.sign(sk, this.payloadBytes);
+        this.signature = this.wallet.sign(sk, this.payloadBytes);
         this.transactionSigned = true;
+    }
+    verifySignature(){
+        //Verify the signature is correct
+        if (!this.transactionSigned) throw new Error('Transaction has not be been signed. Use the sign(<private key>) method first.')
+        return this.wallet.verify(this.sender, this.payloadBytes, this.signature)
     }
     setSignature() {
         // Set the signature in the transcation metadata
-        if (!this.transactionSigned) throw new Error(`No signature present. Use the "sign" method then try again.`)
+        if (!this.transactionSigned) throw new Error(`No signature present. Use the sign(<private key>) method then try again.`)
         const signatureBuffer = this.hexStringToByte(this.signature);
         const messageSignature = this.transactionMetadata.initSignature(signatureBuffer.byteLength);
         messageSignature.copyBuffer(signatureBuffer);
@@ -246,39 +247,61 @@ export class TransactionBuilder {
         this.transaction.setMetadata(this.transactionMetadata);
     }
     setTransactionBytes() {
+        //Convert message to bytes
         this.transactonBytes = this.transactionMessage.toPackedArrayBuffer();
     }
     serialize() {
-        this.setTransactionPayload();
-        this.setSignature();
-        this.setProof();
-        this.setTimeStamp();
-        this.setTransactionBytes();
-        return this.transactonBytes;
+        if (this.verifySignature()){
+            this.setTransactionPayload();
+            this.setSignature();
+            this.setProof();
+            this.setTimeStamp();
+            this.setTransactionBytes();
+            return this.transactonBytes;
+        }
+        throw new Error('Invalid signature')
     }
-    send(sk = undefined, callback = undefined) {
-        if (this.networkNode === '')
-            throw new Error(`No Network information set`);
-        if (sk == null && !this.transactionSigned)
-            throw new Error(`Transation Not Signed: Private key needed to sign transaction.`);
+    async getNonce(callback = undefined) {
+        this.nonceResult = await this.API.getNonce(this.networkNode, this.sender)
+
+        if (typeof this.nonceResult.nonce === 'undefined'){
+            throw new Error(`Unable to get nonce for ${this.sender} on network ${this.networkNode.ip}:${this.networkNode.port}`)
+        }
+
+        this.nonce = this.nonceResult.nonce;
+        this.processor = this.nonceResult.processor;
+
+        if (!callback) return this.nonceResult;
+        return callback(this.nonceResult)
+    }
+    async send(sk = undefined, callback = undefined) {
+        //Error if transaction is not signed and no sk provided to the send method to sign it before sending
+        if (!this.isStringWithValue(sk) && !this.transactionSigned){
+            throw new Error(`Transation Not Signed: Private key needed or call sign(<private key>) first`);
+        }
         
-        if (sk != null)
-            this.sign(sk);
-            
-        
-        const data = this.serialize();
-        return fetch(this.networkNode, {
-            method: 'POST',
-            body: data
-        })
-            .then(res => { this.transactionResponse = res; return res.json(); })
-            .then(res => {
-                this.transactionResult = res;
-                if (callback != null) {
-                    return callback(res);
-                }
-                return this.transactionResult;
-            })
-            .catch(err => { return callback(undefined, err) });
+        try{
+            //If the nonce isn't set attempt to get it
+            if (isNaN(this.nonce) || !this.isStringWithValue(this.processor)) await this.getNonce();
+            //if the sk is provided then sign the transaction
+            if (this.isStringWithValue(sk)) this.sign(sk);
+            //Serialize transaction
+            this.serialize();
+            //Send transaction to the masternode
+            this.transactionResult = await this.API.sendTransaction(this.networkNode, this.transactonBytes)
+        } catch(e) {
+            if (!callback) return e;
+            return callback(undefined, e)
+        }
+
+        if (typeof this.transactionResult === 'undefined' || 
+            typeof this.transactionResult.status_code === 'undefined'){
+            //Return 
+            if (!callback) return this.transactionResult;
+            return callback(undefined, this.transactionResult)
+        }
+
+        if (!callback) return this.transactionResult;
+        return callback(this.transactionResult)
     }
 }

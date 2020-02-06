@@ -1,19 +1,36 @@
-export function isString(value){
+function isString(value){
     if(Object.prototype.toString.call(value) === "[object String]") return true;
     return false;
 }
 
-export function isNumber(value){
+function isNumber(value){
     if(Object.prototype.toString.call(value) === "[object Number]") return true;
     return false;  
 }
 
-export function isStringWithValue(value){
+function isStringWithValue(value){
     if (isString(value) && value !== '') return true;
     return false;
 }
+function isStringHex(string = '') {
+    let hexRegEx = /([0-9]|[a-f])/gim;
+    return typeof string === 'string' &&
+        (string.match(hexRegEx) || []).length === string.length;
+}
+
+export function isObject(value){
+    if(Object.prototype.toString.call(value) === "[object Object]") return true;
+    return false;
+}
+
+function isNetworkObject(networkObj){
+    if (!isObject(networkObj)) return false;
+    if (!isStringWithValue(networkObj.ip) || !isStringWithValue(networkObj.port)) return false;
+    return true
+}
 
 export function masternodeAPI(networkObj, method, path, data, callback){
+    if (!isNetworkObject(networkObj)) throw new Error("Cannot get ip:port from network object.")
     let parms = '';
     if (Object.keys(data).includes('parms')) {
         parms = createParms(data.parms)
@@ -24,7 +41,7 @@ export function masternodeAPI(networkObj, method, path, data, callback){
         let headers = {'Content-Type': 'application/json'}
         options.method = method
         options.headers = headers;
-        options.body = JSON.stringify(data);
+        options.body = data;
     }
 
     return fetch(`${networkObj.ip}:${networkObj.port}${path}${parms}`, options)
@@ -34,7 +51,7 @@ export function masternodeAPI(networkObj, method, path, data, callback){
            })
            .catch(err => {
                 console.log(err)
-                return callback(undefined, err)
+                return callback(undefined, err.toString())
             })
 }
 
@@ -76,9 +93,9 @@ export function getContractMethods(networkObj, contract){
 }
 
 export function lintCode(networkObj, name, code){
-    let data = {name, code}
+    let data = JSON.stringify({name, code})
     return masternodeAPI(networkObj, 'POST', '/lint/', data, (res, err) => {
-        if (err) return err.toString();
+        if (err) return err;
         return res;
     })
 }
@@ -116,7 +133,7 @@ export async function contractExists(networkObj, contractName){
 
 export async function mintTestNetCoins(networkObj, vk, amount){
     if (!isStringWithValue(vk) || !isNumber(amount)) return false;
-    let data = {vk, amount}
+    let data = JSON.stringify({vk, amount})
     let path = `/mint/`
     return masternodeAPI(networkObj, 'POST', path, data, (res, err) => {
         try{
@@ -124,4 +141,40 @@ export async function mintTestNetCoins(networkObj, vk, amount){
         } catch (e){}
         return false;
     })    
+}
+
+export async function sendTransaction(networkObj, data, callback){
+    return masternodeAPI(networkObj, 'POST', '/', data, (res, err) => {
+        if (err){
+            if (callback) {
+                callback(undefined, err);
+                return;
+            } 
+            else return err
+        }
+        if (callback) {
+            callback(res, undefined);
+            return
+        }
+        return res;
+    })   
+}
+
+export async function getNonce(networkObj, sender, callback){
+    if (!isStringHex(sender)) return `${sender} is not a hex string.`
+    let path = `/nonce/${sender}` 
+    return masternodeAPI(networkObj, 'GET', path, {}, (res, err) => {
+        if (err){
+            if (callback) {
+                callback(undefined, `Unable to get nonce for "${sender}". ${err}`)
+                return
+            } 
+            return `Unable to get nonce for "${sender}". ${err}`
+        }
+        if (callback) {
+            callback(res, undefined)
+            return
+        }
+        else return res;
+    })
 }

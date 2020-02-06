@@ -14,7 +14,7 @@
     export let width = '100%';
     export let height = '46px';
     export let margin = 'unset';
-    export let spellcheck = true;
+    export let spellcheck = false;
     export let rows = '1'
     export let readonly = false
     export let autofocus = false;

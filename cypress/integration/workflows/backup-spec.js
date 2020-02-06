@@ -2,6 +2,7 @@ import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
 import 'cypress-file-upload';
 import { writable } from 'svelte/store';
+import "cypress-localstorage-commands";
 
 const loaded = writable(true);
 
