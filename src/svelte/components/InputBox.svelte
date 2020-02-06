@@ -14,9 +14,10 @@
     export let width = '100%';
     export let height = '46px';
     export let margin = 'unset';
-    export let spellcheck = true;
+    export let spellcheck = false;
     export let rows = '1'
     export let readonly = false
+    export let autofocus = false;
 
     export let thisInput;
 
@@ -105,8 +106,10 @@ label{
 
 </style>
 <div class="inputbox" style={`margin: ${margin}; width: ${width};`}>
+
     <label> {label} </label>
     {#if inputType === "password"}
+        <!-- svelte-ignore a11y-autofocus -->
         <input
             id={id}
             bind:value={value}
@@ -118,9 +121,11 @@ label{
             type="password"
             pattern={pattern}
             placeholder={placeholder}
-            required={required}  />
+            required={required}
+            autofocus={autofocus}  />
     {/if}
     {#if inputType === "number"}
+        <!-- svelte-ignore a11y-autofocus -->
         <input
             id={id}
             bind:value={value}
@@ -133,9 +138,11 @@ label{
             min="0.000000001"
             step="0.000000001"
             placeholder={placeholder}
-            required={required}  />
+            required={required}
+            autofocus={autofocus}  />
     {/if}
     {#if inputType === "textarea"}
+        <!-- svelte-ignore a11y-autofocus -->
         <textarea
             id={id}
             rows={rows}
@@ -148,9 +155,11 @@ label{
             pattern={pattern}
             placeholder={placeholder}
             readonly={readonly}
-            required={required}  />
+            required={required}
+            autofocus={autofocus}  />
     {/if}
     {#if inputType === 'text'}
+        <!-- svelte-ignore a11y-autofocus -->
         <input
             id={id}
             bind:value={value}
@@ -162,6 +171,7 @@ label{
             pattern={pattern}
             placeholder={placeholder}
             required={required}
-            spellcheck={spellcheck}  />
+            spellcheck={spellcheck}
+            autofocus={autofocus}  />
     {/if}
 </div>

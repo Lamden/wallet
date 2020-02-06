@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, loggedIn, SettingsStore, password, steps } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore, password, steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -63,7 +63,8 @@
     display: flex;
     flex-direction: column;
     width: 498px;
-    padding: 50px 24px 0 242px;
+    padding: 0px 24px 0 242px;
+    justify-content: center;
 }
 
 .text-box{

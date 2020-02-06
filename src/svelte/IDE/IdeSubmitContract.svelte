@@ -9,6 +9,9 @@
 	import { Components }  from '../Router.svelte'
     const { Button, DropDown, InputBox } = Components;
 
+    //Utils
+    import { contractExists } from '../../js/lamden/masternode-api.js';
+
     //Images
     import warning from '../../img/menu_icons/icon_warning.svg';
 
@@ -50,28 +53,18 @@
         selectedWallet = e.detail.selected.value;
     }
 
-    function handleSubmit(){
+    async function handleSubmit(){
         if (contractNameField.value !== ""){
-            fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractNameField.value}`)
-            .then(res => res.json())
-            .then(res => {
-                if (res.code){
-                    contractNameField.setCustomValidity('Contract name already exists on Network.  Please choose another name.');
-                    contractNameField.reportValidity();
-                    return
-                }
-                if(formObj.checkValidity()){
-                    sendTx();
-                }
-            })
-            .catch(err => {
-                console.log(err)
-                contractNameField.setCustomValidity(`Error getting contract: ${err}`);
-                contractNameField.reportValidity();
-            })
+            let exists = await contractExists($currentNetwork, contractNameField.value)
+            if (exists){
+                setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
+                return
+            }
+            if(await formObj.checkValidity()){
+                sendTx();
+            }
         }else{
-            contractNameField.setCustomValidity('Please fill out this field');
-            contractNameField.reportValidity();  
+            setValidation(contractNameField, 'Please fill out this field')
         }
     }
 
@@ -86,6 +79,11 @@
             txData.txInfo.args.owner = {type: 'text', value: constructorArgs};
         }
         dispatch('saveTxDetails', txData);
+    }
+
+    function setValidation(node, message){
+        node.setCustomValidity(message)
+        node.reportValidity();
     }
 
     function clearValidation(e){
@@ -130,17 +128,6 @@
     padding-top: 27px;
     justify-content: center;
     align-items: center;
-}
-
-.warning{
-    color: orange
-}
-
-.warning-icon{
-    margin-right: 8px;
-    position: relative;
-    top: -1px;
-    width: 20px;
 }
 .disabled{
     background: var(--bg-color-grey);

@@ -8,6 +8,9 @@
     import { Components }  from '../Router.svelte';
     const { Button, InputBox } = Components;
 
+    //Utils
+    import { getContractInfo, getContractMethods  } from '../../js/lamden/masternode-api.js';
+
     //Context
     const { closeModal } = getContext('app_functions');
 
@@ -16,51 +19,39 @@
 
     let contractName = "";
 
-    function newTab(){
-        FilesStore.addNewTab();
+    function newTabFile(){
+        FilesStore.addDefaultFile();
         closeModal();
     }
 
-    function checkContractName(){
+    async function newTabContract(){
         if (contractName === "") {
-            contractField.setCustomValidity('Cannot be Empty');
-            contractField.reportValidity();
+            setValidity('Cannot be Empty');
+            return;
+        }
+        let contractInfo = await getContractInfo($currentNetwork, contractName)
+        if (typeof contractInfo === 'undefined'){
+            setValidity(`Network Error`);
             return
         }
-
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}`)
-        .then(res => res.json())
-        .then(res => {
-            if (!res.code){
-                contractField.setCustomValidity('Contract Does Not Exist');
-                contractField.reportValidity();
-                return
-            }
-            getMethods(res.name, res.code);
-        })
-        .catch(err => {
-            console.log(err)
-            contractField.setCustomValidity(`Error getting contract: ${err}`);
-            contractField.reportValidity();
-        })
-    }
-
-    function getMethods(contractName, contractCode){
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
-            .then(res => res.json())
-            .then(res => {
-                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
-                closeModal();
-            })
-            .catch(err => {
-                console.log(err)
-                contractField.setCustomValidity(`Error getting contract: ${err}`);
-                contractField.reportValidity();
-            })
+        if (contractInfo.error){
+            setValidity(`${contractName} does not exist on ${$currentNetwork.name}`);
+            return
+        }
+        let methods = await getContractMethods($currentNetwork, contractName)
+        try {
+            FilesStore.addFile(contractInfo.name, contractInfo.code, methods, $currentNetwork);
+            closeModal();
+        } catch (e){}
     }
 
     function refreshValidity(e){
         contractField.setCustomValidity('');
+        contractField.reportValidity();
+    }
+
+    function setValidity(message){
+        contractField.setCustomValidity(message);
         contractField.reportValidity();
     }
 
@@ -99,7 +90,7 @@
         width={'410px'}
         margin={'4rem 0 0.6rem'}
         name="Start New Contract"
-        click={() => newTab()} 
+        click={newTabFile} 
         />
     <div class="contract-row flex-row">
         <Button 
@@ -109,7 +100,7 @@
             margin={'0 10px 3px 0'}
             height={'42px'}
             width={'200px'}
-            click={() => checkContractName()} 
+            click={newTabContract} 
         />
         <InputBox
             id={'contract-input'}
@@ -126,6 +117,6 @@
 			height={'24px'}
 			padding={0}
             name="Cancel" 
-            click={() => closeModal()} 
+            click={closeModal} 
     />
 </div>

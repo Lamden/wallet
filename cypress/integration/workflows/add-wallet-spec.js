@@ -1,5 +1,8 @@
 import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
 
 const testingWallet = {
     existing: {    
@@ -14,7 +17,7 @@ const testingWallet = {
 describe('Test all Add Wallet options', () => {
     before(function (){
         cy.viewport(1920, 1080)
-        mount(App)
+        mount(App, {props: {loaded}})
         
         cy.get('#create-wallet').focus().should('exist').click();
 
@@ -53,7 +56,7 @@ describe('Test all Add Wallet options', () => {
         cy.log('Shows Successful Message Box')
         cy.get('.message-box').should('exist')
         cy.get('#message-text').should('exist').then(($text) => {
-            expect($text[0].textContent).to.eq("Lamden (TAU) Wallet Added Successfully")
+            expect($text[0].textContent).to.include("Added")
         })
         cy.get('#success').should('exist')
         cy.log('Message Box buttons render')
@@ -73,7 +76,7 @@ describe('Test all Add Wallet options', () => {
         cy.log('Shows Successful Message Box')
         cy.get('.message-box').should('exist')
         cy.get('#message-text').should('exist').then(($text) => {
-            expect($text[0].textContent).to.eq("Lamden (TAU) Wallet Added Successfully")
+            expect($text[0].textContent).to.include("Added")
         })
         cy.get('#success').should('exist')
         cy.log('Message Box buttons render')
@@ -93,7 +96,7 @@ describe('Test all Add Wallet options', () => {
         cy.log('Shows Successful Message Box')
         cy.get('.message-box').should('exist')
         cy.get('#message-text').should('exist').then(($text) => {
-            expect($text[0].textContent).to.eq("Lamden (TAU) Wallet Added Successfully")
+            expect($text[0].textContent).to.include("Added")
         })
         cy.get('#success').should('exist')
         cy.log('Message Box buttons render')

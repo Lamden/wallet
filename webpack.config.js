@@ -40,7 +40,6 @@ var options = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
         include: [
-          path.resolve(__dirname, "src", "js", "monaco.js"),
           path.resolve(__dirname, "node_modules", "monaco-editor")
         ],
       },
@@ -125,7 +124,9 @@ var options = {
       chunks: ["background"]
     }),
     new WriteFilePlugin(),
-    new MonacoWebpackPlugin()
+    new MonacoWebpackPlugin({
+			languages: ["python"],
+		})
   ]
 };
 

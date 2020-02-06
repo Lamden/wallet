@@ -29,7 +29,10 @@
         }) : undefined;
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
     $: returnValue = () => {
-        if (!result.returnValue) return null;
+        if (!result.returnValue) return [];
+        if(Object.prototype.toString.call(result.returnValue) === "[object Object]") {
+            return Object.keys(result.returnValue).map(item => `${item} : ${result.returnValue[item]}`)
+        }
         if (!Array.isArray(result.returnValue)) return [result.returnValue]
         return result.returnValue;
     }
@@ -87,7 +90,7 @@
         <h6 id={'results-message'}>{result.message}</h6>
     </div>
 
-    {#if result.returnValue}
+    {#if returnValue().length > 0}
         <div class="flex-column return-value ">
             <h6>Return Value</h6>
             {#each returnValue() as value}

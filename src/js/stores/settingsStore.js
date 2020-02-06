@@ -1,55 +1,38 @@
 import { writable, derived } from 'svelte/store';
-
-const lamdenNetworks = [
-    {name: 'Lamden Public Testnet', ip:'https://testnet.lamden.io', port: '443', lamden: true, online: false, selected: true}
-]
+import { isSettingsStoreObj,  isPageInfoObj, isStringWithValue} from './stores.js';
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'firstRun': true,
     'themeStyle':'dark',
     'version':'v0_9_8',
-    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000},
-    'networks' : [...lamdenNetworks],
+    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000}
 }
 
 const createSettingsStore = (key, startValue) => {
+    //Get store value from localstorate
     const json = localStorage.getItem(key);
+    //If there is a value then set it as the inital value
     if (json) {
-        if (json === "undefined"){
-            startValue = startValue;
-            let coinStore = localStorage.getItem('coins');
-            if (coinStore){
-                startValue.firstRun = false;
-                startValue.currentPage = {'name': 'CoinsMain', 'data' : {}}
-            }
-        }else{
-            startValue = JSON.parse(json);
-        }
-        Object.keys(defualtSettingsStore).map(m =>{
-            if (!startValue.hasOwnProperty(m)){
-                startValue[m] = defualtSettingsStore[m]
-            }
-        })
-
-        lamdenNetworks.map(network => {
-            let foundNetwork = startValue.networks.find(f =>{
-                return f.lamden && network.name === f.name
-            })
-            if (!foundNetwork) startValue.networks.unshift(network)
-            if (foundNetwork){
-                if (foundNetwork.lamden){
-                    foundNetwork.ip = network.ip;
-                    foundNetwork.port = network.port;
-                }
-            }
-        })
+        startValue = JSON.parse(json)
     }
 
+    //Create NetworksStore with the inital value
     const SettingsStore = writable(startValue);
+
+    //This gets called everytime the Store updates
     SettingsStore.subscribe(current => {
-        localStorage.setItem(key, JSON.stringify(current));
-    });
+        //If the store was updated to an empty or non Object then recover to previous value
+        if (isSettingsStoreObj(current)){
+            //Save Value to local storage
+            localStorage.setItem(key, JSON.stringify(current));
+        } else {
+            //Recover store value in memory to previous local storage value
+            let json = localStorage.getItem("settings");
+            if (json) SettingsStore.set(JSON.parse(json));
+            console.log('Recovered from bad Settings Store Value');
+        }
+    })
 
     let subscribe = SettingsStore.subscribe;
     let update = SettingsStore.update;
@@ -60,48 +43,44 @@ const createSettingsStore = (key, startValue) => {
         subscribe,
         set,
         update,
-        reset: () => {
-            set(startValue)
-        },
-        setNetwork: (network) => {
-            if (!network) return;
+        //Store that the first run setup has been completed
+        firstRunComplete: () => {
             SettingsStore.update(settingsStore => {
-                settingsStore.networks.map(item => {
-                    item.selected = false;
-                    if(item.name === network.name && item.ip === network.ip && item.port === network.port) item.selected = true;
-                })
+                settingsStore.firstRun = false;
+                settingsStore.currentPage = {name: 'CoinsMain', data: {}};
                 return settingsStore;
             })
         },
-        addNetwork: (networkInfo) => {
+        //Change the current page of the app
+        //an also accept a data package the new page may need;
+        changePage: (pageInfoObj) => {
+            //Return if the object isn't a proper page object
+            if (!isPageInfoObj(pageInfoObj)) return;
+            //Default data to empty object
+            if (!pageInfoObj.data) pageInfoObj.data = {};
             SettingsStore.update(settingsStore => {
-                settingsStore.networks.push(networkInfo);
-                return settingsStore;
-            }) 
-        },
-        setNetworkStatus: (networkInfo, status) => {
-            if (!networkInfo) return;
-            SettingsStore.update(settingsStore => {
-                settingsStore.networks.map(network => {
-                    if (network.ip === networkInfo.ip && network.port === networkInfo.port) network.online = status
-                })
+                //Set name and data in Settings store
+                settingsStore.currentPage = pageInfoObj;
                 return settingsStore;
             })
         },
-        deleteNetwork: (networkInfo) => {
-            if (!networkInfo) return;
+        //Set a new theme in the setting store
+        changeTheme: (theme) => {
+            //Reject undefined or missing info.
+            if (!isStringWithValue(theme)) return;
             SettingsStore.update(settingsStore => {
-                let newNetworks = settingsStore.networks.filter(f => {
-                    if (f.name === networkInfo.name && f.ip === networkInfo.ip && f.port === networkInfo.port) return false
-                    return true;
-                })
-                
-                newNetworks.map((network, index) => {
-                    network.selected = index === 0 ? true : false;
-                })
-                settingsStore.networks = newNetworks;
+                //Set theme in Settings store
+                settingsStore.themeStyle = theme;
                 return settingsStore;
             })
+        },
+        //Calculates the amount of local storage used and remaining
+        calcStorage: () => {
+            SettingsStore.update(settings => {
+                settings.storage.used = new Blob(Object.values(localStorage)).size;
+                settings.storage.remaining = settings.storage.max - settings.storage.used;
+                return settings;
+            })   
         }
     };
 }
@@ -109,51 +88,26 @@ const createSettingsStore = (key, startValue) => {
 //Settings Stores
 export const SettingsStore = createSettingsStore('settings', defualtSettingsStore);
 
-export const loggedIn = writable(true);
-
+//Derived Store to return the current page object
 export const currentPage = derived(
 	SettingsStore,
-	$SettingsStore => loggedIn ? $SettingsStore.currentPage : {'name' : 'LockScreen', 'data' : {} }
+	$SettingsStore => { return $SettingsStore.currentPage }
 );
 
+//Derived Store to return the firstRun value
 export const firstRun = derived(
 	SettingsStore,
-	$SettingsStore => $SettingsStore.firstRun
+    $SettingsStore => { return $SettingsStore.firstRun }
 );
 
+//Derived Store to return the themeStyle
 export const themeStyle = derived(
 	SettingsStore,
-	$SettingsStore => {
-        return $SettingsStore.themeStyle;
-    }
+	$SettingsStore => { return $SettingsStore.themeStyle }
 );
 
-export const networks = derived(
+//Derived Store to return the storageInfo Object
+export const storageInfo = derived(
 	SettingsStore,
-	$SettingsStore => {
-        let networks = [];
-        $SettingsStore.networks.map(network => {
-            networks.push({
-                name: network.name,
-                value: network,
-                selected: network.selected
-            })
-        })
-        return networks;
-    }
+	$SettingsStore => { return $SettingsStore.storage }
 );
-
-export const currentNetwork = derived(
-	SettingsStore,
-	$SettingsStore => {
-        return $SettingsStore.networks.find(network => network.selected === true)
-    }
-);
-
-export function calcRemainingStorage(){
-    SettingsStore.update(settings => {
-        settings.storage.used = new Blob(Object.values(localStorage)).size;
-        settings.storage.remaining = settings.storage.max - settings.storage.used;
-        return settings;
-    })
-}

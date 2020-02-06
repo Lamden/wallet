@@ -35,7 +35,7 @@
 
     async function createTransaction(){
         let txb = new TransactionBuilder(
-            `${$currentNetwork.ip}:${$currentNetwork.port}`, 
+            $currentNetwork, 
             sendingCoin.vk, 
             contractName, 
             methodName, 
@@ -49,7 +49,6 @@
                 dispatch('txResult', txResult)
                 return;
             }
-            console.log('got nonce')
             transaction = txb
         })
     }

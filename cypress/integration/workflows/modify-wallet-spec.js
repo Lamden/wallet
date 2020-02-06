@@ -1,12 +1,15 @@
 import App from '../../../src/svelte/App.svelte';
 import mount from 'cypress-svelte-unit-test';
 import "cypress-localstorage-commands";
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
 
 
 describe('Test that all Modify Wallet Options and screens', () => {
     before(function (){
         cy.viewport(1920, 1080)
-        mount(App)
+        mount(App, {props: {loaded}})
         cy.get('#create-wallet').focus().should('exist').click();
 
         cy.get('.firstrun-create-pwd').should('exist')
@@ -22,7 +25,7 @@ describe('Test that all Modify Wallet Options and screens', () => {
         cy.get('#coin-row-0').should('exist').click()
         cy.get('.coin-details').should('exist')
         cy.get('#modify-coin-btn').should('exist').click()
-        cy.get('.coin-options').should('exist')
+        cy.get('#coin-options').should('exist')
     })
 
     it('Can Edit a Nickname', function () {
@@ -32,7 +35,7 @@ describe('Test that all Modify Wallet Options and screens', () => {
             $input[0].value = "Testing Nickname"
         })   
         cy.get('#modify-edit-info').should('exist').then(($div) => {
-            expect($div[0].textContent).to.eq("Lamden TAU - 0 TAU")
+            expect($div[0].textContent).to.contain("Lamden TAU")
         })
         cy.get('#save-btn').should('exist').focus().click()
 
@@ -72,7 +75,7 @@ describe('Test that all Modify Wallet Options and screens', () => {
         //
         cy.log('Renders CoinOptions when back button clicked')
         cy.get('#back-btn').focus().click()
-        cy.get('.coin-options').should('exist')
+        cy.get('#coin-options').should('exist')
 
     })
 

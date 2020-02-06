@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
 
     //Stores
-    import { SettingsStore, loggedIn, steps } from '../../js/stores/stores.js';
+    import { SettingsStore, steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -43,12 +43,7 @@
     });
 
     function accept(){
-        SettingsStore.update(current => {
-            current.currentPage = {name: 'CoinsMain', data: {}};
-            current.firstRun = false;
-            return current
-        })
-        loggedIn.set(true);
+        SettingsStore.firstRunComplete();
     }
 </script>
 

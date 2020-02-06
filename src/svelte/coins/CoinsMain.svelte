@@ -2,7 +2,7 @@
 	import { onMount, getContext } from 'svelte';
 
 	//Stores
-	import {calcRemainingStorage, 
+	import {SettingsStore, 
 			coinList, 
 			CoinStore,
 			balanceTotal,
@@ -22,6 +22,7 @@
 
 	//Utils
 	import { updateBalances, decryptObject } from '../../js/utils.js';
+	import { getTauBalance } from '../../js/lamden/masternode-api.js';
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
@@ -32,12 +33,16 @@
 	let refreshing = false;
 
 	onMount(() => {
-		calcRemainingStorage();
+		SettingsStore.calcStorage();
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
 
 	function handleRefresh(){
-		CoinStore.updateAllBalances($currentNetwork)
+		$CoinStore.map(async (coin) => {
+            let balance = await getTauBalance($currentNetwork, coin.vk);
+            if (!coin.balance) CoinStore.updateBalance(balance)
+            if (balance !== coin.balance) CoinStore.updateBalance(balance)
+        })
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false

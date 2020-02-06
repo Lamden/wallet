@@ -70,7 +70,7 @@
     <div class="content flex-column">
         <h5>Confirm Transaction</h5>
         <h4 class="no-bottom-margin">Your Public Key</h4>
-        <div class="values text-body1 values">{yourKey}</div>
+        <div id="sender-key" class="values text-body1 values">{yourKey}</div>
         <div class="details flex-column">
             {#each txDetails as detail}
                 <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
@@ -88,7 +88,9 @@
         </div>
     </div>
     <div class="buttons flex-column">
-        <Button classes={'button__solid button__purple'} 
+        <Button 
+            id="confirm-tx-btn"
+            classes={'button__solid button__purple'} 
             width={'232px'}
             margin={'0 0 17px 0'}
             name="Confirm Transaction" 

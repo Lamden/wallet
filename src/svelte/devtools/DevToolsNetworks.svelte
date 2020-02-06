@@ -2,11 +2,14 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { SettingsStore, currentNetwork, networks, CoinStore, CacheStore } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork, networksDropDownList, CoinStore, CacheStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte';
     const { InputBox, Button, DropDown } = Components;
+
+    //Utils
+    import { pingServer, getTauBalance  } from '../../js/lamden/masternode-api.js';
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
@@ -18,60 +21,59 @@
     let ip = ''
     let port = '8000'
     let checking = false;
+    let added = false;
 
     $: addButtonColor = checking ? '' : 'button__purple';
-    $: buttonName = checking ? 'Checking For Network' : 'Add Network';
-    $: network = {name, ip, port, selected: false}
-
-    function testNetork(){
-        ipField.setCustomValidity('')
-        return fetch(`${ip}:${port}/ping`)
-            .then(res => res.json())
-            .then(res => {
-                checking = false;
-                if (res.status !== 'online') {
-                    ipField.setCustomValidity("Network is not Online");
-                    ipField.reportValidity();
-                    return false;
-                }
-                return true;
-            })
-            .catch(err => {
-                ipField.setCustomValidity("Network cannot be found");
-                ipField.reportValidity();
-                return false;
-            })
-    }
+    $: buttonName = checking ? 'Checking For Network' : added ? 'Added!' : 'Add Network';
+    $: network = {name, ip, port, lamden: false, selected: false}
 
     async function formValidation(){
-        //if ($networks.find(f => {return f.value.ip === network.ip && f.value.port === network.port})){
-        //    ipField.setCustomValidity("Network already added");
-        //    ipField.reportValidity();
-        //    return;
-       // }
         if (formField.checkValidity()){
             checking = true;
-            let networkActive = await testNetork();
+            let networkActive = await pingServer({ip, port})
             checking = false;
             if (networkActive){
-
-                SettingsStore.addNetwork(network);
+                let response = NetworksStore.addNetwork(network);
+                if (response.added){
+                    clearFields();
+                }else{
+                    if (response.reason === 'duplicate'){
+                        reportValidityMessage(ipField, "Network ip/port already exists")
+                    }
+                }
+            }else{
+                reportValidityMessage(ipField, "Cannot contact network")
             }
         }
+        
+    }
+
+    function clearFields(){
+        ip = ''
+        port = ''
+        name = ''
     }
 
     function clearIPValidation(){
-        ipField.setCustomValidity('')
-        ipField.reportValidity();
+        reportValidityMessage(ipField, '')
     }
 
     function handleSelected(e){
-        SettingsStore.setNetwork(e.detail.selected.value)
-        CoinStore.updateAllBalances(e.detail.selected.value)
+        NetworksStore.setCurrentNetwork(e.detail.selected.value)
+        $CoinStore.map(async (coin) => {
+            let balance = await getTauBalance($currentNetwork, coin.vk);
+            if (!coin.balance) CoinStore.updateBalance(balance)
+            if (balance !== coin.balance) CoinStore.updateBalance(balance)
+        })
     }
 
     function clearCache(){
         CacheStore.refreshNetwork($currentNetwork.name)
+    }
+
+    function reportValidityMessage(node, message){
+        node.setCustomValidity(message);
+        node.reportValidity();
     }
 
 </script>
@@ -98,7 +100,7 @@
     <div class="current-network">
         <h5>Current Network</h5>
         <DropDown 
-            items={$networks}
+            items={$networksDropDownList}
             width={"250px"}
             label="Current Network"
             on:selected={(e) => handleSelected(e)} />  
@@ -110,12 +112,12 @@
             margin={'20px 0 0 0'}
             click={clearCache}
         /> 
-        {#if !$currentNetwork.lamden}
+        {#if !$currentNetwork}
             <Button 
                 id="del-network"
-                name={`delete ${$currentNetwork.name}`}
+                name={`delete current network`}
                 classes={`button__solid`}
-                width={'232px'}
+                width={'100%'}
                 margin={'20px 0 0 0'}
                 click={() => openModal('DevToolsDeleteNetwork')}
                 disabled={$currentNetwork.lamden} />
@@ -134,6 +136,7 @@
             width="250px"
             styles={'margin-bottom: 20px'}
             required={true}
+            spellcheck={false}
         />
         <InputBox 
             label="IP Address"
@@ -143,6 +146,7 @@
             on:keyup={() => clearIPValidation()}
             width="250px"
             required={true}
+            spellcheck={false}
         />
         <InputBox 
             label="Port"
@@ -152,6 +156,7 @@
             width="125px"
             styles={'margin-bottom: 20px'}
             required={true}
+            spellcheck={false}
         />
         <input 
             id="add-network"

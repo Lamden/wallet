@@ -2,39 +2,27 @@
     import { onMount } from 'svelte';
     
     //Stores
-    import { breadcrumbs, TxStore, currentNetwork } from '../../js/stores/stores.js';
+    import { TxStore, breadcrumbs, currentNetwork, networkKey } from '../../js/stores/stores.js';
 
 	//Components
     import { Transaction }  from '../Router.svelte'
 
     let page = 1;
     
-
-    $: txByNetwork = () =>  {  
-  
-        let netKey = $currentNetwork.ip + $currentNetwork.port
-        let networkTxs = !$TxStore[netKey] ? [] : $TxStore[netKey];
-        let returnList = []
-        Object.keys(networkTxs).map(vks => {
-            returnList = [...returnList, ...$TxStore[netKey][vks]]
-        })
-        return returnList;
-    }
-    $: sortedList = txByNetwork().sort((a, b) => new Date(b.date) - new Date(a.date));;
-    $: txByDay = sortedList.length > 0 ? groupByDate() : {};
-    $: txPerPage = 10;
-    $: maxPages = () => {
-        return (txByDay.length / txPerPage) + (txByDay.length % txPerPage > 0 ? 1 : 0)
-    }
+    $: txByDay = groupByDate(flattenObject($TxStore[networkKey($currentNetwork)]));
   
 	onMount(() => {
-        breadcrumbs.set([{name: 'History', page: {name: ''}},]);
-        
+        breadcrumbs.set([{name: 'History', page: {name: ''}},]);     
     });
 
-    function groupByDate(){
+    function sortTxList(txList){
+        return txList.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    function groupByDate(txList){
+        if (!txList) return {};
         let txDict = {};
-        sortedList.map(tx => {
+        sortTxList(txList).map(tx => {
             let date = new Date(tx.date).toLocaleDateString();
             if (!txDict[date]){
                 txDict[date] = [tx];
@@ -43,6 +31,15 @@
             }   
         })
         return txDict
+    }
+
+    function flattenObject(txList){
+        let flatList = []
+        if (!txList) return flatList;
+        Object.keys(txList).map(vk => {
+            flatList.push(...txList[vk])
+        })
+        return flatList
     }
 
 </script>

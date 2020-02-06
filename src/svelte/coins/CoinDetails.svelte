@@ -2,7 +2,7 @@
     import { setContext, getContext, onMount } from 'svelte';
 
     //Stores
-    import { CoinStore, SettingsStore, currentNetwork, previousPage, getCoinReference, breadcrumbs, TxStore } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore, currentNetwork, previousPage, getCoinReference, breadcrumbs, TxStore, networkKey } from '../../js/stores/stores.js';
 
     //Components
 	import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
@@ -32,9 +32,9 @@
     $: balance = coin.balance ? coin.balance : 0;
     $: sendPage = sendPages[coin.network]
     $: txList = () =>  {
-        if (!$TxStore[$currentNetwork.ip + $currentNetwork.port]) return [];
-        if (!$TxStore[$currentNetwork.ip + $currentNetwork.port][coin.vk]) return [];
-        return [...$TxStore[$currentNetwork.ip + $currentNetwork.port][coin.vk]]   
+        if (!$TxStore[networkKey($currentNetwork)]) return [];
+        if (!$TxStore[networkKey($currentNetwork)][coin.vk]) return [];
+        return [...$TxStore[networkKey($currentNetwork)][coin.vk]]   
     }
 
 	onMount(() => {

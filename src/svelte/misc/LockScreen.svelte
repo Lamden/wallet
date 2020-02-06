@@ -1,14 +1,19 @@
 <script>
+    import { onMount } from 'svelte'
+
     //Components
     import NavLogo from '../nav/NavLogo.svelte';
 	import { Components }  from '../Router.svelte'
-    const { InputBox } = Components;
+    const { InputBox, Loading } = Components;
     
     //Stores
-    import { loggedIn, CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore } from '../../js/stores/stores.js';
     
     //DOM nodes
     let formObj, pwdObj;
+
+    export let loaded;
+ 
 
     function handleSubmit(){
         if (!CoinStore.validatePassword(pwdObj.value)) {
@@ -35,8 +40,21 @@
 .layout{
     display: flex;
     flex-direction: column;
+}
+
+.layout-padding{
     padding-left: 218px;
     padding-top: 140px;
+}
+
+.layout-width{
+    width: 100%
+}
+
+.loading{
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 97px);
 }
 
 .content{
@@ -82,36 +100,45 @@ form{
 }
 </style>
 
-<div class="layout">
+
+<div class="layout" class:layout-padding={loaded} class:layout-width={!loaded}>
     <div class="header text-primary">
         <NavLogo />
     </div>
-    <div class="content text-primary">
-        <div class="lockscreen">
-            <h6 class="heading">Sign In</h6>
-            <div class="text-box text-body1">  
-                Access your Lamden Wallet.
-            </div>
-        
-            <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
-                <div class="input-box">
-                    <InputBox
-                        id="pwd-input"
-                        bind:thisInput={pwdObj}
-                        on:changed={refreshValidity}
-                        on:keyup={refreshValidityKeyup}
-                        width="100%"
-                        label={"Password"}
-                        inputType= 'password'
-                        required={true}/>
+    {#if $loaded}
+        <div class="content text-primary">
+            <div class="lockscreen">
+                <h6 class="heading">Sign In</h6>
+                <div class="text-box text-body1">  
+                    Access your Lamden Wallet.
                 </div>
-                <input  id="login-btn"
-                        value="Login"
-                        class="button__solid button__purple submit submit-button submit-button-text" 
-                        type="submit" >
-            </form>
+            
+                <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
+                    <div class="input-box">
+                        <InputBox
+                            id="pwd-input"
+                            bind:thisInput={pwdObj}
+                            on:changed={refreshValidity}
+                            on:keyup={refreshValidityKeyup}
+                            width="100%"
+                            label={"Password"}
+                            inputType= 'password'
+                            autofocus={true}
+                            required={true}/>
+                    </div>
+                    <input  id="login-btn"
+                            value="Login"
+                            class="button__solid button__purple submit submit-button submit-button-text" 
+                            type="submit" >
+                </form>
+            </div>
         </div>
-    </div>
+    {:else}
+        <div class="loading">
+            <Loading message={'Loading App'} />
+        </div>
+        
+    {/if}
 </div>
 
 

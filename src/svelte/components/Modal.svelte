@@ -47,7 +47,7 @@
 	/*max-height: calc(100vh - 4em);*/
 	transform: translate(-50%, 0px);
 	padding: 30px 55px;
-	margin: 90px 0;
+	margin: 20px 0;
 	background: var(--bg-color);
 	box-shadow: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
 	border-radius: 4px;

@@ -12,9 +12,7 @@
 			currentPage, 
 			themeStyle, 
 			firstRun,
-			password,
-			calcRemainingStorage,
-			pageLoaded} from '../js/stores/stores.js';
+			password} from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
@@ -22,6 +20,8 @@
 
 	//Images
 	import heart from '../img/menu_icons/icon_heart.svg';
+
+	export let loaded;
 
 	let showModal = false;
 	let currentModal;
@@ -31,10 +31,9 @@
 	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
-		calcRemainingStorage();
+		SettingsStore.calcStorage();
 		document.querySelector("html").style = themes[$themeStyle];
-		$firstRun ? $SettingsStore.currentPage = { name: 'FirstRunMain', data: {} } : null;
-		pageLoaded.set(true);
+		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
 	});
 
 	setContext('app_functions', {
@@ -45,14 +44,9 @@
 		appHome: () => switchPage('CoinsMain')
 	});
 
-	function pageIsLoaded(){
-		return pageLoaded;
-	}
-
 	function switchPage(name, data) {
-		data = data || {};
 		showModal = false;
-		$SettingsStore.currentPage = {name, data};
+		SettingsStore.changePage({name, data});
 	}
 
 	function getUsedLocalStorageSpace() {
@@ -71,7 +65,7 @@
 
 </script>
 
-{#if $pageLoaded}
+{#if $loaded}
 	<div class="container">
 		{#if $firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
@@ -105,7 +99,7 @@
 				{/if}
 			{/if}
 			{#if !pwdIsCorrect}
-				<svelte:component this={Pages['LockScreen']}/>
+				<svelte:component this={Pages['LockScreen']} {loaded}/>
 			{/if}
 		{/if}
 

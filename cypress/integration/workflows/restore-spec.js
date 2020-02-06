@@ -2,30 +2,41 @@ import App from '../../../src/svelte/App.svelte'
 import mount from 'cypress-svelte-unit-test'
 import 'cypress-file-upload';
 
+import { writable } from 'svelte/store';
+
+const loaded = writable(true);
+
 const fileName = 'files/Testing.keystore'
 
-describe('First Run Restore Wallet Process', () => {
-    it('Loads FirstRunInto to start', () => {
+describe('Restore Wallet Process', () => {
+    before(function (){
+        cy.viewport(1920, 1080)
+        mount(App, {props: {loaded}})
+        
+        cy.get('#create-wallet').focus().should('exist').click();
+
+        cy.get('.firstrun-create-pwd').should('exist')
+        cy.get('input#pwd1').focus().invoke('attr', 'value', 'Testing0!0101')
+        cy.get('input#pwd2').focus().invoke('attr', 'value', 'Testing0!0101')
+        cy.get('[type="submit"]').focus().click()
+    
+        cy.get('.firstrun-tos').should('exist')
+        cy.get('#i-understand').focus().click()
+
+        cy.wait(5500)
+        cy.get('.coinsmain').should('exist')
+    })
+    
+    it('Will Restore a Key from a Keystore file', () => {
         cy.fixture(fileName, 'utf-8').then(fileContent => {
+            //---------------------------------
+            cy.log('Renders Restore.svelte')
+            cy.get('#restore').should('exist').click()
+            cy.get('.restore').should('exist')
 
-            //
-            cy.log('Renders FirstRunIntro.svelte and two buttons')
-            cy.viewport(1920, 1080)
-            mount(App)
-
-            cy.get('#create-wallet').should('exist')      
-            cy.get('#restore-wallet').should('exist')
-
-            //
-            cy.log('Renders FirstTimeCreatePW when Restore Wallets button is selected')
-            cy.get('#restore-wallet').focus().click();
-            cy.get('.firstrun-create-pwd').should('exist')
-
-            //
-            cy.log('Renders RestoreUpload.svelte after strong passwords are entered and button clicked')
-            cy.get('input#pwd1').focus().invoke('attr', 'value', 'Testing0!0101')
-            cy.get('input#pwd2').focus().invoke('attr', 'value', 'Testing0!0101')
-            cy.get('[type="submit"]').focus().click()
+            //---------------------------------
+            cy.log('Renders RestoreUpload.svelte when Restore Button is clicked')
+            cy.get('#restore-btn').should('exist').click()
             cy.get('.restore-upload').should('exist')
 
             //
@@ -68,15 +79,11 @@ describe('First Run Restore Wallet Process', () => {
             cy.log('Renders RestoreComplete.svelte show recovery status')
             cy.get('.restore-complete').should('exist')
 
-            //
-            cy.log('Renders FirstRunFinishing to do some final steps once Complete Restore button is clicked')
+            //---------------------------------
+            cy.log('Home Button Renderes CoinsMain.svlet which now has two keys')
             cy.get('#home-btn').should('exist').focus().click()
-            cy.get('.firstrun-finishing').should('exist')
-
-            //
-            cy.wait(5000)
             cy.get('.coinsmain').should('exist')
-
+            cy.get('#coin-row-1').should('exist')
         })
     })
 })

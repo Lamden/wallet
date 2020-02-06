@@ -25,7 +25,7 @@
         {page: 'ResultBox', back: -1, cancelButton: false}
     ]
     let buttons = [
-            {name: 'Close', click: () => finish(), class: 'button__solid button__purple'},
+            {name: 'Close', click: () => closeModal(), class: 'button__solid button__purple'},
         ]
     let currentStep = 0;
     
@@ -104,40 +104,6 @@
         TxStore.addTx(txData);
     }
 
-    function finish(){
-        if (txData.txInfo.args.name){
-            getContract();
-            return;
-        }
-        closeModal();
-    }
-    
-    function getContract(){
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${txData.txInfo.args.name.value}`)
-        .then(res => res.json())
-        .then(res => {
-            if (!res.code) closeModal();
-            getMethods(res.name, res.code);
-        })
-        .catch(err => {
-            console.log(err)
-            closeModal();
-        })
-    }
-
-    function getMethods(contractName, contractCode){
-        fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contractName}/methods`)
-            .then(res => res.json())
-            .then(res => {
-                if (!res.methods) closeModal();
-                FilesStore.addExistingContract(contractName, contractCode, res.methods, currentNetwork.name);
-                closeModal();
-            })
-            .catch(err => {
-                console.log(err)
-                closeModal();
-            })
-    }
 </script>
 
 <svelte:component   this={Modals[steps[currentStep].page]} 

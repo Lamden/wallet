@@ -1,5 +1,6 @@
 <script>
     import { onMount} from 'svelte';
+    import { writable } from 'svelte/store';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
@@ -12,6 +13,7 @@
 
     //Utils
     import { isStringHex } from  '../../js/lamden/helpers.js';
+    import { getContractMethods  } from '../../js/lamden/masternode-api.js';
 
     //DOM NODES
     let stampsField, contractNameField
@@ -20,10 +22,10 @@
     export let coin;
     export let currentPage;
 
-    let txData = {};
+    const MethodStore = writable([])
+
     let selectedWallet;
     let contractError = false;
-    let contractMethods;
     let transaction;
     let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
     let typeToInputTypeMAP = {
@@ -48,7 +50,7 @@
     $: methodArgs = [];
     
     onMount(() => {
-        contractMethods = getMethods(contractName)
+        getMethods(contractName)
     });
 
     function coinList(){
@@ -143,17 +145,10 @@
         }
     }
 
-    function getMethods(contract){
-        return fetch(`${$currentNetwork.ip}:${$currentNetwork.port}/contracts/${contract}/methods`)
-                    .then(res => res.json())
-                    .then(res => {
-                        if (res.error) {
-                            contractNameField.setCustomValidity(res.error);
-                            contractNameField.reportValidity();
-                        }
-                        setArgs(res.methods[0], contract)
-                        return res.methods
-                    })
+    async function getMethods(contract){
+        let methods = await getContractMethods($currentNetwork, contract)
+        MethodStore.set(methods)
+        if (methods.length > 0) setArgs(methods[0], contract)
     }
 
     function handleNext(){
@@ -261,6 +256,7 @@
 
     <div class="contract-details">
         <InputBox
+            id="stamp-input"
             width="100%"
             bind:value={stampLimit}
             bind:thisInput={stampsField}
@@ -270,21 +266,22 @@
             required={true}
         />
         <InputBox
+            id="contract-input"
             width="100%"
             value={contractName}
             bind:thisInput={contractNameField}
             label={"Enter Contract Name"}
             styles={`margin-bottom: 17px;`}
-            on:changed={(e) => contractMethods = getMethods(e.detail.target.value)}
+            on:changed={(e) => getMethods(e.detail.target.value)}
             on:keyup={(e) => clearValidation(e)}
             required={true}
         />
         <div class="args">
-            {#await contractMethods }
-                <DropDown  label={'Function Name'}  defaultText={'No Functions'}/>
-            {:then methods}
-                <DropDown  
-                    items={methodList(methods)} 
+            {#if $MethodStore.length === 0 }
+                <DropDown id="no-methods-dd"  label={'Function Name'}  defaultText={'No Functions'}/>
+            {:else}
+                <DropDown
+                    items={methodList($MethodStore)} 
                     id={'methods'}
                     label={'Function Name'} 
                     styles={`margin-bottom: 40px;`}
@@ -294,6 +291,7 @@
                 {#each methodArgs as arg, index}
                     <div class="flex-row">
                         <DropDown
+                                id={`${arg}-dd`}
                                 items={typesList(arg)}
                                 label={'Type'}
                                 width="160px"
@@ -303,6 +301,7 @@
                                 sideBox={true} />
                         {#if argValueTracker[contractName][methodName][arg].selectedType === 'bool'}
                             <DropDown
+                                id={`${arg}-dd`}
                                 items={trueFalseList(arg)}
                                 label={arg}
                                 width="380px"
@@ -312,7 +311,7 @@
                                 required={true} />
                         {:else}
                             <InputBox
-                                id={index}
+                                id={`input-${arg}`}
                                 bind:value={argValueTracker[contractName][methodName][arg][argValueTracker[contractName][methodName][arg].selectedType].value}
                                 width="380px"
                                 styles={'height: 46px; border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
@@ -325,14 +324,13 @@
 
                     </div>        
                 {/each}
-            {:catch}
-                <DropDown  label={'Function Name'}  defaultText={'No Functions'} />
-            {/await}
+            {/if}
         </div>
 
     </div>
     <div class="buttons">
-        <Button classes={'button__solid button__purple'} 
+        <Button id="lamden-tx-next-btn"
+                classes={'button__solid button__purple'} 
                 width={'232px'}
                 margin={'0 0 17px 0'}
                 name="Next" 
