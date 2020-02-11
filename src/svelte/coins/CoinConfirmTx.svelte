@@ -81,7 +81,7 @@
                     </div>
                 {:else}
                     <div class="values text-body1">
-                        {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
+                        {detail.name.includes('fixedPoint') ? parseFloat(detail.value).toFixed(8).toString() : detail.value}
                     </div>
                 {/if}
             {/each}

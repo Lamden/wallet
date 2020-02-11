@@ -75,7 +75,11 @@
         let args = {};
         Object.keys(methods[index].args).map(arg => {
             let argValue = methods[index].args[arg]
-            if (argValue.value !== '') args[arg] = {type: argValue.type, value: argValue.value };
+            if (argValue.value !== '') {
+                args[arg] = {
+                    type: argValue.type, 
+                    value: argValue.type === 'fixedPoint' ? parseFloat(argValue.value) : argValue.value };
+            } 
         })
     	openModal('IdeModelMethodTx', {
 			'contractName': $activeTab.name, 

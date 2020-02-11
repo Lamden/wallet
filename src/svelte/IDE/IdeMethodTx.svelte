@@ -137,7 +137,7 @@
                 {#each txDetails as detail}
                     <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
                     <div class="values text-body1">
-                        {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
+                        {detail.name.includes('fixedPoint') ? parseFloat(detail.value).toFixed(8).toString() : detail.value}
                     </div>
                 {/each}
             </div>

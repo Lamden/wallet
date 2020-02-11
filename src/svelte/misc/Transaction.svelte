@@ -85,7 +85,7 @@
         {#each Object.keys(txInfo.args) as arg}
             <div class="detail-name no-bottom-margin">{arg}</div>
             <div class="text-primary-dark">
-                {txInfo.args[arg].type === 'fixedPoint' ? txInfo.args[arg].value.toFixed(8).toString() : txInfo.args[arg].value}
+                {txInfo.args[arg].type === 'fixedPoint' ? parseFloat(txInfo.args[arg].value).toFixed(8).toString() : txInfo.args[arg].value}
             </div>
         {/each}
     </div>
