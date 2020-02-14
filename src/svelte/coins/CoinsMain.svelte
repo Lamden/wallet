@@ -9,7 +9,8 @@
 			numberOfCoins,
 			breadcrumbs,
 			password,
-			currentNetwork } from '../../js/stores/stores.js';
+			currentNetwork,
+			NetworksStore } from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
@@ -22,7 +23,6 @@
 
 	//Utils
 	import { updateBalances, decryptObject } from '../../js/utils.js';
-	import { getTauBalance } from '../../js/lamden/masternode-api.js';
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
@@ -39,7 +39,7 @@
 
 	function handleRefresh(){
 		$CoinStore.map(async (coin) => {
-            let balance = await getTauBalance($currentNetwork, coin.vk);
+           let balance = await $currentNetwork.API.getTauBalance(coin.vk);
             if (!coin.balance) CoinStore.updateBalance(balance)
             if (balance !== coin.balance) CoinStore.updateBalance(balance)
         })
@@ -49,6 +49,43 @@
 		}, 1000);
 	}
 
+	function testTx(){
+		let kwargs = {
+			to: '57be23d7af186ef946408dbbfb7407b5df4faac4abb856a6e0daf186080fc69d',
+			amount: 1000
+		}
+		let txInfo = {
+			contractName: 'currency',
+			methodName: 'transfer',
+			stampLimit: 50000,
+			senderVk: "270add00fc708791c97aeb5255107c770434bd2ab71c2e103fbee75e202aa15e",
+			kwargs,
+		}
+		/*
+		let txData;
+		try{
+			txData = new LamdenTxData(
+				"thisisanID",
+				$currentNetwork,
+				$CoinStore[0],
+				txInfo
+			)
+		} catch (e) {
+			console.log(e)
+		}
+
+		let newTxData;
+		try{
+			newTxData = new LamdenTxData(txData)
+		} catch (e) {
+			console.log(e)
+		}*/
+	
+		chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txInfo}, (status) => {
+			console.log(status)
+		})
+
+	}
 
 </script>
 
@@ -165,6 +202,7 @@
 		<div class="header-percent header-text">Portfolio %</div>
 	</div>
 	{#if $currentNetwork}
+		<button on:click={testTx}>SEND TRANSACTION</button>
 		{#if $CoinStore.length === 0}
 			<CoinEmpty />
 		{:else}

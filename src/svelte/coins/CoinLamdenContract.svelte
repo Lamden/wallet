@@ -13,7 +13,6 @@
 
     //Utils
     import { isStringHex } from  '../../js/lamden/helpers.js';
-    import { getContractMethods  } from '../../js/lamden/masternode-api.js';
 
     //DOM NODES
     let stampsField, contractNameField
@@ -146,7 +145,7 @@
     }
 
     async function getMethods(contract){
-        let methods = await getContractMethods($currentNetwork, contract)
+        let methods = await $currentNetwork.API.getContractMethods(contract)
         MethodStore.set(methods)
         if (methods.length > 0) setArgs(methods[0], contract)
     }

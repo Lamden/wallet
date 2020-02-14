@@ -10,14 +10,11 @@
 	import { Monaco } from '../components/Monaco.svelte'
 	import MonacoWindow from './IdeMonacoEditor.svelte';
 
-    //Utils
-    import { getContractInfo, getContractMethods, lintCode  } from '../../js/lamden/masternode-api.js';
-
     //Context
 	const { openModal } = getContext('app_functions');
 	setContext('editor_functions', {
-		checkContractExists: async (contractName, options) => await getContract(contractName, options),
-		addContractTab: async (contractName, contractCode) => await addFileToStore(contractName, contractCode)
+		checkContractExists: async (contractName, options) => await $currentNetwork.API.getContract(options),
+		addContractTab: async (contractName, contractCode) => await $currentNetwork.API.addFileToStore(contractCode)
     });
 
 	let lintErrors = {violations: null};
@@ -44,7 +41,7 @@
 	}
 
 	async function lint(callback){
-		lintErrors = await lintCode($currentNetwork, $activeTab.name, $activeTab.code)
+		lintErrors = await $currentNetwork.API.lintCode($activeTab.name, $activeTab.code)
 		try {
 			callback(lintErrors);
 		} catch (e){}
@@ -84,12 +81,12 @@
 	}
 
 	async function getContract(contractName, options){
-		let contractInfo = await getContractInfo($currentNetwork, contractName)
+		let contractInfo = await $currentNetwork.API.getContractInfo(contractName)
 		if (contractInfo) options.callback(contractInfo, !options.data ? undefined : options.data);
 	}
 	
     async function addFileToStore(contractName, contractCode){
-		let methods =  await getContractMethods($currentNetwork, contractName)
+		let methods =  await $currentNetwork.API.getContractMethods(contractName)
 		FilesStore.addFile(contractName, contractCode, methods, $currentNetwork);
 	}
 </script>

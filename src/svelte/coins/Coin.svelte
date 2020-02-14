@@ -7,9 +7,6 @@
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
-    //Utils
-    import { getTauBalance  } from '../../js/lamden/masternode-api.js';
-
     // Props
     export let coin;
     export let id;
@@ -27,7 +24,7 @@
     })
 
     async function getBalance(){
-        let balanceRes = await getTauBalance($currentNetwork, coin.vk)
+        let balanceRes = await $currentNetwork.API.getTauBalance(coin.vk)
         CoinStore.updateBalance(coin, balanceRes)
     }
 

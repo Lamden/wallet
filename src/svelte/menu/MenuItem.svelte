@@ -16,7 +16,7 @@
 
     function menuAction(){
         if (menuItem.page.name === "LockScreen") {
-            CoinStore.setPwd('');
+            chrome.runtime.sendMessage({type: 'lockWallet'});
             return
         }
         if (menuItem.page.name === 'Feedback'){

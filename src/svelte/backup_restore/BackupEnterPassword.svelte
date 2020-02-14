@@ -23,18 +23,20 @@
                 ]
             });
     })
-    function handleSubmit(){
-        if (!CoinStore.validatePassword(pwdObj.value)) {
-            pwdObj.setCustomValidity("Incorrect Password");
-        } else {
-            pwdObj.setCustomValidity('');
-        }
-        pwdObj.reportValidity()
-        if (formObj.checkValidity()){
-            changeStep(2);
-        }
-    }
 
+    function handleSubmit(){
+        chrome.runtime.sendMessage({type: 'validatePassword', data: pwdObj.value}, (valid) => {
+            if (!valid || chrome.runtime.lastError){
+                pwdObj.setCustomValidity("Incorrect Password");
+            } else {
+                pwdObj.setCustomValidity('');
+            }
+            pwdObj.reportValidity()
+            if (formObj.checkValidity()){
+                changeStep(2);
+            }
+        })
+    }
 
     function validatePassword(e){
         let obj = e.detail;

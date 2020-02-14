@@ -18,7 +18,7 @@ export const steps = writable({current:0, stepList:[]});
 
 //Store Utils
 export function networkKey(networkObj){
-    return `${networkObj.ip}:${networkObj.port}`
+    return `${networkObj.host}:${networkObj.port}`
 }
 
 export function copyItem(item){

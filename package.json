@@ -29,10 +29,7 @@
       "test-misc-stores": "./node_modules/.bin/cypress run --spec cypress/integration/store-tests/misc-stores-spec.js --headed --no-exit",
     "test-all-helpers": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/*.js",
       "test-utils": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/utils-spec.js --headed --no-exit",
-      "test-wallets": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/wallets-spec.js --headed --no-exit",
-    "test-all-lamden": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/*.js",
-      "test-masternode-api": "./node_modules/.bin/cypress run --spec cypress/integration/lamden/masternode-api-spec.js --headed --no-exit",
-      "test-transactionBuilder": "./node_modules/.bin/cypress run --spec cypress/integration/lamden/transactionBuilder-spec.js --headed --no-exit"
+      "test-wallets": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/wallets-spec.js --headed --no-exit"
   },
   "repository": {
     "type": "git",

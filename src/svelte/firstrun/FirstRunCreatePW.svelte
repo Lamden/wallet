@@ -76,14 +76,14 @@
     }
     
     function savePassword(){
-        try{
-            CoinStore.setPwd(pwdInput1.value);
-            if (restore) changeStep(1);
-            else changeStep(3);
-            
-        } catch (err) {
-            console.log(err)
-        }
+        chrome.runtime.sendMessage({type: 'createPassword', data: pwdInput1.value}, (response) => {
+            if(response) {
+                if (restore) changeStep(1);
+                else changeStep(3);
+            } else {
+                throw new Error('Could not create password in browser storage.local')
+            }
+        })
     }
 </script>
 

@@ -8,9 +8,6 @@
     import { Components }  from '../Router.svelte';
     const { InputBox, Button, DropDown } = Components;
 
-    //Utils
-    import { pingServer, getTauBalance  } from '../../js/lamden/masternode-api.js';
-
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
 
@@ -30,7 +27,7 @@
     async function formValidation(){
         if (formField.checkValidity()){
             checking = true;
-            let networkActive = await pingServer({ip, port})
+            let networkActive = await $currentNetwork.ping()
             checking = false;
             if (networkActive){
                 let response = NetworksStore.addNetwork(network);
@@ -61,7 +58,7 @@
     function handleSelected(e){
         NetworksStore.setCurrentNetwork(e.detail.selected.value)
         $CoinStore.map(async (coin) => {
-            let balance = await getTauBalance($currentNetwork, coin.vk);
+            let balance = await $currentNetwork.API.getTauBalance(coin.vk);
             if (!coin.balance) CoinStore.updateBalance(balance)
             if (balance !== coin.balance) CoinStore.updateBalance(balance)
         })

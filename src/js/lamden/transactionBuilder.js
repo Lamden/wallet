@@ -1,58 +1,99 @@
 import * as capnp from 'capnp-ts';
-import { TransactionPayload, Transaction } from './transaction.capnp';
-import { Value } from './values.capnp';
-import * as lamdenWallet from './wallet';
-import * as masternodeAPI from './masternode-api.js'
+import { NewTransactionPayload, NewTransaction } from './transaction.capnp';
+import { ValidateTypes } from './validateTypes'
+import * as wallet from './wallet'
+import { Network } from './network'
+const validate = new ValidateTypes();
 import * as pow from './pow';
-export class TransactionBuilder {
-    constructor(networkNode, sender, contract, func, kwargs, stamps, nonce = undefined, processor = undefined) {
-        function checkUndefined(value, name){
-            if (typeof value !== 'undefined') return value;
-            throw new Error(`${name} is undefined`)
-        }
-        //Masternode API
-        this.API = masternodeAPI;
-        this.wallet = lamdenWallet;
 
-        //Stores variables in self for convenience
-        this.networkNode = checkUndefined(networkNode, 'networkNode')
-        this.sender = checkUndefined(sender, 'sender')
-        this.stamps = checkUndefined(stamps, 'stamps');
-        this.contract = checkUndefined(contract, 'contract');;
-        this.func = checkUndefined(func, 'func');
-        this.kwargs = checkUndefined(kwargs, 'kwargs');
-        this.nonce = nonce;
-        this.processor = processor;
+export class TransactionBuilder extends Network {
+    // Constructor needs an Object with the following information to build Class.
+    //  
+    // arg[0] (networkInfo): {
+    //      host: <string> masternode webserver hostname/ip,
+    //      port: <string> masternode webserver port,
+    //      type: <string> "testnet", "mainnet" or "mockchain"
+    //  }
+    //  arg[1] (txInfo): {
+    //      uid: [Optional] <string> unique ID for tracking purposes, 
+    //      senderVk: <hex string> public key of the transaction sender,
+    //      contractName: <string> name of lamden smart contract,
+    //      methodName: <string> name of method to call in contractName,
+    //      kwargs: <object> key/values of args to pass to methodName
+    //              example: kwargs.to = "270add00fc708791c97aeb5255107c770434bd2ab71c2e103fbee75e202aa15e"
+    //                       kwargs.amount = 1000
+    //      stampLimit: <integer> the max amount of stamps the tx should use.  tx could use less. if tx needs more the tx will fail.
+    //      nonce: [Optional] <integer> send() will attempt to retrieve this info automatically
+    //      processor [Optional] <string> send() will attempt to retrieve this info automatically
+    //  }
+    //  arg[2] (txData): [Optional] state hydrating data
+    constructor(networkInfo, txInfo, txData) {
+        super(networkInfo)
+
+        //Validate arguments
+        if(!validate.isObjectWithKeys(txInfo)) throw new Error(`txInfo object not found`)
+        if(!validate.isStringHex(txInfo.senderVk)) throw new Error(`Sender Public Key Required (Type: Hex String)`)
+        if(!validate.isStringWithValue(txInfo.contractName)) throw new Error(`Contract Name Required (Type: String)`)
+        if(!validate.isStringWithValue(txInfo.methodName)) throw new Error(`Method Required (Type: String)`)
+        if(!validate.isObject(txInfo.kwargs)) throw new Error(`Kwarg Object Required (Type: Object)`)
+        if(!validate.isInteger(txInfo.stampLimit)) throw new Error(`Stamps Limit Required (Type: Integer)`)        
+
+        //Store variables in self for reference
+        this.uid = validate.isStringWithValue(txInfo.uid) ? txInfo.uid : undefined;
+        this.sender = txInfo.senderVk;
+        this.contract = txInfo.contractName;
+        this.method = txInfo.methodName;
+        this.kwargs = txInfo.kwargs;
+        this.stampLimit = txInfo.stampLimit;
+
+        //validate and set nonce and processor if user provided them
+        if (typeof txInfo.nonce !== 'undefined'){
+            if(!validate.isInteger(txInfo.nonce)) throw new Error(`arg[6] Nonce is required to be an Integer, type ${typeof txInfo.none} was given`)
+            this.nonce = txInfo.nonce;
+        }
+        if (typeof txInfo.processor !== 'undefined'){
+            if(!validate.isStringWithValue(txInfo.processor)) throw new Error(`arg[7] Processor is required to be a String, type ${typeof txInfo.processor} was given`)
+            this.processor = txInfo.processor;
+        }
+        
         this.proofGenerated = false;
+        this.signature;
         this.transactionSigned = false;
 
+        //Transaction result information
+        this.nonceResult;
+        this.txSendResult;
+        this.blockResult;
+        this.txHash;
+
+        
+        //Hydrate other items if passed
+        if (txData){
+            if (validate.isObjectWithKeys(txData.txSendResult)) this.txSendResult = txData.txSendResult;
+            if (validate.isObjectWithKeys(txData.nonceResult)){
+                this.nonceResult = txData.nonceResult;
+                if (validate.isInteger(this.nonceResult.nonce)) this.nonce = this.nonceResult.nonce;
+                if (validate.isStringWithValue(this.nonceResult.processor)) this.processor = this.nonceResult.processor;
+            }
+            if (validate.isObjectWithKeys(txData.txSendResult)) this.txSendResult = txData.txSendResult;
+            if (validate.isObjectWithKeys(txData.txBlockResult)) this.txBlockResult = txData.txBlockResult;
+            if (validate.isObjectWithKeys(txData.resultInfo)) this.resultInfo = txData.resultInfo;
+        }
         //Create Capnp messages and transactionMessages
+        this.initializePayload();
+    }
+    initializePayload(){
         this.payloadMessage = new capnp.Message();
-        this.payload = this.payloadMessage.initRoot(TransactionPayload);
+        this.payload = this.payloadMessage.initRoot(NewTransactionPayload);
         this.transactionMessage = new capnp.Message();
-        this.transaction = this.transactionMessage.initRoot(Transaction);
+        this.transaction = this.transactionMessage.initRoot(NewTransaction);
         this.transactionMetadata = this.transaction.initMetadata();
         this.transaction.initPayload();
-        //Start creating Payload by setting the values in the capnp message
-        //Set Nonce will need to called externally to compelte the Payload
     }
     numberToUnit64(number) {
         if (number == null)
             return;
         return capnp.Uint64.fromNumber(number);
-    }
-    isStringHex(string = '') {
-        let hexRegEx = /([0-9]|[a-f])/gim;
-        return typeof string === 'string' &&
-            (string.match(hexRegEx) || []).length === string.length;
-    }
-    isString(value){
-        if(Object.prototype.toString.call(value) === "[object String]") return true;
-        return false;
-    }
-    isStringWithValue(value){
-        if (this.isString(value) && value !== '') return true;
-        return false;
     }
     hexStringToByte(string = '') {
         let a = [];
@@ -61,109 +102,24 @@ export class TransactionBuilder {
         }
         return new Uint8Array(a);
     }
-    byteToHexString(uint8arr) {
-        var hexStr = '';
-        for (var i = 0; i < uint8arr.length; i++) {
-          var hex = (uint8arr[i] & 0xff).toString(16);
-          hex = (hex.length === 1) ? '0' + hex : hex;
-          hexStr += hex;
-        }
-        return hexStr.toUpperCase();
-    }
-    stringToArrayBuffer(string) {
-        var buffer = new ArrayBuffer(string.length);
-        var bufferView = new Uint8Array(buffer);
-        for (var i=0, strLen=string.length; i<strLen; i++) {
-          bufferView[i] = string.charCodeAt(i);
-        }
-        return buffer;
-    }
-    kwargsCount() {
-        return Object.keys(this.kwargs).length;
-    }
-    setKwargsInPayload() {
-        let kwargs = this.payload.initKwargs();
-        let kwargsEntries = kwargs.initEntries(this.kwargsCount());
-        
-        if (this.kwargsCount() > 0) {
-            Object.keys(this.kwargs).map((key, index) => {
-                //Check for type and value object properties
-                this.vaildateKwarg(key, this.kwargs[key]);
-                //Create a value pointer to set the Key (text)
-                // ** This does not compile in Typescript but does create the correct
-                // result in javascript.  This is uncommented in the javascript implementation
-                // but commented out here so this can compile.
-
-                let keyMessage = new capnp.Message().initRoot(capnp.Text);
-                keyMessage.set(0, key)
-                kwargsEntries.get(index).setKey(keyMessage)
-
-                //Set the assocaited Value for the kwarg entry
-                kwargsEntries.get(index).setValue(this.mapTypes(this.kwargs[key]));
-            });
-        }
-    }
-    vaildateKwarg(key = undefined, value) {
-        //Match what the user provided as the type typeof results with.
-        const typeLookup = {
-            address: "string",
-            bool: "boolean",
-            fixedPoint: "number",
-            text: "string",
-            data: "string"
-        };
-        if (key == null)
-            //Error if key not provided
-            throw new TypeError(`"key" cannot be empty string`);
-        if (value.type === undefined)
-            //Error if the user did not specifiy the type of kwarg data
-            throw new TypeError(`"${key}" kwarg has no type (bool, string, uint64, fixedPoint)`);
-        if (!typeLookup.hasOwnProperty(value.type))
-            //Error if the user did not specifiy the type of kwarg data
-            throw new TypeError(`Data type "${value.type}" is not supported by Lamden at this time.  Supported type are ${Object.keys(typeLookup).toString}`);
-        if (value.value === undefined)
-            //Error if the user did not specifiy any kwarg data
-            throw new TypeError(`"${key}" kwarg has no value property.`);
-        let valueType = typeof value.value;
-        if (valueType !== typeLookup[value.type])
-            //Error if the user supplied type does not match the actual kwarg data type
-            throw new TypeError(`"${key}" kwarg value is incorrect type or type assignment is incorrect. Recieved value of type "${valueType}" with type property "${value.type}"`);
-        if (value.type === 'data' && !this.isStringHex(value.value))
-            //Make sure the value for data type can covert to hex
-            throw new TypeError(`"${key}" kwarge value should be hex for "data" type`);
-    }
-    mapTypes(value) {
-        let kwargValue = value.value;
-        let kwargType = value.type;
-        //Create a Value pointer that we will set with the appropriate Type
-        //depending on the value supplied by the user
-        let pointer = new capnp.Message().initRoot(Value);
-        const setPointerType = {
-            'text': () => pointer.setText(kwargValue),
-            'address': () => pointer.setText(kwargValue),
-            'bool': () => pointer.setBool(kwargValue),
-            'fixedPoint': () => pointer.setFixedPoint(kwargValue.toString()),
-            'data': () => {
-                let dataBuffer = this.hexStringToByte(kwargValue);
-                let dataPointer = pointer.initData(dataBuffer.length);
-                dataPointer.copyBuffer(dataBuffer);
-            },
-        };
-        try {
-            setPointerType[kwargType]();
-        }
-        catch (e) {
-            throw new Error(`Could not set value ${kwargValue} with type ${kwargType}. Error: ${e}`);
-        }
-        return pointer;
-    }
-    setNetworkNode(networkNode){
-        this.networkNode = networkNode;
-    }
     setSender() {
         let senderBuffer = this.hexStringToByte(this.sender);
         let senderPayload = this.payload.initSender(senderBuffer.byteLength);
         senderPayload.copyBuffer(senderBuffer);
+    }
+    setContract() {
+        this.payload.setContractName(this.contract);
+    }
+    setFunctionName() {
+        this.payload.setFunctionName(this.method);
+    }
+    setKwargsInPayload() {
+        let kwargBuffer = this.hexStringToByte(JSON.stringify(this.kwargs));
+        let kwargPayload = this.payload.initKwargs(kwargBuffer.byteLength);
+        kwargPayload.copyBuffer(kwargBuffer);
+    }
+    setStamps() {
+        this.payload.setStampsSupplied(this.numberToUnit64(this.stampLimit));
     }
     setNonce() {
         this.payload.setNonce(this.numberToUnit64(this.nonce));
@@ -173,23 +129,14 @@ export class TransactionBuilder {
         let processorPayload = this.payload.initProcessor(processorBuffer.byteLength);
         processorPayload.copyBuffer(processorBuffer);
     }
-    setContract() {
-        this.payload.setContractName(this.contract);
-    }
-    setFunctionName() {
-        this.payload.setFunctionName(this.func);
-    }
-    setStamps() {
-        this.payload.setStampsSupplied(this.numberToUnit64(this.stamps));
-    }
     makePayload(){
         //Add values to the capnp structures
-        this.setSender(this.sender);
-        this.setProcessor(this.processor);
-        this.setNonce(this.processor);
-        this.setContract(this.contract);
-        this.setFunctionName(this.func);
-        this.setStamps(this.stamps);
+        this.setSender();
+        this.setProcessor();
+        this.setNonce();
+        this.setContract();
+        this.setFunctionName();
+        this.setStamps();
         this.setKwargsInPayload();
     }
     setPayloadBytes() {
@@ -204,13 +151,13 @@ export class TransactionBuilder {
     sign(sk) {
         if (this.payloadBytes == null) this.setPayloadBytes();
         // Get signature
-        this.signature = this.wallet.sign(sk, this.payloadBytes);
+        this.signature = wallet.sign(sk, this.payloadBytes);
         this.transactionSigned = true;
     }
     verifySignature(){
         //Verify the signature is correct
         if (!this.transactionSigned) throw new Error('Transaction has not be been signed. Use the sign(<private key>) method first.')
-        return this.wallet.verify(this.sender, this.payloadBytes, this.signature)
+        return wallet.verify(this.sender, this.payloadBytes, this.signature)
     }
     setSignature() {
         // Set the signature in the transcation metadata
@@ -262,12 +209,13 @@ export class TransactionBuilder {
         throw new Error('Invalid signature')
     }
     async getNonce(callback = undefined) {
-        this.nonceResult = await this.API.getNonce(this.networkNode, this.sender)
+        let timestamp =  new Date().toUTCString();
+        this.nonceResult = await this.API.getNonce(this.sender)
 
         if (typeof this.nonceResult.nonce === 'undefined'){
-            throw new Error(`Unable to get nonce for ${this.sender} on network ${this.networkNode.ip}:${this.networkNode.port}`)
+            throw new Error(`Unable to get nonce for ${this.sender} on network ${this.url}`)
         }
-
+        this.nonceResult.timestamp = timestamp;
         this.nonce = this.nonceResult.nonce;
         this.processor = this.nonceResult.processor;
 
@@ -276,32 +224,125 @@ export class TransactionBuilder {
     }
     async send(sk = undefined, callback = undefined) {
         //Error if transaction is not signed and no sk provided to the send method to sign it before sending
-        if (!this.isStringWithValue(sk) && !this.transactionSigned){
+        if (!validate.isStringWithValue(sk) && !this.transactionSigned){
             throw new Error(`Transation Not Signed: Private key needed or call sign(<private key>) first`);
         }
-        
+        let timestamp =  new Date().toUTCString();
         try{
             //If the nonce isn't set attempt to get it
-            if (isNaN(this.nonce) || !this.isStringWithValue(this.processor)) await this.getNonce();
+            if (isNaN(this.nonce) || !validate.isStringWithValue(this.processor)) await this.getNonce();
             //if the sk is provided then sign the transaction
-            if (this.isStringWithValue(sk)) this.sign(sk);
+            if (validate.isStringWithValue(sk)) this.sign(sk);
             //Serialize transaction
             this.serialize();
             //Send transaction to the masternode
-            this.transactionResult = await this.API.sendTransaction(this.networkNode, this.transactonBytes)
+            let response = await this.API.sendTransaction(this.transactonBytes)
+            if (validate.isStringWithValue(response)) this.txSendResult = {errors: [response]}
+            else this.txSendResult = response;
         } catch(e) {
-            if (!callback) return e;
-            return callback(undefined, e)
+            this.txSendResult = {errors: [e.message]}
+        }
+        //Set error if txSendResult doesn't exist
+        if (this.txSendResult === 'undefined'){
+            this.txSendResult = {errors: ['TypeError: Failed to fetch']}
+        }else{
+            //Parse txSendResult for error patterns
+            if (!validate.isArray(this.txSendResult.errors)){
+                this.txSendResult.errors = [];
+                parseSendErrors();
+            }
+        }
+        //Set timestamp of result
+        this.txSendResult.timestamp = timestamp;
+
+        //If errors were set then return 
+        if (validate.isArrayWithValues(this.txSendResult.errors)){
+            this.setBlockResultInfo()
+            if (validate.isFunction(callback)) callback(undefined, this.txSendResult);
+        } else {
+            //If hash exists in the result then this is a pending tx and not a blockresult
+            if (validate.isStringWithValue(this.txSendResult.hash)){
+                this.txHash = this.txSendResult.hash;
+                this.setPendingBlockInfo()
+            }else{
+                if (this.txSendResult.stamps_used){
+                    this.blockResult = this.txSendResult;
+                    this.setBlockResultInfo()
+                }
+            }
+            if (validate.isFunction(callback)) callback(this.txSendResult);
+        }
+        this.emit('response', this.txSendResult, validate.isObjectWithKeys(this.resultInfo) ? this.resultInfo.subtitle : 'Response');
+        return this.txSendResult; 
+    }
+    parseSendErrors(){
+        if (validate.isStringWithValue(this.txSendResult.error)) this.txSendResult.errors.push(this.txSendResult.error)
+        if (validate.isInteger(this.txSendResult.status_code)){
+            if (this.txSendResult.status_code > 0) {
+                if (validate.hasKeys(this.txSendResult.result, ['args'])){
+                    this.txSendResult.errors.push("Error: One of your method arguments threw an error")
+                    this.txSendResult.errors = [...this.txSendResult.result.args, ...this.txSendResult.errors]                     
+                } 
+                if (validate.hasKeys(this.txSendResult.result, ['error'])){
+                    if (validate.hasKeys(this.txSendResult.result.error, ['error'])){
+                        this.txSendResult.errors.push(this.txSendResult.result.error.error)
+                    }else{
+                        this.txSendResult.errors.push(this.txSendResult.result.error)
+                    }
+                }
+            } 
+        }
+    }
+    setPendingBlockInfo(){
+        this.resultInfo =  {
+            title: 'Transaction Pending',
+            subtitle: 'Your transaction was submitted and is is being processed',
+            message: `Tx Hash: ${this.txSendResult.hash}`,
+            type: 'success',
+        }
+        return this.resultInfo;
+    }
+    setBlockResultInfo(){
+        let erroredTx = false;
+        let message = '';
+        if(validate.isArrayWithValues(this.txSendResult.errors)){
+            erroredTx = true;
+            message = `This transaction returned ${this.txSendResult.errors.length} errors.`
         }
 
-        if (typeof this.transactionResult === 'undefined' || 
-            typeof this.transactionResult.status_code === 'undefined'){
-            //Return 
-            if (!callback) return this.transactionResult;
-            return callback(undefined, this.transactionResult)
+        this.resultInfo = {
+            title: `Transaction ${erroredTx ? 'Failed' : 'Successful'}`,
+            subtitle: `Your transaction ${erroredTx ? 'returned an error and' : ''} used ${this.txSendResult.stamps_used} stamps`,
+            message,
+            type: `${erroredTx ? 'error' : 'success'}`,
+            errorInfo: erroredTx ? this.txSendResult.errors : undefined
         }
-
-        if (!callback) return this.transactionResult;
-        return callback(this.transactionResult)
+        return this.resultInfo;
+    }
+    getResultInfo(){
+        return this.resultInfo;
+    }
+    getTxInfo(){
+        return {
+            senderVk: this.sender,
+            contractName: this.contract,
+            methodName: this.method,
+            kwargs: this.kwargs,
+            stampLimit: this.stampLimit
+        }
+    }
+    getAllInfo(){
+        return {
+            UID: this.uid,
+            txHash: this.txHash,
+            signed: this.transactionSigned,
+            signature: this.signature,
+            networkInfo: this.getNetworkInfo(),
+            txInfo: this.getTxInfo(),
+            txSendResult: this.txSendResult,
+            txBlockResult: this.txBlockResult,
+            resultInfo: this.getResultInfo(),
+            nonceResult: this.nonceResult
+        }
     }
 }

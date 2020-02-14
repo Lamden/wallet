@@ -11,7 +11,6 @@
 	//Utils
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
     import { encryptStrHash, decryptStrHash } from '../../js/utils.js';
-    import { mintTestNetCoins, updateAllBalances } from '../../js/lamden/masternode-api.js';
 
 	//Context
     const { closeModal } = getContext('app_functions');
@@ -49,8 +48,6 @@
             } else {
                 saveKeys();
             }
-            sendMessage();
-            nextPage();
         }
     }
 
@@ -99,9 +96,23 @@
             'symbol': selected.symbol,
             'vk': keyPair.vk
         }
-        if (addType !== 3) coinInfo.sk = encryptStrHash($password, keyPair.sk);
-        
-        let response = CoinStore.addCoin(coinInfo);
+        if (addType !== 3) {
+             chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
+                coinInfo.sk = encryptStrHash($password, keyPair.sk);
+                if (encryptedSk){
+                    addToCoinStore(coinInfo);
+                }else{
+                    returnMessage = {type:'error', text: `Error encrypting key for ${coinInfo.name} - ${coinInfo.symbol}`}
+                    finish()
+                }
+            })
+        }else{
+            addToCoinStore(coinInfo);
+        } 
+    }
+
+    function addToCoinStore(coinInfo){
+        let response = CoinStore.addCoin(coinInfo)
         if (!response.added){
             if (response.reason === "duplicate") {
                 returnMessage = {type:'warning', text: "Coin already exists in wallet"} 
@@ -118,7 +129,7 @@
                 returnMessage = {type:'success', text: response.reason} 
             }
         }
-
+        finish();
     }
 
     function createAndSaveKeys(){
@@ -143,8 +154,13 @@
     }
 
     async function mintTestCoins(coin){
-        let mintOkay = await mintTestNetCoins($currentNetwork, coin.vk, 1000000);
+        let mintOkay = await $currentNetwork.API.mintTestNetCoins(coin.vk, 1000000);
         if (mintOkay) CoinStore.updateBalance(coin, 1000000)
+    }
+
+    function finish(){
+        sendMessage();
+        nextPage();
     }
 </script>
 <style>

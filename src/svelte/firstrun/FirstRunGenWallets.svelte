@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, password, steps, allNetworks, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, steps, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -10,8 +10,6 @@
 
 	//Utils
     import { keysFromNew } from '../../js/crypto/wallets.js';
-    import { encryptStrHash, encryptObject } from '../../js/utils.js';
-    import { mintTestNetCoins } from '../../js/lamden/masternode-api.js';
     
     //Context
     const { changeStep } = getContext('functions');
@@ -50,16 +48,22 @@
 
     function createStartingWallets(){
         let keyPair = keysFromNew('lamden', 'TAU');
-        let newCoin = {
-            'network': 'lamden',
-            'name': 'Lamden',
-            'nickname' : 'My TAU Address',
-            'symbol': 'TAU',
-            'vk': keyPair.vk,
-            'sk': encryptStrHash($password, keyPair.sk)
-        }
-        CoinStore.addCoin(newCoin)
-        mintTestCoins(newCoin)
+        chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
+            if (encryptedSk){
+                let newCoin = {
+                    'network': 'lamden',
+                    'name': 'Lamden',
+                    'nickname' : 'My TAU Address',
+                    'symbol': 'TAU',
+                    'vk': keyPair.vk,
+                    'sk': encryptedSk
+                }
+                CoinStore.addCoin(newCoin)
+                $currentNetwork.API.mintTestCoins(newCoin)
+            }else{
+                throw new Error('Critical Failure: Could not encrypt key for intial wallet')
+            }
+        })
     }
 
     async function mintTestCoins(coin){

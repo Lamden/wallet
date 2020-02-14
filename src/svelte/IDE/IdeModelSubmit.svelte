@@ -8,9 +8,6 @@
     import { Modals, Components }  from '../Router.svelte';
     const { Button } = Components
 
-    //Utils
-    import { getContractInfo, getContractMethods } from '../../js/lamden/masternode-api.js';
-
     //Context
 	const { closeModal } = getContext('app_functions');
 
@@ -114,9 +111,9 @@
 
     async function addFile(){
         if (txData.txInfo.args.name){
-            let contractInfo = await getContractInfo($currentNetwork, txData.txInfo.args.name.value);
+            let contractInfo = await $currentNetwork.API.getContractInfo(txData.txInfo.args.name.value);
             try {
-                let methods = await getContractMethods($currentNetwork, contractInfo.name, contractInfo.code)
+                let methods = await $currentNetwork.API.getContractMethods(contractInfo.name, contractInfo.code)
                 FilesStore.addFile(contractInfo.name, contractInfo.code, methods, $currentNetwork);
             } catch (e) {
                console.log(e)

@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, afterUpdate } from 'svelte';
     
     //Stores
     import { TxStore, breadcrumbs, currentNetwork, networkKey } from '../../js/stores/stores.js';
@@ -10,10 +10,15 @@
     let page = 1;
     
     $: txByDay = groupByDate(flattenObject($TxStore[networkKey($currentNetwork)]));
+    $: pendingTxList = [];
   
 	onMount(() => {
         breadcrumbs.set([{name: 'History', page: {name: ''}},]);     
     });
+
+    afterUpdate(() => {
+        console.log($TxStore)
+    })
 
     function sortTxList(txList){
         return txList.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -63,9 +68,11 @@
             <div class="section-header text-body2">
                 {new Date(day).toDateString()}
             </div>
+            
             {#each txByDay[day] as tx}
                 <Transaction txData={tx}/>
             {/each}
+            
         {/each}
     {/if}
 </div>

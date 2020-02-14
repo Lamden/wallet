@@ -1,8 +1,9 @@
 import { writable, derived, get } from 'svelte/store';
 import { isNetworkStoreObj, isNetworkObj, isBoolean, networkKey } from './stores.js';
+import {Network} from '../lamden/network.js'
 
 const lamdenNetworks = [
-    {name: 'Lamden Public Testnet', ip:'https://testnet.lamden.io', port: '443', online: false, lamden: true}
+    {name: 'Lamden Public Testnet', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true}
 ]
 
 const defualtNetworksStore = {
@@ -21,9 +22,10 @@ function foundNetwork(networkStore, matchKey){
     return foundNetwork;
 }
 
-const createNetworksStore = (key, startValue) => {
+export const createNetworksStore = (startValue) => {
+    startValue = defualtNetworksStore;
     //Get store value from localstorate
-    const json = localStorage.getItem(key);
+    const json = localStorage.getItem('networks');
     //If there is a value then set it as the inital value
     if (json) {
         startValue = JSON.parse(json)
@@ -38,7 +40,7 @@ const createNetworksStore = (key, startValue) => {
         //If the store was updated to an empty or non Object then recover to previous value
         if (isNetworkStoreObj(current)){
             //Save Value to local storage
-            localStorage.setItem(key, JSON.stringify(current));
+            localStorage.setItem('networks', JSON.stringify(current));
         } else {
             //Recover store value in memory to previous local storage value
             let json = localStorage.getItem("networks")
@@ -107,6 +109,12 @@ const createNetworksStore = (key, startValue) => {
                 return networksStore;
             })
         },
+        //Returns the current network Object
+        getCurrentNetwork: () => {
+            let found = foundNetwork(get(NetworksStore), get(NetworksStore).current);
+            if (found) return found;
+            return $NetworksStore.lamden[0]
+        },
         //Delete a network from the network list
         deleteNetwork: (networkInfo) => {
             //Reject undefined or missing Network info
@@ -130,7 +138,7 @@ const createNetworksStore = (key, startValue) => {
 }
 
 //Networks Stores
-export const NetworksStore = createNetworksStore('networks', defualtNetworksStore);
+export const NetworksStore = createNetworksStore();
 
 //A Derrived Store of both user and lamden networks
 export const allNetworks = derived(
@@ -165,7 +173,7 @@ export const currentNetwork = derived(
 	NetworksStore,
 	$NetworksStore => {
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
-        if (found) return found;
-        return $NetworksStore.lamden[0]
+        if (found) new Network(found);
+        return new Network($NetworksStore.lamden[0])
     }
 );

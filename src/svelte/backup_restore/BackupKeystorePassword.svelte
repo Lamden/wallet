@@ -50,16 +50,6 @@
 		pwdInput2.checkValidity()
 		pwdInput2.reportValidity()
     }
-    
-    function savePassword(){
-        try{
-            CoinStore.setPwd(pwdInput1.value);
-            if (restore) changeStep(1);
-            else changeStep(3);
-        } catch (err) {
-            console.log(err)
-        }
-    }
 
     function strongPasswordUpdate(){
         pwd = pwdInput1.value;

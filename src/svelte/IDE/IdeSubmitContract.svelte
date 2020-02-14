@@ -9,9 +9,6 @@
 	import { Components }  from '../Router.svelte'
     const { Button, DropDown, InputBox } = Components;
 
-    //Utils
-    import { contractExists } from '../../js/lamden/masternode-api.js';
-
     //Images
     import warning from '../../img/menu_icons/icon_warning.svg';
 
@@ -55,7 +52,7 @@
 
     async function handleSubmit(){
         if (contractNameField.value !== ""){
-            let exists = await contractExists($currentNetwork, contractNameField.value)
+            let exists = await $currentNetwork.API.contractExists(contractNameField.value)
             if (exists){
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return

@@ -1,6 +1,6 @@
-import * as jsSHA from 'jssha';
+import jsSHA from 'jssha';
 import * as helpers from './helpers';
-import * as assert from 'assert';
+
 /**
  * @param String o
  * @param String a
@@ -52,7 +52,7 @@ export function find(o, complexity = 3) {
  *      valid:      Whether or not the POW on the object checks out
  */
 export function check(o, proof, complexity = 3) {
-    assert(proof.length === 32);
+    if (proof.length !== 32) throw new Error('proof length does not equal 32');
     const leadZeros = Array(complexity + 1).join('0');
     const shaObj = new jsSHA('SHA3-256', "TEXT");
     shaObj.update(helpers.ab2str(o) + helpers.hex2str(proof));

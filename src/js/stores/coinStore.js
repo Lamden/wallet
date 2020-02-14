@@ -1,99 +1,46 @@
 import { writable, get, derived } from 'svelte/store';
-import { encryptObject, decryptObject } from '../../js/utils.js';
-import { isStringWithValue, copyItem, isCoinInfoObj, isNumber, isArray } from './stores.js';
+import { copyItem, isCoinInfoObj, isNumber, isArray } from './stores.js';
 
-const createCoinStore = () => {
-    let startValue;
-    //Create intial password as empty string
-    const passwordStore = writable('');
-    const lockedStore = writable(true);
+export const createCoinStore = () => {
+    let initialized = false;
 
-    //If password hasn't beeen set then set the CoinStore inital value to an empty array
-    //because we don't have a password to decrypt it yet (Wallet is locked)
-    if ( get(passwordStore) === '' ) startValue = [];
-    const CoinStore = writable(startValue);
+    function getStore(){
+        //Set the Coinstore to the value of the local storage
+        chrome.storage.local.get({"coins": []}, function(getValue) {
+            initialized = true;
+            CoinStore.set(getValue.coins)
+        });
+    }
+
+    //Create Intial Store
+    const CoinStore = writable([]);
 
     //This is called everytime the CoinStore updated
     CoinStore.subscribe(current => {
-        //Make sure we have a password value before encrypting the store
-        if ( !get(lockedStore) ){
-            //Only accept object to be saved to the localstorage
-            if (isArray(current)) {
-                localStorage.setItem('coins', JSON.stringify( encryptObject( get(passwordStore), current)));
-            }else{
-                //Get the CoinStore from local storage
-                const encryptedStorage = localStorage.getItem('coins');
-                if (encryptedStorage) {
-                    //Try and decrypt it with the passwordStore Value
-                    let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
-                    if (decryptedStorage) CoinStore.set(decryptedStorage)
-                    console.log('Recovered from bad Coin Store Value')
-                }                
-            }
-        }
-    });
-
-    //This is called everytime the password Store is updated
-    passwordStore.subscribe(currPwd => {
-        //Do this only if the password being send in isn't an empty string
-        if (currPwd !== ''){
-
-            CoinStore.update(curr => {
-                //Get the CoinStore from local storage
-                const encryptedStorage = localStorage.getItem('coins');
-
-                if (encryptedStorage) {
-                    //Try and decrypt it with the passwordStore Value
-                    let decryptedStorage = decryptObject( get(passwordStore), JSON.parse(encryptedStorage))
-                    startValue = decryptedStorage;
-                    //If decryption was valid then save the store as a backup (incase the main store gets corrupted)
-                    if (decryptedStorage) localStorage.setItem('backup', encryptedStorage);
-                    //If there was an issue decrypting the store then try to use the backup
-                    else if(localStorage.getItem('backup')) {
-                        const encryptedBackupStorage = localStorage.getItem('backup');
-                        startValue = decryptObject( get(passwordStore), JSON.parse(encryptedBackupStorage))
-                    }
-                }
-
-                //Return the CoinStore value from localstorage if one was decrypted
-                if (startValue) {
-                    lockedStore.set(false);
-                    return startValue;
-                } 
-                //Return an empty array if decryption was unsuccessful.
-                return [];
-            })
+        //Only accept and Array Object to be saved to the storage and only
+        //if store has already been initialized
+        if (isArray(current)) {
+            if (initialized) chrome.storage.local.set({"coins": current});
         }else{
-            lockedStore.set(true);
-            CoinStore.set([]);
+            //If non-object found then set the store back to the previous local store value
+            getStore()
+            console.log('Recovered from bad Coin Store Value')
         }
     });
+
+    //Set the Coinstore to the value of the local storage
+    getStore()
 
     let subscribe = CoinStore.subscribe;
     let update = CoinStore.update;
     let set = CoinStore.set;
-	let setPwd = passwordStore.set;
 
     return {
-        startValue,
         subscribe,
         set,
         update,
-        setPwd,
-        passwordStore,
-        lockedStore,
-        //Set the password to an empty string with will force the store
-        //to return an empty array
-        lockCoinStore: () =>{
-            setPwd('')
-        },
-        //This function will attempt to decrypt the localstorage value with an installed password
-        //and return true of false depending on the result
-        validatePassword: (pwd) => {
-            if (!isStringWithValue(pwd)) return false;
-            if (!localStorage.getItem('coins')) return false;
-            if(decryptObject( pwd, JSON.parse(localStorage.getItem('coins'))) === false) return false;
-            return true;
+        getValue: () => {
+            return get(CoinStore)
         },
         //Add a coin to the internal coin storage
         addCoin: (coinInfo) => {
@@ -166,11 +113,8 @@ const createCoinStore = () => {
 //Create CoinStore instance
 export const CoinStore = createCoinStore();
 
-//Create a derived store to show if the store us locked
-export const lockedStorage = derived(CoinStore.lockedStore, ($lockedStore) => $lockedStore);
-
-//Create a derived store to share password to components
-export const password = derived(CoinStore.passwordStore, ($passwordStore) => $passwordStore);
+export const lockedStorage = writable(false);
+export const password = writable('Testing0!2');
 
 //Create a derived store to total all wallets
 export const balanceTotal = derived(CoinStore, ($CoinStore) => {

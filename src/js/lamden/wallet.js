@@ -1,4 +1,4 @@
-import * as nacl from 'tweetnacl';
+import nacl from 'tweetnacl';
 import * as helpers from './helpers';
 /**
  * @param Uint8Array(length: 32) seed

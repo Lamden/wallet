@@ -1,5 +1,5 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onMount, afterUpdate } from 'svelte';
     import { themes } from '../../js/themes.js';
 
 	//Stores
@@ -8,14 +8,21 @@
 	//Components
     import { NavStatus }  from '../Router.svelte'
 
-    //Utils
-    import { pingServer  } from '../../js/lamden/masternode-api.js';
-
     //Context
     const { switchPage } = getContext('app_functions');
 
     let status = 'checking'
-    $: (async() => status = await pingServer($currentNetwork) ? 'online' : 'offline')();
+
+    onMount(() => {
+        $currentNetwork.on('online', (online) => {
+            if (online) status = 'online'
+            else status = 'offline'
+        })
+    })
+
+    afterUpdate(() => {
+        $currentNetwork.ping();
+    })
 
     function toggleTheme(event) {
         SettingsStore.changeTheme(event.detail ? 'light' : 'dark')

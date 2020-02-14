@@ -1,8 +1,5 @@
 <script>
-    import { onMount, getContext } from 'svelte';
-
-	//Stores
-    import { CoinStore } from '../../js/stores/stores.js';
+    import { getContext } from 'svelte';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -18,40 +15,32 @@
     //DOM Nodes
     let formObj, passwordObj;
 
-    //Props
-    export let coin;
-
     let passwordOkay = false;
 
     function handleSubmit(form){
-        if(!passwordOkay){
-            validatePassword()
-            passwordObj.reportValidity()
-        };
-
-        if (formObj.checkValidity()){
-            if (!passwordOkay){
-                passwordOkay = true;
-            }else{
+        if (passwordOkay){
+            if (formObj.checkValidity()){
                 setPage(4);
             }
+        }else{
+            chrome.runtime.sendMessage({type: 'validatePassword', data: passwordObj.value}, (valid) => {
+                if (!valid || chrome.runtime.lastError){
+                    setValidity(passwordObj, "Incorrect Password")
+                    passwordOkay = false;
+                } else {
+                    passwordOkay = valid;
+                }
+            })
         }
     }
 
-    function validatePassword(){
-        if (!CoinStore.validatePassword(passwordObj.value)) {
-            passwordObj.setCustomValidity("Incorrect Wallet Password");
-        } else {
-            passwordObj.setCustomValidity('');
-        }
-    }
-
-    function refreshValidity(){
-        passwordObj.setCustomValidity('');
+    function setValidity(node, message){
+        node.setCustomValidity(message);
+        node.reportValidity();
     }
 
     function refreshValidityKeyup(e){ 
-        if (e.detail.keyCode !== 13) passwordObj.setCustomValidity('');
+        if (e.detail.keyCode !== 13) setValidity(passwordObj, '')
     }
 </script>
 
@@ -118,7 +107,7 @@
                     label={"Password"}
                     placeholder={`Enter Lamden Wallet Password`}
                     styles={`margin-bottom: 17px;`}
-                    on:changed={refreshValidity}
+                    on:changed={() => setValidity(passwordObj, '')}
                     on:keyup={refreshValidityKeyup}
                     inputType={"password"}
                     required={true}/>

@@ -28,9 +28,16 @@
 	let modalData;
 	let fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
-	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
+	$: walletIsLocked = true;
+
+	chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+		if (message.type === 'walletIsLocked') walletIsLocked = message.data;
+	})
 
 	onMount(() => {
+		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
+			walletIsLocked = locked;
+		})
 		SettingsStore.calcStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
@@ -70,7 +77,7 @@
 		{#if $firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
 		{:else}
-			{#if pwdIsCorrect}
+			{#if !walletIsLocked}
 				{#if fullPage.includes($currentPage.name)}
 					<svelte:component this={Pages[$currentPage.name]}/>
 				{:else}
@@ -98,7 +105,7 @@
 					</div>
 				{/if}
 			{/if}
-			{#if !pwdIsCorrect}
+			{#if walletIsLocked}
 				<svelte:component this={Pages['LockScreen']} {loaded}/>
 			{/if}
 		{/if}

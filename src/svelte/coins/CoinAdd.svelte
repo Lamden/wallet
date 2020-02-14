@@ -1,9 +1,6 @@
 <script>
     import { getContext, setContext } from 'svelte';
     
-	//Stores
-    import { CoinStore, coinMeta, password, breadcrumbs } from '../../js/stores/stores.js';
-
     //Components
     import { Modals, Components } from '../Router.svelte';
     const { Button } = Components;
