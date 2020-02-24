@@ -118,7 +118,7 @@ export const createCoinStore = () => {
 export const CoinStore = createCoinStore();
 
 export const lockedStorage = writable(false);
-export const password = writable('Testing0!2');
+export const password = writable('');
 
 //Create a derived store to total all wallets
 export const balanceTotal = derived(CoinStore, ($CoinStore) => {
