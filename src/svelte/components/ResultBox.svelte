@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from 'svelte'
     //Components
     import { Components } from '../Router.svelte';
     const { Button } = Components;
@@ -10,6 +11,7 @@
 
     //Props
     export let result;
+    console.log(result)
 
     let typeIcons = {
         'error': errorCircle,
@@ -18,24 +20,11 @@
     }
 
     $: icon = typeIcons[result.type]
-    $: stateInfo = result.stateInfo ? Object.keys(result.stateInfo).map(i => {
-            let iSplit = i.split(':');
-            let info = {}
-            info.contractName =  iSplit[0]
-            info.variableName = iSplit[1]
-            info.keyName = iSplit[2]
-            info.value = result.stateInfo[i]
-            return info
-        }) : undefined;
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
-    $: returnValue = () => {
-        if (!result.returnValue) return [];
-        if(Object.prototype.toString.call(result.returnValue) === "[object Object]") {
-            return Object.keys(result.returnValue).map(item => `${item} : ${result.returnValue[item]}`)
-        }
-        if (!Array.isArray(result.returnValue)) return [result.returnValue]
-        return result.returnValue;
-    }
+
+    onMount(() => {
+        console.log(result)
+    })
 
 </script>
 
@@ -59,25 +48,7 @@
     align-items: center;
     padding-top: 2rem;
 }
-.state-info{
-    width: 100%;
-    overflow-wrap: break-word;
-}
-.error-info{
-    width: 100%; 
-    overflow-wrap: break-word;       
-}
-.title{
-    margin-right: 10px;
-}
-.return-value{
-    width: 100%;
-}
-.value-row{
-    margin-bottom: 20px;
-    max-height: 100px;
-    overflow-y: auto;
-}
+
 </style>
 
 <div class="results-box flex-column">
@@ -89,45 +60,6 @@
         <div class="icon">{@html icon}</div>
         <h6 id={'results-message'}>{result.message}</h6>
     </div>
-
-    {#if returnValue().length > 0}
-        <div class="flex-column return-value ">
-            <h6>Return Value</h6>
-            {#each returnValue() as value}
-                <div class="text-body1 text-primary-dark">{value}</div>
-            {/each}
-        </div>
-    {/if}
-
-    {#if stateInfo}
-        <div class="state-info text-body1 flex-column">
-            <h6>New State</h6>
-            {#each stateInfo as detail}
-                <div class="flex-row">
-                    <div class="title">{`contract: `}</div>
-                    <div class="text-primary-dark">{detail.contractName}</div>
-                </div>
-                <div class="flex-row">
-                    <div class="title">{`variable: `}</div>
-                    <div class="text-primary-dark">
-                        {detail.variableName}
-                    </div>
-                </div>
-                <div class="flex-row">
-                    <div class="title">{`key: `}</div>
-                    <div class="text-primary-dark">
-                        {detail.keyName}
-                    </div>
-                </div>
-                <div class="flex-column value-row">
-                    <div>{`new value: `}</div>
-                    <div class="text-primary-dark">
-                        {detail.value}
-                    </div>
-                </div>
-            {/each}
-        </div>
-    {/if}
     {#if errorInfo}
         <div class="error-info text-body1 flex-column">
             <h6>Error Info</h6>

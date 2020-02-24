@@ -136,5 +136,5 @@
 				/>
         </div>
     </div>
-    <!--<CoinHistory txList={txList()} />-->
+    <CoinHistory txList={txList()} />
 </div>

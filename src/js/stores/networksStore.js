@@ -1,6 +1,12 @@
 import { writable, derived, get } from 'svelte/store';
-import { isNetworkStoreObj, isNetworkObj, isBoolean, networkKey } from './stores.js';
-import {Network} from '../lamden/network.js'
+
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+
+import { networkKey } from './stores.js';
+import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
+
+import Lamden from 'lamden-js'
 
 const lamdenNetworks = [
     {name: 'Lamden Public Testnet', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true}
@@ -98,7 +104,7 @@ export const createNetworksStore = (startValue) => {
         //Change the online status of network to true/false
         setNetworkStatus: (networkInfo, status) => {
             //Reject undefined or missing info
-            if (!isNetworkObj(networkInfo) || !isBoolean(status)) return;
+            if (!isNetworkObj(networkInfo) || !validateTypes.isBoolean(status)) return;
 
             let netKey = networkKey(networkInfo)
             NetworksStore.update(networksStore => {
@@ -173,7 +179,7 @@ export const currentNetwork = derived(
 	NetworksStore,
 	$NetworksStore => {
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
-        if (found) new Network(found);
-        return new Network($NetworksStore.lamden[0])
+        if (found) new Lamden.Network(found);
+        return new Lamden.Network($NetworksStore.lamden[0])
     }
 );

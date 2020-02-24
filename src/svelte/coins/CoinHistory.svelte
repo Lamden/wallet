@@ -16,6 +16,7 @@
   
 	onMount(() => {
         if (all) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
+        console.log(txList)
     });
 
     function sortTxList(){
@@ -26,7 +27,7 @@
         sortTxList();
         let txDict = {};
         txList.map(tx => {
-            let date = new Date(tx.date).toLocaleDateString();
+            let date = new Date(tx.timestamp).toLocaleDateString();
             if (!txDict[date]){
                 txDict[date] = [tx];
             }else{

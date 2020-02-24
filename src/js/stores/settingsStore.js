@@ -1,5 +1,9 @@
 import { writable, derived } from 'svelte/store';
-import { isSettingsStoreObj,  isPageInfoObj, isStringWithValue} from './stores.js';
+
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+
+import { isSettingsStoreObj,  isPageInfoObj} from '../objectValidations';
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
@@ -67,7 +71,7 @@ const createSettingsStore = (key, startValue) => {
         //Set a new theme in the setting store
         changeTheme: (theme) => {
             //Reject undefined or missing info.
-            if (!isStringWithValue(theme)) return;
+            if (!validateTypes.isStringWithValue(theme)) return;
             SettingsStore.update(settingsStore => {
                 //Set theme in Settings store
                 settingsStore.themeStyle = theme;

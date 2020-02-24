@@ -1,5 +1,10 @@
-import { writable, derived, get } from 'svelte/store';
-import { isNetworkObj, isObject, isStringWithValue, networkKey } from './stores.js';
+import { writable, get } from 'svelte/store';
+
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+
+import { networkKey } from './stores.js';
+import { isNetworkObj } from '../objectValidations';
 
 const createTxStore = () => {
     let initialized = false;
@@ -7,6 +12,7 @@ const createTxStore = () => {
     function getStore(){
         //Set the Coinstore to the value of the local storage
         chrome.storage.local.get({"txs": {}}, function(getValue) {
+            console.log(getValue)
             initialized = true;
             TxStore.set(getValue.txs)
             console.log(get(TxStore))
@@ -19,7 +25,7 @@ const createTxStore = () => {
     //This is called everytime the value of the store changes
     TxStore.subscribe(current => {
         //Only accept object to be saved to the localstorage
-        if (isObject(current)) {
+        if (validateTypes.isObject(current)) {
             if (initialized) chrome.storage.local.set({"txs": current});
         }else{
             //If non-object found then set the store back to the previous local store value
@@ -29,6 +35,12 @@ const createTxStore = () => {
     });
 
     getStore();
+
+    chrome.storage.onChanged.addListener((changes) => {
+        for (let key in changes) {
+            if (key === 'txs') TxStore.set(changes[key].newValue)
+        }
+    });
     
     let subscribe = TxStore.subscribe;
     let update = TxStore.update;
@@ -41,7 +53,7 @@ const createTxStore = () => {
         update,
         getTxList: (networkObj, vk) => {
             //Return if arguments are undefined and incorrect types
-            if (!isNetworkObj(networkObj) || !isStringWithValue(vk)) return;
+            if (!isNetworkObj(networkObj) || !validateTypes.isStringWithValue(vk)) return;
 
             //Create Network Key
             let netKey = networkKey(networkObj);
@@ -58,7 +70,7 @@ const createTxStore = () => {
         },
         clearTx: (networkObj, vk) => {
             //Return if arguments are undefined and incorrect types
-            if (!isNetworkObj(networkObj) || !isStringWithValue(vk)) return;
+            if (!isNetworkObj(networkObj) || !validateTypes.isStringWithValue(vk)) return;
 
             //Create network Key
             let netKey = networkKey(networkObj)

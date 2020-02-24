@@ -1,5 +1,9 @@
 import { writable, get } from 'svelte/store';
-import { isObject, isStringWithValue, networkKey, isNetworkObj } from './stores.js';
+
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+import { networkKey } from './stores.js';
+import { isNetworkObj } from '../objectValidations';
 
 const createCacheStore = (key, startValue) => {
     //get the local storage value of the cache store
@@ -16,7 +20,7 @@ const createCacheStore = (key, startValue) => {
     CacheStore.subscribe(current => {
         //If the value it's trying to save isn't an object then
         //recover the localstorage value and save it to the store
-        if (isObject(current)) {
+        if (validateTypes.isObject(current)) {
             localStorage.setItem(key, JSON.stringify(current));
         }else{
             let json = localStorage.getItem(key)
@@ -37,7 +41,7 @@ const createCacheStore = (key, startValue) => {
         //Stores a network/contract pair so that we don't call the API again to check it
         addContract: (contractName, networkObj) => {
             //Reject missing or undefined arguments
-            if (!isStringWithValue(contractName)) return;
+            if (!validateTypes.isStringWithValue(contractName)) return;
             if (!isNetworkObj(networkObj)) return;
 
             let netKey = networkKey(networkObj)
@@ -53,7 +57,7 @@ const createCacheStore = (key, startValue) => {
         //Check if we have already called the API to check this contract name
         contractExists: (contractName, networkObj) => {
             //Reject missing or undefined arguments
-            if (!isStringWithValue(contractName)) return;
+            if (!validateTypes.isStringWithValue(contractName)) return;
             if (!isNetworkObj(networkObj)) return;
 
             let netKey = networkKey(networkObj)

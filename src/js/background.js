@@ -3,26 +3,24 @@ import '../img/icon-34.png'
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash } from './utils.js';
 
 import { createNetworksStore } from './stores/networksStore.js' 
-import { TransactionBuilder } from './lamden/transactionBuilder.js'
+import Lamden from 'lamden-js'
 
-let password = '';
-let walletIsLocked = true;
+//Background Stores
 let hash;
 let coinStore;
 let txStore;
-/*
-chrome.storage.local.remove(["txs"], function() {
-    chrome.storage.local.get({"hash": "", "coins": [], "txs": {}}, function(getValue) {
-        hash = getValue.hash
-        coinStore = getValue.coins
-        txStore = getValue.txs;
-    })
-})*/
+let pendingTxList;
 
-chrome.storage.local.get({"hash": "", "coins": [], "txs": {}}, function(getValue) {
+//Misc Values
+let password = '';
+let walletIsLocked = true;
+
+chrome.storage.local.get({"hash": "", "coins": [], "txs": {}, "pendingTxs": {}}, function(getValue) {
     hash = getValue.hash
     coinStore = getValue.coins
     txStore = getValue.txs;
+    alert(JSON.stringify(txStore))
+    pendingTxList = getValue.pendingTxs;
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -67,9 +65,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (!wallet) sendResponse({status: 'Error: Did not find publc key (vk) in wallet'});
         try{
             message.data.uid = encryptString(wallet.vk, 'tracking-id')
-            let txBuilder = new TransactionBuilder(getCurrentNetwork(), message.data)
-            sendResponse({status: 'Sending Transaction. await result.'})
-            sendTx(txBuilder, wallet.sk)
+            let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), message.data)
+            sendResponse({status: "Transaction Sent, Awaiting Response"})
+            sendTx(txBuilder, wallet.sk, message.url)
         }catch (err){
             sendResponse({status: `Failed to create Tx - ${err}`})
         }
@@ -111,26 +109,48 @@ function getCurrentNetwork(){
 	return NetworksStore.getCurrentNetwork()
 }
 
-function sendTx(txBuilder, sk){
-    saveTxData(txBuilder)
-    txBuilder.send(decryptString(sk), () => updateTxData(txBuilder))
+function sendTx(txBuilder, sk, sentFrom){
+    txBuilder.send(decryptString(sk), () => {
+        let txData = txBuilder.getAllInfo()
+        saveTxData(txBuilder);
+        sendMessageToTab(sentFrom, txData)
+    })
 }
 
 function saveTxData(txBuilder){
+    let result = txBuilder.txSendResult;
+    alert(JSON.stringify(result))
     let netKey = txBuilder.url;
     let vk = txBuilder.sender;
-    //create keys if they don't exist
-    if (!txStore[netKey]) txStore[netKey] = {}
-    if (!txStore[netKey][vk]) txStore[netKey][vk] = [];
 
-    //Add tx to Store List
-    txStore[netKey][vk].push(txBuilder.getAllInfo());
+    if (result.hash){
+        //create keys if they don't exist
+        if (!pendingTxList[netKey]) pendingTxList[netKey] = {}
+        if (!pendingTxList[netKey][vk]) pendingTxList[netKey][vk] = [];
 
-    chrome.storage.local.set({"txs": txStore});
-    alert('SAVING TO STORE: ' + JSON.stringify(txStore))
+        pendingTxList[netKey][vk].push(txBuilder.getAllInfo());
+
+        chrome.storage.local.set({"pendingTxs": pendingTxList});
+        alert('SAVING TO STORE: ' + JSON.stringify(pendingTxList))
+    }else{
+        //create keys if they don't exist
+        if (!txStore[netKey]) txStore[netKey] = {}
+        if (!txStore[netKey][vk]) txStore[netKey][vk] = [];
+
+        let txDate = {
+            txInfo: txBuilder.getTxInfo(),
+            resultInfo: txBuilder.getResultInfo(),
+            timestamp: result.timestamp
+        }
+
+        txStore[netKey][vk].push(txDate);
+
+        chrome.storage.local.set({"txs": txStore});
+        alert('SAVING TO STORE: ' + JSON.stringify(txStore))        
+    }
 }
 
-function updateTxData(){
+function updateTxData(){/*
     let netKey = txBuilder.url
     let vk = txBuilder.sender
     if (!txStore[netKey]) return;
@@ -144,11 +164,29 @@ function updateTxData(){
     foundTx = txBuilder.getAllInfo()
     chrome.storage.local.set({"txs": txStore});
     alert('UPDATING STORE: ' + JSON.stringify(txStore))
+    */
+}
+
+function sendMessageToTab(url, data){
+    chrome.windows.getAll({populate:true},function(windows){
+        windows.forEach((window) => {
+            window.tabs.forEach((tab) => {
+                if (url === tab.url){
+                    chrome.tabs.sendMessage(tab.id, {type: 'txResult', data});  
+                }
+            });
+        });
+    });
 }
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
         if (key === 'coins') coinStore = changes[key].newValue;
-        if (key === 'txs') txStore = changes[key].newValue;
+        if (key === 'txs') {
+            
+            txStore = changes[key].newValue;
+            alert(JSON.stringify(txStore)); 
+        }
+        if (key === 'pendingTxs') pendingTxList = changes[key].newValue;
     }
 });

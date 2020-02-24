@@ -12,15 +12,14 @@
     //Props
     export let txData;
     
-    $: coin = txData.sender
     $: txInfo = txData.txInfo;
-    $: error = txData.resultInfo.type === "error" || txData.result.status_code > 0 ? true : false
+    $: error = txData.resultInfo.type === "error";
     $: errorMsg = () => {
         if (typeof txData.resultInfo.subtitle === 'string' ) return error ? txData.resultInfo.subtitle : '';
         if (typeof txData.resultInfo.subtitle === 'object' ) return error ? txData.resultInfo.title : '';
         return '';
     }
-    $: stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
+    $: stampsUsed = txData.stampUsed ? txData.stampUsed : 0;
 
 </script>
 
@@ -30,12 +29,12 @@
     display: flex;
     flex-direction: row;
     padding: 12px 0;
+    justify-content: space-between;
 }
 
 .icon-box {
     align-items: center;
     justify-content: center;
-    width: 221px;
 }
 
 .args{
@@ -45,7 +44,9 @@
 .stamps{
     justify-content: center;
     align-items: center;
-    width: 198px;
+}
+.stamps-title{
+    margin-right: 5px;
 }
 
 .error-msg{
@@ -55,47 +56,32 @@
     height: 20px;
 }
 
-.icon{
-    display: flex;
-    align-items: center;
-}
-
 .icon-size{
-    width: 25px;
-    margin-top: 1rem;
+    width: 27px;
+    height: 25px;
+    margin-right: 35px;
 }
 .time-date{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
-    width: 200px;
 }
 
 </style>
 
 <div class="tx-box text-body1">
-    <div class="icon-box flex-column text-body1">
-        <div>{txInfo.contractName}</div>
-        <div>{txInfo.methodName}</div>
+    <div class="icon-box flex-row text-body1">
         <div class="icon-size">{@html error ? errorCircle : successCircle}</div>
+        <div>{`${txInfo.contractName} > ${txInfo.methodName}`}</div>
     </div>
-    <div class="args flex-column text-body1">
-        {#each Object.keys(txInfo.args) as arg}
-            <div class="detail-name no-bottom-margin">{arg}</div>
-            <div class="text-primary-dark">
-                {txInfo.args[arg].type === 'fixedPoint' ? txInfo.args[arg].value.toFixed(8).toString() : txInfo.args[arg].value}
-            </div>
-        {/each}
-    </div>
-    <div class="flex-column stamps">
-        <div>{'Stamps Used'}</div>
+    <div class="flex-row stamps">
+        <div class="stamps-title">{`Stamps Used `}</div>
         <div class="text-primary-dark">{stampsUsed}</div>
     </div>
     <div class="time-date">
-        <div> {new Date(txData.date).toLocaleDateString()} </div>
-        <div> {new Date(txData.date).toLocaleTimeString()} </div>
+        <div> {new Date(txData.timestamp).toLocaleDateString()} </div>
+        <div> {new Date(txData.timestamp).toLocaleTimeString()} </div>
     </div>
 </div>
 {#if error}

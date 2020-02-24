@@ -1,7 +1,6 @@
 import {  pubFromPriv, 
           keysFromNew,
-          validateAddress,
-          signTx } from '../../../src/js/crypto/wallets.js';
+          validateAddress } from '../../../src/js/crypto/wallets.js';
 
 /* 
 TO DO:

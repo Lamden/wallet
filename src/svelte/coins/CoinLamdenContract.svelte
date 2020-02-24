@@ -4,6 +4,7 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
+
 	//Stores
     import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
 
@@ -12,7 +13,8 @@
     const { DropDown, InputBox, Button } = Components;
 
     //Utils
-    import { isStringHex } from  '../../js/lamden/helpers.js';
+    import * as validators from 'types-validate-assert'
+    const { validateTypes } = validators;
 
     //DOM NODES
     let stampsField, contractNameField
@@ -26,22 +28,22 @@
     let selectedWallet;
     let contractError = false;
     let transaction;
-    let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
+    let dataTypes = ['text', 'address', 'data', 'number', 'bool']
     let typeToInputTypeMAP = {
         address: 'text',
         text: 'textarea',
         data: 'text',
-        fixedPoint: 'number',
+        number: 'number',
         bool: trueFalseList()
     }
     let defaultValues = {
         address: '',
         text: '',
         data: '',
-        fixedPoint: 0,
+        number: 0,
         bool: true 
     }
-    let stampLimit = 35000;
+    let stampLimit = 50000;
     
     $: contractName = 'currency'
     $: methodName  = ''
@@ -113,8 +115,8 @@
     function getStartingType(arg){
         let type = 'text';
         let numberArgs = ['number', 'value', 'amount', 'stamps', 'tau', 'decimal']
-        numberArgs.map(str => arg.includes(str) ? type = 'fixedPoint' : null)
-        if (type === 'fixedPoint') return type;
+        numberArgs.map(str => arg.includes(str) ? type = 'number' : null)
+        if (type === 'number') return type;
         let addressArgs = ['to', 'from', 'wallet', 'address', 'sender', 'receiver', 'owner', 'public', 'private', 'key']
         addressArgs.map(str => arg.includes(str) ? type = 'address' : null)
         return type;
@@ -123,13 +125,13 @@
     function saveArgValue(arg, e){
         let selectedType = argValueTracker[contractName][methodName][arg].selectedType
         if (selectedType === 'data' || selectedType === 'address'){
-            if (!isStringHex(e.detail.target.value)){
+            if (!validateTypes.isStringHex(e.detail.target.value)){
                 e.detail.target.setCustomValidity('Invalid Format: Must be HEX')
                 e.detail.target.reportValidity()
             }
         }
         let argValue = selectedType === 'bool' ?  e.detail.selected.value : e.detail.target.value;
-        if (selectedType === 'fixedPoint'){
+        if (selectedType === 'number'){
             argValue = parseFloat(argValue)
         }
         argValueTracker[contractName][methodName][arg][selectedType].value = argValue;
@@ -155,12 +157,13 @@
             dispatch('contractDetails', {
                 sender: selectedWallet,
                 txInfo: {
+                    senderVk: selectedWallet.vk,
                     stampLimit,
                     'contractName': contractNameField.value, 
                     methodName, 
-                    args: packageArgs()
-                    }
-                })
+                    kwargs: getKwargs()
+                }
+            })
         }
     }
 
@@ -191,21 +194,17 @@
         e.detail.target.reportValidity();
     }
 
-    function packageArgs(){
-        let argPackage = {}
+    function getKwargs(){
+        let kwargs = {}
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             if (arg !== 'selectedType'){
                 let argValue = argValueTracker[contractName][methodName][arg]
                 if (argValue[argValue.selectedType].value !== ""){
-                    argPackage[arg] = {
-                        value: argValue[argValue.selectedType].value,
-                        type: argValue.selectedType
-                    }
+                    kwargs[arg] = argValue[argValue.selectedType].value
                 }
-
             }
         })
-        return argPackage;
+        return kwargs;
     }
 
     function handleSelectedWallet(e){

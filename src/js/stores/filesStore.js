@@ -1,7 +1,11 @@
 import { writable, derived } from 'svelte/store';
-import { isArray, isStringWithValue, isFileObj, isString, isInteger, networkKey } from './stores.js';
 
-const createFilesStore = (key) => {
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+import { networkKey } from './stores.js';
+import { isFileObj } from '../objectValidations';
+
+const createFilesStore = () => {
     //Default File Content that will be created
     const defaultFile = {
         name: 'New Contract',
@@ -19,7 +23,7 @@ const createFilesStore = (key) => {
     //Set intial value. Will get overwritten if by localstorage state if it exists
     let startValue = [JSON.parse(JSON.stringify(defaultFile))];
     //Get Local Storage value
-    const json = localStorage.getItem(key);
+    const json = localStorage.getItem('files');
     
     //Set intial value to local storage value if it exists 
     if (json) {
@@ -31,11 +35,11 @@ const createFilesStore = (key) => {
     //This funtion gets call everytime the FileStore is updated
     FilesStore.subscribe(current => {
         //Check to make sure the value we just updated in memory is an Array
-        if (isArray(current)) {
-            localStorage.setItem(key, JSON.stringify(current));
+        if (validateTypes.isArray(current)) {
+            localStorage.setItem('files', JSON.stringify(current));
         }else{
             //If the value was not an array then set the memory value back to the previous localstorage value
-            let json = localStorage.getItem(key)
+            let json = localStorage.getItem('files')
             if (json) FilesStore.set(JSON.parse(json))
             console.log('Recovered from bad Files Store Value')
         }
@@ -87,7 +91,7 @@ const createFilesStore = (key) => {
         //Change the current file to be active in the IDE
         activeTab: (index) => {
             //Return if index is undefined or not a an Integer
-            if (!isInteger(index)) return;
+            if (!validateTypes.isInteger(index)) return;
 
             FilesStore.update(filesstore => {
                 //Set all files in store as unselected
@@ -100,7 +104,7 @@ const createFilesStore = (key) => {
         //Change the name of a file
         changeName:(newName, index) => {
             //Return if arguments are undefined or incorrect types
-            if (!isStringWithValue(newName) || !isInteger(index)) return;
+            if (!validateTypes.isStringWithValue(newName) || !validateTypes.isInteger(index)) return;
             
             FilesStore.update(filesstore => {
                 //Set new name of file
@@ -110,7 +114,7 @@ const createFilesStore = (key) => {
         },
         updateCode:(code, index) => {
             //Return if arguments are undefined or incorrect types
-            if (!isString(code) || !isInteger(index)) return;
+            if (!validateTypes.isString(code) || !validateTypes.isInteger(index)) return;
 
             FilesStore.update(filesstore => {
                 //Set new code in file
@@ -120,7 +124,7 @@ const createFilesStore = (key) => {
         },
         deleteTab: (index) => {
             //Return if index is undefined or not an integer
-            if (!isInteger(index)) return;
+            if (!validateTypes.isInteger(index)) return;
 
             FilesStore.update(filesstore => {
                 //remove index from array
@@ -147,7 +151,7 @@ const createFilesStore = (key) => {
 }
 
 //Create Files Store
-export const FilesStore = createFilesStore('files');
+export const FilesStore = createFilesStore();
 
 //Create a store for the current active tab (selected = true)
 export const activeTab = derived(FilesStore, ($FilesStore) => {

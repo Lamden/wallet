@@ -1,5 +1,9 @@
 import { writable, get, derived } from 'svelte/store';
-import { copyItem, isCoinInfoObj, isNumber, isArray } from './stores.js';
+
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+import { copyItem } from './stores.js';
+import { isCoinInfoObj } from '../objectValidations';
 
 export const createCoinStore = () => {
     let initialized = false;
@@ -19,7 +23,7 @@ export const createCoinStore = () => {
     CoinStore.subscribe(current => {
         //Only accept and Array Object to be saved to the storage and only
         //if store has already been initialized
-        if (isArray(current)) {
+        if (validateTypes.isArray(current)) {
             if (initialized) chrome.storage.local.set({"coins": current});
         }else{
             //If non-object found then set the store back to the previous local store value
@@ -93,7 +97,7 @@ export const createCoinStore = () => {
         //Update the balance of a coin
         updateBalance: (coinInfo, balance) => {
             //Reject missing or undefined arguments
-            if (!isCoinInfoObj(coinInfo) || !isNumber(balance)) return;
+            if (!isCoinInfoObj(coinInfo) || !validateTypes.isNumber(balance)) return;
             
             CoinStore.update(coinstore => {
                 //Find the coin to update in the store

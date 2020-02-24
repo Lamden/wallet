@@ -1,69 +1,36 @@
 <script>
-    import { onMount, getContext, createEventDispatcher } from 'svelte';
+    import { onMount, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    //Stores
-    import { password, currentNetwork } from '../../js/stores/stores.js';
     
     //Components
     import { Components }  from '../Router.svelte';
     const { Loading } = Components;
 
-    //Utils
-    import { TransactionBuilder } from  '../../js/lamden/transactionBuilder.js';
-    import { decryptStrHash } from '../../js/utils.js';
-
     //Props
     export let txData;
+    let message = 'Sending Transaction'
 
-    let transaction;
 
-    $: sendingCoin = txData.sender
-    $: contractName = txData.txInfo.contractName
-    $: methodName = txData.txInfo.methodName
-    $: stampLimit = txData.txInfo.stampLimit
-    $: kwargs = txData.txInfo.args
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        console.log(message)
+        console.log(sender)
+        console.log(sender.tab ?
+                    "from a content script:" + sender.tab.url :
+                    "from the extension");
+        if (message.type === "txResult" && !sender.tab){
+            dispatch('txResult', message.data)
+        }
+        sendResponse('ok');
+    });
 
     onMount(() => {
-        send();
+        let url = window.location.toString()
+        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo, url}, (response) => {
+            message = response.status
+        })
     })
 
-    async function send(){
-        await createTransaction();
-        await sendTransaction();
-    }
-
-    async function createTransaction(){
-        let txb = new TransactionBuilder(
-            $currentNetwork, 
-            sendingCoin.vk, 
-            contractName, 
-            methodName, 
-            kwargs, 
-            stampLimit
-        )
-        await txb.getNonce((res, err) => {
-            let txResult = {};
-            if (err) {
-                txResult.error = err;
-                dispatch('txResult', txResult)
-                return;
-            }
-            transaction = txb
-        })
-    }
-
-    async function sendTransaction(){
-        await transaction.send(decryptStrHash($password, sendingCoin.sk), (res, err) =>{
-            let txResult = {};
-            if (err) {
-                txResult.error = err;
-            }else{
-                txResult = res;
-            }
-            dispatch('txResult', txResult)
-        })
-    }
 </script>
 
 <style>
@@ -76,6 +43,6 @@
 </style>
 
 <div class="sending-tx flex-column">
-    <h5>Sending Transaction</h5>
+    <h5>{message}</h5>
     <Loading />
 </div>
