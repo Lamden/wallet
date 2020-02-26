@@ -20,8 +20,7 @@
     });
 
     onMount(() => {
-        let url = window.location.toString()
-        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo, url}, (response) => {
+        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: JSON.stringify(txData.txInfo)}, (response) => {
             message = response.status
         })
     })

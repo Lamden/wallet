@@ -117,8 +117,6 @@ export const createCoinStore = () => {
 //Create CoinStore instance
 export const CoinStore = createCoinStore();
 
-export const lockedStorage = writable(false);
-
 //Create a derived store to total all wallets
 export const balanceTotal = derived(CoinStore, ($CoinStore) => {
     let total = 0;
@@ -127,4 +125,21 @@ export const balanceTotal = derived(CoinStore, ($CoinStore) => {
         total  = total + coin.balance;
     })
     return total;
+});
+
+//Create a derived store to total all wallets
+export const coinsDropDown = derived(CoinStore, ($CoinStore) => {
+    let returnList = [{
+        value: undefined,
+        name: `Select Wallet`,
+        selected: true
+    }]
+    $CoinStore.map(c => {
+        returnList.push({
+            value: c,
+            name: `${c.nickname} \n${c.vk.substring(0, 52)}...`,
+            selected: false
+        })
+    })
+    return returnList
 });

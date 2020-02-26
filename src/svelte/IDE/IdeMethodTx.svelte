@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
     
 	//Stores
-    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -23,22 +23,6 @@
     let selectedWallet;
     let stampLimit = 50000;
 
-    function coinList(){
-        let returnList = [{
-                value: undefined,
-                name: `Select Wallet`,
-                selected: true
-            }]
-        $CoinStore.map(c => {
-            returnList.push({
-                value: c,
-                name: `${c.nickname}\n${c.vk.substring(0, 52)}...`,
-                selected: false
-            })
-        })
-        return returnList
-    }
-
     function handleSelectedWallet(e){
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
@@ -53,6 +37,7 @@
     function sendTx(){
         txData.sender = selectedWallet;
         txData.txInfo.stampLimit = stampLimit;
+        txData.txInfo.senderVk = txData.sender.vk
         dispatch('saveTxDetails', txData);
     }
 </script>
@@ -64,10 +49,6 @@
 }
 .confirm-tx{
     width: 600px;
-}
-
-.content{
-    padding-left: 55px;
 }
 
 .details{
@@ -107,11 +88,11 @@
 </style>
 
 <div class="confirm-tx flex-column">
-    <div class="content flex-column">
+    <div class="flex-column">
         <h5>{`Submit Contract`}</h5>
         <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
         <DropDown  
-            items={coinList()}
+            items={$coinsDropDown}
             innerHeight={'70px'}
             id={'mycoins'} 
             label={'Select Wallet to Send From'}
@@ -137,7 +118,7 @@
                 {#each txDetails as detail}
                     <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
                     <div class="values text-body1">
-                        {detail.name.includes('fixedPoint') ? detail.value.toFixed(8).toString() : detail.value}
+                        {detail.value}
                     </div>
                 {/each}
             </div>

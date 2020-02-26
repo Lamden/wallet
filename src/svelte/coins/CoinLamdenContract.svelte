@@ -6,7 +6,7 @@
 
 
 	//Stores
-    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components }  from '../Router.svelte'
@@ -55,13 +55,16 @@
     });
 
     function coinList(){
-        return $CoinStore.map(c => {
-            return {
-                value: c,
-                name: `${c.nickname} - ${c.vk.substring(0, 55 - c.nickname.length)}...`,
-                selected: c.network === coin.network && c.symbol === coin.symbol && c.vk === coin.vk
+        let returnList = $coinsDropDown.map(c => {
+            if (c.value){
+                c.selected = c.value.network === coin.network && c.value.symbol === coin.symbol && c.value.vk === coin.vk
             }
+            return c
         })
+        returnList.shift()
+        console.log($coinsDropDown)
+        console.log(returnList)
+        return returnList
     }
 
     function methodList(methods){
@@ -240,6 +243,7 @@
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
+        innerHeight={'70px'}
         label={'Select Wallet to Send From'}
         styles="margin-bottom: 19px;"
         required={true}

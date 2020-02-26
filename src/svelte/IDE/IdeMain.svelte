@@ -5,7 +5,7 @@
     import { breadcrumbs, currentNetwork, activeTab, FilesStore } from '../../js/stores/stores.js';
 
 	//Components
-	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../Router.svelte';
+	import { IdeErrorsBox, IdeMethods, IdeGetVariable, IdeTabs, Components }  from '../Router.svelte';
 	const { Button, Loading } = Components;
 	import { Monaco } from '../components/Monaco.svelte'
 	import MonacoWindow from './IdeMonacoEditor.svelte';
@@ -13,7 +13,7 @@
     //Context
 	const { openModal } = getContext('app_functions');
 	setContext('editor_functions', {
-		checkContractExists: async (contractName, options) => await $currentNetwork.API.getContract(options),
+		checkContractExists: async (contractName, options) => await getContract(contractName, options),
 		addContractTab: async (contractName, contractCode) => await $currentNetwork.API.addFileToStore(contractCode)
     });
 
@@ -30,6 +30,7 @@
 				editorIsLoaded = true;
 			}
 		})
+
 		return () => {
 			editorIsLoaded = false;
 		}
@@ -52,15 +53,9 @@
 			openModal('IdeModelSubmit', {
 				'contractName': 'submission', 
 				'methodName': 'submit_contract', 
-				args: {
-					name: {
-						type: 'text',
-						value: $activeTab.name
-					},
-					code:{
-						type: 'text',
-						value: $activeTab.code
-					}
+				kwargs: {
+					name: $activeTab.name,
+					code:$activeTab.code
 				}
 			})
 		}
@@ -70,9 +65,9 @@
         methods.map(method => {
             if (!method.args) method.args = {};
             method.arguments.map((arg, index) => {
-               if (!method.args[arg]) method.args[arg] = {type: "text", value: 'testing'}
+			   if (!method.args[arg]) method.args[arg] = {type: "text", value: ''}
             })
-        })
+		})
         return [...methods]
 	}
 
@@ -140,6 +135,7 @@
 			<IdeErrorsBox {lintErrors} />
 		{/if}
 		{#if editorIsLoaded && $activeTab.methods}
+			<IdeGetVariable contractName={$activeTab.name}/>
 			<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
 		{/if}
 	</div>

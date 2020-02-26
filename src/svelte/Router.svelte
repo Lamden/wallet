@@ -82,6 +82,7 @@ import StrongPW from './components/StrongPW.svelte';
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
 import IdeErrorsBox from './IDE/IdeErrorsBox.svelte';
+import IdeGetVariable from './IDE/IdeGetVariable.svelte';
 import IdeMethods from './IDE/IdeMethods.svelte';
 import IdeMonacoEditor from './IDE/IdeMonacoEditor.svelte';
 import IdeTabs from './IDE/IdeTabs.svelte';
@@ -188,6 +189,6 @@ export {
     HistoryMain,
     Transaction,
     About,
-    IdeMain, IdeMethods, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
+    IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
 };
 </script>

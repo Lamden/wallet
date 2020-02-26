@@ -5,36 +5,42 @@ const { validateTypes } = validators;
 import { networkKey } from './stores.js';
 import { isNetworkObj } from '../objectValidations';
 
-const createCacheStore = (key, startValue) => {
-    //get the local storage value of the cache store
-    const json = localStorage.getItem(key);
+const createCacheStore = () => {
+    let initialized = false;
 
-    //If the value exists then set the store starting value to it
-    if (json) {
-        startValue = JSON.parse(json)
+    function getStore(){
+        //Set the Coinstore to the value of the local storage
+        chrome.storage.local.get({"ideCache": {}}, function(getValue) {
+            initialized = true;
+            CacheStore.set(getValue.ideCache)
+        });
     }
-    //Create Cache Store (starting value is {})
-    const CacheStore = writable(startValue);
 
-    //This is called every time the store value is updated
+    //Create Intial Store
+    const CacheStore = writable({});
+
+    //This is called everytime the CoinStore updated
     CacheStore.subscribe(current => {
-        //If the value it's trying to save isn't an object then
-        //recover the localstorage value and save it to the store
+        //Only accept an object that can be determined to be a networks storage object
+        // if store has already been initialized
         if (validateTypes.isObject(current)) {
-            localStorage.setItem(key, JSON.stringify(current));
+            if (initialized) chrome.storage.local.set({"ideCache": current});
         }else{
-            let json = localStorage.getItem(key)
-            if (json) CacheStore.set(JSON.parse(json))
+            //If non-object found then set the store back to the previous local store value
+            getStore()
             console.log('Recovered from bad Cache Store Value')
         }
     });
+
+    //Set the NetworksStore to the value of the local storage
+    getStore()
+
 
     let subscribe = CacheStore.subscribe;
     let update = CacheStore.update;
     let set = CacheStore.set;
 
     return {
-        startValue,
         subscribe,
         set,
         update,
@@ -42,15 +48,16 @@ const createCacheStore = (key, startValue) => {
         addContract: (contractName, networkObj) => {
             //Reject missing or undefined arguments
             if (!validateTypes.isStringWithValue(contractName)) return;
-            if (!isNetworkObj(networkObj)) return;
+            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
-            let netKey = networkKey(networkObj)
-
+            let netKey = networkObj.url
+            console.log(contractName)
             CacheStore.update(cacheStore => {
                 //Store network / contract pair under the contracts key in the cash
                 if (!cacheStore['contracts']) cacheStore['contracts'] = {};
                 if (!cacheStore['contracts'][netKey]) cacheStore['contracts'][netKey] = {};
                 cacheStore['contracts'][netKey][contractName] = true;
+                console.log(cacheStore)
                 return cacheStore;
             })
         },
@@ -58,13 +65,14 @@ const createCacheStore = (key, startValue) => {
         contractExists: (contractName, networkObj) => {
             //Reject missing or undefined arguments
             if (!validateTypes.isStringWithValue(contractName)) return;
-            if (!isNetworkObj(networkObj)) return;
+            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
-            let netKey = networkKey(networkObj)
+            let netKey = networkObj.url
 
             //Reject missing or undefined arguments
 
             let cacheStore = get(CacheStore);
+            console.log(cacheStore)
             if (!cacheStore['contracts']) return false;
             if (!cacheStore['contracts'][netKey]) return false;
             if (!cacheStore['contracts'][netKey][contractName]) return false;
@@ -73,9 +81,9 @@ const createCacheStore = (key, startValue) => {
         //Remove all contracts under a network so that the API will cheeck them again
         refreshNetwork: (networkObj) => {
             //Reject missing or undefined arguments
-            if (!isNetworkObj(networkObj)) return;
+            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
-            let netKey = networkKey(networkObj)
+            let netKey = networkObj.url
             
             //Clear all contracts under the supplied network
             CacheStore.update(cacheStore => {
@@ -88,4 +96,4 @@ const createCacheStore = (key, startValue) => {
 }
 
 //Create Cache Stores
-export const CacheStore = createCacheStore('cache', {});
+export const CacheStore = createCacheStore();

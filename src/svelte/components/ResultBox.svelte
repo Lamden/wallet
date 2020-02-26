@@ -26,6 +26,7 @@
 .results-box{
     align-items: center;   
     max-width: 800px; 
+    min-width: 600px;
 }
 
 .icon{

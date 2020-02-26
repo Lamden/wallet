@@ -1,0 +1,78 @@
+<script>
+    //Stores
+    import { currentNetwork } from '../../js/stores/stores.js'
+	//Components
+    import { Components }  from '../Router.svelte';
+    const { InputBox, Button } = Components;
+
+    export let contractName
+
+    let variableName = '';
+    let key = '';
+    let result = '';
+
+    async function handleRun(){
+        console.log(contractName)
+        console.log(variableName)
+        console.log(key)
+        try{
+            result = JSON.parse(await $currentNetwork.API.getVariable(contractName, variableName, key))
+        } catch (e) {
+            result = null
+        }
+    }
+</script>
+
+<style>
+.get-variable{
+    margin-top: 1rem;
+}
+.heading{
+    align-items: center;
+}
+</style>
+
+
+<div class="get-variable flex-column">
+    <div class="flex-row heading">
+        <h5>Get Current State</h5>
+        <Button 
+            name={'run'} 
+            height={'22px'} 
+            margin={'0 0 0 10px'}
+            padding={'0 5px'}
+            classes={'button__solid button__purple'}
+            click={() => handleRun()}
+        />
+    </div>
+    <div class="flex-row">
+        <InputBox
+            on:changed={(e) => {variableName = e.detail.target.value}}
+            label={'Variable Name'}
+            placeholder={'Enter Variable Name'}
+            width={'300px'}
+            height={'42px'}
+            margin={'0 20px 0 0'}
+            styles={'min-width: 200px;'}
+        />
+        <InputBox 
+            on:changed={(e) => {key = e.detail.target.value}}
+            label={'Key'}
+            placeholder={'Enter Key'}
+            width={'300px'}
+            height={'42px'}
+            styles={'min-width: 200px;'}
+        />
+    </div>
+    <div>
+        <InputBox
+            value={result}
+            label={`${contractName} - Current State`}
+            inputType={'textarea'}
+            width={'620px'}
+            height={'92px'}
+            margin={'1rem 0 0 0'}
+            styles={'min-width: 200px;'}
+        />
+    </div>
+</div>

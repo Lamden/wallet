@@ -198,7 +198,6 @@ export const currentNetwork = derived(
 	NetworksStore,
 	$NetworksStore => {
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
-        console.log(found)
         if (found) return new Lamden.Network(found);
         return new Lamden.Network($NetworksStore.lamden[0])
     }

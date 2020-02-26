@@ -1,9 +1,6 @@
 <script>
     import { setContext, getContext } from 'svelte';
 
-	//Stores
-    import { CoinStore, SettingsStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
-
     //Components
     import { Modals, Components }  from '../Router.svelte'
     const { CoinLamdenContract } = Modals

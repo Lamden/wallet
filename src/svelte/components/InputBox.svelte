@@ -117,11 +117,12 @@ label{
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
             class="mainbox input:required:invalid input:focus:invalid"
-            style={`width: 100%; ${styles}`}
+            style={`width: 100%; height: ${height}; ${styles}`}
             type="password"
             pattern={pattern}
             placeholder={placeholder}
             required={required}
+            spellcheck={spellcheck}
             autofocus={autofocus}  />
     {/if}
     {#if inputType === "number"}
@@ -133,7 +134,7 @@ label{
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
             class="mainbox input:required:invalid input:focus:invalid"
-            style={`width: 100%; ${styles}`}
+            style={`width: 100%; height: ${height}; ${styles}`}
             type="number"
             min="0.000000001"
             step="0.000000001"
@@ -151,11 +152,12 @@ label{
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
             class="mainbox textarea:required:invalid textarea:focus:invalid"
-            style={`width: 100%; font-family: 'Roboto', sans-serif; ${styles}`}
+            style={`width: 100%; height: ${height}; font-family: 'Roboto', sans-serif; ${styles}`}
             pattern={pattern}
             placeholder={placeholder}
             readonly={readonly}
             required={required}
+            spellcheck={spellcheck}
             autofocus={autofocus}  />
     {/if}
     {#if inputType === 'text'}
@@ -167,7 +169,7 @@ label{
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
             class="mainbox input:required:invalid input:focus:invalid"
-            style={`width: 100%; ${styles}`}
+            style={`width: 100%; height: ${height}; ${styles}`}
             pattern={pattern}
             placeholder={placeholder}
             required={required}

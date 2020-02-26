@@ -4,53 +4,51 @@ import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 import { networkKey } from './stores.js';
 import { isFileObj } from '../objectValidations';
+import { defaultFileCode } from './defaults.js';
 
 const createFilesStore = () => {
+    let initialized = false;
+
     //Default File Content that will be created
     const defaultFile = {
         name: 'New Contract',
-        code: [
-            '# Get started @ https://contracting.lamden.io/',
-            '',
-            '@export',
-            'def first_method(value):',
-            '	return value',
-        ].join('\n'),
+        code: defaultFileCode,
         type: 'local',
         selected: true
     }
 
-    //Set intial value. Will get overwritten if by localstorage state if it exists
-    let startValue = [JSON.parse(JSON.stringify(defaultFile))];
-    //Get Local Storage value
-    const json = localStorage.getItem('files');
-    
-    //Set intial value to local storage value if it exists 
-    if (json) {
-        startValue = JSON.parse(json)
+    function getStore(){
+        //Set the Coinstore to the value of the local storage
+        chrome.storage.local.get({"files": [JSON.parse(JSON.stringify(defaultFile))]}, function(getValue) {
+            initialized = true;
+            FilesStore.set(getValue.files)
+        });
     }
-    //Create File Store
-    const FilesStore = writable(startValue);
 
-    //This funtion gets call everytime the FileStore is updated
+    //Create Intial Store
+    const FilesStore = writable([]);
+
+    //This is called everytime the CoinStore updated
     FilesStore.subscribe(current => {
-        //Check to make sure the value we just updated in memory is an Array
+        //Only accept an object that can be determined to be a networks storage object
+        // if store has already been initialized
         if (validateTypes.isArray(current)) {
-            localStorage.setItem('files', JSON.stringify(current));
+            if (initialized) chrome.storage.local.set({"files": current});
         }else{
-            //If the value was not an array then set the memory value back to the previous localstorage value
-            let json = localStorage.getItem('files')
-            if (json) FilesStore.set(JSON.parse(json))
+            //If non-object found then set the store back to the previous local store value
+            getStore()
             console.log('Recovered from bad Files Store Value')
         }
     });
+
+    //Set the NetworksStore to the value of the local storage
+    getStore()
 
     let subscribe = FilesStore.subscribe;
     let update = FilesStore.update;
     let set = FilesStore.set;
 
     return {
-        startValue,
         defaultFile,
         subscribe,
         set,

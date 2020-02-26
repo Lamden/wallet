@@ -14,19 +14,17 @@
     //Props
     export let methods;
 
-    let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
+    let dataTypes = ['text', 'address', 'number', 'bool']
     let typeToInputTypeMAP = {
         address: 'text',
         text: 'textarea',
-        data: 'text',
-        fixedPoint: 'number',
+        number: 'number',
         bool: trueFalseList()
     }
     let defaultValues = {
         address: '',
         text: '',
-        data: '',
-        fixedPoint: 0,
+        number: 0,
         bool: true 
     }
 
@@ -72,17 +70,16 @@
     }
 
     function handleRun(index){
-        let args = {};
+        let kwargs = {};
         Object.keys(methods[index].args).map(arg => {
             let argValue = methods[index].args[arg]
-            if (argValue.value !== '') args[arg] = {type: argValue.type, value: argValue.value };
+            if (argValue.value !== '') kwargs[arg] = argValue.value;
         })
     	openModal('IdeModelMethodTx', {
 			'contractName': $activeTab.name, 
             'methodName': methods[index].name, 
-            args
+            kwargs
         })
-
     }
 </script>
 

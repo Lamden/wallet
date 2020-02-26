@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
     
 	//Stores
-    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -25,25 +25,11 @@
 
     let selectedWallet;
     let contractName;
+    let methodName;
     let stampLimit = 1000000;
+    let kwargs = {}
     let owner = "";
     let constructorArgs = "";
-
-    function coinList(){
-        let returnList = [{
-                value: undefined,
-                name: `Select Wallet`,
-                selected: true
-            }]
-        $CoinStore.map(c => {
-            returnList.push({
-                value: c,
-                name: `${c.nickname}\n${c.vk.substring(0, 52)}...`,
-                selected: false
-            })
-        })
-        return returnList
-    }
 
     function handleSelectedWallet(e){
         if (!e.detail.selected.value) return;
@@ -67,14 +53,11 @@
 
     function sendTx(){
         txData.sender = selectedWallet;
+        txData.txInfo.senderVk = txData.sender.vk;
         txData.txInfo.stampLimit = stampLimit;
-        txData.txInfo.args.name.value = contractNameField.value;
-        if (owner !== "") {
-            txData.txInfo.args.owner = {type: 'text', value: owner};
-        }
-        if (constructorArgs !== "") {
-            txData.txInfo.args.owner = {type: 'text', value: constructorArgs};
-        }
+        txData.txInfo.kwargs.name = contractNameField.value;
+        if (owner !== "") txData.txInfo.kwargs.owner = owner;
+        if (constructorArgs !== "") txData.txInfo.kwargs.constructor_args = constructorArgs;
         dispatch('saveTxDetails', txData);
     }
 
@@ -99,10 +82,6 @@
 }
 .confirm-tx{
     width: 600px;
-}
-
-.content{
-    padding-left: 55px;
 }
 
 .details{
@@ -132,12 +111,12 @@
 </style>
 
 <div class="confirm-tx flex-column">
-    <div class="content flex-column">
+    <div class="flex-column">
         <h5>{`Submit Contract`}</h5>
         <div>* signifies manditory field</div>
         <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
         <DropDown  
-            items={coinList()}
+            items={$coinsDropDown}
             innerHeight={'70px'}
             id={'mycoins'} 
             label={'* Select Sending Wallet'}

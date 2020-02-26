@@ -93,11 +93,12 @@
 }
 
 .header-name{
-	width: 234px;
-	justify-content: center;
+    width: 234px;
+    margin-left: 84px;
 }
 
 .header-amount{
+	padding-left: 15px;
 	flex-grow: 1;
 }
 

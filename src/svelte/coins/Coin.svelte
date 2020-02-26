@@ -38,7 +38,7 @@
 .coin-box{
     display: flex;
     flex-direction: row;
-    height: 63px;
+    min-height: 63px;
     padding: 12px 0;
     cursor: pointer;
 }
@@ -53,14 +53,22 @@
     flex-wrap: wrap;
 }
 
+.logo{
+    display: flex;
+    justify-content: center;
+}
+
 .name{
 	width: 234px;
 }
 
+.nickname{
+    word-break: break-word;
+}
+
 .amount{
+    padding-left: 15px;
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
 }
 
@@ -73,19 +81,21 @@
 </style>
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
-    <div class="name text text-body1">
+    <div class="logo flex-column">
         <CryptoLogos {coin} black={true} styles={`width: 32px; margin: 0 36px 0 16px;`}/>
+    </div>
+    <div class="name text text-body1">
         <div class="name-box">
             <div class="text-body1">
                 {`${coin.name}`} 
             </div>
-            <div id={`coin-nickname-${id}`} class="text-body2 text-primary-dark">
+            <div id={`coin-nickname-${id}`} class="text-body2 text-primary-dark nickname">
                 {`${coin.nickname}`} 
             </div>
         </div>
     </div>
 
-    <div class="amount  flex-column">
+    <div class="amount flex-column">
         <div class="text-body1">{`${ balance.toLocaleString('en') } ${ symbol }`}</div>
         {#if watching}
             <div class="text-body2 text-primary-dark">{"Watching Wallet"}</div>

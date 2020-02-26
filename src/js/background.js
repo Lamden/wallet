@@ -8,6 +8,7 @@ import Lamden from 'lamden-js'
 //Background Stores
 let hash;
 let coinStore;
+let networksStore;
 let txStore;
 let pendingTxList;
 
@@ -15,10 +16,11 @@ let pendingTxList;
 let current = '';
 let walletIsLocked = true;
 
-chrome.storage.local.get({"hash": "", "coins": [], "txs": {}, "pendingTxs": {}}, function(getValue) {
+chrome.storage.local.get({"hash": "", "coins": [], "txs": {}, "pendingTxs": {}, "networks":{}}, function(getValue) {
     hash = getValue.hash
     coinStore = getValue.coins
     txStore = getValue.txs;
+    networksStore = getValue.networks;
     pendingTxList = getValue.pendingTxs; 
 })
 
@@ -59,15 +61,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'walletIsLocked') sendResponse(walletIsLocked)
 
     if (message.type === 'sendLamdenTransaction'){
-        let wallet = getWallet(message.data.senderVk);
-        if (!wallet) sendResponse({status: 'Error: Did not find publc key (vk) in wallet'});
+        let txInfo = {};
         try{
-            message.data.uid = encryptString(wallet.vk, 'tracking-id')
-            let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), message.data)
+            txInfo = JSON.parse(message.data)
+        } catch (e) {
+            sendResponse({status: "Error: Failed to Parse JSON object"})
+        }
+        
+        let wallet = getWallet(txInfo.senderVk);
+        if (!wallet) sendResponse({status: `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`});
+
+        try{
+            txInfo.uid = encryptString(wallet.vk, 'tracking-id')
+            let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
             sendResponse({status: "Transaction Sent, Awaiting Response"})
-            sendTx(txBuilder, wallet.sk, message.url)
+            sendTx(txBuilder, wallet.sk, sender.url)
         }catch (err){
-            sendResponse({status: `Failed to create Tx - ${err}`})
+            sendResponse({status: `Error: Failed to create Tx - ${err}`})
         }
     }
 });
@@ -103,8 +113,12 @@ function getWallet(vk){
 }
 
 function getCurrentNetwork(){
-    let NetworksStore = createNetworksStore()
-	return NetworksStore.getCurrentNetwork()
+    console.log(networksStore)
+    let networks = [...networksStore.lamden, ...networksStore.user]
+    console.log(networks)
+    let foundNetwork = networks.find(network => networksStore.current === `${network.host}:${network.port}`)
+    console.log(foundNetwork)
+    return foundNetwork
 }
 
 function sendTx(txBuilder, sk, sentFrom){
@@ -202,6 +216,7 @@ function decryptedKeys(){
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
         if (key === 'coins') coinStore = changes[key].newValue;
+        if (key === 'networks') networksStore = changes[key].newValue;
         if (key === 'txs') {
             
             txStore = changes[key].newValue;
