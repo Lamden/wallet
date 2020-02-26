@@ -12,53 +12,51 @@ let txStore;
 let pendingTxList;
 
 //Misc Values
-let password = '';
+let current = '';
 let walletIsLocked = true;
 
 chrome.storage.local.get({"hash": "", "coins": [], "txs": {}, "pendingTxs": {}}, function(getValue) {
     hash = getValue.hash
     coinStore = getValue.coins
     txStore = getValue.txs;
-    alert(JSON.stringify(txStore))
-    pendingTxList = getValue.pendingTxs;
+    pendingTxList = getValue.pendingTxs; 
 })
+
+function fromApp(sender){
+    return sender.url === `${window.location.origin}/app.html`
+}
+
+function stripRef(value){
+    return JSON.parse(JSON.stringify(value))
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (chrome.runtime.lastError) return;
-
-    if(message.type === 'createPassword'){
-        chrome.storage.local.set({"hash" : encryptObject(message.data, {valid: true})}, () => {
-            sendResponse(true)
-        });
-    }
-
-    if (message.type === 'validatePassword') {
-        sendResponse(validatePassword(message.data))
-    }
-
-    if (message.type === 'unlockWallet') {
-        if (validatePassword(message.data)){
-            password = message.data
-            setWalletIsLocked(false)
+    if (fromApp(sender)){
+        if(message.type === 'createPassword'){
+            try{
+                let hashedPW = encryptObject(message.data, {valid: true})
+                hash = hashedPW
+                chrome.storage.local.set({"hash" : hashedPW});
+                sendResponse(true)
+            } catch (e){}
         }
-        sendResponse(walletIsLocked)
+        if (message.type === 'unlockWallet') {
+            if (validatePassword(message.data)){
+                current = message.data
+                setWalletIsLocked(false)
+            }
+            sendResponse(walletIsLocked)
+        }
+        if (message.type === 'validatePassword') sendResponse(validatePassword(message.data))
+        if (message.type === 'lockWallet') setWalletIsLocked(true)
+        if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
+        if (message.type === 'decryptSk') sendResponse(decryptString(message.data))
+        if (message.type === 'backupCoinstore') sendResponse(createKeystore(message.data))
+        if (message.type === 'decryptStore') sendResponse(decryptedKeys())
     }
 
-    if (message.type === 'lockWallet') {
-        setWalletIsLocked(true)
-    }
-
-    if (message.type === 'walletIsLocked') {
-        sendResponse(walletIsLocked)
-    }
-
-    if (message.type === 'encryptSk') {
-        sendResponse(encryptString(message.data))
-    }
-
-    if (message.type === 'decryptSk') {
-        sendResponse(decryptString(message.data))
-    }
+    if (message.type === 'walletIsLocked') sendResponse(walletIsLocked)
 
     if (message.type === 'sendLamdenTransaction'){
         let wallet = getWallet(message.data.senderVk);
@@ -88,15 +86,15 @@ function setWalletIsLocked(status){
 
 function encryptString(string){
     try{
-        return encryptStrHash(password, string);
-    }catch(e){}
+        return encryptStrHash(current, string);
+    }catch(e){console.log(e)}
     return false;
 }
 
 function decryptString(string){
     try{
-        return decryptStrHash(password, string);
-    }catch(e){}
+        return decryptStrHash(current, string);
+    }catch(e){console.log(e)}
     return false;
 }
 
@@ -177,6 +175,28 @@ function sendMessageToTab(url, data){
             });
         });
     });
+}
+
+
+function createKeystore(info) {
+    return JSON.stringify({
+        data: encryptObject(info.pwd, {'version' : info.version, keyList: decryptedKeys()}),
+        w: info.hint === "" ? "" : encryptStrHash(info.obscure, info.hint),
+    });
+}
+
+function decryptedKeys(){
+    return stripRef(coinStore).map( coin => {
+        let decryptedKey;
+        try{
+            decryptedKey = decryptString(coin.sk);
+        } catch (e) {}
+        if (decryptedKey) coin.sk = decryptedKey
+        else {
+            coin.sk = `Cannot decrypt Secret Key: wrong password or bad data. Encrypted Data: ${coin.sk}`
+        }
+        return coin
+    })
 }
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {

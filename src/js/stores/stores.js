@@ -5,7 +5,7 @@ export { obscure, supportedCoins } from './defaults.js';
 export { coinMeta } from './coinMeta.js';
 export { CoinStore, lockedStorage, password, balanceTotal } from './coinStore.js';
 export { SettingsStore, firstRun, themeStyle, currentPage, storageInfo  } from './settingsStore.js';
-export { NetworksStore, allNetworks, networksDropDownList, currentNetwork  } from './networksStore.js';
+export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList  } from './networksStore.js';
 export { TxStore }  from './txStore.js';
 export { FilesStore, activeTab }  from './filesStore.js';
 export { CacheStore }  from './cacheStore.js';

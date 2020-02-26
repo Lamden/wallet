@@ -13,11 +13,6 @@
 
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        console.log(message)
-        console.log(sender)
-        console.log(sender.tab ?
-                    "from a content script:" + sender.tab.url :
-                    "from the extension");
         if (message.type === "txResult" && !sender.tab){
             dispatch('txResult', message.data)
         }

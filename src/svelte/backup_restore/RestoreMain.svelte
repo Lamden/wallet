@@ -18,7 +18,8 @@
             if (step === -1 && currentStep === 0) switchPage('Restore');
             else if (step === -1) currentStep = back;
             else currentStep = step;
-        }
+        },
+        cancel: () => switchPage('Restore')
 	});
 
     let file;

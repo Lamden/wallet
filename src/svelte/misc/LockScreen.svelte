@@ -4,6 +4,9 @@
 	import { Components }  from '../Router.svelte'
     const { InputBox } = Components;
 
+    //Utils
+    import { hashStringValue } from '../../js/utils.js'
+
     //DOM nodes
     let formObj, pwdObj;
 
@@ -11,13 +14,16 @@
 
     function handleSubmit(){
         if (formObj.checkValidity()){
-            chrome.runtime.sendMessage({type: 'unlockWallet', data: pwdObj.value}, (walletIsLocked) => {
-                console.log(walletIsLocked)
+            chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (walletIsLocked) => {
                 if (walletIsLocked || chrome.runtime.lastError) {
                     setValidity(pwdObj, "Incorrect Password")
                 }
-            })
+            })/*
+            chrome.runtime.sendMessage({type: 'createPassword', data: hashStringValue(pwdObj.value)}, (response) => {
+                console.log(response)
+            })*/
         }
+        
     }
 
     function setValidity(node, message){

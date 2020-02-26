@@ -59,7 +59,7 @@
 .icon-size{
     width: 27px;
     height: 25px;
-    margin-right: 35px;
+    margin: 0px 17px;
 }
 .time-date{
     display: flex;

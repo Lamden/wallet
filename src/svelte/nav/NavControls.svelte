@@ -14,21 +14,21 @@
     let status = 'checking'
 
     onMount(() => {
-        $currentNetwork.on('online', (online) => {
-            if (online) status = 'online'
-            else status = 'offline'
-        })
+        ping()
     })
 
     afterUpdate(() => {
-        $currentNetwork.ping();
+        ping()
     })
+
+    async function ping(){
+        status = await $currentNetwork.ping() ? 'online' : 'offline'
+    }
 
     function toggleTheme(event) {
         SettingsStore.changeTheme(event.detail ? 'light' : 'dark')
         document.querySelector("html").style = themes[$themeStyle];
     }
-
 </script>
 
 <style>

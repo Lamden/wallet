@@ -98,9 +98,11 @@
         }
         if (addType !== 3) {
              chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
-                coinInfo.sk = encryptStrHash($password, keyPair.sk);
                 if (encryptedSk){
+                    console.log(encryptedSk)
+                    coinInfo.sk = encryptedSk;
                     addToCoinStore(coinInfo);
+                    console.log(coinInfo)
                 }else{
                     returnMessage = {type:'error', text: `Error encrypting key for ${coinInfo.name} - ${coinInfo.symbol}`}
                     finish()

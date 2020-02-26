@@ -5,6 +5,9 @@
 	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
+    //Utils
+    import { hashStringValue } from '../../js/utils.js'
+
     //Images
     import warning from '../../img/menu_icons/icon_warning.svg';
 
@@ -23,7 +26,7 @@
                 setPage(4);
             }
         }else{
-            chrome.runtime.sendMessage({type: 'validatePassword', data: passwordObj.value}, (valid) => {
+            chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(passwordObj.value)}, (valid) => {
                 if (!valid || chrome.runtime.lastError){
                     setValidity(passwordObj, "Incorrect Password")
                     passwordOkay = false;

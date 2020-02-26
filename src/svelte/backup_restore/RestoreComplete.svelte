@@ -25,7 +25,7 @@
 
 	onMount(() => {
         steps.update(current => {
-            current.currentStep = restore ? 5 : 4;
+            current.currentStep = 5;
             return current
         });   
     });
@@ -112,6 +112,11 @@
 .error{
     color: red;
 }
+
+.message{
+    color: green;
+}
+
 
 .key-row{
     display: flex;
@@ -231,7 +236,11 @@ label.css-label-error {
                     <label class="css-label"></label>
                 </div>
                 <div class="name">{`${key.name}`}</div>
-                <div class="address-box text-subtitle1 text-primary-dark">{`${key.vk}`}</div>
+                <div class="address-box text-subtitle1 text-primary-dark">
+                    <div class="address">{`${key.vk}`}</div>
+                    <div class="message">{key.message}</div>
+                </div>
+                
             </div>
             {/if}
             {#if key.error}

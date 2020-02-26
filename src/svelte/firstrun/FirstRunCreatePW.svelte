@@ -2,10 +2,10 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, password, steps } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
     //Utils
-    import { encryptObject } from '../../js/utils.js';
+    import { hashStringValue } from '../../js/utils.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -76,10 +76,10 @@
     }
     
     function savePassword(){
-        chrome.runtime.sendMessage({type: 'createPassword', data: pwdInput1.value}, (response) => {
+        chrome.runtime.sendMessage({type: 'createPassword', data: hashStringValue(pwdInput1.value)}, (response) => {
             if(response) {
                 if (restore) changeStep(1);
-                else changeStep(3);
+                else changeStep(3); 
             } else {
                 throw new Error('Could not create password in browser storage.local')
             }

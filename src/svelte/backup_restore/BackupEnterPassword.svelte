@@ -8,6 +8,9 @@
 	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
+    //Utils
+    import { hashStringValue } from '../../js/utils.js'
+
     //Context
     const { changeStep } = getContext('functions');
 
@@ -25,7 +28,7 @@
     })
 
     function handleSubmit(){
-        chrome.runtime.sendMessage({type: 'validatePassword', data: pwdObj.value}, (valid) => {
+        chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(pwdObj.value)}, (valid) => {
             if (!valid || chrome.runtime.lastError){
                 pwdObj.setCustomValidity("Incorrect Password");
             } else {
@@ -36,15 +39,6 @@
                 changeStep(2);
             }
         })
-    }
-
-    function validatePassword(e){
-        let obj = e.detail;
-        if (!CoinStore.validatePassword(obj.value)) {
-            obj.setCustomValidity("Incorrect Wallet Password");
-        } else {
-            obj.setCustomValidity('');
-        }
     }
 
     function refreshValidityKeyup(e){ 
@@ -95,7 +89,8 @@ a{
             on:changed={refreshValidity}
             on:keyup={refreshValidityKeyup}
             inputType={"password"}
-            required={true} />
+            required={true}
+            autofocus={true} />
 
         <div class="buttons flex-column">
             <input  class="button__solid button__purple submit submit-button submit-button-text submit-button-size"

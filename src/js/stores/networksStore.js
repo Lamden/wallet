@@ -28,32 +28,36 @@ function foundNetwork(networkStore, matchKey){
     return foundNetwork;
 }
 
-export const createNetworksStore = (startValue) => {
-    startValue = defualtNetworksStore;
-    //Get store value from localstorate
-    const json = localStorage.getItem('networks');
-    //If there is a value then set it as the inital value
-    if (json) {
-        startValue = JSON.parse(json)
-    }
-    //Update store with lamdenNetwork info
+export const createNetworksStore = () => {
+    let initialized = false;
+    let startValue = defualtNetworksStore;
     startValue.lamden = lamdenNetworks;
-    //Create NetworksStore with the inital value
+    function getStore(){
+        //Set the Coinstore to the value of the local storage
+        chrome.storage.local.get({"networks": startValue}, function(getValue) {
+            initialized = true;
+            NetworksStore.set(getValue.networks)
+        });
+    }
+
+    //Create Intial Store
     const NetworksStore = writable(startValue);
 
-    //This gets called everytime the Store updates
+    //This is called everytime the CoinStore updated
     NetworksStore.subscribe(current => {
-        //If the store was updated to an empty or non Object then recover to previous value
+        //Only accept an object that can be determined to be a networks storage object
+        // if store has already been initialized
         if (isNetworkStoreObj(current)){
-            //Save Value to local storage
-            localStorage.setItem('networks', JSON.stringify(current));
-        } else {
-            //Recover store value in memory to previous local storage value
-            let json = localStorage.getItem("networks")
-            if (json) NetworksStore.set(JSON.parse(json))
-            console.log('Recovered from bad Networks Store Value')
+            if (initialized) chrome.storage.local.set({"networks": current});
+        }else{
+            //If non-object found then set the store back to the previous local store value
+            getStore()
+            console.log('Recovered from bad Network Store Value')
         }
     });
+
+    //Set the NetworksStore to the value of the local storage
+    getStore()
 
     let subscribe = NetworksStore.subscribe;
     let update = NetworksStore.update;
@@ -69,15 +73,14 @@ export const createNetworksStore = (startValue) => {
         setCurrentNetwork: (networkInfo) => {
             //Reject undefined or missing Network info
             if (!isNetworkObj(networkInfo)) return;
-
+            console.log(networkInfo)
             let netKey = networkKey(networkInfo);
             //If this is already the current network then do nothing
             if (netKey !== get(NetworksStore).current){
                 NetworksStore.update(networksStore => {
                     //If the network is found then set this as the current network
-                    //if (foundNetwork(networksStore, netKey)) throw new Error('found')
-                    //throw new Error('not found')
                     if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
+                    console.log(networksStore.current)
                     return networksStore;
                 })
             }
@@ -104,7 +107,8 @@ export const createNetworksStore = (startValue) => {
         //Change the online status of network to true/false
         setNetworkStatus: (networkInfo, status) => {
             //Reject undefined or missing info
-            if (!isNetworkObj(networkInfo) || !validateTypes.isBoolean(status)) return;
+            if (!isNetworkObj(networkInfo)) return;
+            if (!validateTypes.isBoolean(status)) return;
 
             let netKey = networkKey(networkInfo)
             NetworksStore.update(networksStore => {
@@ -122,11 +126,13 @@ export const createNetworksStore = (startValue) => {
             return $NetworksStore.lamden[0]
         },
         //Delete a network from the network list
-        deleteNetwork: (networkInfo) => {
+        deleteNetwork: (networkObj) => {
             //Reject undefined or missing Network info
-            if (!isNetworkObj(networkInfo)) return;
+            if (!validateTypes.isSpecificClass(networkObj, 'Network')) return;
 
-            let netKey = networkKey(networkInfo)
+            let netKey = networkObj.url
+            console.log(networkObj)
+            console.log(netKey)
             NetworksStore.update(networksStore => {
                 //Filter out the matching network.
                 networksStore.user = networksStore.user.filter(network => {
@@ -137,6 +143,7 @@ export const createNetworksStore = (startValue) => {
                 if (netKey === networksStore.current){
                     networksStore.current = networkKey(networksStore.lamden[0])
                 }
+                console.log(networksStore)
                 return networksStore;
             })
         }
@@ -174,12 +181,25 @@ export const networksDropDownList = derived(
     }
 );
 
+//A Derrived Store that contains values formatted for a DropDown Box
+export function networkTypesDropDownList(){
+    return ['mockchain', 'testnet', 'mainnet'].map(type => {
+        return {
+            name: type,
+            value: type,
+            selected: type === 'mockchain'
+        }
+    })
+}
+
+
 //A Derrived Store that returns the currenly seletecd network object
 export const currentNetwork = derived(
 	NetworksStore,
 	$NetworksStore => {
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
-        if (found) new Lamden.Network(found);
+        console.log(found)
+        if (found) return new Lamden.Network(found);
         return new Lamden.Network($NetworksStore.lamden[0])
     }
 );

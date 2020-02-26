@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from 'svelte'
     //Components
     import { Components } from '../Router.svelte';
     const { Button } = Components;
@@ -11,7 +10,6 @@
 
     //Props
     export let result;
-    console.log(result)
 
     let typeIcons = {
         'error': errorCircle,
@@ -21,10 +19,6 @@
 
     $: icon = typeIcons[result.type]
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
-
-    onMount(() => {
-        console.log(result)
-    })
 
 </script>
 

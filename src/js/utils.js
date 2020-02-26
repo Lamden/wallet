@@ -79,12 +79,21 @@ function decryptObject ( password, objString ){
         const decrypt = CryptoJS.AES.decrypt(objString, password, { format: JsonFormatter })
         return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypt));
     } catch (e){
+        console.log(e)
         return false;
     }
 };
 
+/*
+    Create a hash from a string
+    Return: MD5 hash
+*/
+function hashStringValue(string){
+    return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
-    encryptObject, decryptObject
+    encryptObject, decryptObject, hashStringValue
   }

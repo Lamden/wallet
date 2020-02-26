@@ -115,7 +115,8 @@ a{
                 on:keyup={() => strongPasswordUpdate()}
                 inputType={"password"}
                 {pattern}
-                required={true}/>
+                required={true}
+                autofocus={true}/>
             <InputBox
                 id={'pwd2-input'} 
                 label={"Confirm Password"}

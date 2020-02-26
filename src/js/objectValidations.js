@@ -30,7 +30,7 @@ export function isNetworkObj(networkInfo){
     //Reject undefined or missing info
     if (!validateTypes.isObjectWithKeys(networkInfo)) return false;
     if (!validateTypes.isStringWithValue(networkInfo.name)) return false;
-    if (!validateTypes.isStringWithValue(networkInfo.ip)) return false;
+    if (!validateTypes.isStringWithValue(networkInfo.host)) return false;
     if (!validateTypes.isStringWithValue(networkInfo.port)) return false;
     return true;
 }

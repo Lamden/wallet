@@ -9,7 +9,7 @@
     const { Button } = Components;
 
     //Context
-    const { setKeys, changeStep, nextPage } = getContext('functions');
+    const { setKeys, changeStep, nextPage, cancel } = getContext('functions');
 
     //DOM nodes
     let formObj;
@@ -147,8 +147,13 @@ input[type="checkbox"]{
                 classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Restore Wallets"
-                disabled={false}
                 click={() => nextStep()} />
+
+        <Button id={'cancel-btn'}
+                classes={`button__solid`}
+                styles={'margin-bottom: 16px;'}
+                name="Cancel"
+                click={() => cancel()} />
 
         <a  class="text-caption text-secondary" 
             href="https://www.lamden.io" 
