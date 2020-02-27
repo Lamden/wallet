@@ -32,7 +32,7 @@
 
 	let refreshing = false;
 
-	onMount(() => {
+	onMount(async () => {
 		SettingsStore.calcStorage();
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
@@ -48,6 +48,8 @@
 			refreshing = false
 		}, 1000);
 	}
+
+
 
 </script>
 

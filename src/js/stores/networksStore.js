@@ -56,7 +56,7 @@ export const createNetworksStore = () => {
             if (initialized) chrome.storage.local.set({"networks": current});
         }else{
             //If non-object found then set the store back to the previous local store value
-            getStore()
+            getStore();
             console.log('Recovered from bad Network Store Value')
         }
     });

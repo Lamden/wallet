@@ -11,12 +11,11 @@
 			SettingsStore, 
 			currentPage, 
 			themeStyle, 
-			firstRun,
 			password} from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
-	const { Modal } = Components;
+	const { Modal, Loading } = Components;
 
 	//Images
 	import heart from '../img/menu_icons/icon_heart.svg';
@@ -29,6 +28,7 @@
 	let fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
 	$: walletIsLocked = true;
+	$: firstRun = undefined;
 
 	chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		if (message.type === 'walletIsLocked') walletIsLocked = message.data;
@@ -38,9 +38,9 @@
 		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 			walletIsLocked = locked;
 		})
+		checkFirstRun();
 		SettingsStore.calcStorage();
 		document.querySelector("html").style = themes[$themeStyle];
-		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
 	});
 
 	setContext('app_functions', {
@@ -48,10 +48,25 @@
 		openModal: (modal, data) => openModal(modal, data),
 		getModalData: () => {return modalData},
 		closeModal: () => showModal = false,
-		appHome: () => switchPage('CoinsMain')
+		firstRun: () => firstRun ? true : false,
+		appHome: () => switchPage('CoinsMain'),
+		checkFirstRun: () => checkFirstRun()
 	});
 
+	function checkFirstRun(){
+		console.log('changing page')
+		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {
+			firstRun = isFirstRun;
+			if (!firstRun && $currentPage.name === 'FirstRunMain'){
+				SettingsStore.changePage({name: 'CoinsMain'})
+			}
+			firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
+			console.log($SettingsStore)
+		})
+	}
+
 	function switchPage(name, data) {
+		console.log(name, data)
 		showModal = false;
 		SettingsStore.changePage({name, data});
 	}
@@ -72,9 +87,9 @@
 
 </script>
 
-{#if $loaded}
-	<div class="container">
-		{#if $firstRun}
+<div class="container">
+	{#if $loaded && typeof firstRun !== 'undefined'}
+		{#if firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
 		{:else}
 			{#if !walletIsLocked}
@@ -109,9 +124,11 @@
 				<svelte:component this={Pages['LockScreen']} {loaded}/>
 			{/if}
 		{/if}
+	{:else}
+		<Loading message="Loading Lamden Wallet" />
+	{/if}
+</div>
 
-	</div>
-{/if}
 
 <style>
 	:global(h1){

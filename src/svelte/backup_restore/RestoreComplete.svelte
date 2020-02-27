@@ -10,6 +10,7 @@
 
     //Images
     import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg';
+    import errorIcon from '../../img/menu_icons/icon_error.svg';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -39,16 +40,12 @@
 
 <style>
 .restore-complete{
-    display: flex;
-    flex-direction: row;
     flex-grow:1;
     padding-top: 156px;
 }
 
 .content{
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
     padding: 0px 24px 0 242px;
     width: 498px;
     justify-content: center;
@@ -59,14 +56,7 @@
     max-width: 314px;
 }
 
-.keys{
-    display: flex;
-    flex-direction: column;
-}
-
 .header{
-    display: flex;
-    flex-direction: row;
     margin-left: 53px;
     border-bottom: 2px solid var(--font-primary-darker);
 }
@@ -88,25 +78,12 @@
     align-items: center;
 }
 
-.address-box{
-    display: flex;
-    height: 88px;
-    border-bottom: 1px dashed var(--font-primary-darker);
-    align-items: center;
-    flex-grow: 1;
-}
-
-.address-error-box{
-    display: flex;
-    flex-direction: column;
+.result-box{
     height: 88px;
     border-bottom: 1px dashed var(--font-primary-darker);
     flex-grow: 1;
+    padding-right: 20px;
     justify-content: center;
-}
-
-.address{
-    margin-top: 12px;
 }
 
 .error{
@@ -119,13 +96,12 @@
 
 
 .key-row{
-    display: flex;
-    flex-direction: row;
     align-items: center;
 }
 
 .checkbox-box{
     margin-right: 35px;
+    height: 18px;
 }
 
 .text-box{
@@ -198,10 +174,23 @@ label.css-label-error {
     user-select: none;
 }
 
+.checkmark-icon{
+    position: relative;
+    top: -14px;
+    width: 14px;
+    right: -2px;
+}
+
+.error-icon{
+    margin-right: 35px;
+    width: 18px;
+    height: 18px;
+}
+
 </style>
 
-<div class="restore-complete">
-    <div class="content">
+<div class="restore-complete flex-row">
+    <div class="flex-column content">
         <h6>Wallets Restored</h6>
     
         <div class="text-box text-body1 text-primary">
@@ -211,7 +200,7 @@ label.css-label-error {
         <Button id={'home-btn'}
                 classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
-                name="Back to Home"
+                name={restore ? "Finish" : "Back to Home"}
                 disabled={false}
                 click={() => done()} />
 
@@ -223,39 +212,39 @@ label.css-label-error {
         </a>
     </div>
     <div class="spacer"></div>
-    <div class="keys">
-        <div class="header text-subtitle2 text-primary-light">
+    <div class="flex-column">
+        <div class="flex-row header text-subtitle2 text-primary-light">
             <div class="header-name">{'Name'}</div>
             <div class="header-address">{'Address'}</div>
         </div>
         {#each keys.keyList as key, i}
-            {#if key.added}
-            <div class="key-row">
-                <div class="checkbox-box">
-                    <input type="checkbox" class="css-checkbox" bind:checked={keys.keyList[i].checked} class:added={key.added}>
-                    <label class="css-label"></label>
+            {#if key.message}
+                <div class="flex-row key-row">
+                    <div class="checkbox-box">
+                        <input type="checkbox" class="css-checkbox" bind:checked={keys.keyList[i].checked} class:added={key.added}>
+                        <label class="css-label"></label>
+                        <div class="checkmark-icon">{@html checkmarkWhite}</div>
+                    </div>
+                    <div class="name">{`${key.name}`}</div>
+                    <div class="flex-column result-box text-subtitle1 text-primary-dark">
+                        <div>{`${key.vk}`}</div>
+                        <div class="message">{key.message}</div>
+                    </div>
+                    
                 </div>
-                <div class="name">{`${key.name}`}</div>
-                <div class="address-box text-subtitle1 text-primary-dark">
-                    <div class="address">{`${key.vk}`}</div>
-                    <div class="message">{key.message}</div>
-                </div>
-                
-            </div>
             {/if}
             {#if key.error}
-            <div class="key-row">
-                <div class="checkbox-box">
-                    <input type="checkbox" class="css-checkbox" bind:checked={keys.keyList[i].checked} class:added={key.added}>
-                    <label class="css-label-error"></label>
+                <div class="flex-row key-row">
+                    <div class="error-icon">
+                        {@html errorIcon}
+                    </div>
+                    <div class="name">{`${key.name}`}</div>
+                    <div class="flex-column result-box text-subtitle1 text-primary-dark ">
+                        <div>{key.vk}</div>
+                        <div class="error">{key.error}</div>
+                    </div>
+                    
                 </div>
-                <div class="name">{`${key.name}`}</div>
-                <div class="address-error-box text-subtitle1 text-primary-dark ">
-                    <div class="address">{key.vk}</div>
-                    <div class="error">{key.error}</div>
-                </div>
-                
-            </div>
             {/if}
         {/each}
     </div>

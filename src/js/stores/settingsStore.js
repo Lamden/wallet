@@ -3,6 +3,8 @@ import { writable, derived } from 'svelte/store';
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
+//import { defualtSettingsStore } from './defaults'
+
 import { isSettingsStoreObj,  isPageInfoObj} from '../objectValidations';
 
 const defualtSettingsStore = {
@@ -13,37 +15,51 @@ const defualtSettingsStore = {
     'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000}
 }
 
-const createSettingsStore = (key, startValue) => {
-    //Get store value from localstorate
-    const json = localStorage.getItem(key);
-    //If there is a value then set it as the inital value
-    if (json) {
-        startValue = JSON.parse(json)
+const createSettingsStore = () => {
+    let startValue = defualtSettingsStore
+    let initialized = false;
+
+    function getStore(){
+        //Set the Coinstore to the value of the local storage
+        chrome.storage.local.get({"settings": startValue}, function(getValue) {
+            initialized = true;
+            SettingsStore.set(getValue.settings)
+        });
     }
 
-    //Create NetworksStore with the inital value
+    //Create Intial Store
     const SettingsStore = writable(startValue);
 
-    //This gets called everytime the Store updates
+    //This is called everytime the CoinStore updated
     SettingsStore.subscribe(current => {
-        //If the store was updated to an empty or non Object then recover to previous value
+        //Only accept and Array Object to be saved to the storage and only
+        //if store has already been initialized
+        if (!initialized) {
+            return current
+        }
         if (isSettingsStoreObj(current)){
-            //Save Value to local storage
-            localStorage.setItem(key, JSON.stringify(current));
-        } else {
+            chrome.storage.local.set({"settings": current});
+        }else{
             //Recover store value in memory to previous local storage value
-            let json = localStorage.getItem("settings");
-            if (json) SettingsStore.set(JSON.parse(json));
+            getStore();
             console.log('Recovered from bad Settings Store Value');
         }
-    })
+    });
+
+    chrome.storage.onChanged.addListener(function(changes, namespace) {
+        for (let key in changes) {
+            if (key === 'settings') SettingsStore.set(changes[key].newValue)
+        }
+    });
+
+    //Set the Coinstore to the value of the local storage
+    getStore()
 
     let subscribe = SettingsStore.subscribe;
     let update = SettingsStore.update;
     let set = SettingsStore.set;
 
     return {
-        startValue,
         subscribe,
         set,
         update,
@@ -90,18 +106,12 @@ const createSettingsStore = (key, startValue) => {
 }
 
 //Settings Stores
-export const SettingsStore = createSettingsStore('settings', defualtSettingsStore);
+export const SettingsStore = createSettingsStore();
 
 //Derived Store to return the current page object
 export const currentPage = derived(
 	SettingsStore,
 	$SettingsStore => { return $SettingsStore.currentPage }
-);
-
-//Derived Store to return the firstRun value
-export const firstRun = derived(
-	SettingsStore,
-    $SettingsStore => { return $SettingsStore.firstRun }
 );
 
 //Derived Store to return the themeStyle

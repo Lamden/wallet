@@ -2,8 +2,6 @@ import { writable, get } from 'svelte/store';
 
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
-import { networkKey } from './stores.js';
-import { isNetworkObj } from '../objectValidations';
 
 const createCacheStore = () => {
     let initialized = false;

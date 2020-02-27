@@ -7,7 +7,7 @@
     import NavLogo from '../nav/NavLogo.svelte';
 
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, checkFirstRun } = getContext('app_functions');
 
     setContext('functions', {
         nextPage: () => {currentStep = currentStep + 1},
@@ -18,7 +18,8 @@
             if (step === -1 && currentStep === 0) switchPage('FirstRunMain');
             else if (step === -1) currentStep = back;
             currentStep = step;
-        }
+        },
+        done: () => checkFirstRun()
 	});
 
     let file;

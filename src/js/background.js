@@ -4,24 +4,42 @@ import { encryptObject, decryptObject, encryptStrHash, decryptStrHash } from './
 
 import Lamden from 'lamden-js'
 
-//Background Stores
+//Settings
 let hash;
+let firstRun;
+
+//Background Store copies
 let coinStore;
+let settingsStore;
 let networksStore;
 let txStore;
-let pendingTxList;
+
 
 //Misc Values
+let pendingTxList;
 let current = '';
 let walletIsLocked = true;
+//chrome.storage.local.set({"hash": ""});
 
-chrome.storage.local.get({"hash": "", "coins": [], "txs": {}, "pendingTxs": {}, "networks":{}}, function(getValue) {
-    hash = getValue.hash
-    coinStore = getValue.coins
-    txStore = getValue.txs;
-    networksStore = getValue.networks;
-    pendingTxList = getValue.pendingTxs; 
-})
+chrome.storage.local.get(
+    {
+        "hash": "",
+        "coins": [],
+        "txs": {},
+        "pendingTxs": {},
+        "networks":{},
+        "settings": undefined
+    },
+    function(getValue) {
+        hash = getValue.hash
+        firstRun = hash === "" ? true : false;
+        coinStore = getValue.coins
+        txStore = getValue.txs;
+        networksStore = getValue.networks;
+        settingsStore = getValue.settings; 
+        pendingTxList = getValue.pendingTxs;
+    }
+)
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
@@ -51,9 +69,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             try{
                 let hashedPW = encryptObject(message.data, {valid: true})
                 hash = hashedPW
+                current = message.data
+                firstRun = false;
                 chrome.storage.local.set({"hash" : hashedPW});
                 sendResponse(true)
-            } catch (e){}
+            } catch (e){sendResponse(false)}
+        }
+        if(message.type === 'isFirstRun'){
+            sendResponse(firstRun)
         }
         if (message.type === 'unlockWallet') {
             if (validatePassword(message.data)){
@@ -64,7 +87,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
         if (message.type === 'validatePassword') sendResponse(validatePassword(message.data))
         if (message.type === 'lockWallet') setWalletIsLocked(true)
-        if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
+        if (message.type === 'encryptSk') {
+            console.log(message.data)
+            sendResponse(encryptString(message.data))
+        }
         if (message.type === 'decryptSk') sendResponse(decryptString(message.data))
         if (message.type === 'backupCoinstore') sendResponse(createKeystore(message.data))
         if (message.type === 'decryptStore') sendResponse(decryptedKeys())
@@ -95,6 +121,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function validatePassword(testPassword){
+    console.log(hash)
     try{
         return decryptObject(testPassword, hash).valid
     } catch (e) {}

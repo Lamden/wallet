@@ -9,7 +9,7 @@
     const { InputBox, Button, DropDown } = Components;
 
     //Context
-    const { switchPage, openModal, closeModal } = getContext('app_functions');
+    const { openModal, closeModal } = getContext('app_functions');
 
     //DOM Nodes
     let formField, hostField, nameField

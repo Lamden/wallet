@@ -64,7 +64,7 @@
                     completedKeys = completedKeys + 1
                 })
             }else{
-                key.error =  "skipped"
+                key.message =  "skipped"
                 completedKeys = completedKeys + 1
             }
         })

@@ -17,6 +17,7 @@
     align-items: center;
     height: 100%;
     justify-content: center;
+    flex-grow: 1;
 }
 
 .spinner{

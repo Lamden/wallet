@@ -18,12 +18,8 @@
                 if (walletIsLocked || chrome.runtime.lastError) {
                     setValidity(pwdObj, "Incorrect Password")
                 }
-            })/*
-            chrome.runtime.sendMessage({type: 'createPassword', data: hashStringValue(pwdObj.value)}, (response) => {
-                console.log(response)
-            })*/
+            })
         }
-        
     }
 
     function setValidity(node, message){

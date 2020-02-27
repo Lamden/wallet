@@ -6,12 +6,12 @@
     import lamden_words from '../../img/nav/lamden_words.svg';
 
     //Stores
-    import { themeStyle, firstRun } from '../../js/stores/stores.js';
+    import { themeStyle } from '../../js/stores/stores.js';
 
 	//Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, firstRun } = getContext('app_functions');
 
-    $: clickable = !$firstRun
+    $: clickable = firstRun()
 
     function goHome(){
         if (clickable) switchPage('CoinsMain')

@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, steps, currentNetwork, NetworksStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -14,8 +14,7 @@
     //Context
     const { changeStep } = getContext('functions');
     
-    //Props
-    export let switchPage;
+    let message = 'Creating Keys';
 
     onMount(() => {
         steps.update(current => {
@@ -49,6 +48,7 @@
     function createStartingWallets(){
         let keyPair = keysFromNew('lamden', 'TAU');
         chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
+            console.log(encryptedSk)
             if (encryptedSk){
                 let newCoin = {
                     'network': 'lamden',
@@ -58,21 +58,17 @@
                     'vk': keyPair.vk,
                     'sk': encryptedSk
                 }
+                //Add coin to coinstore
                 CoinStore.addCoin(newCoin)
-                $currentNetwork.API.mintTestCoins(newCoin)
+
+                // Mint coins on mockchain for new wallet
+                let mockchain = NetworksStore.getPublicMockchain()
+                mockchain.API.mintTestNetCoins(newCoin.vk, 100000)
             }else{
-                throw new Error('Critical Failure: Could not encrypt key for intial wallet')
+                message = 'Critical Failure: Could not encrypt key for intial wallet'
             }
         })
     }
-
-    async function mintTestCoins(coin){
-        let mintOkay = await mintTestNetCoins($currentNetwork, coin.vk, 1000000);
-        if (mintOkay) CoinStore.updateBalance(coin, 1000000)
-    }
-
-
-
 </script>
 
 <style>
