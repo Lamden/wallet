@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
     
 	//Stores
-    import { CoinStore, coinMeta, password, supportedCoins, allNetworks, currentNetwork } from '../../js/stores/stores.js';
+    import { SettingsStore, CoinStore, coinMeta, password, supportedCoins, allNetworks, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components, Modals } from '../Router.svelte';
@@ -129,6 +129,7 @@
                 returnMessage = {type:'success', text: response.reason} 
             }
         }
+        if (returnMessage.type === 'success') SettingsStore.setLastCoinAddedDate()
         finish();
     }
 

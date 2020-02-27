@@ -61,14 +61,6 @@ const createSettingsStore = () => {
         subscribe,
         set,
         update,
-        //Store that the first run setup has been completed
-        firstRunComplete: () => {
-            SettingsStore.update(settingsStore => {
-                settingsStore.firstRun = false;
-                settingsStore.currentPage = {name: 'CoinsMain', data: {}};
-                return settingsStore;
-            })
-        },
         //Change the current page of the app
         //an also accept a data package the new page may need;
         changePage: (pageInfoObj) => {
@@ -92,13 +84,17 @@ const createSettingsStore = () => {
                 return settingsStore;
             })
         },
-        //Calculates the amount of local storage used and remaining
-        calcStorage: () => {
-            SettingsStore.update(settings => {
-                settings.storage.used = new Blob(Object.values(localStorage)).size;
-                settings.storage.remaining = settings.storage.max - settings.storage.used;
-                return settings;
-            })   
+        setLastBackupDate: () => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.lastBackupDate = new Date().toLocaleString()
+                return settingsStore;
+            })
+        },
+        setLastCoinAddedDate: () => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.lastCoinAddedDate = new Date().toLocaleString()
+                return settingsStore;
+            }) 
         }
     };
 }
@@ -116,4 +112,20 @@ export const currentPage = derived(
 export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => { return $SettingsStore.themeStyle }
+);
+
+//Derived Store to return the themeStyle
+export const needsBackup = derived(
+	SettingsStore,
+	$SettingsStore => {
+        if (validateTypes.isString($SettingsStore.lastBackupDate) && 
+            validateTypes.isString($SettingsStore.lastCoinAddedDate)){
+            return new Date($SettingsStore.lastCoinAddedDate) > new Date($SettingsStore.lastBackupDate)
+        }
+        if (typeof $SettingsStore.lastBackupDate === 'undefined' && 
+            validateTypes.isString($SettingsStore.lastCoinAddedDate)){
+            return true
+        }
+        return false
+    }
 );

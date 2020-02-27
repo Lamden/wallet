@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { breadcrumbs } from '../../js/stores/stores.js';
+    import { breadcrumbs, needsBackup } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -11,6 +11,8 @@
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
     import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
+    import warningIcon from '../../img/menu_icons/icon_warning.svg'
+
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -51,6 +53,17 @@
     max-width: 601px;
 }
 
+.backup-warning{
+    align-content: center;
+    padding: 40px;
+    justify-content: center;
+}
+
+.warning-icon{
+    width: 30px;
+    margin-right: 30px;
+}
+
 
 </style>
 
@@ -76,3 +89,12 @@
         </div>
 	</div>
 </div>
+
+{#if $needsBackup}
+    <div class="flex-row backup-warning">
+        <div class="warning-icon">{@html warningIcon}</div>
+        <div class="warning-text text-body3">
+            You have added Keys since your last backup. It is highly recommended you create another one.
+        </div>
+    </div>
+{/if}

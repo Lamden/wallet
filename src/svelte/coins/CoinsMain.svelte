@@ -10,7 +10,7 @@
 			breadcrumbs,
 			password,
 			currentNetwork,
-			NetworksStore } from '../../js/stores/stores.js';
+			NetworksStore, needsBackup } from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
@@ -33,7 +33,6 @@
 	let refreshing = false;
 
 	onMount(async () => {
-		SettingsStore.calcStorage();
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
 	});
 

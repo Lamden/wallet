@@ -45,10 +45,7 @@
         element.click();
         document.body.removeChild(element);
 
-        SettingsStore.update(current => {
-            current.lastBackup = new Date();
-            return current;
-        })
+        SettingsStore.setLastBackupDate()
         
         setTimeout(() => {
             appHome();

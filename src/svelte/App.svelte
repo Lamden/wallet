@@ -39,7 +39,6 @@
 			walletIsLocked = locked;
 		})
 		checkFirstRun();
-		SettingsStore.calcStorage();
 		document.querySelector("html").style = themes[$themeStyle];
 	});
 
