@@ -11,7 +11,7 @@
 	//Context
     const { switchPage, firstRun } = getContext('app_functions');
 
-    $: clickable = firstRun()
+    $: clickable = !firstRun()
 
     function goHome(){
         if (clickable) switchPage('CoinsMain')
