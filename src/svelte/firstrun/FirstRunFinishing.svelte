@@ -40,7 +40,7 @@
         })
         .then(res => {
             setTimeout(() => {
-                SettingsStore.changePage({name: 'LockScreen'})
+                SettingsStore.changePage({name: 'CoinsMain'})
                 done()
             }, 500);            
         })

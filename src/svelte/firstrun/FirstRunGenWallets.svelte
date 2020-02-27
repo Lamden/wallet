@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps, currentNetwork, NetworksStore } from '../../js/stores/stores.js';
+    import { CoinStore, steps, currentNetwork, NetworksStore, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -59,7 +59,8 @@
                 }
                 //Add coin to coinstore
                 CoinStore.addCoin(newCoin)
-
+                SettingsStore.setLastCoinAddedDate();
+                
                 // Mint coins on mockchain for new wallet
                 let mockchain = NetworksStore.getPublicMockchain()
                 mockchain.API.mintTestNetCoins(newCoin.vk, 100000)

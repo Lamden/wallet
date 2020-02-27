@@ -19,8 +19,16 @@ let txStore;
 let pendingTxList;
 let current = '';
 let walletIsLocked = true;
-//chrome.storage.local.set({"hash": ""});
-
+/*chrome.storage.local.set(
+    {
+        "hash": "",
+        "coins": [],
+        "txs": {},
+        "pendingTxs": {},
+        "networks":{},
+        "settings": undefined
+    }
+)*/
 chrome.storage.local.get(
     {
         "hash": "",
