@@ -2,7 +2,6 @@ import '../img/icon-128.png'
 import '../img/icon-34.png'
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash } from './utils.js';
 
-import { createNetworksStore } from './stores/networksStore.js' 
 import Lamden from 'lamden-js'
 
 //Background Stores
@@ -23,6 +22,19 @@ chrome.storage.local.get({"hash": "", "coins": [], "txs": {}, "pendingTxs": {}, 
     networksStore = getValue.networks;
     pendingTxList = getValue.pendingTxs; 
 })
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (let key in changes) {
+        if (key === 'coins') coinStore = changes[key].newValue;
+        if (key === 'networks') networksStore = changes[key].newValue;
+        if (key === 'txs') {
+            
+            txStore = changes[key].newValue;
+            //alert(JSON.stringify(txStore)); 
+        }
+        if (key === 'pendingTxs') pendingTxList = changes[key].newValue;
+    }
+});
 
 function fromApp(sender){
     return sender.url === `${window.location.origin}/app.html`
@@ -113,11 +125,8 @@ function getWallet(vk){
 }
 
 function getCurrentNetwork(){
-    console.log(networksStore)
     let networks = [...networksStore.lamden, ...networksStore.user]
-    console.log(networks)
     let foundNetwork = networks.find(network => networksStore.current === `${network.host}:${network.port}`)
-    console.log(foundNetwork)
     return foundNetwork
 }
 
@@ -131,7 +140,7 @@ function sendTx(txBuilder, sk, sentFrom){
 
 function saveTxData(txBuilder){
     let result = txBuilder.txSendResult;
-    alert(JSON.stringify(result))
+    //alert(JSON.stringify(result))
     let netKey = txBuilder.url;
     let vk = txBuilder.sender;
 
@@ -143,7 +152,7 @@ function saveTxData(txBuilder){
         pendingTxList[netKey][vk].push(txBuilder.getAllInfo());
 
         chrome.storage.local.set({"pendingTxs": pendingTxList});
-        alert('SAVING TO STORE: ' + JSON.stringify(pendingTxList))
+        //alert('SAVING TO STORE: ' + JSON.stringify(pendingTxList))
     }else{
         //create keys if they don't exist
         if (!txStore[netKey]) txStore[netKey] = {}
@@ -158,7 +167,7 @@ function saveTxData(txBuilder){
         txStore[netKey][vk].push(txDate);
 
         chrome.storage.local.set({"txs": txStore});
-        alert('SAVING TO STORE: ' + JSON.stringify(txStore))        
+        //alert('SAVING TO STORE: ' + JSON.stringify(txStore))        
     }
 }
 
@@ -213,15 +222,3 @@ function decryptedKeys(){
     })
 }
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    for (let key in changes) {
-        if (key === 'coins') coinStore = changes[key].newValue;
-        if (key === 'networks') networksStore = changes[key].newValue;
-        if (key === 'txs') {
-            
-            txStore = changes[key].newValue;
-            alert(JSON.stringify(txStore)); 
-        }
-        if (key === 'pendingTxs') pendingTxList = changes[key].newValue;
-    }
-});

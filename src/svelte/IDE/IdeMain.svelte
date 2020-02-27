@@ -2,7 +2,7 @@
 	import { onMount, getContext, setContext } from 'svelte'
 	
     //Stores
-    import { breadcrumbs, currentNetwork, activeTab, FilesStore } from '../../js/stores/stores.js';
+    import { breadcrumbs, currentNetwork, activeTab, FilesStore, NetworksStore } from '../../js/stores/stores.js';
 
 	//Components
 	import { IdeErrorsBox, IdeMethods, IdeGetVariable, IdeTabs, Components }  from '../Router.svelte';
@@ -42,7 +42,9 @@
 	}
 
 	async function lint(callback){
-		lintErrors = await $currentNetwork.API.lintCode($activeTab.name, $activeTab.code)
+		let mockchain = $currentNetwork
+		if ($currentNetwork.type !== 'mockchain') mockchain = NetworksStore.getPublicMockchain()
+		lintErrors = await mockchain.API.lintCode($activeTab.name, $activeTab.code)
 		try {
 			callback(lintErrors);
 		} catch (e){}

@@ -50,3 +50,11 @@ export const defaultFileCode = [
     '# example to get the value of \'stu\' in the \'yourState\' state variable from \'example\' contract:',
     '# https://testnet.lamden.io:443/contracts/example/yourState?key=stu',
 ].join('\n')
+
+export function makeContractHeader(networkName) {
+    return [
+        '#############################################################',
+        `#  Contract Is On ${networkName}`,
+        '#############################################################'
+    ].join('\n')
+}

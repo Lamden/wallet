@@ -11,6 +11,7 @@
     export let items = [];
     export let styles = '';
     export let width = '100%';
+    export let margin = 'unset'
     export let innerHeight = '46px'
     export let classes = '';
     export let required = false;
@@ -151,7 +152,7 @@ label{
 
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
-<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; `}>
+<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; margin:${margin}`}>
     <label>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}

@@ -75,7 +75,7 @@
 .percent{
     justify-content: flex-end;
     margin-right: 28px;  
-	width: 203px;
+	width: 90px;
 }
 
 </style>

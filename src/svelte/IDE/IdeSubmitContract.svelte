@@ -112,15 +112,14 @@
 
 <div class="confirm-tx flex-column">
     <div class="flex-column">
-        <h5>{`Submit Contract`}</h5>
+        <h5>{`Submit Contract to ${$currentNetwork.name}`}</h5>
         <div>* signifies manditory field</div>
-        <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
         <DropDown  
             items={$coinsDropDown}
             innerHeight={'70px'}
+            margin={'1rem 0 7px'}
             id={'mycoins'} 
-            label={'* Select Sending Wallet'}
-            styles="margin-bottom: 19px;"
+            label={'* Send Transaction From'}
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
         />

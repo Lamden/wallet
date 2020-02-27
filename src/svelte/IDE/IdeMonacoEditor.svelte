@@ -233,12 +233,7 @@
 </script>
 
 <style>
-.loading{
-	justify-content: center;
-	justify-items: center;
-	align-content: center;
-	align-items: center;
-}
+
 :global(.input-error){
 	background: #ff000054;
 	padding: 1px 3px;

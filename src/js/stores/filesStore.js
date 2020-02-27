@@ -4,7 +4,7 @@ import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 import { networkKey } from './stores.js';
 import { isFileObj } from '../objectValidations';
-import { defaultFileCode } from './defaults.js';
+import { defaultFileCode, makeContractHeader } from './defaults.js';
 
 const createFilesStore = () => {
     let initialized = false;
@@ -69,6 +69,9 @@ const createFilesStore = () => {
             //Return if arguments are undefined and incorrect types
             if (!isFileObj(name, code, methods, networkObj)) return;
 
+            //Add reminder to the use where the contract exists
+            code = `${makeContractHeader(networkObj.name)}\n${code}`
+
             //Add new files to the files store
             FilesStore.update(filesstore => {
                 filesstore.map(file => file.selected = false)
@@ -83,6 +86,7 @@ const createFilesStore = () => {
 
                 }
                 filesstore.push(newFile)
+                console.log(filesstore)
                 return filesstore;
             })
         },

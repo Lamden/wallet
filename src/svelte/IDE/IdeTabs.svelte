@@ -13,8 +13,6 @@
     //Context
     const { openModal } = getContext('app_functions');
 
-    $: files = $FilesStore.filter(f => f.networkKey === networkKey($currentNetwork) || f.type === 'local')
-
     function addTab(){
         openModal('IdeModelNewTab');
     }
@@ -36,7 +34,7 @@
 <div class="new-button" on:click={addTab}>
     <div class="plus-icon" >{@html plus}</div>
 </div>
-{#each files as file, index}
+{#each $FilesStore as file, index}
     <IdeTab {file} {index} />
 {/each}
 </div>

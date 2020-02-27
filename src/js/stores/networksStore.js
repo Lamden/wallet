@@ -9,7 +9,8 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 import Lamden from 'lamden-js'
 
 const lamdenNetworks = [
-    {name: 'Lamden Public Testnet', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true}
+    {name: 'Lamden Testnet', host:'http://138.68.43.35', port: '18080', type:'testnet', lamden: true},
+    {name: 'Lamden Public Mockchain', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true}
 ]
 
 const defualtNetworksStore = {
@@ -24,8 +25,11 @@ function makeList(networkStore){
 
 function foundNetwork(networkStore, matchKey){
     let networks = makeList(networkStore);
-    let foundNetwork = networks.find(network => networkKey(network) === matchKey)
-    return foundNetwork;
+    return networks.find(network => networkKey(network) === matchKey)
+}
+
+function getNetworkByName(networkStore, name){
+    return networkStore.lamden.find(network => network.name === name)
 }
 
 export const createNetworksStore = () => {
@@ -48,6 +52,7 @@ export const createNetworksStore = () => {
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
         if (isNetworkStoreObj(current)){
+            current.lamden = lamdenNetworks;
             if (initialized) chrome.storage.local.set({"networks": current});
         }else{
             //If non-object found then set the store back to the previous local store value
@@ -73,14 +78,13 @@ export const createNetworksStore = () => {
         setCurrentNetwork: (networkInfo) => {
             //Reject undefined or missing Network info
             if (!isNetworkObj(networkInfo)) return;
-            console.log(networkInfo)
+
             let netKey = networkKey(networkInfo);
             //If this is already the current network then do nothing
             if (netKey !== get(NetworksStore).current){
                 NetworksStore.update(networksStore => {
                     //If the network is found then set this as the current network
                     if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
-                    console.log(networksStore.current)
                     return networksStore;
                 })
             }
@@ -120,10 +124,8 @@ export const createNetworksStore = () => {
             })
         },
         //Returns the current network Object
-        getCurrentNetwork: () => {
-            let found = foundNetwork(get(NetworksStore), get(NetworksStore).current);
-            if (found) return found;
-            return $NetworksStore.lamden[0]
+        getPublicMockchain: () => {
+            return new Lamden.Network(getNetworkByName(get(NetworksStore), 'Lamden Public Mockchain'))
         },
         //Delete a network from the network list
         deleteNetwork: (networkObj) => {
@@ -131,8 +133,7 @@ export const createNetworksStore = () => {
             if (!validateTypes.isSpecificClass(networkObj, 'Network')) return;
 
             let netKey = networkObj.url
-            console.log(networkObj)
-            console.log(netKey)
+
             NetworksStore.update(networksStore => {
                 //Filter out the matching network.
                 networksStore.user = networksStore.user.filter(network => {
@@ -143,7 +144,7 @@ export const createNetworksStore = () => {
                 if (netKey === networksStore.current){
                     networksStore.current = networkKey(networksStore.lamden[0])
                 }
-                console.log(networksStore)
+
                 return networksStore;
             })
         }
