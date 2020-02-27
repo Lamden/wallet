@@ -62,8 +62,6 @@
             return c
         })
         returnList.shift()
-        console.log($coinsDropDown)
-        console.log(returnList)
         return returnList
     }
 

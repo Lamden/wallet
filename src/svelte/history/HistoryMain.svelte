@@ -1,5 +1,5 @@
 <script>
-    import { onMount, afterUpdate } from 'svelte';
+    import { onMount } from 'svelte';
     
     //Stores
     import { TxStore, breadcrumbs, currentNetwork, networkKey } from '../../js/stores/stores.js';
@@ -15,10 +15,6 @@
 	onMount(() => {
         breadcrumbs.set([{name: 'History', page: {name: ''}},]);     
     });
-
-    afterUpdate(() => {
-        console.log($TxStore)
-    })
 
     function sortTxList(txList){
         return txList.sort((a, b) => new Date(b.date) - new Date(a.date));

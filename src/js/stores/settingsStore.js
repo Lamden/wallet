@@ -9,10 +9,8 @@ import { isSettingsStoreObj,  isPageInfoObj} from '../objectValidations';
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
-    'firstRun': true,
     'themeStyle':'dark',
-    'version':'v0_9_8',
-    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000}
+    'version':'0.9.10'
 }
 
 const createSettingsStore = () => {
@@ -118,10 +116,4 @@ export const currentPage = derived(
 export const themeStyle = derived(
 	SettingsStore,
 	$SettingsStore => { return $SettingsStore.themeStyle }
-);
-
-//Derived Store to return the storageInfo Object
-export const storageInfo = derived(
-	SettingsStore,
-	$SettingsStore => { return $SettingsStore.storage }
 );

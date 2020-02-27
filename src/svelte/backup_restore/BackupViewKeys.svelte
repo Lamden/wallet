@@ -26,7 +26,6 @@
         });
 
         chrome.runtime.sendMessage({type: 'decryptStore'}, (coinStore) => {
-            console.log(coinStore)
             if (typeof coinStore === 'undefined' || chrome.runtime.lastError) {
                 throw new Error('unable to decrypt keystore')
             } else {

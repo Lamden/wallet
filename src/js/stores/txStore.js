@@ -12,10 +12,8 @@ const createTxStore = () => {
     function getStore(){
         //Set the Coinstore to the value of the local storage
         chrome.storage.local.get({"txs": {}}, function(getValue) {
-            console.log(getValue)
             initialized = true;
             TxStore.set(getValue.txs)
-            console.log(get(TxStore))
         });
     }
 
@@ -76,14 +74,12 @@ const createTxStore = () => {
             let netKey = networkKey(networkObj)
             
             TxStore.update(txstore => {
-                console.log(txstore)
                 //If the key paths don't exists then just return
                 if (!txstore[netKey]) return txstore;
                 if (!txstore[netKey][vk]) return txstore;
 
                 //Set key to an empty Array
                 txstore[netKey][vk] = [];
-                console.log(JSON.stringify(txstore))
                 return txstore;
             })
         },

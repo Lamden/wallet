@@ -48,7 +48,6 @@
     function createStartingWallets(){
         let keyPair = keysFromNew('lamden', 'TAU');
         chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
-            console.log(encryptedSk)
             if (encryptedSk){
                 let newCoin = {
                     'network': 'lamden',

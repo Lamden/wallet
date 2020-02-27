@@ -12,9 +12,6 @@
     let result = '';
 
     async function handleRun(){
-        console.log(contractName)
-        console.log(variableName)
-        console.log(key)
         try{
             result = JSON.parse(await $currentNetwork.API.getVariable(contractName, variableName, key))
         } catch (e) {

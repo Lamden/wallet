@@ -16,7 +16,6 @@
   
 	onMount(() => {
         if (all) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
-        console.log(txList)
     });
 
     function sortTxList(){

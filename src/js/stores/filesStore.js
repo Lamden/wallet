@@ -86,7 +86,7 @@ const createFilesStore = () => {
 
                 }
                 filesstore.push(newFile)
-                console.log(filesstore)
+
                 return filesstore;
             })
         },

@@ -38,7 +38,6 @@
         }
         pwdObj.reportValidity()
         if (formObj.checkValidity()){
-            console.log(decryptObject(pwdObj.value, keystoreFile.data))
             setKeys(decryptObject(pwdObj.value, keystoreFile.data));
             nextPage();
         }

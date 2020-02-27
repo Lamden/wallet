@@ -49,13 +49,13 @@ const createCacheStore = () => {
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
             let netKey = networkObj.url
-            console.log(contractName)
+
             CacheStore.update(cacheStore => {
                 //Store network / contract pair under the contracts key in the cash
                 if (!cacheStore['contracts']) cacheStore['contracts'] = {};
                 if (!cacheStore['contracts'][netKey]) cacheStore['contracts'][netKey] = {};
                 cacheStore['contracts'][netKey][contractName] = true;
-                console.log(cacheStore)
+
                 return cacheStore;
             })
         },
@@ -70,7 +70,7 @@ const createCacheStore = () => {
             //Reject missing or undefined arguments
 
             let cacheStore = get(CacheStore);
-            console.log(cacheStore)
+
             if (!cacheStore['contracts']) return false;
             if (!cacheStore['contracts'][netKey]) return false;
             if (!cacheStore['contracts'][netKey][contractName]) return false;

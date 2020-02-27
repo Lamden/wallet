@@ -87,10 +87,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
         if (message.type === 'validatePassword') sendResponse(validatePassword(message.data))
         if (message.type === 'lockWallet') setWalletIsLocked(true)
-        if (message.type === 'encryptSk') {
-            console.log(message.data)
-            sendResponse(encryptString(message.data))
-        }
+        if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
         if (message.type === 'decryptSk') sendResponse(decryptString(message.data))
         if (message.type === 'backupCoinstore') sendResponse(createKeystore(message.data))
         if (message.type === 'decryptStore') sendResponse(decryptedKeys())
@@ -121,7 +118,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function validatePassword(testPassword){
-    console.log(hash)
     try{
         return decryptObject(testPassword, hash).valid
     } catch (e) {}

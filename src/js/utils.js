@@ -74,7 +74,7 @@ function encryptObject ( password, obj ){
 function decryptObject ( password, objString ){
     assertTypes.isStringWithValue(password)
     assertTypes.isStringWithValue(objString)
-    console.log(password, objString)
+
     try{
         const decrypt = CryptoJS.AES.decrypt(objString, password, { format: JsonFormatter })
         return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypt));

@@ -24,7 +24,6 @@
                 current.currentStep = 5;
                 return current
             });
-            console.log(steps)
         }
 
         new Promise(function(resolve, reject) {

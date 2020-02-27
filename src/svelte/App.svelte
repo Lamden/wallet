@@ -54,19 +54,16 @@
 	});
 
 	function checkFirstRun(){
-		console.log('changing page')
 		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {
 			firstRun = isFirstRun;
 			if (!firstRun && $currentPage.name === 'FirstRunMain'){
 				SettingsStore.changePage({name: 'CoinsMain'})
 			}
 			firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
-			console.log($SettingsStore)
 		})
 	}
 
 	function switchPage(name, data) {
-		console.log(name, data)
 		showModal = false;
 		SettingsStore.changePage({name, data});
 	}
