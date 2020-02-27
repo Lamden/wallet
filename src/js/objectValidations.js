@@ -56,12 +56,9 @@ export function isCoinInfoObj(coinInfoObj){
 
 export function isSettingsStoreObj(obj){
     if (!validateTypes.isObjectWithKeys(obj)) return false;
-    if (!validateTypes.hasKeys(obj, ['currentPage', 'firstRun', 'themeStyle', 'version', 'storage'])) return false;
+    if (!validateTypes.hasKeys(obj, ['currentPage', 'themeStyle', 'version'])) return false;
     if (!isPageInfoObj(obj.currentPage)) return false;
-    if (!isStorageObj(obj.storage)) return false;
     if (!validateTypes.isStringWithValue(obj.version)) return false;
-    if (!validateTypes.isStringWithValue(obj.themeStyle)) return false;
-    if (!validateTypes.isBoolean(obj.firstRun)) return false;
     return true;
 }
 
