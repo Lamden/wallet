@@ -34,7 +34,9 @@
 
 .icon-box {
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    width: 30%;
+    min-width: fit-content;
 }
 
 .args{
@@ -42,8 +44,11 @@
 }
 
 .stamps{
-    justify-content: center;
+    margin-left: 20px;
+    justify-content: flex-start;
     align-items: center;
+    min-width: fit-content;
+    width: 30%;
 }
 .stamps-title{
     margin-right: 5px;
@@ -52,7 +57,7 @@
 .error-msg{
     display: flex;
     align-content: center;
-    margin-left: 220px;
+    margin-left: 60px;
     height: 20px;
 }
 
@@ -64,8 +69,9 @@
 .time-date{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-end;
+    min-width: fit-content;
+    flex-grow: 1;
 }
 
 </style>

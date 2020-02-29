@@ -68,6 +68,7 @@ chrome.storage.onChanged.addListener(function(changes) {
     console.log(changes)
     for (let key in changes) {
         if (key === 'coins') coinStore = changes[key].newValue;
+        if (key === 'settings') settingsStore = changes[key].newValue;
         if (key === 'dapps') dappsStore = changes[key].newValue;
         if (key === 'networks') networksStore = changes[key].newValue;
         if (key === 'txs') {
@@ -280,6 +281,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'decryptSk') sendResponse(decryptString(message.data))
         if (message.type === 'backupCoinstore') sendResponse(createKeystore(message.data))
         if (message.type === 'decryptStore') sendResponse(decryptedKeys())
+        if (message.type === 'coinStoreDelete') {
+            console.log('in here')
+            console.log(message.data)
+            sendResponse(coinStoreDelete(message.data))
+        }
     }
 
     if (message.type === 'walletIsLocked') sendResponse(walletIsLocked)
@@ -421,6 +427,7 @@ const contractExists = (networkName, contractName) => {
 
 const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
     let installedStatus = {
+        version: settingsStore.version,
         installed: true,
         setup: !firstRun,
         locked: walletIsLocked,
@@ -489,3 +496,14 @@ const approveDapp = (sender) => {
 
 }
 
+//CoinStore
+const coinStoreDelete = (coinInfo) => {
+    const before = coinStore.length
+    coinStore.splice(coinStore.indexOf(coinInfo), 1);
+    if (coinStore.length < before){
+        chrome.storage.local.set({"coins": coinStore});
+        return true
+    }else{
+        return false
+    }
+}

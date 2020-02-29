@@ -22,9 +22,12 @@ const createTxStore = () => {
     
     //This is called everytime the value of the store changes
     TxStore.subscribe(current => {
+        if (!initialized) {
+            return current
+        }
         //Only accept object to be saved to the localstorage
         if (validateTypes.isObject(current)) {
-            if (initialized) chrome.storage.local.set({"txs": current});
+            chrome.storage.local.set({"txs": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()
@@ -36,7 +39,9 @@ const createTxStore = () => {
 
     chrome.storage.onChanged.addListener((changes) => {
         for (let key in changes) {
-            if (key === 'txs') TxStore.set(changes[key].newValue)
+            if (key === 'txs') {
+                if (changes[key].newValue !== get(TxStore)) TxStore.set(changes[key].newValue)
+            }
         }
     });
     

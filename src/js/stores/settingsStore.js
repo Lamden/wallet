@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
@@ -44,12 +44,6 @@ const createSettingsStore = () => {
         }
     });
 
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-        for (let key in changes) {
-            if (key === 'settings') SettingsStore.set(changes[key].newValue)
-        }
-    });
-
     //Set the Coinstore to the value of the chome.storage.local
     getStore()
 
@@ -66,6 +60,7 @@ const createSettingsStore = () => {
         changePage: (pageInfoObj) => {
             //Return if the object isn't a proper page object
             if (!isPageInfoObj(pageInfoObj)) return;
+
             //Default data to empty object
             if (!pageInfoObj.data) pageInfoObj.data = {};
             SettingsStore.update(settingsStore => {

@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
@@ -30,10 +30,13 @@ const createFilesStore = () => {
 
     //This is called everytime the FilesStore updated
     FilesStore.subscribe(current => {
+        if (!initialized) {
+            return current
+        }
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
         if (validateTypes.isArray(current)) {
-            if (initialized) chrome.storage.local.set({"files": current});
+            chrome.storage.local.set({"files": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()

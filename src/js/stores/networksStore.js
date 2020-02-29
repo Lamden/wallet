@@ -50,11 +50,14 @@ export const createNetworksStore = () => {
 
     //This is called everytime the NetworksStore updated
     NetworksStore.subscribe(current => {
+        if (!initialized) {
+            return current
+        }
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
         if (isNetworkStoreObj(current)){
             current.lamden = lamdenNetworks;
-            if (initialized) chrome.storage.local.set({"networks": current});
+            chrome.storage.local.set({"networks": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore();
@@ -70,7 +73,6 @@ export const createNetworksStore = () => {
     let set = NetworksStore.set;
 
     return {
-        startValue,
         subscribe,
         set,
         update,

@@ -19,7 +19,7 @@
         setMessage: (msg) => message = msg,
         home: () => currentStep = 1,
         close: () => closeModal(),
-        deleteCoin: () => deleteCoin(),
+        deleteCoin: (resolve) => deleteCoin(resolve),
     });
     
     let resultInfo = {}
@@ -35,11 +35,13 @@
     ]
     let currentStep = 1;
 
-    function deleteCoin(){
-        CoinStore.update(coinstore => {
-            coinstore.splice(coinstore.indexOf(selectedCoin), 1); 
-            return coinstore;
-        });
+    function deleteCoin(resolve){
+        chrome.runtime.sendMessage({type: 'coinStoreDelete', data: selectedCoin}, (result) => {
+            if (!result || chrome.runtime.lastError) {
+                resolve(false)
+            }
+            resolve(result)
+        })
     }
 </script>
 

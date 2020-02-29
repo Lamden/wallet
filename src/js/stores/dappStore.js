@@ -11,7 +11,7 @@ export const createDappStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"dapps": startValue}, function(getValue) {
             initialized = true;
-            //DappStore.set(getValue.dapps)
+            DappStore.set(getValue.dapps)
         });
     }
 
@@ -20,11 +20,13 @@ export const createDappStore = () => {
 
     //This is called everytime the DappStore updated
     DappStore.subscribe(current => {
+        if (!initialized) {
+            return current
+        }
         // Dapp Store should only every accept an array
         // if store has already been initialized
         if (validateTypes.isObject(current)){
-            console.log(current)
-            //if (initialized) chrome.storage.local.set({"dapps": current});
+            chrome.storage.local.set({"dapps": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore();
@@ -34,7 +36,9 @@ export const createDappStore = () => {
 
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
-            //if (key === 'dapps') DappStore.set(changes[key].newValue)
+            if (key === 'dapps') {
+                if (changes[key].newValue !== get(DappStore)) DappStore.set(changes[key].newValue)
+            }
         }
     });
 

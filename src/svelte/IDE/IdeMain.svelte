@@ -14,7 +14,7 @@
 	const { openModal } = getContext('app_functions');
 	setContext('editor_functions', {
 		checkContractExists: async (contractName, options) => await getContract(contractName, options),
-		addContractTab: async (contractName, contractCode) => await $currentNetwork.API.addFileToStore(contractCode)
+		addContractTab: async (contractName, contractCode) => await addFileToStore(contractName, contractCode)
     });
 
 	let lintErrors = {violations: null};

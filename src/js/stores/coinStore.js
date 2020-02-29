@@ -21,10 +21,18 @@ export const createCoinStore = () => {
 
     //This is called everytime the CoinStore updated
     CoinStore.subscribe(current => {
+        if (!initialized) {
+            console.log('is initialized')
+            return current
+        }
         //Only accept and Array Object to be saved to the storage and only
         //if store has already been initialized
         if (validateTypes.isArray(current)) {
-            if (initialized) chrome.storage.local.set({"coins": current});
+            console.log('is array')
+            console.log(current)
+            console.log(get(CoinStore))
+            console.log(get(CoinStore) !== current)
+            chrome.storage.local.set({"coins": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()
@@ -34,7 +42,9 @@ export const createCoinStore = () => {
 
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
-            if (key === 'coins') CoinStore.set(changes[key].newValue)
+            if (key === 'coins') {
+                if (changes[key].newValue !== get(CoinStore)) CoinStore.set(changes[key].newValue)
+            }
         }
     });
 

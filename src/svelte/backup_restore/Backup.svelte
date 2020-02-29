@@ -12,6 +12,7 @@
     import squares_bg from '../../img/backgrounds/squares_bg.png';
     import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
     import warningIcon from '../../img/menu_icons/icon_warning.svg'
+    import iconClose from '../../img/menu_icons/icon_close.svg'
 
 
 	//Context
@@ -54,14 +55,14 @@
 }
 
 .backup-warning{
-    align-content: center;
-    padding: 40px;
-    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
 }
 
 .warning-icon{
-    width: 30px;
-    margin-right: 30px;
+    width: 20px;
+    margin-right: 10px;
+    min-width: 20px;
 }
 
 
@@ -87,14 +88,21 @@
 				icon={arrowRight}
                 iconPosition='after'/>
         </div>
+        {#if $needsBackup}
+            <div class="flex-row backup-warning">
+                <div class="warning-icon">{@html warningIcon}</div>
+                <div class="warning-text text-body4">
+                    You have added Keys since your last backup so it is HIGHLY recommended that you create another backup.
+                </div>
+                <Button
+                    id={'backup-btn'} 
+                    classes={'button__transparent'}
+                    name="dismiss"
+                    margin={'0 49px 0 0'}
+                    click={() => switchPage('BackupMain')} 
+                    icon={iconClose}
+                    iconPosition='before'/>
+            </div>
+        {/if}
 	</div>
 </div>
-
-{#if $needsBackup}
-    <div class="flex-row backup-warning">
-        <div class="warning-icon">{@html warningIcon}</div>
-        <div class="warning-text text-body3">
-            You have added Keys since your last backup. It is highly recommended you create another one.
-        </div>
-    </div>
-{/if}

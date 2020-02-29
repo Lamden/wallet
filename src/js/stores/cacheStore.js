@@ -19,10 +19,13 @@ const createCacheStore = () => {
 
     //This is called everytime the CacheStore updated
     CacheStore.subscribe(current => {
+        if (!initialized) {
+            return current
+        }
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
         if (validateTypes.isObject(current)) {
-            if (initialized) chrome.storage.local.set({"ideCache": current});
+            chrome.storage.local.set({"ideCache": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()

@@ -36,7 +36,7 @@
 }
 
 .buttons{
-    padding: 65px 0 25px;
+    padding: 2rem 0 10px;
 }
 
 .message{
