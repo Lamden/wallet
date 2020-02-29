@@ -17,8 +17,8 @@ const createFilesStore = () => {
         selected: true
     }
 
-    function getStore(){
-        //Set the Coinstore to the value of the local storage
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"files": [JSON.parse(JSON.stringify(defaultFile))]}, function(getValue) {
             initialized = true;
             FilesStore.set(getValue.files)
@@ -28,7 +28,7 @@ const createFilesStore = () => {
     //Create Intial Store
     const FilesStore = writable([]);
 
-    //This is called everytime the CoinStore updated
+    //This is called everytime the FilesStore updated
     FilesStore.subscribe(current => {
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
@@ -41,7 +41,7 @@ const createFilesStore = () => {
         }
     });
 
-    //Set the NetworksStore to the value of the local storage
+    //Set the NetworksStore to the value of the chome.storage.local
     getStore()
 
     let subscribe = FilesStore.subscribe;

@@ -307,3 +307,9 @@ button {
 .outside-link:visited {
     outline: none;
 }
+
+input[type="checkbox"]{
+    width: 18px;
+    height: 18px;
+    background: #DADADA;
+}

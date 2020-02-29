@@ -7,7 +7,7 @@ const lamdenWallet = Lamden.wallet
     Gets the Public Address of a Coin from the Private Key
     Return: Public Address (str)
 */
-function pubFromPriv( network, symbol, privateKey ){
+const pubFromPriv = ( network, symbol, privateKey ) => {
     assertTypes.isStringWithValue(network)
     assertTypes.isStringWithValue(symbol)
     assertTypes.isStringWithValue(privateKey)
@@ -24,7 +24,7 @@ function pubFromPriv( network, symbol, privateKey ){
     Create a new Public/Private keypair for a network/symbol combination
     Return: Keypair Object (obj)
 */
-function keysFromNew( network, symbol ){
+const keysFromNew = ( network, symbol ) => {
     assertTypes.isStringWithValue(network)
     assertTypes.isStringWithValue(symbol)
 
@@ -49,7 +49,7 @@ function keysFromNew( network, symbol ){
     Validates an address if valid for a specific network/symbol
     Return: Trimmed String (str)
 */
-function validateAddress ( network, wallet_address ){
+const validateAddress = ( network, wallet_address ) => {
     assertTypes.isStringWithValue(network)
     assertTypes.isStringWithValue(wallet_address)
     
@@ -66,7 +66,7 @@ function validateAddress ( network, wallet_address ){
     Signed a Raw transaction for Bitcoin and Ethereum networks
     Returns: Signed Transactions (str)
 */
-function signTx ( rawTransaction, privateKey, network, networkSymbol = undefined ){
+const signTx = ( rawTransaction, privateKey, network, networkSymbol = undefined ) => {
     assertTypes.isStringWithValue(rawTransaction)
     assertTypes.isStringWithValue(privateKey)
     assertTypes.isStringWithValue(network)

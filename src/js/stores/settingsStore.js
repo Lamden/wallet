@@ -17,8 +17,8 @@ const createSettingsStore = () => {
     let startValue = defualtSettingsStore
     let initialized = false;
 
-    function getStore(){
-        //Set the Coinstore to the value of the local storage
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"settings": startValue}, function(getValue) {
             initialized = true;
             SettingsStore.set(getValue.settings)
@@ -28,7 +28,7 @@ const createSettingsStore = () => {
     //Create Intial Store
     const SettingsStore = writable(startValue);
 
-    //This is called everytime the CoinStore updated
+    //This is called everytime the SettingsStore updated
     SettingsStore.subscribe(current => {
         //Only accept and Array Object to be saved to the storage and only
         //if store has already been initialized
@@ -38,19 +38,19 @@ const createSettingsStore = () => {
         if (isSettingsStoreObj(current)){
             chrome.storage.local.set({"settings": current});
         }else{
-            //Recover store value in memory to previous local storage value
+            //Recover store value in memory to previous chome.storage.local value
             getStore();
             console.log('Recovered from bad Settings Store Value');
         }
     });
 
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
         for (let key in changes) {
             if (key === 'settings') SettingsStore.set(changes[key].newValue)
         }
     });
 
-    //Set the Coinstore to the value of the local storage
+    //Set the Coinstore to the value of the chome.storage.local
     getStore()
 
     let subscribe = SettingsStore.subscribe;

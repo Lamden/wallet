@@ -19,16 +19,16 @@ const defualtNetworksStore = {
     current: 'https://testnet.lamden.io:443'
 }
 
-function makeList(networkStore){
+const makeList = (networkStore) => {
     return [...networkStore.user, ...networkStore.lamden];
 }
 
-function foundNetwork(networkStore, matchKey){
+const foundNetwork = (networkStore, matchKey) => {
     let networks = makeList(networkStore);
     return networks.find(network => networkKey(network) === matchKey)
 }
 
-function getNetworkByName(networkStore, name){
+const getNetworkByName = (networkStore, name) => {
     return networkStore.lamden.find(network => network.name === name)
 }
 
@@ -36,8 +36,9 @@ export const createNetworksStore = () => {
     let initialized = false;
     let startValue = defualtNetworksStore;
     startValue.lamden = lamdenNetworks;
-    function getStore(){
-        //Set the Coinstore to the value of the local storage
+
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"networks": startValue}, function(getValue) {
             initialized = true;
             NetworksStore.set(getValue.networks)
@@ -47,7 +48,7 @@ export const createNetworksStore = () => {
     //Create Intial Store
     const NetworksStore = writable(startValue);
 
-    //This is called everytime the CoinStore updated
+    //This is called everytime the NetworksStore updated
     NetworksStore.subscribe(current => {
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
@@ -61,7 +62,7 @@ export const createNetworksStore = () => {
         }
     });
 
-    //Set the NetworksStore to the value of the local storage
+    //Set the NetworksStore to the value of the chome.storage.local
     getStore()
 
     let subscribe = NetworksStore.subscribe;

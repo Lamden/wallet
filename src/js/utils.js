@@ -8,7 +8,7 @@ const { validateTypes, assertTypes } = validators;
     Creates a dummy DOM node to mount a string to and then copies to the clipboard
     Return: Nothing
 */
-function copyToClipboard ( textTOcopy='', callback=undefined ){
+const copyToClipboard = ( textTOcopy='', callback=undefined ) => {
     if (validateTypes.isString(textTOcopy)){
         try{
             var dummy = document.createElement("input");
@@ -30,7 +30,7 @@ function copyToClipboard ( textTOcopy='', callback=undefined ){
     Encrypt a string using a password string 
     Return: Encrypted String (str)
 */
-function encryptStrHash ( password, string ){
+const encryptStrHash = ( password, string ) => {
     assertTypes.isStringWithValue(password)
     assertTypes.isString(string)
 
@@ -42,7 +42,7 @@ function encryptStrHash ( password, string ){
     Decrypt a string using a password string 
     Return: Decrypted String (str)
 */
-function decryptStrHash ( password, encryptedString ){
+const decryptStrHash = ( password, encryptedString ) => {
     assertTypes.isStringWithValue(password)
     assertTypes.isStringWithValue(encryptedString)
     
@@ -59,7 +59,7 @@ function decryptStrHash ( password, encryptedString ){
     Encrypt an Object using a password string 
     Return: Encrypted Object (obj)
 */
-function encryptObject ( password, obj ){
+const encryptObject = ( password, obj ) => {
     assertTypes.isStringWithValue(password)
     assertTypes.isObject(obj)
 
@@ -71,7 +71,7 @@ function encryptObject ( password, obj ){
     Decrypt an Object using a password string 
     Return: Decrypted Object (obj)
 */
-function decryptObject ( password, objString ){
+const decryptObject = ( password, objString )  => {
     assertTypes.isStringWithValue(password)
     assertTypes.isStringWithValue(objString)
 
@@ -88,7 +88,7 @@ function decryptObject ( password, objString ){
     Create a hash from a string
     Return: MD5 hash
 */
-function hashStringValue(string){
+const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 

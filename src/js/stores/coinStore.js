@@ -8,8 +8,8 @@ import { isCoinInfoObj } from '../objectValidations';
 export const createCoinStore = () => {
     let initialized = false;
 
-    function getStore(){
-        //Set the Coinstore to the value of the local storage
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"coins": []}, function(getValue) {
             initialized = true;
             CoinStore.set(getValue.coins)
@@ -32,7 +32,13 @@ export const createCoinStore = () => {
         }
     });
 
-    //Set the Coinstore to the value of the local storage
+    chrome.storage.onChanged.addListener(function(changes) {
+        for (let key in changes) {
+            if (key === 'coins') CoinStore.set(changes[key].newValue)
+        }
+    });
+
+    //Set the Coinstore to the value of the chome.storage.local
     getStore()
 
     let subscribe = CoinStore.subscribe;

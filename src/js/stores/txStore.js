@@ -9,8 +9,8 @@ import { isNetworkObj } from '../objectValidations';
 const createTxStore = () => {
     let initialized = false;
 
-    function getStore(){
-        //Set the Coinstore to the value of the local storage
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"txs": {}}, function(getValue) {
             initialized = true;
             TxStore.set(getValue.txs)

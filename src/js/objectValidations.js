@@ -2,7 +2,7 @@
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
-export function isPageInfoObj(pageInfoObj){
+export const isPageInfoObj = (pageInfoObj) => {
     //Reject undefined or missing info.
     if (!validateTypes.isObjectWithKeys(pageInfoObj)) return false;
     if(!validateTypes.hasKeys(pageInfoObj, ['name'])) return false;
@@ -10,7 +10,7 @@ export function isPageInfoObj(pageInfoObj){
     return true;
 }
 
-export function isStorageObj(storageObj){
+export const isStorageObj = (storageObj) => {
     //Reject undefined or missing info.
     if (!validateTypes.isObjectWithKeys(storageObj)) return false;
     if(!validateTypes.hasKeys(storageObj, ['used', 'remaining', 'max'])) return false;
@@ -18,7 +18,7 @@ export function isStorageObj(storageObj){
     return true;
 }
 
-export function isFileObj(name, code, methods, networkObj){
+export const isFileObj = (name, code, methods, networkObj) => {
     if (!validateTypes.isStringWithValue(name)) return false;
     if (!validateTypes.isString(code)) return false;
     if (!validateTypes.isArray(methods)) return false;
@@ -26,7 +26,7 @@ export function isFileObj(name, code, methods, networkObj){
     return true
 }
 
-export function isNetworkObj(networkInfo){
+export const isNetworkObj = (networkInfo) => {
     //Reject undefined or missing info
     if (!validateTypes.isObjectWithKeys(networkInfo)) return false;
     if (!validateTypes.isStringWithValue(networkInfo.name)) return false;
@@ -35,7 +35,7 @@ export function isNetworkObj(networkInfo){
     return true;
 }
 
-export function isTxDataObj(txDataObj){
+export const isTxDataObj = (txDataObj) => {
     if (!validateTypes.isObjectWithKeys(txDataObj)) return false;
     if (!validateTypes.hasKeys(txDataObj, ['network', 'sender'])) return false;
     if (!validateTypes.isStringWithValue(txDataObj.network.ip)) return false;
@@ -43,7 +43,7 @@ export function isTxDataObj(txDataObj){
     if (!validateTypes.isStringWithValue(txDataObj.sender.vk)) return false;
     return true;
 }
-export function isCoinInfoObj(coinInfoObj){
+export const isCoinInfoObj = (coinInfoObj) => {
     if (!validateTypes.isObjectWithKeys(coinInfoObj)) return false;
     if (!validateTypes.hasKeys(coinInfoObj, ['network', 'name', 'nickname', 'symbol', 'vk'])) return false;
     if (!validateTypes.isStringWithValue(coinInfoObj.network)) return false;
@@ -54,7 +54,7 @@ export function isCoinInfoObj(coinInfoObj){
     return true;
 }
 
-export function isSettingsStoreObj(obj){
+export const isSettingsStoreObj = (obj) => {
     if (!validateTypes.isObjectWithKeys(obj)) return false;
     if (!validateTypes.hasKeys(obj, ['currentPage', 'themeStyle', 'version'])) return false;
     if (!isPageInfoObj(obj.currentPage)) return false;
@@ -62,7 +62,7 @@ export function isSettingsStoreObj(obj){
     return true;
 }
 
-export function isNetworkStoreObj(obj){
+export const isNetworkStoreObj = (obj) => {
     if (!validateTypes.isObjectWithKeys(obj)) return false;
     if (!validateTypes.hasKeys(obj, ['user', 'lamden', 'current'])) return false;
     if (!validateTypes.isArray(obj.user) || !validateTypes.isArrayWithValues(obj.lamden)) return false;

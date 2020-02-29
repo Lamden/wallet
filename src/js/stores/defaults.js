@@ -22,14 +22,6 @@ export const supportedCoins = {
     ]
 }
 
-export const defualtSettingsStore = {
-    'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
-    'firstRun': true,
-    'themeStyle':'dark',
-    'version':'v0_9_8',
-    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000}
-}
-
 export const defaultFileCode = [
     '###',
     '#  This is a simple smart contract',

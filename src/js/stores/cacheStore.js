@@ -6,8 +6,8 @@ const { validateTypes } = validators;
 const createCacheStore = () => {
     let initialized = false;
 
-    function getStore(){
-        //Set the Coinstore to the value of the local storage
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"ideCache": {}}, function(getValue) {
             initialized = true;
             CacheStore.set(getValue.ideCache)
@@ -17,7 +17,7 @@ const createCacheStore = () => {
     //Create Intial Store
     const CacheStore = writable({});
 
-    //This is called everytime the CoinStore updated
+    //This is called everytime the CacheStore updated
     CacheStore.subscribe(current => {
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
@@ -30,7 +30,7 @@ const createCacheStore = () => {
         }
     });
 
-    //Set the NetworksStore to the value of the local storage
+    //Set the NetworksStore to the value of the chome.storage.local
     getStore()
 
 

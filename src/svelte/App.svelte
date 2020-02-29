@@ -38,6 +38,7 @@
 		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 			walletIsLocked = locked;
 		})
+
 		checkFirstRun();
 		document.querySelector("html").style = themes[$themeStyle];
 	});
