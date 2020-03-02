@@ -187,6 +187,11 @@ body{
     color: var(--font-primary-dark);
 }
 
+.button__icon{
+    background-color: unset;
+    border: unset;
+}
+
 .button__transparent{
     display: flex;
     align-items: center;

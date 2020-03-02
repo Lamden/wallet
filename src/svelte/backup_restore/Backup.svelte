@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { breadcrumbs, needsBackup } from '../../js/stores/stores.js';
+    import { breadcrumbs, needsBackup, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -21,6 +21,8 @@
 	onMount(() => {
         breadcrumbs.set([{name: 'Backup Wallet', page: {name: ''}}]);
     });
+
+    const dismissWarning = () => {SettingsStore.dismissWarning()}
 
 </script>
 
@@ -95,12 +97,13 @@
                     You have added Keys since your last backup so it is HIGHLY recommended that you create another backup.
                 </div>
                 <Button
-                    id={'backup-btn'} 
-                    classes={'button__transparent'}
-                    name="dismiss"
-                    margin={'0 49px 0 0'}
-                    click={() => switchPage('BackupMain')} 
+                    id={'dismiss-btn'} 
+                    classes={'button__icon'}
+                    margin={'1px 0 0 10px'}
+                    padding={'0'}
+                    click={dismissWarning} 
                     icon={iconClose}
+                    iconInvert={true}
                     iconPosition='before'/>
             </div>
         {/if}

@@ -82,14 +82,22 @@ const createSettingsStore = () => {
         setLastBackupDate: () => {
             SettingsStore.update(settingsStore => {
                 settingsStore.lastBackupDate = new Date().toLocaleString()
+                settingsStore.dismissWarning = false;
                 return settingsStore;
             })
         },
         setLastCoinAddedDate: () => {
             SettingsStore.update(settingsStore => {
                 settingsStore.lastCoinAddedDate = new Date().toLocaleString()
+                settingsStore.dismissWarning = false;
                 return settingsStore;
             }) 
+        },
+        dismissWarning: () => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.dismissWarning = true;
+                return settingsStore;
+            })    
         }
     };
 }
@@ -113,6 +121,7 @@ export const themeStyle = derived(
 export const needsBackup = derived(
 	SettingsStore,
 	$SettingsStore => {
+        if ($SettingsStore.dismissWarning) return false;
         if (validateTypes.isString($SettingsStore.lastBackupDate) && 
             validateTypes.isString($SettingsStore.lastCoinAddedDate)){
             return new Date($SettingsStore.lastCoinAddedDate) > new Date($SettingsStore.lastBackupDate)
