@@ -8,6 +8,7 @@
 
 	//Components
 	import ApproveConnection from './confirms/ApproveConnection.svelte'
+	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
 	
 	setContext('confirm_functions', {
 		approve: () => sendApprove(),
@@ -15,14 +16,15 @@
 	});
 
 	const componentMap = {
-		ApproveConnection
+		ApproveConnection, 
+		ApproveTransaction
 	}
 	let confirmData;
 
 	onMount(() => {
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
-			if (response) confirmData = response
 			console.log(response)
+			if (response) confirmData = response
 		})
 		document.querySelector("html").style = themes['dark'];
 	});
@@ -64,7 +66,7 @@
 	.logo {
 		width: 32px;
 		margin-right: 15.5px;
-		margin-left: 51px;
+		margin-left: 20px;
 	}
 
 	.words {

@@ -23,7 +23,7 @@
 
     onMount(() => {
         new Promise(function(resolve) {
-            addKeys2();
+            addKeys();
             let timerId = setTimeout(function checkProcessing() {
                 if (completedKeys === keys.keyList.length){
                     clearTimeout(timerId);
@@ -44,7 +44,7 @@
         })
     });
 
-    function addKeys2(resolve){
+    function addKeys(resolve){
         keys.keyList.map( key => {
             if (key.checked) {
                 chrome.runtime.sendMessage({type: 'encryptSk', data: key.sk}, (encryptedSk) => {

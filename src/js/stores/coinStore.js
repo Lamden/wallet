@@ -22,16 +22,11 @@ export const createCoinStore = () => {
     //This is called everytime the CoinStore updated
     CoinStore.subscribe(current => {
         if (!initialized) {
-            console.log('is initialized')
             return current
         }
         //Only accept and Array Object to be saved to the storage and only
         //if store has already been initialized
         if (validateTypes.isArray(current)) {
-            console.log('is array')
-            console.log(current)
-            console.log(get(CoinStore))
-            console.log(get(CoinStore) !== current)
             chrome.storage.local.set({"coins": current});
         }else{
             //If non-object found then set the store back to the previous local store value
@@ -43,7 +38,11 @@ export const createCoinStore = () => {
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'coins') {
-                if (changes[key].newValue !== get(CoinStore)) CoinStore.set(changes[key].newValue)
+                if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(CoinStore))) {
+                    console.log('updating CoinStore')
+                    console.log(changes[key])
+                    CoinStore.set(changes[key].newValue)
+                }
             }
         }
     });
@@ -135,12 +134,16 @@ export const CoinStore = createCoinStore();
 
 //Create a derived store to total all wallets
 export const balanceTotal = derived(CoinStore, ($CoinStore) => {
-    let total = 0;
-    $CoinStore.map(coin => {
-        if (!coin.balance) return
-        total  = total + coin.balance;
+    let totals = {};
+    $CoinStore.forEach(coin =>{
+        if (coin.balances){
+            Object.keys(coin.balances).forEach(key => {
+                if (!totals[key]) totals[key] = 0;
+                totals[key] = totals[key] + coin.balances[key];
+            })
+        }
     })
-    return total;
+    return totals;
 });
 
 //Create a derived store to total all wallets

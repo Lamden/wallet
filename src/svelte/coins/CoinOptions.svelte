@@ -32,7 +32,8 @@
 
     $: coin = getModalData();
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = coin.balance ? coin.balance : 0;
+    $: coinBalances = !coin.balances ? {} : coin.balances
+    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
 
     function showEdit(){
         setSelectedCoin(selectedWallet);
@@ -116,7 +117,7 @@
         {#if selectedWallet}
             {selectedWallet.name}
             <strong>
-                {`${selectedWallet.symbol} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`${selectedWallet.symbol} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
             </strong> 
         {/if}
     </div>

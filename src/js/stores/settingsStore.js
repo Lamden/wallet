@@ -20,6 +20,7 @@ const createSettingsStore = () => {
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"settings": startValue}, function(getValue) {
+            console.log(getValue.settings)
             initialized = true;
             SettingsStore.set(getValue.settings)
         });
@@ -36,6 +37,8 @@ const createSettingsStore = () => {
             return current
         }
         if (isSettingsStoreObj(current)){
+            console.log('setting settings store')
+            console.log(current)
             chrome.storage.local.set({"settings": current});
         }else{
             //Recover store value in memory to previous chome.storage.local value

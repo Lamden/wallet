@@ -57,12 +57,8 @@
     }
 
     function handleSelected(e){
+        console.log(e)
         NetworksStore.setCurrentNetwork(e.detail.selected.value)
-        $CoinStore.map(async (coin) => {
-            let balance = await $currentNetwork.API.getTauBalance(coin.vk);
-            if (!coin.balance) CoinStore.updateBalance(balance)
-            if (balance !== coin.balance) CoinStore.updateBalance(balance)
-        })
     }
 
     function handleTypeSelected(e){

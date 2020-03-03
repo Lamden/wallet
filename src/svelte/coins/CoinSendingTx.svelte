@@ -11,16 +11,16 @@
     export let txData;
     let message = 'Sending Transaction'
 
-
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === "txResult" && !sender.tab){
+        if (message.type === "txStatus"){
             dispatch('txResult', message.data)
         }
         sendResponse('ok');
     });
 
     onMount(() => {
-        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: JSON.stringify(txData.txInfo)}, (response) => {
+        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
+            console.log(response)
             message = response.status
         })
     })

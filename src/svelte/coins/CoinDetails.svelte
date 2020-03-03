@@ -29,7 +29,8 @@
 
     $: coin = CoinStore.getCoin($SettingsStore.currentPage.data, $CoinStore) || $SettingsStore.currentPage.data;
     $: symbol = coin.symbol;
-    $: balance = coin.balance ? coin.balance : 0;
+    $: coinBalances = !coin.balances ? {} : coin.balances
+    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
     $: sendPage = sendPages[coin.network]
     $: txList = () =>  {
         if (!$TxStore[networkKey($currentNetwork)]) return [];

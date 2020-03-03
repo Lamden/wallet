@@ -12,12 +12,16 @@
 
     export let confirmData;
 
+    const txData = confirmData.messageData.txData
+    const wallet = confirmData.messageData.wallet
+    const dappInfo = confirmData.messageData.dappInfo
+
     let prevent = false
 
 </script>
 
 <style>
-.approve-conection{
+.details{
     align-items: center;
     flex-grow: 1;
     justify-content: space-between;
@@ -27,11 +31,12 @@
 
 .hero-rec{
     width: 100%;
-    height: 125px;
-    padding: 15px 20px;
+    height: 119px;
+    padding: 15px 0;
     justify-content: space-between;
     background-size: cover;
     background-repeat: no-repeat;
+    align-items: center;
 }
 
 .dapp-name{
@@ -42,21 +47,36 @@
     justify-content: center;
     align-content: space-around;
     width: 100%;
-    padding-bottom: 20px;
 }
 
 .item{
     width: 45%;
     justify-content: space-evenly;
+    border-right: 1px solid gray;
 }
 
-.item:first-child{
-    border-right: 1px solid gray;
+.item:last-child{
+    border-right: none;
 }
 
 input[type="checkbox"]{
     width: 12px;
     height: 12px;
+}
+
+.kwargs {
+    align-items: flex-start;
+    max-height: 175px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.kwarg-value{
+    word-break: break-word;
+    margin-bottom: 0.5rem;
+}
+
+.kwarg-value:last-child{
+    margin-bottom: unset;
 }
 
 .checkbox-words{
@@ -73,26 +93,32 @@ input[type="checkbox"]{
 
 </style>
 
-<div class="approve-conection flex-column">
-    <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-        <h1>{`App Connection Request From`}</h1>
-        <div class="text-body3 dapp-name">{`${confirmData.messageData.appName}`}</div>
-        <div>{`app url: ${confirmData.url}`}</div>
-    </div>
-
-    <div class="description text-subtitle2">
-        {confirmData.messageData.description}
-    </div>
-
+<div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
+    <h1>{`Confirm Transaction From`}</h1>
+    <div class="text-body3 dapp-name">{`${dappInfo.appName}`}</div>
+    <div>{`app url: ${dappInfo.url}`}</div>
+</div>
+<div class="details flex-column">
     <div class="approve-items flex-row">
         <div class="item flex-column">
             <div class="text-body2 text-primary-dark">{`Smart Contract`}</div>
-            <div>{confirmData.messageData.contractName}</div>
+            <div>{txData.txInfo.contractName}</div>
+        </div>
+        <div class="item flex-column">
+            <div class="text-body2 text-primary-dark">{`Method`}</div>
+            <div>{txData.txInfo.methodName}</div>
         </div>
         <div class="item flex-column">
             <div class="text-body2 text-primary-dark">{`On Network`}</div>
-            <div>{confirmData.messageData.networkType.toUpperCase()}</div>
+            <div>{txData.networkInfo.type.toUpperCase()}</div>
         </div>
+    </div>
+
+    <div class="kwargs flex-column">
+        {#each Object.keys(txData.txInfo.kwargs) as kwarg }
+            <div class="text-subtitle2">{kwarg}</div>
+            <div class="kwarg-value text-subtitle4 text-primary-dark">{txData.txInfo.kwargs[kwarg]}</div>
+        {/each}
     </div>
     <div class="flex-column">
         <div class="buttons flex-row">

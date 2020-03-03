@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
 	//Stores
-    import { CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -17,6 +17,8 @@
     
     //Props
     export let coin;
+    $: coinBalances = !coin.balances ? {} : coin.balances
+    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
 
     let returnMessage = {};
     
@@ -70,7 +72,7 @@
     <div id={'modify-edit-info'} class="coin-info text-subtitle3">
         {coin.name}
         <strong>
-            {`${coin.symbol} - ${!coin.balance ? 0 : coin.balance} ${coin.symbol}`}
+            {`${coin.symbol} - ${balance.toLocaleString('en')} ${coin.symbol}`}
         </strong> 
     </div>
 

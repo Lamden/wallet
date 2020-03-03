@@ -16,21 +16,21 @@
     
     $: watching = coin.sk === 'watchOnly';
     $: symbol = coin.symbol;
-    $: balance = coin.balance ? coin.balance : 0;
+    $: coinBalances = !coin.balances ? {} : coin.balances
+    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
     $: percent = $balanceTotal === undefined ? "" : toPercentString();
 
     onMount(() => {
-        getBalance();
+        //getBalance();
     })
 
     async function getBalance(){
-        let balanceRes = await $currentNetwork.API.getTauBalance(coin.vk)
-        CoinStore.updateBalance(coin, balanceRes)
+        chrome.runtime.sendMessage({type: 'coinStoreUpdateBalance', data: coin.vk})
     }
 
     function toPercentString(){
-        if (isNaN((coin.balance / $balanceTotal))) return '0 %'
-        return ((coin.balance / $balanceTotal)* 100).toFixed(1).toString() + ' %'
+        if (isNaN((balance / $balanceTotal))) return '0 %'
+        return ((balance / $balanceTotal)* 100).toFixed(1).toString() + ' %'
     }
 </script>
 

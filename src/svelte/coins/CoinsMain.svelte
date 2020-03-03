@@ -30,25 +30,22 @@
 	//Props
 	export let name
 
+	let totalBalance = $balanceTotal[$currentNetwork.url] ? $balanceTotal[$currentNetwork.url] : 0;
+
 	let refreshing = false;
 
 	onMount(async () => {
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
+		console.log(await $currentNetwork.API.getTauBalance('270add00fc708791c97aeb5255107c770434bd2ab71c2e103fbee75e202aa15e'))
 	});
 
 	function handleRefresh(){
-		$CoinStore.map(async (coin) => {
-           let balance = await $currentNetwork.API.getTauBalance(coin.vk);
-            if (!coin.balance) CoinStore.updateBalance(balance)
-            if (balance !== coin.balance) CoinStore.updateBalance(balance)
-        })
+		chrome.runtime.sendMessage({type: 'coinStoreUpdateAllBalances', data: $currentNetwork.getNetworkInfo()})
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false
 		}, 1000);
 	}
-
-
 
 </script>
 
@@ -144,7 +141,7 @@
 			{`TAU`}
 		</div>
 		<div class="flex-row balance-total text-title">
-			{`${$balanceTotal.toLocaleString('en')}`}
+			{`${totalBalance.toLocaleString('en')}`}
 			<div on:click={handleRefresh} 
 				 class="refresh-icon clickable" 
 				 class:spinner={refreshing}>

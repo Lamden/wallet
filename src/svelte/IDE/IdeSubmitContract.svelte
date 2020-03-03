@@ -125,7 +125,7 @@
         />
         <div class="coin-info text-subtitle3">
             {#if selectedWallet}
-                {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`${selectedWallet.name} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
             {/if}
         </div>
         <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">

@@ -49,6 +49,8 @@
     $: methodName  = ''
     $: argValueTracker = {};
     $: methodArgs = [];
+    $: coinBalances = !coin.balances ? {} : coin.balances
+    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
     
     onMount(() => {
         getMethods(contractName)
@@ -250,7 +252,7 @@
 
     <div class="coin-info text-subtitle3">
         {#if selectedWallet}
-            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
+            {`${selectedWallet.name} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
         {/if}
     </div>
 
