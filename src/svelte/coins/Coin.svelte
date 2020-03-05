@@ -1,8 +1,8 @@
 <script>
-    import { onMount, afterUpdate, getContext, setContext} from 'svelte';
+    import { getContext, setContext} from 'svelte';
 
     //Stores
-    import { SettingsStore, currentNetwork, themeStyle, CoinStore, balanceTotal } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork, themeStyle, CoinStore, BalancesStore, balanceTotal } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
@@ -17,20 +17,13 @@
     $: watching = coin.sk === 'watchOnly';
     $: symbol = coin.symbol;
     $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
-    $: percent = $balanceTotal === undefined ? "" : toPercentString();
-
-    onMount(() => {
-        //getBalance();
-    })
-
-    async function getBalance(){
-        chrome.runtime.sendMessage({type: 'coinStoreUpdateBalance', data: coin.vk})
-    }
+    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
+    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
+    $: percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
 
     function toPercentString(){
-        if (isNaN((balance / $balanceTotal))) return '0 %'
-        return ((balance / $balanceTotal)* 100).toFixed(1).toString() + ' %'
+        if (isNaN((balance / $balanceTotal[$currentNetwork.url]))) return '0 %'
+        return ((balance / $balanceTotal[$currentNetwork.url])* 100).toFixed(1).toString() + ' %'
     }
 </script>
 

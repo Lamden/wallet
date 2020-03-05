@@ -3,7 +3,9 @@ import { coin, pubkey } from './defaults.js';
 
 export { obscure, supportedCoins } from './defaults.js';
 export { coinMeta } from './coinMeta.js';
-export { CoinStore, coinsDropDown, balanceTotal } from './coinStore.js';
+export { CoinStore, coinsDropDown } from './coinStore.js';
+export { BalancesStore, balanceTotal} from './balancesStore.js';
+export { PendingTxStore} from './pendingTxStore.js';
 export { SettingsStore, themeStyle, currentPage, needsBackup  } from './settingsStore.js';
 export { DappStore } from './dappStore.js';
 export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList  } from './networksStore.js';

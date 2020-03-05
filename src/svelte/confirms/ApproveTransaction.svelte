@@ -8,7 +8,7 @@
     import squares_bg from '../../img/backgrounds/squares_bg.png';
 
     //Context
-    const { approve, close } = getContext('confirm_functions');
+    const { approve, close, openNewTab } = getContext('confirm_functions');
 
     export let confirmData;
 
@@ -96,7 +96,7 @@ input[type="checkbox"]{
 <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
     <h1>{`Confirm Transaction From`}</h1>
     <div class="text-body3 dapp-name">{`${dappInfo.appName}`}</div>
-    <div>{`app url: ${dappInfo.url}`}</div>
+    <div class=" appurl-link text-body2 text-primary-dark" on:click={() => openNewTab(dappInfo.url)}>{`source ${dappInfo.url}`}</div>
 </div>
 <div class="details flex-column">
     <div class="approve-items flex-row">

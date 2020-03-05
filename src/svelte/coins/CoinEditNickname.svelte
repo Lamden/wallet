@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
 	//Stores
-    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -18,7 +18,8 @@
     //Props
     export let coin;
     $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
+    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
+    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
 
     let returnMessage = {};
     

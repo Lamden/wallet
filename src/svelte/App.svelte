@@ -25,7 +25,7 @@
 	let showModal = false;
 	let currentModal;
 	let modalData;
-	let fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
+	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
 	$: walletIsLocked = true;
 	$: firstRun = undefined;
@@ -53,7 +53,7 @@
 		checkFirstRun: () => checkFirstRun()
 	});
 
-	function checkFirstRun(){
+	const checkFirstRun = () => {
 		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {
 			firstRun = isFirstRun;
 			if (!firstRun && $currentPage.name === 'FirstRunMain'){
@@ -63,22 +63,22 @@
 		})
 	}
 
-	function switchPage(name, data) {
+	const switchPage = (name, data) => {
 		showModal = false;
 		SettingsStore.changePage({name, data});
 	}
 
-	function getUsedLocalStorageSpace() {
+	const getUsedLocalStorageSpace = () => {
   		return Object.keys(window.localStorage).map(function(key) { return localStorage[key].length;}).reduce(function(a,b) { return a+b;});
 	};
 
-	function openModal(modal, data){
+	const openModal = (modal, data) => {
 		currentModal = modal;
 		modalData = data;
         showModal = true;
 	}
 
-	function closeModal(){
+	const closeModal = () => {
 		showModal = false;
 	}
 

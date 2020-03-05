@@ -3,7 +3,7 @@
 
 	onMount(() => {
 		chrome.tabs.query({}, function(tabs) {
-			let foundTab = tabs.find((tab) => {
+			const foundTab = tabs.find((tab) => {
 				if (typeof tab.url !== 'undefined') return tab.url.includes(chrome.runtime.id)
 				else return false
 			});

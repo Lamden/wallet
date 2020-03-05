@@ -13,6 +13,7 @@
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === "txStatus"){
+            console.log(message.data)
             dispatch('txResult', message.data)
         }
         sendResponse('ok');

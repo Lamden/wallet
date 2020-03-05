@@ -12,13 +12,14 @@ export const createCoinStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"coins": []}, function(getValue) {
             initialized = true;
+            console.log(getValue.coins)
             CoinStore.set(getValue.coins)
         });
     }
 
     //Create Intial Store
     const CoinStore = writable([]);
-
+    /*
     //This is called everytime the CoinStore updated
     CoinStore.subscribe(current => {
         if (!initialized) {
@@ -27,20 +28,22 @@ export const createCoinStore = () => {
         //Only accept and Array Object to be saved to the storage and only
         //if store has already been initialized
         if (validateTypes.isArray(current)) {
-            chrome.storage.local.set({"coins": current});
+            console.log('setting to storage from CoinStore')
+            console.log(current)
+            //chrome.storage.local.set({"coins": current});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()
             console.log('Recovered from bad Coin Store Value')
         }
     });
-
+*/
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
+            console.log(changes)
             if (key === 'coins') {
+                console.log('setting CoinStore from listener')
                 if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(CoinStore))) {
-                    console.log('updating CoinStore')
-                    console.log(changes[key])
                     CoinStore.set(changes[key].newValue)
                 }
             }
@@ -58,9 +61,6 @@ export const createCoinStore = () => {
         subscribe,
         set,
         update,
-        getValue: () => {
-            return get(CoinStore)
-        },
         //Add a coin to the internal coin storage
         addCoin: (coinInfo) => {
             //Reject missing or undefined arguments
@@ -78,6 +78,7 @@ export const createCoinStore = () => {
                 //If the coin doesn't exists then push it to the array
                 CoinStore.update(coinstore => {
                     coinstore.push(coinInfo)
+                    chrome.storage.local.set({"coins": coinstore});
                     return coinstore;
                 })
                 return {added: true, reason: 'new'}
@@ -90,6 +91,7 @@ export const createCoinStore = () => {
                                 coin.sk = coinInfo.sk;
                             }
                         });
+                        chrome.storage.local.set({"coins": coinstore});
                         return coinstore;
                     })
                     return {added: true, reason: `${coinFound.nickname}'s Private Key Updated`}
@@ -100,32 +102,12 @@ export const createCoinStore = () => {
             }
         },
         //Retrive a specific coin from the Coin Store
-        getCoin: (coinInfo) => {
+        getCoin: (vk) => {
             //Reject missing or undefined arguments
-            if (!isCoinInfoObj(coinInfo)) return;
+            if (!validateTypes.isStringWithValue(vk)) return;
 
             //Return the matching coin (will be undefined if not matched)
-            return get(CoinStore).find( f => {
-                return  f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
-            });
-        },
-        //Update the balance of a coin
-        updateBalance: (coinInfo, balance) => {
-            //Reject missing or undefined arguments
-            if (!isCoinInfoObj(coinInfo) || !validateTypes.isNumber(balance)) return;
-            
-            CoinStore.update(coinstore => {
-                //Find the coin to update in the store
-                let coinToUpdate = coinstore.find( f => {
-                    return  f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
-                });
-                
-                //If the coin was matched then update the balance to the one provided
-                if (coinToUpdate){
-                    coinToUpdate.balance = balance;
-                };
-                return coinstore;
-            })
+            return get(CoinStore).find( f => f.vk === vk);
         }
     };
 }

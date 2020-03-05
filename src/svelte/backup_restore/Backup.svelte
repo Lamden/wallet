@@ -83,7 +83,7 @@
         <div class="buttons">
         	<Button
                 id={'backup-btn'} 
-                classes={'button__transparent'}
+                classes={'button__transparent button__blue'}
 				name="Backup Wallet"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('BackupMain')} 

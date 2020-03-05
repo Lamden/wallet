@@ -12,7 +12,8 @@
 	
 	setContext('confirm_functions', {
 		approve: () => sendApprove(),
-		close:() => closePopup()
+		close:() => closePopup(),
+		openNewTab: (url) => openNewTab(url)
 	});
 
 	const componentMap = {
@@ -23,19 +24,22 @@
 
 	onMount(() => {
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
-			console.log(response)
 			if (response) confirmData = response
 		})
 		document.querySelector("html").style = themes['dark'];
 	});
 
-	function sendApprove(){
+	const sendApprove = () => {
 		chrome.runtime.sendMessage({type: 'approveConfirm'})
 		closePopup()
 	}
 
-	function closePopup(){
+	const closePopup = () => {
 		window.close();
+	}
+
+	const openNewTab = (url) => {
+		window.open(url, '_blank');
 	}
 </script>
 

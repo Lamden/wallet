@@ -212,8 +212,7 @@ body{
     background: #5120e0;
 }
 
-.button__blue{
-    color: #4FB8FF;
+.button__blue:hover{
     border: 1px solid #4FB8FF;
 }
 
@@ -303,6 +302,7 @@ button {
 
 .outside-link{
     color: cyan;
+    cursor: pointer;
 }
 
 .outside-link:hover {
@@ -312,6 +312,36 @@ button {
 .outside-link:visited {
     outline: none;
 }
+
+.appurl-link{
+    cursor: pointer;
+}
+
+.appurl-link:hover {
+    color: cyan;
+    
+}
+
+.appurl-link:visited {
+    outline: none;
+}
+
+.hash-link{
+    cursor: pointer;
+    color: var(--primary-color)
+}
+
+.hash-link:hover {
+    color: cyan;
+    
+}
+
+.hash-link:visited {
+    outline: none;
+    color: var(--secondary-color);
+}
+
+
 
 input[type="checkbox"]{
     width: 18px;

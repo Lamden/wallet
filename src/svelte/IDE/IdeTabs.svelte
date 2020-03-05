@@ -13,7 +13,7 @@
     //Context
     const { openModal } = getContext('app_functions');
 
-    function addTab(){
+    const addTab = () => {
         openModal('IdeModelNewTab');
     }
 

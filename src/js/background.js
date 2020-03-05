@@ -3,6 +3,7 @@ import '../img/icon-34.png'
 
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue } from './utils.js';
 import Lamden from 'lamden-js'
+import Lamden2 from '../../../lamden-js/dist/lamden'
 
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators
@@ -16,14 +17,17 @@ let coinStore;
 let dappsStore;
 let settingsStore;
 let networksStore;
+let balancesStore;
 let txStore;
+let pendingTxStore;
 
 
 //Misc Values
-let pendingTxList;
 let txToConfirm = {};
 let current = '';
 let walletIsLocked = true;
+let updatingBalances = false;
+let checkingTransactions = false;
 const LamdenNetworkTypes = ['mainnet','testnet','mockchain']
 /*
 chrome.storage.local.set(
@@ -31,9 +35,9 @@ chrome.storage.local.set(
        // "hash": "",
       //  "coins": [],
       //  "txs": {},
-      //  "pendingTxs": {},
+      //  "pendingTxs": [],
        // "networks":{},
-        "dapps":{},
+        //"dapps":{},
       //  "settings": undefined
     }
 )
@@ -47,7 +51,8 @@ chrome.storage.local.get(
         "hash": "",
         "coins": [],
         "txs": {},
-        "pendingTxs": {},
+        "balances":{},
+        "pendingTxs": [],
         "networks":{},
         "dapps":{},
         "settings": {}
@@ -56,12 +61,14 @@ chrome.storage.local.get(
         console.log(getValue)
         hash = getValue.hash
         firstRun = hash === "" ? true : false;
-        coinStore = getValue.coins
+        coinStore = getValue.coins;
+        balancesStore = getValue.balances;
         txStore = getValue.txs;
         networksStore = getValue.networks;
         settingsStore = getValue.settings; 
-        pendingTxList = getValue.pendingTxs;
+        pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
+        console.log(coinStore)
     }
 )
 
@@ -69,7 +76,6 @@ chrome.storage.local.get(
  * Sync information in the store with the background page everytime new information is saved.
  * This also will sync data when the svelte stores save to chrome.local.storage
  ********************************************************************/
-
 chrome.storage.onChanged.addListener(function(changes) {
     console.log(changes)
     for (let key in changes) {
@@ -81,7 +87,10 @@ chrome.storage.onChanged.addListener(function(changes) {
             txStore = changes[key].newValue;
             //alert(JSON.stringify(txStore)); 
         }
-        if (key === 'pendingTxs') pendingTxList = changes[key].newValue;
+        if (key === 'pendingTxs') {
+            pendingTxStore = changes[key].newValue;
+            //alert(JSON.stringify(txStore)); 
+        }
     }
 });
 
@@ -110,6 +119,14 @@ const validatePassword = (testPassword) => {
 }
 
 /***********************************************************************
+ * Settings Store Functions
+ ***********************************************************************/
+const setDissmissFlag = (value) => {
+    settingsStore.dismissWarning = value
+    chrome.storage.local.set({"settings": settingsStore});
+}
+
+/***********************************************************************
  * Wallet Locking Functions
  ***********************************************************************/
 const setWalletIsLocked = (status) => {
@@ -121,7 +138,6 @@ const setWalletIsLocked = (status) => {
 /***********************************************************************
  * Encryption / Decryption Functions
  ***********************************************************************/
-
 const encryptString = (string) => {
     try{
         return encryptStrHash(current, string);
@@ -156,14 +172,89 @@ const decryptedKeys = () => {
         return coin
     })
 }
+/***********************************************************************
+ * BalancesStore Updating TAU balances
+ ***********************************************************************/
+const balancesStoreUpdateOne = (vk, networkInfo) => {
+    if (!updatingBalances){
+        updatingBalances = true;
+        balancesStoreUpdateVk(vk, networkInfo)
+        .then((res) => {
+            if (!updatingBalances && res){
+                chrome.storage.local.set({"balances": balancesStore}, () =>{
+                    updatingBalances = false;
+                });
+            }
+        })
+    }
+}
 
+const balancesStoreUpdateAll = (networkInfo) => {
+    updatingBalances = true;
+    const coinsToProcess = coinStore.length; 
+    let coinsProcessed = 0;
+
+    coinStore.forEach((coin, index) => {
+        balancesStoreUpdateVk(coin.vk, networkInfo)
+        .then(() => {
+            coinsProcessed = coinsProcessed + 1
+            if (coinsProcessed >= coinsToProcess){
+                chrome.storage.local.set({"balances": balancesStore}, () =>{
+                    updatingBalances = false;
+                });
+            }
+        })
+    })
+}
+
+const balancesStoreUpdateVk = async (vk, networkInfo) => {
+    let network;
+    if (networkInfo){
+        network = new Lamden.Network(networkInfo)
+    } else {
+        network = new Lamden.Network(getCurrentNetwork())
+    }
+    if (!balancesStore[network.url]) balancesStore[network.url] = {}
+    if (!balancesStore[network.url][vk]) balancesStore[network.url][vk] = 0
+    const currentBalance = balancesStore[network.url][vk]
+    let newBalance = await network.API.getTauBalance(vk)
+    if (parseFloat(parseFloat(newBalance).toFixed(8)) != parseFloat(parseFloat(currentBalance).toFixed(8))){
+        balancesStore[network.url][vk] = newBalance
+        return true;
+    }else{
+        return false
+    }
+}
 
 /***********************************************************************
  * CoinStore/Wallet Functions
  ***********************************************************************/
-
 const getWallet = (vk) => {
 	return coinStore.find(coin => coin.vk === vk)
+}
+
+const coinStoreAddNewLamdenCoin = (name) => {
+    let keyPair = Lamden.wallet.new_wallet()
+    keyPair.sk = encryptString(keyPair.sk)
+    if (keyPair.sk){
+        const coinInfo = {
+            'network': 'lamden',
+            'name': "Lamden",
+            'nickname' : name,
+            'symbol': "TAU",
+            'vk': keyPair.vk,
+            'sk': keyPair.sk
+        }
+        coinStoreAddNewCoin(coinInfo)
+        return coinInfo
+    }else{
+        return false
+    }
+}
+
+const coinStoreAddNewCoin = (coinInfo) => {
+    coinStore.push(coinInfo)
+    chrome.storage.local.set({"coins": coinStore});
 }
 
 const coinStoreDelete = (coinInfo) => {
@@ -177,37 +268,11 @@ const coinStoreDelete = (coinInfo) => {
     }
 }
 
-const coinStoreUpdateAllBalances = (networkInfo) => {
-    coinStore.forEach((coin) => {
-        coinStoreUpdateBalance(coin.vk, networkInfo)
-    })
-    return true
-}
 
-const coinStoreUpdateBalance = async (vk, networkInfo) => {
-    let network;
-    if (networkInfo){
-        network = new Lamden.Network(networkInfo)
-    } else {
-        network = new Lamden.Network(getCurrentNetwork())
-    }
-    const foundCoin = coinStore.find(coin => coin.vk === vk)
-    if (foundCoin){
-        if (!foundCoin.balances) foundCoin.balances = {};
-        if (!foundCoin.balances[network.url]) foundCoin.balances[network.url] = 0
-        let balance = await network.API.getTauBalance(foundCoin.vk)
-        if (parseFloat(parseFloat(balance).toFixed(8)) !== parseFloat(parseFloat(foundCoin.balances[network.url]).toFixed(8))){
-            foundCoin.balances[network.url] = balance
-            chrome.storage.local.set({"coins": coinStore});
-        }
-    }
-    return true
-}
 
 /***********************************************************************
  * NetworkStore / API Functions
  ***********************************************************************/
-
 const getCurrentNetwork = () => {
     const networks = [...networksStore.lamden, ...networksStore.user]
     const foundNetwork = networks.find(network => networksStore.current === `${network.host}:${network.port}`)
@@ -215,9 +280,7 @@ const getCurrentNetwork = () => {
 }
 
 const getLamdenNetwork = (networkType) => {
-    console.log(networkType)
     const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase())
-    console.log(foundNetwork)
     if (!foundNetwork) return false;
     return foundNetwork;
 }
@@ -238,65 +301,67 @@ const contractExists = (networkType, contractName) => {
  ***********************************************************************/
 const sendTx = (txBuilder, sk, sentFrom) => {
     txBuilder.send(decryptString(sk), () => {
-        const txData = txBuilder.getAllInfo()
-        saveTxData(txBuilder);
-        sendMessageToTab(sentFrom, 'txStatus', txData)
+        console.log(txBuilder)
+        processSendResponse(txBuilder);
+        console.log(sentFrom)
+        sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
     })
 }
 
-const saveTxData = (txBuilder) => {
+const processSendResponse = (txBuilder) => {
     const result = txBuilder.txSendResult;
-    //alert(JSON.stringify(result))
-    const netKey = txBuilder.url;
-    const vk = txBuilder.sender;
-
     if (result.hash){
-        //create keys if they don't exist
-        if (!pendingTxList[netKey]) pendingTxList[netKey] = {}
-        if (!pendingTxList[netKey][vk]) pendingTxList[netKey][vk] = [];
-
-        pendingTxList[netKey][vk].push(txBuilder.getAllInfo());
-
-        chrome.storage.local.set({"pendingTxs": pendingTxList});
-        //alert('SAVING TO STORE: ' + JSON.stringify(pendingTxList))
+        pendingTxStore.push(txBuilder.getAllInfo());
+        chrome.storage.local.set({"pendingTxs": pendingTxStore});
     }else{
-        //create keys if they don't exist
-        if (!txStore[netKey]) txStore[netKey] = {}
-        if (!txStore[netKey][vk]) txStore[netKey][vk] = [];
-
-        let txDate = {
-            txInfo: txBuilder.getTxInfo(),
-            resultInfo: txBuilder.getResultInfo(),
-            timestamp: result.timestamp
-        }
-
-        txStore[netKey][vk].push(txDate);
-
-        chrome.storage.local.set({"txs": txStore});
-        //alert('SAVING TO STORE: ' + JSON.stringify(txStore))        
+        saveToTxStore(txBuilder)
     }
 }
 
-function updateTxData(){
-    let netKey = txBuilder.url
-    let vk = txBuilder.sender
-    if (!txStore[netKey]) return;
-    if (!txStore[netKey][vk]) return;
+const saveToTxStore = (txBuilder) => {
+    const netKey = txBuilder.url;
+    const vk = txBuilder.sender;
 
-    let txHistory = txStore[netKey][vk]
-    let foundTx = txHistory.find(f => f.id === txBuilder.id)
+    //create keys if they don't exist
+    if (!txStore[netKey]) txStore[netKey] = {}
+    if (!txStore[netKey][vk]) txStore[netKey][vk] = [];
 
-    if (!foundTx) return
+    let txData = {
+        hash: txBuilder.txHash,
+        txInfo: txBuilder.getTxInfo(),
+        resultInfo: txBuilder.getResultInfo(),
+        timestamp: txBuilder.txBlockResult.timestamp || txBuilder.txSendResult.timestamp,
+        network: txBuilder.url
+    }
 
-    foundTx = txBuilder.getAllInfo()
-    chrome.storage.local.set({"txs": txStore});
-    alert('UPDATING STORE: ' + JSON.stringify(txStore))
+    txStore[netKey][vk].push(txData);
+    chrome.storage.local.set({"txs": txStore}); 
+}
+
+const checkPendingTransactions = () => {
+    if (!checkingTransactions){
+        checkingTransactions = true;
+        const transactionsToProcess = pendingTxStore.length; 
+        let transactionsProcessed = 0; 
+        pendingTxStore.forEach(async (tx) => {
+            const txBuilder = new Lamden2.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
+            await txBuilder.checkForTransactionResult()
+            .then(() => {
+                transactionsProcessed = transactionsProcessed + 1
+                saveToTxStore(txBuilder)
+                if (transactionsProcessed >= transactionsToProcess){
+                    chrome.storage.local.set({"pendingTxs": []}, () => {
+                        checkingTransactions = false;
+                    });
+                }
+            })
+        })
+    }
 }
 
 /***********************************************************************
  * dApp Approavl and Handling Functions
  ***********************************************************************/
-
 const validateConnectionMessage = (data) => {
     let errors = [];
     const messageData = isJSON(data)
@@ -330,7 +395,6 @@ const validateConnectionMessage = (data) => {
 }
 
 const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
-    console.log(settingsStore)
     let installedStatus = {
         version: settingsStore.version,
         installed: true,
@@ -340,13 +404,16 @@ const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
     }
     if (installedStatus.locked === false){
         installedStatus.wallets = [dappInfo.vk]
-        installedStatus.currentNetwork = new Lamden.Network(getCurrentNetwork()).getNetworkInfo()
+        let approvals = {}
+        Object.keys(dappInfo).forEach(key => {
+            if(LamdenNetworkTypes.includes(key)) approvals[key] = dappInfo[key].contractName
+        })
+        installedStatus.approvals = approvals
     }
     sendResponse(installedStatus)
 }
 
 const promptApproveDapp = async (sender, messageData) => {
-    console.log(messageData)
     let exists = await contractExists(messageData.networkType, messageData.contractName)
     if (!exists) {
         const errors = [`contractName: '${messageData.contractName}' does not exists on '${messageData.networkType}' network.`]
@@ -367,7 +434,6 @@ const promptApproveDapp = async (sender, messageData) => {
 }
 
 const promptApproveTransaction = async (sender, messageData) => {
-    console.log(messageData)
     const keypair = Lamden.wallet.new_wallet()
     const windowId = hashStringValue(keypair.vk)
     txToConfirm[windowId] = {
@@ -384,32 +450,19 @@ const promptApproveTransaction = async (sender, messageData) => {
 const approveDapp = (sender) => {
     const confirmData = txToConfirm[getSenderHash(sender)]
     if (!walletIsLocked){
-        let keyPair = Lamden.wallet.new_wallet()
-        keyPair.sk = encryptString(keyPair.sk)
-        const messageData = confirmData.messageData
-        if (keyPair.sk){
-            console.log(confirmData.url)
-            if (!dappsStore[confirmData.url]) dappsStore[confirmData.url] = {}
-            if (!dappsStore[confirmData.url][messageData.networkType]) dappsStore[confirmData.url][messageData.networkType] = {}
-            dappsStore[confirmData.url][messageData.networkType].contractName = messageData.contractName
-            dappsStore[confirmData.url].appName = messageData.appName
-            dappsStore[confirmData.url].url = confirmData.url
-            dappsStore[confirmData.url].vk = keyPair.vk
-            console.log(dappsStore)
-
-            coinStore.push({
-                'network': 'lamden',
-                'name': "Lamden",
-                'nickname' : messageData.appName,
-                'symbol': "TAU",
-                'vk': keyPair.vk,
-                'sk': keyPair.sk
-            })
-            chrome.storage.local.set({"dapps": dappsStore});
-            chrome.storage.local.set({"coins": coinStore});
+        const dappInfo = getDappInfo(sender)
+        if (dappInfo){
+            DappStoreUpdateApproval(confirmData.url, messageData.networkType, messageData.contractName)
             sendMessageToTab(confirmData.url, 'sendWalletInfo')
         }else{
-            throw new Error('Unable to encrypt private key while approving dapp')
+            const messageData = confirmData.messageData
+            const newWallet = coinStoreAddNewLamdenCoin(messageData.appName)
+            if (newWallet){
+                DappStoreAddNew(confirmData.url, newWallet.vk, messageData)
+                sendMessageToTab(confirmData.url, 'sendWalletInfo')
+            }else{
+                throw new Error('Unable to encrypt private key while approving dapp')
+            }
         }
     }else{
         const errors = ['Tried to approve app but wallet was locked']
@@ -428,6 +481,21 @@ const approveTransaction = (sender) => {
         const errors = ['Tried to send transaction app but wallet was locked']
         sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
     }
+}
+
+const DappStoreAddNew = (appUrl, vk, messageData) => {
+    if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
+    if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
+    dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
+    dappsStore[appUrl].appName = messageData.appName
+    dappsStore[appUrl].url = appUrl
+    dappsStore[appUrl].vk = vk
+    chrome.storage.local.set({"dapps": dappsStore});
+}
+
+const DappStoreUpdateApproval = (appUrl, network, contractName) => {
+    dappsStore[appUrl][network].contractName = contractName
+    chrome.storage.local.set({"dapps": dappsStore}); 
 }
 
 /***********************************************************************
@@ -504,40 +572,49 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const dappInfo = isFromAuthorizedDapp ? getDappInfo(sender.url) : undefined;
     const isFromApp = fromApp(sender.url);
     const isFromConfirm = fromConfirm(sender.url);
-
+/*
     console.log(message)
     console.log(sender)
     console.log(isFromAuthorizedDapp)
     console.log(dappInfo)
     console.log(isFromApp)
     console.log(isFromConfirm)
-
-
-    //Reject any messages not from the App itself of from the autorized Dapp List.
-    if (!isFromAuthorizedDapp && !isFromApp && !isFromConfirm){
-        console.log('in here')
-        /*************************************************
-         ** UNAUTHOIZED MESSAGE PROCESSING
-        **************************************************/
-       //Process messages from dApps that want to be authorized
-        if (message.type === 'lamdenWalletConnect') {
-            if (walletIsLocked){
-                sendResponse({errors:["Wallet is Locked"]})
-                return
-            }
-            //Make sure the connection request is valid before processing; return erros to dApp
-            const connectionMessage = validateConnectionMessage(message.data)
-            if (validateTypes.hasKeys(connectionMessage, ['errors'])){
-                sendResponse(connectionMessage)
-                return
-            }else{
+*/
+   /*************************************************
+    ** AUTHORIZATION MESSAGES
+    **************************************************/
+    //Process connection messages to have the user authorize an app
+    if (message.type === 'lamdenWalletConnect') {
+        //Reject if wallet is locked as we won't have the user's password stored to encrypt the new keypair
+        if (walletIsLocked){
+            sendResponse({errors:["Wallet is Locked"]})
+            return
+        }
+        //Make sure the connection request is valid before processing; return erros to dApp
+        const connectionMessage = validateConnectionMessage(message.data)
+        if (validateTypes.hasKeys(connectionMessage, ['errors'])){
+            sendResponse(connectionMessage)
+            return
+        }else{
+            let sendApproval = true;
+            try{
+                //Check if the dApp is already authorized on the requested network
+                if (dappInfo[connectionMessage.networkType].contractName === connectionMessage.contractName){
+                    sendResponse({errors:[`App is already authorized to use ${connectionMessage.contractName} on ${connectionMessage.networkType}`]})
+                    sendApproval = false;
+                }
+            }catch (e){}
+            if (sendApproval){
                 //Open Confirm popup to the user to approve the app
                 promptApproveDapp(sender, connectionMessage)
                 sendResponse("ok")
             }
-        }else{
-            sendResponse(`You must be an authorized dApp to send message type ${message.type}. Send 'lamdenWalletConnect' event first to authorize.`)
         }
+    }
+
+    //Reject any messages not from the App itself of from the autorized Dapp List.
+    if (!isFromAuthorizedDapp && !isFromApp && !isFromConfirm){
+        sendResponse(`You must be an authorized dApp to send message type ${message.type}. Send 'lamdenWalletConnect' event first to authorize.`)
     }else{
         /*************************************************
          ** MESSAGES FROM THE LAMDEN WALLET APP 
@@ -588,9 +665,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 //Delete a coin/wallet from the coinStore
                 if (message.type === 'coinStoreDelete') sendResponse(coinStoreDelete(message.data))
                 //Call the currentNetwork API to refresh all balances in the coinStore
-                if (message.type === 'coinStoreUpdateAllBalances') sendResponse(coinStoreUpdateAllBalances(message.data))
+                if (message.type === 'balancesStoreUpdateAll') sendResponse(balancesStoreUpdateAll(message.data))
                 //Call the currentNetwork API to refresh the balance of 1 coin/wallet in the coinStore
-                if (message.type === 'coinStoreUpdateBalance') sendResponse(coinStoreUpdateBalance(message.data))
+                if (message.type === 'balancesStoreUpdateOne') sendResponse(balancesStoreUpdateOne(message.data))
                 //Create and Send a transaction to the currentNetwork Masternode
                 if (message.type === 'sendLamdenTransaction'){
                     let txInfo = message.data;
@@ -598,7 +675,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     if (!wallet) sendResponse({status: `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`});
                     try{
                         txInfo.uid = encryptString(wallet.vk, 'tracking-id')
-                        let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
+                        let txBuilder = new Lamden2.TransactionBuilder(getCurrentNetwork(), txInfo)
                         sendResponse({status: "Transaction Sent, Awaiting Response"})
                         sendTx(txBuilder, wallet.sk, sender.url)
                     }catch (err){
@@ -616,8 +693,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             let confirmHash = sender.url.split('#')[1]
             //recover the information about the request being confirmed
             if (message.type === 'getConfirmInfo'){
-                console.log(confirmHash)
-                console.log(txToConfirm[confirmHash])
                 try {
                     sendResponse(txToConfirm[confirmHash])
                 } catch (e){}
@@ -661,7 +736,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     } catch (err) {
                         sendTxErrorResponse(errorStatus, ['Failed to Parse JSON object', err.message], rejectedTx, sendResponse)
                     }
-                    console.log(txInfo)
                     //Reject transaction attempt if network type has not been approved
                     if (!dappInfo[txInfo.networkType]) {
                         errors = [`Transactions on ${txInfo.networkType} have not been approved for ${dappInfo.url}.`]
@@ -688,7 +762,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         //Set the contract name to the one approved by the user for the dApp
                         txInfo.contractName = dappInfo[txInfo.networkType].contractName
                         //Create a Lamden Transaction
-                        const txBuilder = new Lamden.TransactionBuilder(network, txInfo)
+                        const txBuilder = new Lamden2.TransactionBuilder(network, txInfo)
                         //Send dummp response so message tunnel doesn't error
                         sendResponse("ok")
                         const info = (({ appName, url }) => ({ appName, url }))(dappInfo);
@@ -702,3 +776,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     }
 });
+
+
+// Timer to check pending transacations
+let timerId = setTimeout(async function resolvePendingTxs() {
+    if (!checkingTransactions && pendingTxStore.length > 0){
+        checkPendingTransactions()
+    }
+    timerId = setTimeout(resolvePendingTxs, 1000);
+}, 1000);

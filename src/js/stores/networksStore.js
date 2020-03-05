@@ -56,8 +56,6 @@ export const createNetworksStore = () => {
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
         if (isNetworkStoreObj(current)){
-            console.log('setting current network!')
-            console.log(current)
             current.lamden = lamdenNetworks;
             chrome.storage.local.set({"networks": current});
         }else{

@@ -12,7 +12,7 @@
 
     export let loaded;
 
-    function handleSubmit(){
+    const handleSubmit = () => {
         if (formObj.checkValidity()){
             chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (walletIsLocked) => {
                 if (walletIsLocked || chrome.runtime.lastError) {
@@ -22,12 +22,12 @@
         }
     }
 
-    function setValidity(node, message){
+    const setValidity = (node, message) => {
         node.setCustomValidity(message);
         node.reportValidity();
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => { 
         if (e.detail.keyCode !== 13) setValidity(pwdObj, '')
     }
 </script>

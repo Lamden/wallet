@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { CoinStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, TxStore, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -32,8 +32,8 @@
 
     $: coin = getModalData();
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balance = !coinBalances[$currentNetwork.url] ? 0 : coinBalances[$currentNetwork.url];
+    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
+    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
 
     function showEdit(){
         setSelectedCoin(selectedWallet);
@@ -87,8 +87,16 @@
     background-color: var(--primary-color);
 }
 
+.purple:hover{
+    background-color: #5121de;
+}
+
 .grey{
     background-color: var(--bg-color-grey);
+}
+
+.grey:hover{
+    background-color: #444444;
 }
 
 .buttons{

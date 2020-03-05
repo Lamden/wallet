@@ -116,7 +116,7 @@
 					{#if $activeTab.type === 'local'}
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent'}
+							classes={'button__transparent button__blue'}
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
 							height={'42px'}

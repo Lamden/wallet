@@ -2,29 +2,29 @@
     import { onMount } from 'svelte';
     
     //Stores
-    import { TxStore, breadcrumbs, currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { TxStore, breadcrumbs, currentNetwork, networkKey, PendingTxStore } from '../../js/stores/stores.js';
 
 	//Components
-    import { Transaction }  from '../Router.svelte'
+    import { Transaction, PendingTransactions }  from '../Router.svelte'
 
     let page = 1;
     
     $: txByDay = groupByDate(flattenObject($TxStore[networkKey($currentNetwork)]));
-    $: pendingTxList = [];
   
 	onMount(() => {
-        breadcrumbs.set([{name: 'History', page: {name: ''}},]);     
+        breadcrumbs.set([{name: 'History', page: {name: ''}},]);   
     });
 
     function sortTxList(txList){
-        return txList.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return txList.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }
 
     function groupByDate(txList){
         if (!txList) return {};
         let txDict = {};
         sortTxList(txList).map(tx => {
-            let date = new Date(tx.date).toLocaleDateString();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            let date = new Date(tx.timestamp).toLocaleDateString(undefined, options);
             if (!txDict[date]){
                 txDict[date] = [tx];
             }else{
@@ -50,25 +50,24 @@
     display:flex;
     flex-direction: column;
 }
-
 .section-header{
     margin: 24px 0 18px;
 }
 </style>
 
-<div class="history text-primary">
-    {#if Object.keys(txByDay).length === 0}
-        <h5>No Transaction History</h5>
-    {:else}
-        {#each Object.keys(txByDay) as day}
-            <div class="section-header text-body2">
-                {new Date(day).toDateString()}
-            </div>
-            
-            {#each txByDay[day] as tx}
-                <Transaction txData={tx}/>
-            {/each}
-            
+<div class="history text-primary flex-column">
+    <h5>Transaction History</h5>
+    <h4>Pending Transactions</h4>
+    <PendingTransactions pendingTransactions={$PendingTxStore} />
+
+    {#each Object.keys(txByDay) as day}
+        <h4>Transaction Results</h4>
+        <div class="section-header text-body2">
+            {day}
+        </div>
+        
+        {#each txByDay[day] as tx}
+            <Transaction txData={tx}/>
         {/each}
-    {/if}
+    {/each}
 </div>

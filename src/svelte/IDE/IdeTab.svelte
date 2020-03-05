@@ -12,19 +12,19 @@
 
     let rename = false;
 
-    function selectTab(){
+    const selectTab = () => {
         FilesStore.activeTab(index);
     }
 
-    function closeTab(){
+    const closeTab = () => {
         FilesStore.deleteTab(index);
     }
 
-    function renameTab(){
+    const renameTab = () => {
         if (file.type === 'local') rename = true;
     }
 
-    function saveName(e){
+    const saveName = (e) => {
         if (e.keyCode === 13) {
             FilesStore.changeName(e.target.value, index);
             rename = false;

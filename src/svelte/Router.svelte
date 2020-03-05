@@ -57,6 +57,8 @@ import RestoreComplete from './backup_restore/RestoreComplete.svelte';
 
 //History
 import HistoryMain from './history/HistoryMain.svelte';
+import PendingTransactions from './history/PendingTransactions.svelte'
+import PendingTransaction from './history/PendingTransaction.svelte'
 
 //DevTools
 import DevToolsMain from './devtools/DevToolsMain.svelte';
@@ -186,7 +188,7 @@ export {
     Restore,
     LockScreen,
     Modal,
-    HistoryMain,
+    HistoryMain, PendingTransactions, PendingTransaction,
     Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx

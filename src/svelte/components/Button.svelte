@@ -58,6 +58,7 @@
 .icon-invert{
     filter: invert(1);
 }
+
 </style>
 
 <button class={`${classes}`}
@@ -71,7 +72,7 @@
     >
 
     {#if icon !== ''}
-        <div class="icon" style={`width: ${iconWidth};`} 
+        <div class="icon" style={`width: ${iconWidth}; fill:${'blue'};`} 
             class:icon-left={!iconAfter} 
             class:icon-right={iconAfter}
             class:icon-invert={iconInvert}>{@html icon}</div>

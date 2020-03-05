@@ -22,7 +22,7 @@
 	import plus from '../../img/menu_icons/icon_plus.svg';
 
 	//Utils
-	import { updateBalances, decryptObject } from '../../js/utils.js';
+	import { decryptObject } from '../../js/utils.js';
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
@@ -30,17 +30,17 @@
 	//Props
 	export let name
 
-	let totalBalance = $balanceTotal[$currentNetwork.url] ? $balanceTotal[$currentNetwork.url] : 0;
+	$: totalBalance = $balanceTotal[$currentNetwork.url] ? $balanceTotal[$currentNetwork.url] : 0;
 
 	let refreshing = false;
 
 	onMount(async () => {
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
-		console.log(await $currentNetwork.API.getTauBalance('270add00fc708791c97aeb5255107c770434bd2ab71c2e103fbee75e202aa15e'))
+		handleRefresh();
 	});
 
-	function handleRefresh(){
-		chrome.runtime.sendMessage({type: 'coinStoreUpdateAllBalances', data: $currentNetwork.getNetworkInfo()})
+	const handleRefresh = () => {
+		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false

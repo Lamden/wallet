@@ -13,7 +13,7 @@
 
     $: clickable = !firstRun()
 
-    function goHome(){
+    const goHome = () => {
         if (clickable) switchPage('CoinsMain')
     }
     

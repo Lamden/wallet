@@ -21,11 +21,11 @@
         ping()
     })
 
-    async function ping(){
+    const ping = async () => {
         status = await $currentNetwork.ping() ? 'online' : 'offline'
     }
 
-    function toggleTheme(event) {
+    const toggleTheme = (event) => {
         SettingsStore.changeTheme(event.detail ? 'light' : 'dark')
         document.querySelector("html").style = themes[$themeStyle];
     }
