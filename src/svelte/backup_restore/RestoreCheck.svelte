@@ -25,7 +25,7 @@
         .catch(err => error = err)
     });
 
-    async function validateKeyStore(fileObj, resolve, reject){
+    const validateKeyStore = async (fileObj, resolve, reject) => {
         const reader = new FileReader();      
         reader.onload = async function (e) {
             let output = e.target.result;
@@ -34,12 +34,10 @@
             try{
                 keystoreObj = JSON.parse(JSON.parse(output).data);
             } catch (e) {
-                console.log(e)
                 reject("This is not a valid keystore file.")
             }
 
             if (!keystoreObj.ct || !keystoreObj.iv || !keystoreObj.s){
-                console.log(e)
                 reject("This is not a valid keystore file.")
             }
 
@@ -49,7 +47,7 @@
         await reader.readAsText(fileObj);
     }
 
-    function goBack(){
+    const goBack = () => {
         setKeyStore(undefined);
         changeStep(0);
     }

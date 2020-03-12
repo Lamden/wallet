@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { NetworksStore, currentNetwork, networks } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -11,7 +11,7 @@
     //Props 
     export let closeModal;
 
-    function deleteNetwork(){
+    const deleteNetwork = () => {
         NetworksStore.deleteNetwork($currentNetwork)
         closeModal();
     }

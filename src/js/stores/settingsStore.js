@@ -1,61 +1,66 @@
-import { writable, derived } from 'svelte/store';
-import { isSettingsStoreObj,  isPageInfoObj, isStringWithValue} from './stores.js';
+import { writable, derived, get } from 'svelte/store';
+
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+
+//import { defualtSettingsStore } from './defaults'
+
+import { isSettingsStoreObj,  isPageInfoObj} from '../objectValidations';
 
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
-    'firstRun': true,
     'themeStyle':'dark',
-    'version':'v0_9_8',
-    'storage' : {'used': 0, 'remaining': 5000000, 'max': 5000000}
+    'version':'0.9.12'
 }
 
-const createSettingsStore = (key, startValue) => {
-    //Get store value from localstorate
-    const json = localStorage.getItem(key);
-    //If there is a value then set it as the inital value
-    if (json) {
-        startValue = JSON.parse(json)
+const createSettingsStore = () => {
+    let startValue = defualtSettingsStore
+    let initialized = false;
+
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
+        chrome.storage.local.get({"settings": startValue}, function(getValue) {
+            initialized = true;
+            SettingsStore.set(getValue.settings)
+        });
     }
 
-    //Create NetworksStore with the inital value
+    //Create Intial Store
     const SettingsStore = writable(startValue);
 
-    //This gets called everytime the Store updates
+    //This is called everytime the SettingsStore updated
     SettingsStore.subscribe(current => {
-        //If the store was updated to an empty or non Object then recover to previous value
+        //Only accept and Array Object to be saved to the storage and only
+        //if store has already been initialized
+        if (!initialized) {
+            return current
+        }
         if (isSettingsStoreObj(current)){
-            //Save Value to local storage
-            localStorage.setItem(key, JSON.stringify(current));
-        } else {
-            //Recover store value in memory to previous local storage value
-            let json = localStorage.getItem("settings");
-            if (json) SettingsStore.set(JSON.parse(json));
+            chrome.storage.local.set({"settings": current});
+        }else{
+            //Recover store value in memory to previous chome.storage.local value
+            getStore();
             console.log('Recovered from bad Settings Store Value');
         }
-    })
+    });
+
+    //Set the Coinstore to the value of the chome.storage.local
+    getStore()
 
     let subscribe = SettingsStore.subscribe;
     let update = SettingsStore.update;
     let set = SettingsStore.set;
 
     return {
-        startValue,
         subscribe,
         set,
         update,
-        //Store that the first run setup has been completed
-        firstRunComplete: () => {
-            SettingsStore.update(settingsStore => {
-                settingsStore.firstRun = false;
-                settingsStore.currentPage = {name: 'CoinsMain', data: {}};
-                return settingsStore;
-            })
-        },
         //Change the current page of the app
         //an also accept a data package the new page may need;
         changePage: (pageInfoObj) => {
             //Return if the object isn't a proper page object
             if (!isPageInfoObj(pageInfoObj)) return;
+
             //Default data to empty object
             if (!pageInfoObj.data) pageInfoObj.data = {};
             SettingsStore.update(settingsStore => {
@@ -64,29 +69,31 @@ const createSettingsStore = (key, startValue) => {
                 return settingsStore;
             })
         },
-        //Set a new theme in the setting store
-        changeTheme: (theme) => {
-            //Reject undefined or missing info.
-            if (!isStringWithValue(theme)) return;
+        setLastBackupDate: () => {
             SettingsStore.update(settingsStore => {
-                //Set theme in Settings store
-                settingsStore.themeStyle = theme;
+                settingsStore.lastBackupDate = new Date().toLocaleString()
+                settingsStore.dismissWarning = false;
                 return settingsStore;
             })
         },
-        //Calculates the amount of local storage used and remaining
-        calcStorage: () => {
-            SettingsStore.update(settings => {
-                settings.storage.used = new Blob(Object.values(localStorage)).size;
-                settings.storage.remaining = settings.storage.max - settings.storage.used;
-                return settings;
-            })   
+        setLastCoinAddedDate: () => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.lastCoinAddedDate = new Date().toLocaleString()
+                settingsStore.dismissWarning = false;
+                return settingsStore;
+            }) 
+        },
+        dismissWarning: () => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.dismissWarning = true;
+                return settingsStore;
+            })    
         }
     };
 }
 
 //Settings Stores
-export const SettingsStore = createSettingsStore('settings', defualtSettingsStore);
+export const SettingsStore = createSettingsStore();
 
 //Derived Store to return the current page object
 export const currentPage = derived(
@@ -94,20 +101,19 @@ export const currentPage = derived(
 	$SettingsStore => { return $SettingsStore.currentPage }
 );
 
-//Derived Store to return the firstRun value
-export const firstRun = derived(
+//Derived Store to return if the user needs to make another backup
+export const needsBackup = derived(
 	SettingsStore,
-    $SettingsStore => { return $SettingsStore.firstRun }
-);
-
-//Derived Store to return the themeStyle
-export const themeStyle = derived(
-	SettingsStore,
-	$SettingsStore => { return $SettingsStore.themeStyle }
-);
-
-//Derived Store to return the storageInfo Object
-export const storageInfo = derived(
-	SettingsStore,
-	$SettingsStore => { return $SettingsStore.storage }
+	$SettingsStore => {
+        if ($SettingsStore.dismissWarning) return false;
+        if (validateTypes.isString($SettingsStore.lastBackupDate) && 
+            validateTypes.isString($SettingsStore.lastCoinAddedDate)){
+            return new Date($SettingsStore.lastCoinAddedDate) > new Date($SettingsStore.lastBackupDate)
+        }
+        if (typeof $SettingsStore.lastBackupDate === 'undefined' && 
+            validateTypes.isString($SettingsStore.lastCoinAddedDate)){
+            return true
+        }
+        return false
+    }
 );

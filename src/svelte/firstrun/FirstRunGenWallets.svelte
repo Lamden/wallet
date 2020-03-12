@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, password, steps, allNetworks, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, steps, NetworksStore, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -10,14 +10,11 @@
 
 	//Utils
     import { keysFromNew } from '../../js/crypto/wallets.js';
-    import { encryptStrHash, encryptObject } from '../../js/utils.js';
-    import { mintTestNetCoins } from '../../js/lamden/masternode-api.js';
     
     //Context
     const { changeStep } = getContext('functions');
     
-    //Props
-    export let switchPage;
+    let message = 'Creating Keys';
 
     onMount(() => {
         steps.update(current => {
@@ -44,31 +41,34 @@
         })
     });
 
-    function dispatchState(step) {
+    const dispatchState = (step) => {
         dispatch('toggleStep', step);
     }
 
-    function createStartingWallets(){
+    const createStartingWallets = () => {
         let keyPair = keysFromNew('lamden', 'TAU');
-        let newCoin = {
-            'network': 'lamden',
-            'name': 'Lamden',
-            'nickname' : 'My TAU Address',
-            'symbol': 'TAU',
-            'vk': keyPair.vk,
-            'sk': encryptStrHash($password, keyPair.sk)
-        }
-        CoinStore.addCoin(newCoin)
-        mintTestCoins(newCoin)
+        chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
+            if (encryptedSk){
+                let newCoin = {
+                    'network': 'lamden',
+                    'name': 'Lamden',
+                    'nickname' : 'My TAU Address',
+                    'symbol': 'TAU',
+                    'vk': keyPair.vk,
+                    'sk': encryptedSk
+                }
+                //Add coin to coinstore
+                CoinStore.addCoin(newCoin)
+                SettingsStore.setLastCoinAddedDate();
+                
+                // Mint coins on mockchain for new wallet
+                let mockchain = NetworksStore.getPublicMockchain()
+                mockchain.API.mintTestNetCoins(newCoin.vk, 100000)
+            }else{
+                message = 'Critical Failure: Could not encrypt key for intial wallet'
+            }
+        })
     }
-
-    async function mintTestCoins(coin){
-        let mintOkay = await mintTestNetCoins($currentNetwork, coin.vk, 1000000);
-        if (mintOkay) CoinStore.updateBalance(coin, 1000000)
-    }
-
-
-
 </script>
 
 <style>

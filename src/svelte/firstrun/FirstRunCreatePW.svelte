@@ -2,10 +2,10 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, password, steps } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
     //Utils
-    import { encryptObject } from '../../js/utils.js';
+    import { hashStringValue } from '../../js/utils.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -49,7 +49,7 @@
 
     });
 
-	function formValidation(){
+	const formValidation = () => {
 		pwdInput2.setCustomValidity("")
 		if (formField.checkValidity()){
 				if (pwdInput1.value === pwdInput2.value){
@@ -61,29 +61,29 @@
 		}
 	}
 	
-	function pwd1Validity(){
+	const pwd1Validity = () => {
 		pwdInput1.checkValidity()
 		pwdInput1.reportValidity()
 	}
 	
-	function pwd2Validity(){
+	const pwd2Validity = () => {
 		pwdInput2.checkValidity()
 		pwdInput2.reportValidity()
     }
 
-    function strongPasswordUpdate(){
+    const strongPasswordUpdate = () => {
         pwd = pwdInput1.value;
     }
     
-    function savePassword(){
-        try{
-            CoinStore.setPwd(pwdInput1.value);
-            if (restore) changeStep(1);
-            else changeStep(3);
-            
-        } catch (err) {
-            console.log(err)
-        }
+    const savePassword = () => {
+        chrome.runtime.sendMessage({type: 'createPassword', data: hashStringValue(pwdInput1.value)}, (response) => {
+            if(response) {
+                if (restore) changeStep(1);
+                else changeStep(3); 
+            } else {
+                throw new Error('Could not create password in browser storage.local')
+            }
+        })
     }
 </script>
 

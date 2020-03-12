@@ -10,16 +10,14 @@
 </script>
 
 <style>
-.coin-empty{}
-
 .buttons{
     display: flex;
     justify-content: center;
-    margin-top: 167px;
+    margin-top: 4rem;
 }
 </style>
 
-<div class="coin-empty buttons">
+<div id="coin-empty" class="buttons">
     <Button 
             id={"empty-add-btn"}
             classes={'button__solid button__purple'}

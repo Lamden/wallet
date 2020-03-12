@@ -2,15 +2,12 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps, password } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
 	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
-
-    //Utils
-    import { decryptStrHash } from '../../js/utils.js';
 
     //Context
     const { appHome } = getContext('app_functions');
@@ -19,25 +16,27 @@
     //DOM Nodes
     let formObj;
 
-    $: coins = [...$CoinStore];
+    $: coins = [];
 
 
     onMount(() => {
         steps.update(current => {
             current.currentStep = 3;
             return current
-        });   
+        });
+
+        chrome.runtime.sendMessage({type: 'decryptStore'}, (coinStore) => {
+            if (typeof coinStore === 'undefined' || chrome.runtime.lastError) {
+                throw new Error('unable to decrypt keystore')
+            } else {
+                coins = [...coinStore];
+            }
+        })
     })
 
-    function getLogo(coin){
+    const getLogo = (coin) => {
         return logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     }
-
-    function decryptSk(sk){
-        return decryptStrHash($password, sk) ? decryptStrHash($password, sk) : 'Cannot decrypt Secret Key: wrong password or bad data';
-    }
-
-
 </script>
 
 <style>
@@ -164,7 +163,7 @@ a{
                 <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
                 <div class="keys text-body2">
                     <div>{`vk: ${coin.vk}`}</div>
-                    <div class=" text-primary-dark">{`sk: ${decryptSk(coin.sk)}`}</div>
+                    <div class=" text-primary-dark">{`sk: ${coin.sk}`}</div>
                 </div>
             </div>
         {/each}

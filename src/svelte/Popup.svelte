@@ -2,8 +2,17 @@
     import { onMount} from 'svelte';
 
 	onMount(() => {
-		chrome.runtime.sendMessage({type:'expand'}, () => {
-			console.log('error')
-        })
+		chrome.tabs.query({}, function(tabs) {
+			const foundTab = tabs.find((tab) => {
+				if (typeof tab.url !== 'undefined') return tab.url.includes(chrome.runtime.id)
+				else return false
+			});
+			if (!foundTab) {
+				chrome.tabs.create({ url: '/app.html' });
+			}else{
+				chrome.tabs.update(foundTab.id, {selected: true});
+				window.close();
+			}
+		});
 	});
 </script>

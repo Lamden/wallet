@@ -38,16 +38,16 @@
 
     });
 
-    function openPicker(){
+    const openPicker = () => {
         let element = document.getElementById('filePicker');
         element.click();
     }
 
-    function handleFileEvent(ev){
+    const handleFileEvent = (ev) => {
         let file;
         ev.preventDefault();
 
-        if (ev.target.files) {
+        if (ev.target.files){
             file = ev.target.files[0];
         } else if (ev.dataTransfer.items) {
             ev.dataTransfer.items[0].kind === 'file' ? file = ev.dataTransfer.items[0].getAsFile() : null;
@@ -60,11 +60,11 @@
         }
     }
 
-    function handleDragover(e){
+    const handleDragover = (e) => {
         if (!dragover) dragover = true;
     }
 
-    function handleDragleave(e){
+    const handleDragleave = (e) => {
         if (dragover) dragover = false;
     }
     

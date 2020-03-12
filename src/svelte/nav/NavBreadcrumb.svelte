@@ -1,9 +1,6 @@
 <script>
     import { getContext  } from 'svelte';
 
-    //Stores
-    import { currentPage } from '../../js/stores/stores.js';
-    
     //Images
     import chevronRight from '../../img/menu_icons/icon_chevron-right.svg';
 

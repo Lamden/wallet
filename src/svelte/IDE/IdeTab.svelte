@@ -1,5 +1,4 @@
 <script>
-
 	//Stores
     import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
@@ -13,19 +12,19 @@
 
     let rename = false;
 
-    function selectTab(){
+    const selectTab = () => {
         FilesStore.activeTab(index);
     }
 
-    function closeTab(){
+    const closeTab = () => {
         FilesStore.deleteTab(index);
     }
 
-    function renameTab(){
+    const renameTab = () => {
         if (file.type === 'local') rename = true;
     }
 
-    function saveName(e){
+    const saveName = (e) => {
         if (e.keyCode === 13) {
             FilesStore.changeName(e.target.value, index);
             rename = false;
@@ -62,9 +61,14 @@
 }
 </style>
 
-<div class="tab-box flex-row" class:selected={file.selected} on:click={selectTab}>
+<div class="tab-box flex-row" 
+     class:selected={file.selected} 
+     on:click={selectTab}
+     title={file.type === 'online' ? `Contract is on ${$currentNetwork.name}` : ""}
+     >
+
     {#if file.type === 'online'}
-        <div class="icons connected-icon" title={`Contract is on ${$currentNetwork.name}`}>{@html connected}</div>
+        <div class="icons connected-icon">{@html connected}</div>
     {/if}
     {#if !rename}
         <div on:dblclick={() => rename = true}>{`${file.name}`}</div>

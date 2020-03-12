@@ -8,7 +8,7 @@
 	$:errors = reformatErrorList(lintErrors);
 	$:errorsLength = errors.length;
 
-	function reformatErrorList(errors){
+	const reformatErrorList = (errors) => {
         let errorsList = ['Contract is Okay'];
         if (errors === undefined) return errorsList;
 		if (errors.violations === null) return errorsList;
@@ -28,7 +28,7 @@
         return errorsList;
 	}
 
-	function closeBox(){
+	const closeBox = () => {
 		errors = []
 	}
 </script>

@@ -2,15 +2,11 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, SettingsStore, password, steps } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
     const { Button } = Components;
-
-	//Utils
-    import { keysFromNew } from '../../js/crypto/wallets.js';
-    import { encryptStrHash } from '../../js/utils.js';
 
     //Context
     const { changeStep } = getContext('functions');
@@ -22,11 +18,11 @@
         });
     });
 
-    function accept(){
+    const accept = () => {
         changeStep(4)
     }
 
-    function startOver(){
+    const startOver = () => {
         changeStep(0);
     }
 

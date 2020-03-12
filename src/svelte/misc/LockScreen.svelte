@@ -1,38 +1,34 @@
 <script>
-    import { onMount } from 'svelte'
-
     //Components
     import NavLogo from '../nav/NavLogo.svelte';
 	import { Components }  from '../Router.svelte'
-    const { InputBox, Loading } = Components;
-    
-    //Stores
-    import { CoinStore } from '../../js/stores/stores.js';
-    
+    const { InputBox } = Components;
+
+    //Utils
+    import { hashStringValue } from '../../js/utils.js'
+
     //DOM nodes
     let formObj, pwdObj;
 
     export let loaded;
- 
 
-    function handleSubmit(){
-        if (!CoinStore.validatePassword(pwdObj.value)) {
-            pwdObj.setCustomValidity("Incorrect Password");
-        } else {
-            pwdObj.setCustomValidity('');
-        }
-        pwdObj.reportValidity()
+    const handleSubmit = () => {
         if (formObj.checkValidity()){
-            CoinStore.setPwd(pwdObj.value);
+            chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (walletIsLocked) => {
+                if (walletIsLocked || chrome.runtime.lastError) {
+                    setValidity(pwdObj, "Incorrect Password")
+                }
+            })
         }
     }
 
-    function refreshValidity(e){
-        e.detail.target.setCustomValidity('');
+    const setValidity = (node, message) => {
+        node.setCustomValidity(message);
+        node.reportValidity();
     }
 
-    function refreshValidityKeyup(e){ 
-        if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
+    const refreshValidityKeyup = (e) => { 
+        if (e.detail.keyCode !== 13) setValidity(pwdObj, '')
     }
 </script>
 
@@ -105,40 +101,33 @@ form{
     <div class="header text-primary">
         <NavLogo />
     </div>
-    {#if $loaded}
-        <div class="content text-primary">
-            <div class="lockscreen">
-                <h6 class="heading">Sign In</h6>
-                <div class="text-box text-body1">  
-                    Access your Lamden Wallet.
-                </div>
-            
-                <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
-                    <div class="input-box">
-                        <InputBox
-                            id="pwd-input"
-                            bind:thisInput={pwdObj}
-                            on:changed={refreshValidity}
-                            on:keyup={refreshValidityKeyup}
-                            width="100%"
-                            label={"Password"}
-                            inputType= 'password'
-                            autofocus={true}
-                            required={true}/>
-                    </div>
-                    <input  id="login-btn"
-                            value="Login"
-                            class="button__solid button__purple submit submit-button submit-button-text" 
-                            type="submit" >
-                </form>
+    <div class="content text-primary">
+        <div class="lockscreen">
+            <h6 class="heading">Sign In</h6>
+            <div class="text-box text-body1">  
+                Access your Lamden Wallet.
             </div>
-        </div>
-    {:else}
-        <div class="loading">
-            <Loading message={'Loading App'} />
-        </div>
         
-    {/if}
+            <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
+                <div class="input-box">
+                    <InputBox
+                        id="pwd-input"
+                        bind:thisInput={pwdObj}
+                        on:changed={() => setValidity(pwdObj, '')}
+                        on:keyup={refreshValidityKeyup}
+                        width="100%"
+                        label={"Password"}
+                        inputType= 'password'
+                        autofocus={true}
+                        required={true}/>
+                </div>
+                <input  id="login-btn"
+                        value="Login"
+                        class="button__solid button__purple submit submit-button submit-button-text" 
+                        type="submit" >
+            </form>
+        </div>
+    </div>
 </div>
 
 

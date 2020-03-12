@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { CoinStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
+    import { CoinStore, TxStore, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -32,23 +32,24 @@
 
     $: coin = getModalData();
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = coin.balance ? coin.balance : 0;
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
 
-    function showEdit(){
+    const showEdit = () => {
         setSelectedCoin(selectedWallet);
         setPage(2);
     }
 
-    function showDelete(){
+    const showDelete = () => {
         setSelectedCoin(selectedWallet);
         setPage(3);
     }
-    function copyWalletAddress(){
+
+    const copyWalletAddress = () => {
         copyToClipboard(selectedWallet.vk)
         copySuccessful = true;
     }
 
-    function coinList(){
+    const coinList = () => {
         return $CoinStore.map(c => {
             return {
                 value: c,
@@ -58,7 +59,7 @@
         })
     }
 
-    function clearTxHistory(){
+    const clearTxHistory = () => {
         TxStore.clearTx($currentNetwork, selectedWallet.vk)
     }
 </script>
@@ -86,8 +87,16 @@
     background-color: var(--primary-color);
 }
 
+.purple:hover{
+    background-color: #5121de;
+}
+
 .grey{
     background-color: var(--bg-color-grey);
+}
+
+.grey:hover{
+    background-color: #444444;
 }
 
 .buttons{
@@ -116,7 +125,7 @@
         {#if selectedWallet}
             {selectedWallet.name}
             <strong>
-                {`${selectedWallet.symbol} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`${selectedWallet.symbol} - ${balance} ${$currentNetwork.currencySymbol}`}
             </strong> 
         {/if}
     </div>

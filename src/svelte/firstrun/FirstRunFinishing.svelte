@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount, getContext } from 'svelte';
 
     //Stores
     import { SettingsStore, steps } from '../../js/stores/stores.js';
@@ -7,6 +7,9 @@
     //Components
 	import { Components }  from '../Router.svelte'
     const { Loading } = Components;
+
+    //Context
+    const { done } = getContext('functions');
 
     //Props
     export let restore = false;
@@ -33,18 +36,15 @@
                 }
                 message = 'Done!'
                 resolve();
-            }, 2000);
+            }, 1000);
         })
         .then(res => {
             setTimeout(() => {
-                accept()
+                SettingsStore.changePage({name: 'CoinsMain'})
+                done()
             }, 500);            
         })
     });
-
-    function accept(){
-        SettingsStore.firstRunComplete();
-    }
 </script>
 
 <style>

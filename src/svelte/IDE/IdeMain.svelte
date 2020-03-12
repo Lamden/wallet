@@ -2,16 +2,13 @@
 	import { onMount, getContext, setContext } from 'svelte'
 	
     //Stores
-    import { breadcrumbs, currentNetwork, activeTab, FilesStore } from '../../js/stores/stores.js';
+    import { breadcrumbs, currentNetwork, activeTab, FilesStore, NetworksStore } from '../../js/stores/stores.js';
 
 	//Components
-	import { IdeErrorsBox, IdeMethods, IdeTabs, Components }  from '../Router.svelte';
+	import { IdeErrorsBox, IdeMethods, IdeGetVariable, IdeTabs, Components }  from '../Router.svelte';
 	const { Button, Loading } = Components;
 	import { Monaco } from '../components/Monaco.svelte'
 	import MonacoWindow from './IdeMonacoEditor.svelte';
-
-    //Utils
-    import { getContractInfo, getContractMethods, lintCode  } from '../../js/lamden/masternode-api.js';
 
     //Context
 	const { openModal } = getContext('app_functions');
@@ -33,63 +30,60 @@
 				editorIsLoaded = true;
 			}
 		})
+
 		return () => {
 			editorIsLoaded = false;
 		}
 	})
 
-	function editorLoaded(){
+	const editorLoaded = () => {
 		editorIsLoaded = true;
 		if ($activeTab.type === 'local') lint();
 	}
 
-	async function lint(callback){
-		lintErrors = await lintCode($currentNetwork, $activeTab.name, $activeTab.code)
+	const lint = async (callback) => {
+		let mockchain = $currentNetwork
+		if ($currentNetwork.type !== 'mockchain') mockchain = NetworksStore.getPublicMockchain()
+		lintErrors = await mockchain.API.lintCode($activeTab.name, $activeTab.code)
 		try {
 			callback(lintErrors);
 		} catch (e){}
 	}
 
-	function submit(res){
+	const submit = (res) => {
 		if (res.violations === null){
 			openModal('IdeModelSubmit', {
 				'contractName': 'submission', 
 				'methodName': 'submit_contract', 
-				args: {
-					name: {
-						type: 'text',
-						value: $activeTab.name
-					},
-					code:{
-						type: 'text',
-						value: $activeTab.code
-					}
+				kwargs: {
+					name: $activeTab.name,
+					code:$activeTab.code
 				}
 			})
 		}
 	}
 
-	function reformatMethodObject(methods){
+	const reformatMethodObject = (methods) => {
         methods.map(method => {
             if (!method.args) method.args = {};
             method.arguments.map((arg, index) => {
-               if (!method.args[arg]) method.args[arg] = {type: "text", value: 'testing'}
+			   if (!method.args[arg]) method.args[arg] = {type: "text", value: ''}
             })
-        })
+		})
         return [...methods]
 	}
 
-	function handleMethodClick(e){
+	const handleMethodClick = (e) => {
 		openModal('IdeModelMethodTx', e.detail)
 	}
 
-	async function getContract(contractName, options){
-		let contractInfo = await getContractInfo($currentNetwork, contractName)
+	const getContract = async (contractName, options) => {
+		let contractInfo = await $currentNetwork.API.getContractInfo(contractName)
 		if (contractInfo) options.callback(contractInfo, !options.data ? undefined : options.data);
 	}
 	
-    async function addFileToStore(contractName, contractCode){
-		let methods =  await getContractMethods($currentNetwork, contractName)
+    const addFileToStore = async (contractName, contractCode) => {
+		let methods =  await $currentNetwork.API.getContractMethods(contractName)
 		FilesStore.addFile(contractName, contractCode, methods, $currentNetwork);
 	}
 </script>
@@ -122,7 +116,7 @@
 					{#if $activeTab.type === 'local'}
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent'}
+							classes={'button__transparent button__blue'}
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
 							height={'42px'}
@@ -143,6 +137,7 @@
 			<IdeErrorsBox {lintErrors} />
 		{/if}
 		{#if editorIsLoaded && $activeTab.methods}
+			<IdeGetVariable contractName={$activeTab.name}/>
 			<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
 		{/if}
 	</div>

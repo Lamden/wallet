@@ -9,7 +9,7 @@
     const { Button, InputBox } = Components;
 
     //Utils
-    import { decryptObject, decryptStrHash } from '../../js/utils.js';
+    import { decryptObject, decryptStrHash, hashStringValue } from '../../js/utils.js';
 
     //Context
     const { setKeys, changeStep, nextPage } = getContext('functions');
@@ -30,11 +30,11 @@
         });
     });
 
-    function handleSubmit(){
+    const handleSubmit = () => {
         if (decryptObject(pwdObj.value, keystoreFile.data)) {
             pwdObj.setCustomValidity('');
         } else {
-            pwdObj.setCustomValidity("Incorrect Password");
+            pwdObj.setCustomValidity("Incorrect KeyStore Password");
         }
         pwdObj.reportValidity()
         if (formObj.checkValidity()){
@@ -43,11 +43,11 @@
         }
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         e.detail.target.setCustomValidity('');
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => {
         if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
     }
     
@@ -64,7 +64,7 @@
 }
 
 .text-box{
-    margin-bottom: 8px;
+    margin: 8px 0px 40px;
 }
 
 .caption-box{
@@ -78,6 +78,7 @@ a{
 
 .submit{
     width: 100%;
+    height: 40px;
     margin: 20px 0 9px;
 }
 
@@ -89,17 +90,19 @@ a{
 
 <div class="restore-password">
     <h6>Keystore File Confirmed</h6>
-    
+
     <div class="text-box text-body1 text-primary">
-        Nice job. Now let's enter your original Keystore file password.
+        Nice job! Now let's enter your original Keystore file password.
     </div>
+
     <div class="caption-box text-caption text-secondary">
-        <strong>last modified date:</strong> {file.lastModifiedDate}
+        <strong>last modified date:</strong> 
+        <div class="text-primary-dark">{file.lastModifiedDate} </div>
     </div>
 
     <div class="caption-box text-caption text-secondary" class:hide={pwdHint === ""}>
         <div><strong>Password Hint</strong></div>
-        <div id="pwd-hint">{pwdHint}</div>
+        <div id="pwd-hint" class="text-primary-dark">{pwdHint}</div>
     </div>
     
     <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
@@ -107,16 +110,17 @@ a{
             <InputBox
                     id={'pwd-input'}
                     width="100%"
-                    label={"Password"}
+                    label={"Keystore Password"}
                     inputType= 'password'
                     bind:thisInput={pwdObj}
                     on:changed={refreshValidity}
                     on:keyup={refreshValidityKeyup}
-                    required={true}/>
+                    required={true}
+                    autofocus={true}/>
         </div>
         <input  id={'pwd-btn'}
                 value="Confirm Password"
-                class="button__solid button__purple submit submit-button submit-button-text" 
+                class="button__solid button__purple submit-button submit-button-text submit" 
                 type="submit" >
     </form>
 

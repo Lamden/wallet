@@ -1,25 +1,27 @@
 <script>
-    import { getContext } from 'svelte';
-    import { themes } from '../../js/themes.js';
+    import { getContext, onMount, afterUpdate } from 'svelte';
 
 	//Stores
-    import { SettingsStore, currentNetwork, themeStyle } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
     
 	//Components
     import { NavStatus }  from '../Router.svelte'
-
-    //Utils
-    import { pingServer  } from '../../js/lamden/masternode-api.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
 
     let status = 'checking'
-    $: (async() => status = await pingServer($currentNetwork) ? 'online' : 'offline')();
 
-    function toggleTheme(event) {
-        SettingsStore.changeTheme(event.detail ? 'light' : 'dark')
-        document.querySelector("html").style = themes[$themeStyle];
+    onMount(() => {
+        ping()
+    })
+
+    afterUpdate(() => {
+        ping()
+    })
+
+    const ping = async () => {
+        status = await $currentNetwork.ping() ? 'online' : 'offline'
     }
 
 </script>

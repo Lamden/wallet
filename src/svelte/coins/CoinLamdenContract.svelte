@@ -4,16 +4,17 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
+
 	//Stores
-    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
+    import { coinsDropDown, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
     import { Components }  from '../Router.svelte'
     const { DropDown, InputBox, Button } = Components;
 
     //Utils
-    import { isStringHex } from  '../../js/lamden/helpers.js';
-    import { getContractMethods  } from '../../js/lamden/masternode-api.js';
+    import * as validators from 'types-validate-assert'
+    const { validateTypes } = validators;
 
     //DOM NODES
     let stampsField, contractNameField
@@ -23,47 +24,57 @@
     export let currentPage;
 
     const MethodStore = writable([])
+    const trueFalseList = (arg = undefined) => {
+        if (arg == null) return [{name:'true', value: true}, {name: 'false', value:false}]
+        let selectedValue = argValueTracker[contractName][methodName][arg]['bool'].value
+        return [
+            {name:'true', value: true, selected: selectedValue === true}, 
+            {name: 'false', value:false, selected: selectedValue === false}
+        ]
+    }
 
     let selectedWallet;
     let contractError = false;
     let transaction;
-    let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
+    let dataTypes = ['text', 'address', 'data', 'number', 'bool']
     let typeToInputTypeMAP = {
         address: 'text',
         text: 'textarea',
         data: 'text',
-        fixedPoint: 'number',
+        number: 'number',
         bool: trueFalseList()
     }
     let defaultValues = {
         address: '',
         text: '',
         data: '',
-        fixedPoint: 0,
+        number: 0,
         bool: true 
     }
-    let stampLimit = 35000;
+    let stampLimit = 50000;
     
     $: contractName = 'currency'
     $: methodName  = ''
     $: argValueTracker = {};
     $: methodArgs = [];
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     
     onMount(() => {
         getMethods(contractName)
     });
 
-    function coinList(){
-        return $CoinStore.map(c => {
-            return {
-                value: c,
-                name: `${c.nickname} - ${c.vk.substring(0, 55 - c.nickname.length)}...`,
-                selected: c.network === coin.network && c.symbol === coin.symbol && c.vk === coin.vk
+    const coinList = () => {
+        let returnList = $coinsDropDown.map(c => {
+            if (c.value){
+                c.selected = c.value.network === coin.network && c.value.symbol === coin.symbol && c.value.vk === coin.vk
             }
+            return c
         })
+        returnList.shift()
+        return returnList
     }
 
-    function methodList(methods){
+    const methodList = (methods) => {
         if (!methods) return [];
         return methods.map(method => {
             return {
@@ -73,7 +84,7 @@
         })
     }
 
-    function typesList(arg){
+    const typesList = (arg) => {
         return dataTypes.map(type => {
             return {
                 value: type,
@@ -83,16 +94,7 @@
         })
     }
 
-    function trueFalseList(arg = undefined){
-        if (arg == null) return [{name:'true', value: true}, {name: 'false', value:false}]
-        let selectedValue = argValueTracker[contractName][methodName][arg]['bool'].value
-        return [
-            {name:'true', value: true, selected: selectedValue === true}, 
-            {name: 'false', value:false, selected: selectedValue === false}
-        ]
-    }
-
-    function setArgs(method, contract){
+    const setArgs = (method, contract) => {
         if (!method) return;
         methodName = method.name;
         methodArgs = [...method.arguments];
@@ -111,33 +113,33 @@
         contractName = contract;
     }
 
-    function getStartingType(arg){
+    const getStartingType = (arg) => {
         let type = 'text';
         let numberArgs = ['number', 'value', 'amount', 'stamps', 'tau', 'decimal']
-        numberArgs.map(str => arg.includes(str) ? type = 'fixedPoint' : null)
-        if (type === 'fixedPoint') return type;
+        numberArgs.map(str => arg.includes(str) ? type = 'number' : null)
+        if (type === 'number') return type;
         let addressArgs = ['to', 'from', 'wallet', 'address', 'sender', 'receiver', 'owner', 'public', 'private', 'key']
         addressArgs.map(str => arg.includes(str) ? type = 'address' : null)
         return type;
     }
 
-    function saveArgValue(arg, e){
+    const saveArgValue = (arg, e) => {
         let selectedType = argValueTracker[contractName][methodName][arg].selectedType
         if (selectedType === 'data' || selectedType === 'address'){
-            if (!isStringHex(e.detail.target.value)){
+            if (!validateTypes.isStringHex(e.detail.target.value)){
                 e.detail.target.setCustomValidity('Invalid Format: Must be HEX')
                 e.detail.target.reportValidity()
             }
         }
         let argValue = selectedType === 'bool' ?  e.detail.selected.value : e.detail.target.value;
-        if (selectedType === 'fixedPoint'){
+        if (selectedType === 'number'){
             argValue = parseFloat(argValue)
         }
         argValueTracker[contractName][methodName][arg][selectedType].value = argValue;
         if (selectedType !== 'bool')  argValueTracker[contractName][methodName][arg][selectedType].target = e.detail.target;
     }
 
-    function saveArgType(arg, e){
+    const saveArgType = (arg, e) => {
         let type = e.detail.selected.value;
         argValueTracker[contractName][methodName][arg].selectedType = type;
         if (!argValueTracker[contractName][methodName][arg][type]){
@@ -145,27 +147,28 @@
         }
     }
 
-    async function getMethods(contract){
-        let methods = await getContractMethods($currentNetwork, contract)
+    const getMethods = async (contract) => {
+        let methods = await $currentNetwork.API.getContractMethods(contract)
         MethodStore.set(methods)
         if (methods.length > 0) setArgs(methods[0], contract)
     }
 
-    function handleNext(){
+    const handleNext = () => {
         if (validateFields()){
             dispatch('contractDetails', {
                 sender: selectedWallet,
                 txInfo: {
+                    senderVk: selectedWallet.vk,
                     stampLimit,
                     'contractName': contractNameField.value, 
                     methodName, 
-                    args: packageArgs()
-                    }
-                })
+                    kwargs: getKwargs()
+                }
+            })
         }
     }
 
-    function validateFields(){
+    const validateFields = () => {
         stampsField.setCustomValidity('')
         if (stampLimit <= 0) {
             stampsField.setCustomValidity('Stamps must be greater than 0')
@@ -187,29 +190,25 @@
         return validity;
     }
 
-    function clearValidation(e){
+    const clearValidation = (e) => {
         e.detail.target.setCustomValidity('')
         e.detail.target.reportValidity();
     }
 
-    function packageArgs(){
-        let argPackage = {}
+    const getKwargs = () => {
+        let kwargs = {}
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             if (arg !== 'selectedType'){
                 let argValue = argValueTracker[contractName][methodName][arg]
                 if (argValue[argValue.selectedType].value !== ""){
-                    argPackage[arg] = {
-                        value: argValue[argValue.selectedType].value,
-                        type: argValue.selectedType
-                    }
+                    kwargs[arg] = argValue[argValue.selectedType].value
                 }
-
             }
         })
-        return argPackage;
+        return kwargs;
     }
 
-    function handleSelectedWallet(e){
+    const handleSelectedWallet = (e) => {
         selectedWallet = e.detail.selected.value
     }
 </script>
@@ -242,6 +241,7 @@
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
+        innerHeight={'70px'}
         label={'Select Wallet to Send From'}
         styles="margin-bottom: 19px;"
         required={true}
@@ -250,7 +250,7 @@
 
     <div class="coin-info text-subtitle3">
         {#if selectedWallet}
-            {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
+            {`${selectedWallet.name} - ${balance} ${$currentNetwork.currencySymbol}`}
         {/if}
     </div>
 

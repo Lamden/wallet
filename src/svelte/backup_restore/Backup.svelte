@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { breadcrumbs } from '../../js/stores/stores.js';
+    import { breadcrumbs, needsBackup, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -11,6 +11,9 @@
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
     import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
+    import warningIcon from '../../img/menu_icons/icon_warning.svg'
+    import iconClose from '../../img/menu_icons/icon_close.svg'
+
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -18,6 +21,8 @@
 	onMount(() => {
         breadcrumbs.set([{name: 'Backup Wallet', page: {name: ''}}]);
     });
+
+    const dismissWarning = () => {SettingsStore.dismissWarning()}
 
 </script>
 
@@ -51,6 +56,17 @@
     max-width: 601px;
 }
 
+.backup-warning{
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.warning-icon{
+    width: 20px;
+    margin-right: 10px;
+    min-width: 20px;
+}
+
 
 </style>
 
@@ -67,12 +83,29 @@
         <div class="buttons">
         	<Button
                 id={'backup-btn'} 
-                classes={'button__transparent'}
+                classes={'button__transparent button__blue'}
 				name="Backup Wallet"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('BackupMain')} 
 				icon={arrowRight}
                 iconPosition='after'/>
         </div>
+        {#if $needsBackup}
+            <div class="flex-row backup-warning">
+                <div class="warning-icon">{@html warningIcon}</div>
+                <div class="warning-text text-body4">
+                    You have added Keys since your last backup so it is HIGHLY recommended that you create another backup.
+                </div>
+                <Button
+                    id={'dismiss-btn'} 
+                    classes={'button__icon'}
+                    margin={'1px 0 0 10px'}
+                    padding={'0'}
+                    click={dismissWarning} 
+                    icon={iconClose}
+                    iconInvert={true}
+                    iconPosition='before'/>
+            </div>
+        {/if}
 	</div>
 </div>

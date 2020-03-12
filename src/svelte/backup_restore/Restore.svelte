@@ -66,7 +66,7 @@
         <div class="buttons">
         	<Button
                 id={'restore-btn'} 
-                classes={'button__transparent'}
+                classes={'button__transparent button__blue'}
 				name="Restore Now"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('RestoreMain')} 

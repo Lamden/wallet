@@ -20,11 +20,11 @@
 	import { Components }  from '../Router.svelte'
     const { Card } = Components;
 
-    function openLink(url){
+    const openLink = (url) => {
         window.open(url, '_blank');
     }
     
-    let aboutLinks = [
+    const aboutLinks = [
         {
             name:'Visit Our Website',
             desc:'Write smart contracts in Python',
@@ -39,7 +39,7 @@
         }
     ]
 
-    let socials = [
+    const socials = [
         {   name: 'Twitter',
             link: 'https://twitter.com/lamdentau',
             image: twitter

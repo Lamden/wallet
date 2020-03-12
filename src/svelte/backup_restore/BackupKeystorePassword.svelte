@@ -28,7 +28,7 @@
         });
     })
 
-	function formValidation(){
+	const formValidation = () => {
 		pwdInput2.setCustomValidity("")
 		if (formField.checkValidity()){
 				if (pwdInput1.value === pwdInput2.value){
@@ -41,27 +41,17 @@
 		}
 	}
 	
-	function pwd1Validity(){
+	const pwd1Validity = () => {
 		pwdInput1.checkValidity()
 		pwdInput1.reportValidity()
 	}
 	
-	function pwd2Validity(){
+	const pwd2Validity = () => {
 		pwdInput2.checkValidity()
 		pwdInput2.reportValidity()
     }
-    
-    function savePassword(){
-        try{
-            CoinStore.setPwd(pwdInput1.value);
-            if (restore) changeStep(1);
-            else changeStep(3);
-        } catch (err) {
-            console.log(err)
-        }
-    }
 
-    function strongPasswordUpdate(){
+    const strongPasswordUpdate = () => {
         pwd = pwdInput1.value;
     }
 
@@ -125,7 +115,8 @@ a{
                 on:keyup={() => strongPasswordUpdate()}
                 inputType={"password"}
                 {pattern}
-                required={true}/>
+                required={true}
+                autofocus={true}/>
             <InputBox
                 id={'pwd2-input'} 
                 label={"Confirm Password"}

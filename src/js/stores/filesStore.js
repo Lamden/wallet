@@ -1,52 +1,57 @@
-import { writable, derived } from 'svelte/store';
-import { isArray, isStringWithValue, isFileObj, isString, isInteger, networkKey } from './stores.js';
+import { writable, derived, get } from 'svelte/store';
 
-const createFilesStore = (key) => {
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+import { networkKey } from './stores.js';
+import { isFileObj } from '../objectValidations';
+import { defaultFileCode, makeContractHeader } from './defaults.js';
+
+const createFilesStore = () => {
+    let initialized = false;
+
     //Default File Content that will be created
     const defaultFile = {
         name: 'New Contract',
-        code: [
-            '# Get started @ https://contracting.lamden.io/',
-            '',
-            '@export',
-            'def first_method(value):',
-            '	return value',
-        ].join('\n'),
+        code: defaultFileCode,
         type: 'local',
         selected: true
     }
 
-    //Set intial value. Will get overwritten if by localstorage state if it exists
-    let startValue = [JSON.parse(JSON.stringify(defaultFile))];
-    //Get Local Storage value
-    const json = localStorage.getItem(key);
-    
-    //Set intial value to local storage value if it exists 
-    if (json) {
-        startValue = JSON.parse(json)
+    const getStore = () => {
+        //Set the Coinstore to the value of the chome.storage.local
+        chrome.storage.local.get({"files": [JSON.parse(JSON.stringify(defaultFile))]}, function(getValue) {
+            initialized = true;
+            FilesStore.set(getValue.files)
+        });
     }
-    //Create File Store
-    const FilesStore = writable(startValue);
 
-    //This funtion gets call everytime the FileStore is updated
+    //Create Intial Store
+    const FilesStore = writable([]);
+
+    //This is called everytime the FilesStore updated
     FilesStore.subscribe(current => {
-        //Check to make sure the value we just updated in memory is an Array
-        if (isArray(current)) {
-            localStorage.setItem(key, JSON.stringify(current));
+        if (!initialized) {
+            return current
+        }
+        //Only accept an object that can be determined to be a networks storage object
+        // if store has already been initialized
+        if (validateTypes.isArray(current)) {
+            chrome.storage.local.set({"files": current});
         }else{
-            //If the value was not an array then set the memory value back to the previous localstorage value
-            let json = localStorage.getItem(key)
-            if (json) FilesStore.set(JSON.parse(json))
+            //If non-object found then set the store back to the previous local store value
+            getStore()
             console.log('Recovered from bad Files Store Value')
         }
     });
+
+    //Set the NetworksStore to the value of the chome.storage.local
+    getStore()
 
     let subscribe = FilesStore.subscribe;
     let update = FilesStore.update;
     let set = FilesStore.set;
 
     return {
-        startValue,
         defaultFile,
         subscribe,
         set,
@@ -67,6 +72,9 @@ const createFilesStore = (key) => {
             //Return if arguments are undefined and incorrect types
             if (!isFileObj(name, code, methods, networkObj)) return;
 
+            //Add reminder to the use where the contract exists
+            code = `${makeContractHeader(networkObj.name)}\n${code}`
+
             //Add new files to the files store
             FilesStore.update(filesstore => {
                 filesstore.map(file => file.selected = false)
@@ -81,13 +89,14 @@ const createFilesStore = (key) => {
 
                 }
                 filesstore.push(newFile)
+
                 return filesstore;
             })
         },
         //Change the current file to be active in the IDE
         activeTab: (index) => {
             //Return if index is undefined or not a an Integer
-            if (!isInteger(index)) return;
+            if (!validateTypes.isInteger(index)) return;
 
             FilesStore.update(filesstore => {
                 //Set all files in store as unselected
@@ -100,7 +109,7 @@ const createFilesStore = (key) => {
         //Change the name of a file
         changeName:(newName, index) => {
             //Return if arguments are undefined or incorrect types
-            if (!isStringWithValue(newName) || !isInteger(index)) return;
+            if (!validateTypes.isStringWithValue(newName) || !validateTypes.isInteger(index)) return;
             
             FilesStore.update(filesstore => {
                 //Set new name of file
@@ -110,7 +119,7 @@ const createFilesStore = (key) => {
         },
         updateCode:(code, index) => {
             //Return if arguments are undefined or incorrect types
-            if (!isString(code) || !isInteger(index)) return;
+            if (!validateTypes.isString(code) || !validateTypes.isInteger(index)) return;
 
             FilesStore.update(filesstore => {
                 //Set new code in file
@@ -120,7 +129,7 @@ const createFilesStore = (key) => {
         },
         deleteTab: (index) => {
             //Return if index is undefined or not an integer
-            if (!isInteger(index)) return;
+            if (!validateTypes.isInteger(index)) return;
 
             FilesStore.update(filesstore => {
                 //remove index from array
@@ -147,7 +156,7 @@ const createFilesStore = (key) => {
 }
 
 //Create Files Store
-export const FilesStore = createFilesStore('files');
+export const FilesStore = createFilesStore();
 
 //Create a store for the current active tab (selected = true)
 export const activeTab = derived(FilesStore, ($FilesStore) => {

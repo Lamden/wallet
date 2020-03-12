@@ -8,9 +8,6 @@
     import { Components }  from '../Router.svelte';
     const { Button, InputBox } = Components;
 
-    //Utils
-    import { getContractInfo, getContractMethods  } from '../../js/lamden/masternode-api.js';
-
     //Context
     const { closeModal } = getContext('app_functions');
 
@@ -19,17 +16,17 @@
 
     let contractName = "";
 
-    function newTabFile(){
+    const newTabFile = () => {
         FilesStore.addDefaultFile();
         closeModal();
     }
 
-    async function newTabContract(){
+    const newTabContract = async () => {
         if (contractName === "") {
             setValidity('Cannot be Empty');
             return;
         }
-        let contractInfo = await getContractInfo($currentNetwork, contractName)
+        let contractInfo = await $currentNetwork.API.getContractInfo(contractName)
         if (typeof contractInfo === 'undefined'){
             setValidity(`Network Error`);
             return
@@ -38,24 +35,24 @@
             setValidity(`${contractName} does not exist on ${$currentNetwork.name}`);
             return
         }
-        let methods = await getContractMethods($currentNetwork, contractName)
+        let methods = await $currentNetwork.API.getContractMethods(contractName)
         try {
             FilesStore.addFile(contractInfo.name, contractInfo.code, methods, $currentNetwork);
             closeModal();
         } catch (e){}
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         contractField.setCustomValidity('');
         contractField.reportValidity();
     }
 
-    function setValidity(message){
+    const setValidity = (message) => {
         contractField.setCustomValidity(message);
         contractField.reportValidity();
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => { 
         if (e.detail.keyCode !== 13) {
             contractField.reportValidity();
             contractField.setCustomValidity('');

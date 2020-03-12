@@ -11,27 +11,37 @@
 
     //Props
     export let coin;
-
-    let buttons = [
+    const buttons = [
         {id: 'home-btn', name: 'Home', click: () => appHome(), class: 'button__solid button__purple'}
     ]
 
+    const successResult= {
+        title: 'Wallet Deleted',
+        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Wallet deleted successfully`,
+        message: "Successful Deletion",
+        type: 'success',
+        buttons
+    }
+
+    const failedResult= {
+        title: 'Delete Failed',
+        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Wallet failed to delete`,
+        message: "Something went wrong while removing this wallet",
+        type: 'error',
+        buttons
+    }
+
     onMount(() => {
         new Promise(function(resolve, reject) {
-            setTimeout(() => {
-                deleteCoin()
-                resolve();
-            }, 2000);
+            deleteCoin(resolve)
         })
         .then(res => {
-            setResult({
-                title: 'Wallet Deleted',
-                subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Wallet deleted successfully`,
-                message: "Successful Deletion",
-                type: 'success',
-                buttons
-            })
+            setResult(res ? successResult : failedResult)
             setPage(5)
+        })
+        .catch(err => {
+            setResult(failedResult)
+            setPage(5)  
         })
     })
 </script>

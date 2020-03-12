@@ -2,10 +2,13 @@
     import { getContext  } from 'svelte';
 
     //Stores
-	import { currentPage, CoinStore } from '../../js/stores/stores.js';
+	import { currentPage, needsBackup } from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
+
+    //Images
+    import warningIcon from '../../img/menu_icons/icon_warning.svg'
 
     //Props
     export let menuItem;
@@ -13,10 +16,11 @@
     let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
 
     $: isSelected = $currentPage.name === menuItem.page.name;
+    $: backupPage = menuItem.name === 'Backup Wallet'
 
-    function menuAction(){
+    const menuAction = () => {
         if (menuItem.page.name === "LockScreen") {
-            CoinStore.setPwd('');
+            chrome.runtime.sendMessage({type: 'lockWallet'});
             return
         }
         if (menuItem.page.name === 'Feedback'){
@@ -61,6 +65,11 @@
 .selected{
     background-color: #461BC2;
 }
+.warning-icon{
+    width: 18px;
+    margin-right: 29px;
+    margin-left: -47px;
+}
 
 </style>
 
@@ -68,4 +77,9 @@
 <div id={menuItem.id} class="item" class:selected={isSelected} class:notselected={!isSelected} on:click={ () => menuAction() }>
     <div class="logo">{@html menuItem.logo}</div>
     <span class="name"> {menuItem.name} </span>
+    {#if backupPage && $needsBackup}
+        <div class="warning-icon">
+            {@html warningIcon}
+        </div>
+    {/if}
 </div>

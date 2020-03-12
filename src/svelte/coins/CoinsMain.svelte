@@ -2,14 +2,12 @@
 	import { onMount, getContext } from 'svelte';
 
 	//Stores
-	import {SettingsStore, 
-			coinList, 
+	import { 
 			CoinStore,
 			balanceTotal,
-			numberOfCoins,
 			breadcrumbs,
-			password,
-			currentNetwork } from '../../js/stores/stores.js';
+			currentNetwork
+		} from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
@@ -21,8 +19,7 @@
 	import plus from '../../img/menu_icons/icon_plus.svg';
 
 	//Utils
-	import { updateBalances, decryptObject } from '../../js/utils.js';
-	import { getTauBalance } from '../../js/lamden/masternode-api.js';
+	import { decryptObject } from '../../js/utils.js';
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
@@ -30,25 +27,22 @@
 	//Props
 	export let name
 
+	$: totalBalance = $balanceTotal[$currentNetwork.url] ? $balanceTotal[$currentNetwork.url] : 0;
+
 	let refreshing = false;
 
-	onMount(() => {
-		SettingsStore.calcStorage();
+	onMount(async () => {
 		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
+		handleRefresh();
 	});
 
-	function handleRefresh(){
-		$CoinStore.map(async (coin) => {
-            let balance = await getTauBalance($currentNetwork, coin.vk);
-            if (!coin.balance) CoinStore.updateBalance(balance)
-            if (balance !== coin.balance) CoinStore.updateBalance(balance)
-        })
+	const handleRefresh = () => {
+		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false
 		}, 1000);
 	}
-
 
 </script>
 
@@ -94,11 +88,12 @@
 }
 
 .header-name{
-	width: 234px;
-	justify-content: center;
+    width: 234px;
+    margin-left: 84px;
 }
 
 .header-amount{
+	padding-left: 15px;
 	flex-grow: 1;
 }
 
@@ -140,10 +135,10 @@
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
 		<div class="balance-words text-body3">
-			{`TAU`}
+			{`${$currentNetwork.currencySymbol}`}
 		</div>
 		<div class="flex-row balance-total text-title">
-			{`${$balanceTotal.toLocaleString('en')}`}
+			{`${totalBalance.toLocaleString('en')}`}
 			<div on:click={handleRefresh} 
 				 class="refresh-icon clickable" 
 				 class:spinner={refreshing}>
@@ -159,15 +154,15 @@
 				icon={plus}/>
 		</div>
 	</div>
-	<div class="header header-text divider">
-		<div class="header-name header-text">Name</div>
-		<div class="header-amount header-text">Amount</div>
-		<div class="header-percent header-text">Portfolio %</div>
-	</div>
 	{#if $currentNetwork}
 		{#if $CoinStore.length === 0}
 			<CoinEmpty />
 		{:else}
+			<div class="header header-text divider">
+				<div class="header-name header-text">Name</div>
+				<div class="header-amount header-text">Amount</div>
+				<div class="header-percent header-text">Portfolio %</div>
+			</div>
 			{#each $CoinStore as coin, id}
 				<Coin {coin} {id} />
 				<CoinDivider />

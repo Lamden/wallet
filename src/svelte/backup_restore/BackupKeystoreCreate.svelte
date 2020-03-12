@@ -2,17 +2,17 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, CURRENT_KS_VERSION, password, obscure, steps } from '../../js/stores/stores.js';
+    import { CURRENT_KS_VERSION, obscure, steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
     const { Loading } = Components;
 
     //Utils
-    import { decryptStrHash, encryptObject, encryptStrHash } from '../../js/utils.js';
+    import { decryptStrHash, encryptObject, encryptStrHash, hashStringValue, decryptObject } from '../../js/utils.js';
 
     //Context
-    const { changeStep, setKeystoreFile, getKeystorePW  } = getContext('functions');
+    const { changeStep, setKeystoreFile  } = getContext('functions');
 
     //Props
     export let ksPwdInfo;
@@ -35,25 +35,16 @@
         })
     });
 
-    function createKeystore() {
-        let ksPwdInfo = getKeystorePW();
-        let file = JSON.stringify({
-            data: encryptObject(ksPwdInfo.pwd, {'version' : $CURRENT_KS_VERSION, keyList: decryptedKeys()}),
-            w: ksPwdInfo.hint === "" ? "" : encryptStrHash(obscure, ksPwdInfo.hint),
-        });
-
-        setKeystoreFile(file)
-    }
-
-    function decryptedKeys(){
-        return JSON.parse(JSON.stringify($CoinStore)).map( key => {
-            key.sk = decryptSk(key.sk);
-            return key;
+    const createKeystore = () => {
+        ksPwdInfo.obscure = obscure
+        ksPwdInfo.version = $CURRENT_KS_VERSION
+        chrome.runtime.sendMessage({type: 'backupCoinstore', data: ksPwdInfo}, (file) => {
+            if (typeof file === 'undefined' || chrome.runtime.lastError) {
+                throw new Error('unable to create keystore file')
+            } else {
+                setKeystoreFile(file)
+            }
         })
-    }
-
-    function decryptSk(sk){
-        return decryptStrHash($password, sk) ? decryptStrHash($password, sk) : 'Cannot decrypt Secret Key: wrong password or bad data';
     }
 
 </script>

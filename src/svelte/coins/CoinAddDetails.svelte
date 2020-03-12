@@ -1,8 +1,8 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onMount } from 'svelte';
     
 	//Stores
-    import { CoinStore, coinMeta, password, supportedCoins, allNetworks, currentNetwork } from '../../js/stores/stores.js';
+    import { SettingsStore, CoinStore,  supportedCoins, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components, Modals } from '../Router.svelte';
@@ -11,7 +11,6 @@
 	//Utils
     import { pubFromPriv, keysFromNew, validateAddress } from '../../js/crypto/wallets.js';
     import { encryptStrHash, decryptStrHash } from '../../js/utils.js';
-    import { mintTestNetCoins, updateAllBalances } from '../../js/lamden/masternode-api.js';
 
 	//Context
     const { closeModal } = getContext('app_functions');
@@ -25,7 +24,7 @@
     let keyPair = {};
     let addType = 1;
 
-    let returnMessageButtons = [
+    const returnMessageButtons = [
             {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
             {id: "another-btn", name: 'Add Another', click: () => detailsPage(), class: 'button__solid'}
         ]
@@ -39,7 +38,7 @@
     $: supportedCoinsList = createCoinList();
     $: selected = selectedInput ? selectedInput.value : selectedInput;
 
-    async function handleSubmit(){
+    const handleSubmit = async () => {
         if (addType === 2) validatePrivateKey();
         if (addType === 3) validatePublicKey();
         
@@ -49,48 +48,44 @@
             } else {
                 saveKeys();
             }
-            sendMessage();
-            nextPage();
         }
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         e.detail.target.setCustomValidity('');
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => { 
         if (e.detail.keyCode !== 13) e.detail.target.setCustomValidity('');
     }
 
-    function sendMessage(){
+    const sendMessage = () => {
         returnMessage.buttons = returnMessageButtons
         setMessage(returnMessage)
     }
 
-    function validatePrivateKey(){
+    const validatePrivateKey = () => {
         privateKeyObj.setCustomValidity('');
         try{
             keyPair.vk = pubFromPriv(selected.network, selected.symbol, privateKeyObj.value);
             keyPair.sk = privateKeyObj.value;
         } catch (e) {
-            console.log(e)
             privateKeyObj.setCustomValidity(e);
         }
         privateKeyObj.reportValidity()
     }
 
-    function validatePublicKey(){
+    const validatePublicKey = () => {
         publicKeyObj.setCustomValidity('');
         try{
             keyPair.vk = validateAddress(selected.network, publicKeyObj.value);
         } catch (e) {
-            console.log(e)
             publicKeyObj.setCustomValidity(e);
         }
         publicKeyObj.reportValidity()
     }
 
-    function saveKeys(){
+    const saveKeys = () => {
         let nickname = nicknameObj.value === '' ? `New ${selected.name} Wallet` : nicknameObj.value;
         let coinInfo = {
             'network': selected.network,
@@ -99,9 +94,23 @@
             'symbol': selected.symbol,
             'vk': keyPair.vk
         }
-        if (addType !== 3) coinInfo.sk = encryptStrHash($password, keyPair.sk);
-        
-        let response = CoinStore.addCoin(coinInfo);
+        if (addType !== 3) {
+             chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
+                if (encryptedSk){
+                    coinInfo.sk = encryptedSk;
+                    addToCoinStore(coinInfo);
+                }else{
+                    returnMessage = {type:'error', text: `Error encrypting key for ${coinInfo.name} - ${coinInfo.symbol}`}
+                    finish()
+                }
+            })
+        }else{
+            addToCoinStore(coinInfo);
+        } 
+    }
+
+    const addToCoinStore = (coinInfo) => {
+        let response = CoinStore.addCoin(coinInfo)
         if (!response.added){
             if (response.reason === "duplicate") {
                 returnMessage = {type:'warning', text: "Coin already exists in wallet"} 
@@ -118,21 +127,21 @@
                 returnMessage = {type:'success', text: response.reason} 
             }
         }
-
+        if (returnMessage.type === 'success') SettingsStore.setLastCoinAddedDate()
+        finish();
     }
 
-    function createAndSaveKeys(){
+    const createAndSaveKeys = () => {
         try {
             keyPair = keysFromNew(selected.network, selected.symbol);
             saveKeys();
         } catch (e){
-            console.log(e)
             returnMessage = {type:'error', text: e}
         }
         
     }
 
-    function createCoinList(){
+    const createCoinList = () => {
         let coinList = []
         Object.keys(supportedCoins).forEach(network => {
             coinList.push(...supportedCoins[network].map(coin => {
@@ -142,9 +151,16 @@
         return coinList
     }
 
-    async function mintTestCoins(coin){
-        let mintOkay = await mintTestNetCoins($currentNetwork, coin.vk, 1000000);
-        if (mintOkay) CoinStore.updateBalance(coin, 1000000)
+    const mintTestCoins = async (coin) => {
+        try{
+            $currentNetwork.API.mintTestNetCoins(coin.vk, 1000000);
+        }catch(e){}
+    }
+
+    const finish = () => {
+        chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
+        sendMessage();
+        nextPage();
     }
 </script>
 <style>

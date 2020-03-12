@@ -45,7 +45,7 @@
 		}
 	})
 
-	function createEditor(){
+	const createEditor = () => {
 		editor = monaco.editor.create(
 			container,
 			{
@@ -108,16 +108,16 @@
 		container.style.width = `${window.innerWidth - 402}px`;
 	}
 
-	function updateCode(){
+	const updateCode = () => {
 		FilesStore.updateCode(editor.getValue(), $activeTab.index);
 	}
 
-	function handler(e){
+	const handler = (e) => {
 		container.style.width = `${e.target.innerWidth - 402}px`;
 		container.style.fontFamily = "'Courier Prime', monospace"
 	}
 
-	function showErrors(){
+	const showErrors = () => {
 		errorList = [];
 		if (!lintErrors.violations){
 			decorations = editor.deltaDecorations(decorations, []);
@@ -151,7 +151,7 @@
 		}
 	}
 
-	function parseErrorString(string){
+	const parseErrorString = (string) => {
 		try {
 			return {
 				lineNo: parseInt(string.split(':', 1)[0].split(' ')[1]),
@@ -163,7 +163,7 @@
 
 	}
 
-	function highlightImports(){
+	const highlightImports = () => {
 		importList = [];
 		importErrors = [];
 		if (!checkedContracts[$currentNetwork.name]) checkedContracts[$currentNetwork.name] = {};
@@ -184,7 +184,7 @@
 		})
 	}
 
-	function pushInputDecoration(match){
+	const pushInputDecoration = (match) => {
 		let lineNumber = match.range.startLineNumber;
 		let startColumn = match.range.startColumn + 7;
 		let endColumn = match.range.endColumn;
@@ -201,7 +201,7 @@
 		decorations = editor.deltaDecorations(decorations, [...errorList, ...importList, ...importErrors])
 	}
 
-	function pushErrorDecoration(match, errorText){
+	const pushErrorDecoration = (match, errorText) => {
 		let lineNumber = match.range.startLineNumber;
 		let startColumn = match.range.startColumn + 7;
 		let endColumn = match.range.endColumn;
@@ -215,7 +215,7 @@
 		decorations = editor.deltaDecorations(decorations, [...errorList, ...importList, ...importErrors])
 	}
 
-	function handleContractExists(res, match){
+	const handleContractExists = (res, match) => {
 		if (!res.code) {
 			if (match.matches[1] !== "") {
 				checkedContracts[$currentNetwork.name][match.matches[1]] = true;
@@ -227,18 +227,13 @@
 		pushInputDecoration(match);
 	}
 
-	function addTab(res){
+	const addTab = (res) => {
 		if (!res.error) addContractTab(res.name, res.code)
 	}
 </script>
 
 <style>
-.loading{
-	justify-content: center;
-	justify-items: center;
-	align-content: center;
-	align-items: center;
-}
+
 :global(.input-error){
 	background: #ff000054;
 	padding: 1px 3px;

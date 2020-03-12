@@ -14,26 +14,27 @@
     //Props
     export let methods;
 
-    let dataTypes = ['text', 'address', 'data', 'fixedPoint', 'bool']
+    let dataTypes = ['text', 'address', 'number', 'bool']
     let typeToInputTypeMAP = {
         address: 'text',
         text: 'textarea',
-        data: 'text',
-        fixedPoint: 'number',
-        bool: trueFalseList()
+        number: 'number',
+        bool: [
+            {name:'true', value: true, selected: true}, 
+            {name: 'false', value:false, selected: false}
+        ]
     }
     let defaultValues = {
         address: '',
         text: '',
-        data: '',
-        fixedPoint: 0,
+        number: 0,
         bool: true 
     }
 
     $: argValues = {}
     $: newMethods = [...methods]
 
-    function typesList(argValue){
+    const typesList = (argValue) => {
         let returnList = dataTypes.map(type => {
             return {
                 value: type,
@@ -44,12 +45,12 @@
         return returnList;
     }
 
-    function saveArgType(index, arg, e){
+    const saveArgType = (index, arg, e) => {
         methods[index].args[arg].type = e;
         methods[index].args[arg].value = defaultValues[e]
     }
 
-    function saveArgValue(index, arg, e){
+    const saveArgValue = (index, arg, e) => {
         let newValue;
         if (!e.detail)
             newValue = e;
@@ -59,34 +60,22 @@
         methods[index].args[arg].value = newValue;
     }
 
-    function trueFalseList(){
-        return [
-            {name:'true', value: true, selected: true}, 
-            {name: 'false', value:false, selected: false}
-        ]
-    }
-
-    function clearValidation(e){
+    const clearValidation = (e) => {
         e.detail.target.setCustomValidity('')
         e.detail.target.reportValidity();
     }
 
-    function handleRun(index){
-        let args = {};
+    const handleRun = (index) => {
+        let kwargs = {};
         Object.keys(methods[index].args).map(arg => {
             let argValue = methods[index].args[arg]
-            if (argValue.value !== '') {
-                args[arg] = {
-                    type: argValue.type, 
-                    value: argValue.type === 'fixedPoint' ? parseFloat(argValue.value) : argValue.value };
-            } 
+            if (argValue.value !== '') kwargs[arg] = argValue.value;
         })
     	openModal('IdeModelMethodTx', {
 			'contractName': $activeTab.name, 
             'methodName': methods[index].name, 
-            args
+            kwargs
         })
-
     }
 </script>
 

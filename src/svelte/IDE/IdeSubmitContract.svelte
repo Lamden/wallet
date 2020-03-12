@@ -3,14 +3,11 @@
     const dispatch = createEventDispatcher();
     
 	//Stores
-    import { CoinStore, currentNetwork } from '../../js/stores/stores.js';
+    import { BalancesStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
     const { Button, DropDown, InputBox } = Components;
-
-    //Utils
-    import { contractExists } from '../../js/lamden/masternode-api.js';
 
     //Images
     import warning from '../../img/menu_icons/icon_warning.svg';
@@ -28,34 +25,20 @@
 
     let selectedWallet;
     let contractName;
+    let methodName;
     let stampLimit = 1000000;
+    let kwargs = {}
     let owner = "";
     let constructorArgs = "";
 
-    function coinList(){
-        let returnList = [{
-                value: undefined,
-                name: `Select Wallet`,
-                selected: true
-            }]
-        $CoinStore.map(c => {
-            returnList.push({
-                value: c,
-                name: `${c.nickname}\n${c.vk.substring(0, 52)}...`,
-                selected: false
-            })
-        })
-        return returnList
-    }
-
-    function handleSelectedWallet(e){
+    const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
     }
 
-    async function handleSubmit(){
+    const handleSubmit = async () => {
         if (contractNameField.value !== ""){
-            let exists = await contractExists($currentNetwork, contractNameField.value)
+            let exists = await $currentNetwork.API.contractExists(contractNameField.value)
             if (exists){
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return
@@ -68,31 +51,26 @@
         }
     }
 
-    function sendTx(){
+    const sendTx = () => {
         txData.sender = selectedWallet;
+        txData.txInfo.senderVk = txData.sender.vk;
         txData.txInfo.stampLimit = stampLimit;
-        txData.txInfo.args.name.value = contractNameField.value;
-        if (owner !== "") {
-            txData.txInfo.args.owner = {type: 'text', value: owner};
-        }
-        if (constructorArgs !== "") {
-            txData.txInfo.args.owner = {type: 'text', value: constructorArgs};
-        }
+        txData.txInfo.kwargs.name = contractNameField.value;
+        if (owner !== "") txData.txInfo.kwargs.owner = owner;
+        if (constructorArgs !== "") txData.txInfo.kwargs.constructor_args = constructorArgs;
         dispatch('saveTxDetails', txData);
     }
 
-    function setValidation(node, message){
+    const setValidation = (node, message) => {
         node.setCustomValidity(message)
         node.reportValidity();
     }
 
-    function clearValidation(e){
+    const clearValidation = (e) => {
         if (e.detail.keyCode === 13) return;
         e.detail.target.setCustomValidity('')
         e.detail.target.reportValidity();
     }
-
-
 </script>
 
 <style>
@@ -102,10 +80,6 @@
 }
 .confirm-tx{
     width: 600px;
-}
-
-.content{
-    padding-left: 55px;
 }
 
 .details{
@@ -135,22 +109,25 @@
 </style>
 
 <div class="confirm-tx flex-column">
-    <div class="content flex-column">
-        <h5>{`Submit Contract`}</h5>
+    <div class="flex-column">
+        <h5>{`Submit Contract to ${$currentNetwork.name}`}</h5>
         <div>* signifies manditory field</div>
-        <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
         <DropDown  
-            items={coinList()}
+            items={$coinsDropDown}
             innerHeight={'70px'}
+            margin={'1rem 0 7px'}
             id={'mycoins'} 
-            label={'* Select Sending Wallet'}
-            styles="margin-bottom: 19px;"
+            label={'* Send Transaction From'}
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
         />
         <div class="coin-info text-subtitle3">
             {#if selectedWallet}
-                {`${selectedWallet.name} - ${!selectedWallet.balance ? 0 : selectedWallet.balance.toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`
+                    ${selectedWallet.name} - 
+                    ${BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'}
+                    ${$currentNetwork.currencySymbol}
+                `}
             {/if}
         </div>
         <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">

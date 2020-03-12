@@ -1,22 +1,15 @@
 <script>
 	import { onMount, setContext } from 'svelte';
-	import { themes } from '../js/themes.js'
 
 	//Utils
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import {
-			CoinStore,
-			SettingsStore, 
-			currentPage, 
-			themeStyle, 
-			firstRun,
-			password} from '../js/stores/stores.js';
+	import { SettingsStore, currentPage } from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
-	const { Modal } = Components;
+	const { Modal, Loading } = Components;
 
 	//Images
 	import heart from '../img/menu_icons/icon_heart.svg';
@@ -26,14 +19,20 @@
 	let showModal = false;
 	let currentModal;
 	let modalData;
-	let fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
+	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
 
-	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
+	$: walletIsLocked = true;
+	$: firstRun = undefined;
+
+	chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+		if (message.type === 'walletIsLocked') walletIsLocked = message.data;
+	})
 
 	onMount(() => {
-		SettingsStore.calcStorage();
-		document.querySelector("html").style = themes[$themeStyle];
-		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
+		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
+			walletIsLocked = locked;
+		})
+		checkFirstRun();
 	});
 
 	setContext('app_functions', {
@@ -41,36 +40,48 @@
 		openModal: (modal, data) => openModal(modal, data),
 		getModalData: () => {return modalData},
 		closeModal: () => showModal = false,
-		appHome: () => switchPage('CoinsMain')
+		firstRun: () => firstRun ? true : false,
+		appHome: () => switchPage('CoinsMain'),
+		checkFirstRun: () => checkFirstRun()
 	});
 
-	function switchPage(name, data) {
+	const checkFirstRun = () => {
+		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {
+			firstRun = isFirstRun;
+			if (!firstRun && $currentPage.name === 'FirstRunMain'){
+				SettingsStore.changePage({name: 'CoinsMain'})
+			}
+			firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
+		})
+	}
+
+	const switchPage = (name, data) => {
 		showModal = false;
 		SettingsStore.changePage({name, data});
 	}
 
-	function getUsedLocalStorageSpace() {
+	const getUsedLocalStorageSpace = () => {
   		return Object.keys(window.localStorage).map(function(key) { return localStorage[key].length;}).reduce(function(a,b) { return a+b;});
 	};
 
-	function openModal(modal, data){
+	const openModal = (modal, data) => {
 		currentModal = modal;
 		modalData = data;
         showModal = true;
 	}
 
-	function closeModal(){
+	const closeModal = () => {
 		showModal = false;
 	}
 
 </script>
 
-{#if $loaded}
-	<div class="container">
-		{#if $firstRun}
+<div class="container">
+	{#if $loaded && typeof firstRun !== 'undefined'}
+		{#if firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
 		{:else}
-			{#if pwdIsCorrect}
+			{#if !walletIsLocked}
 				{#if fullPage.includes($currentPage.name)}
 					<svelte:component this={Pages[$currentPage.name]}/>
 				{:else}
@@ -98,13 +109,15 @@
 					</div>
 				{/if}
 			{/if}
-			{#if !pwdIsCorrect}
+			{#if walletIsLocked}
 				<svelte:component this={Pages['LockScreen']} {loaded}/>
 			{/if}
 		{/if}
+	{:else}
+		<Loading message="Loading Lamden Wallet" />
+	{/if}
+</div>
 
-	</div>
-{/if}
 
 <style>
 	:global(h1){

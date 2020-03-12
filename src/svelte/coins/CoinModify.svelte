@@ -1,8 +1,5 @@
 <script>
     import { onMount, getContext, setContext } from 'svelte';
-    
-	//Stores
-    import { CoinStore, coinMeta, password, breadcrumbs } from '../../js/stores/stores.js';
 
     //Components
     import { Modals, Components } from '../Router.svelte';
@@ -19,7 +16,7 @@
         setMessage: (msg) => message = msg,
         home: () => currentStep = 1,
         close: () => closeModal(),
-        deleteCoin: () => deleteCoin(),
+        deleteCoin: (resolve) => deleteCoin(resolve),
     });
     
     let resultInfo = {}
@@ -35,11 +32,13 @@
     ]
     let currentStep = 1;
 
-    function deleteCoin(){
-        CoinStore.update(coinstore => {
-            coinstore.splice(coinstore.indexOf(selectedCoin), 1); 
-            return coinstore;
-        });
+    const deleteCoin = (resolve) => {
+        chrome.runtime.sendMessage({type: 'coinStoreDelete', data: selectedCoin}, (result) => {
+            if (!result || chrome.runtime.lastError) {
+                resolve(false)
+            }
+            resolve(result)
+        })
     }
 </script>
 

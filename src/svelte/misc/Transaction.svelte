@@ -1,106 +1,165 @@
 <script>
-    //Stores
-    import { CoinStore } from '../../js/stores/stores.js';
+    import { getContext } from 'svelte'
 
-    //Router
-    import { CoinDivider } from '../Router.svelte';
+	//Stores
+    import { allNetworks, CoinStore } from '../../js/stores/stores.js';
+
+    //Components
+	import { Components }  from '../Router.svelte'
+    const { Button } = Components;
 
     //images
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';
     import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
+
+    //Context
+    const { openModal, closeModal } = getContext('app_functions');
     
     //Props
     export let txData;
-    
-    $: coin = txData.sender
+
     $: txInfo = txData.txInfo;
-    $: error = txData.resultInfo.type === "error" || txData.result.status_code > 0 ? true : false
-    $: errorMsg = () => {
-        if (typeof txData.resultInfo.subtitle === 'string' ) return error ? txData.resultInfo.subtitle : '';
-        if (typeof txData.resultInfo.subtitle === 'object' ) return error ? txData.resultInfo.title : '';
-        return '';
+    $: senderVk = txInfo.senderVk
+    $: coin = $CoinStore.find(f => f.vk === senderVk);
+    $: coinNickname = typeof coin === 'undefined' ? '*deleted wallet' : coin.nickname; 
+    $: error = txData.resultInfo.type === "error";
+    $: stampsUsed = txData.resultInfo.stampUsed
+    $: network = $allNetworks.find(f => `${f.host}:${f.port}` === txData.network)
+    $: currencySymbol = network.currencySymbol || ''
+    $: errorInfo = txData.resultInfo.errorInfo || []
+    $: errorMsg = typeof errorInfo[0] === 'undefined' ? "" : errorInfo[0]
+
+    const openHashLink = () => {
+        window.open(`${txData.network}/tx?hash=${txData.hash}`, '_blank');
     }
-    $: stampsUsed = txData.result.stamps_used ? txData.result.stamps_used : 0;
+
+    const processErrorMessage = (err) => {
+        if (err === "Transaction sender has too few stamps for this transaction."){
+            return `Not enough ${currencySymbol} to complete this transaction`
+        }
+        else return err
+    }
 
 </script>
 
 
 <style>
-.tx-box{
-    display: flex;
-    flex-direction: row;
-    padding: 12px 0;
+.tx-container{
+    margin-bottom: 3rem;
+    background-color: rgba(38, 38, 38, 0.64);
+    border-radius: 4px;
 }
 
-.icon-box {
+.hash-box{
+    min-width: fit-content;
+    padding: 8px 10px 6px;
+    justify-content: space-between;
+    border-radius: 4px 4px 0 0;
+    background-color: var(--primary-color);        
+}
+
+.hash-link{
+    word-break: break-word;
+}
+
+.time-icon{
+    margin-left: 20px;
+    min-width: fit-content;
+}
+
+.time{
+    margin-right: 20px;
+}
+
+.error{
+    color: red;
+}
+
+.nickname{
+    min-width: fit-content;
+}
+
+.info-box{
+    justify-content: space-between;
+    padding: 0.5rem 12px 0.5rem 0;
+}
+
+.details {
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    width: 221px;
 }
 
-.args{
-    flex-grow: 1;
+.details > div {
+    margin-left: 10px;
 }
 
-.stamps{
-    justify-content: center;
-    align-items: center;
-    width: 198px;
+.info{
+    margin-top: -1rem;
+    margin-bottom: 0.5rem;
+    line-height: unset;
 }
 
-.error-msg{
-    display: flex;
-    align-content: center;
-    margin-left: 220px;
-    height: 20px;
-}
-
-.icon{
-    display: flex;
-    align-items: center;
+.item-margin{
+    margin-left: 6px;
 }
 
 .icon-size{
-    width: 25px;
-    margin-top: 1rem;
+    min-width: 20px;
+    max-width: 20px;
 }
-.time-date{
+.name-button{
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
     align-items: center;
-    
-    width: 200px;
+    flex-grow: 1;
+    justify-content: flex-end;
+    flex-wrap: wrap;
 }
+
 
 </style>
 
-<div class="tx-box text-body1">
-    <div class="icon-box flex-column text-body1">
-        <div>{txInfo.contractName}</div>
-        <div>{txInfo.methodName}</div>
-        <div class="icon-size">{@html error ? errorCircle : successCircle}</div>
+<div class='tx-container flex-column'>
+    <div class="hash-box flex-row">
+        {#if typeof txData.hash !== 'undefined'}
+            <div class="hash-link text-subtitle2 " on:click={openHashLink}>{txData.hash}</div>
+        {:else}
+            <div class="error text-subtitle2 ">{processErrorMessage(errorMsg)}</div>
+        {/if}
+        <div class="time-icon flex-row"> 
+            <div class="time text-body1"> {new Date(txData.timestamp).toLocaleTimeString()} </div>
+            <div class="icon-size">{@html error ? errorCircle : successCircle}</div>
+        </div>
+        
     </div>
-    <div class="args flex-column text-body1">
-        {#each Object.keys(txInfo.args) as arg}
-            <div class="detail-name no-bottom-margin">{arg}</div>
-            <div class="text-primary-dark">
-                {txInfo.args[arg].type === 'fixedPoint' ? parseFloat(txInfo.args[arg].value).toFixed(8).toString() : txInfo.args[arg].value}
+    <div class="info-box starting-margin flex-row text-body1">
+        <div class="details flex-row text-body1">
+            <div class="flex-row">
+                <div>{`contract : `}</div>
+                <div class="text-primary-dark item-margin">{` ${txInfo.contractName}`}</div>
             </div>
-        {/each}
-    </div>
-    <div class="flex-column stamps">
-        <div>{'Stamps Used'}</div>
-        <div class="text-primary-dark">{stampsUsed}</div>
-    </div>
-    <div class="time-date">
-        <div> {new Date(txData.date).toLocaleDateString()} </div>
-        <div> {new Date(txData.date).toLocaleTimeString()} </div>
+            <div class="flex-row">
+                <div>{`method : `}</div>
+                <div class="text-primary-dark item-margin">{` ${txInfo.methodName}`}</div>
+            </div>
+            {#if txInfo.contractName === 'currency' && txInfo.methodName === 'transfer'}
+                <div class="flex-row">
+                    <div>{`amount : `}</div>
+                    <div class="text-primary-dark item-margin">{`${txInfo.kwargs.amount || 0} ${currencySymbol}`}</div>
+                </div>
+            {/if}
+        </div>
+
+        <div class="flex-row name-button">
+            <div class="nickname text-subtitle3 text-primary-dark">{coinNickname}</div>
+            <Button 
+                name={"tx details"}
+                classes="button__transparent button__blue"
+                padding={'5px 10px'}
+                margin={'0 0 0 10px'}
+                click={() => openModal('TxInfoBox', {txData, coin, closeModal})}
+            />
+        </div>
     </div>
 </div>
-{#if error}
-    <div class="error-msg text-subtitle text-primary-dark">
-        {errorMsg()}
-    </div>
-{/if}
-<CoinDivider />
+

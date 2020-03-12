@@ -1,19 +1,22 @@
 <script>
-    import { setContext } from 'svelte';
+    import { setContext, getContext } from 'svelte';
     
 	//Components
     import { Components, FirstRun }  from '../Router.svelte'
     const { Steps, Step } = Components;
     import NavLogo from '../nav/NavLogo.svelte';
 
-    //Context
+	//Context
+    const { checkFirstRun } = getContext('app_functions');
+
     setContext('functions', {
         nextPage: () => currentStep = currentStep + 1,
         changeStep: (step) => {
             if (step === -1 && currentStep === 0) currentStep = 0;
             else if (step === -1) currentStep = back;
             else currentStep = step;
-        }
+        },
+        done: () => checkFirstRun()
 	});
 
     let SetupSteps = [

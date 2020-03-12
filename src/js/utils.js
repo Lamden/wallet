@@ -1,13 +1,15 @@
-const typedFunction = require("./typechecker");
 const nodeCryptoJs = require("node-cryptojs-aes")
 const { CryptoJS, JsonFormatter } = nodeCryptoJs;
+
+const validators = require('types-validate-assert')
+const { validateTypes, assertTypes } = validators;
 
 /*
     Creates a dummy DOM node to mount a string to and then copies to the clipboard
     Return: Nothing
 */
-function copyToClipboard ( textTOcopy='', callback=undefined ){
-    if (typeof textTOcopy === "string"){
+const copyToClipboard = ( textTOcopy='', callback=undefined ) => {
+    if (validateTypes.isString(textTOcopy)){
         try{
             var dummy = document.createElement("input");
             document.body.appendChild(dummy);
@@ -28,20 +30,21 @@ function copyToClipboard ( textTOcopy='', callback=undefined ){
     Encrypt a string using a password string 
     Return: Encrypted String (str)
 */
-const encryptStrHash = typedFunction( [ String, String ],  ( password, string )=>{
-    password = vailidateString(password, 'password', false)
-    string = vailidateString(string, 'string', false)
+const encryptStrHash = ( password, string ) => {
+    assertTypes.isStringWithValue(password)
+    assertTypes.isString(string)
+
     const encrypt = CryptoJS.AES.encrypt(string, password).toString();
     return encrypt;
-});
+};
 
 /*
     Decrypt a string using a password string 
     Return: Decrypted String (str)
 */
-const decryptStrHash = typedFunction( [ String, String ],  ( password, encryptedString )=>{
-    password = vailidateString(password, 'password', false)
-    encryptedString = vailidateString(encryptedString, 'encryptedString', false)
+const decryptStrHash = ( password, encryptedString ) => {
+    assertTypes.isStringWithValue(password)
+    assertTypes.isStringWithValue(encryptedString)
     
     try{
         const decrypted = CryptoJS.AES.decrypt(encryptedString, password);
@@ -50,48 +53,47 @@ const decryptStrHash = typedFunction( [ String, String ],  ( password, encrypted
         console.log(e)
         return false;
     }
-});
+};
 
 /*
     Encrypt an Object using a password string 
     Return: Encrypted Object (obj)
 */
-const encryptObject = typedFunction( [ String, Object ],  ( password, obj )=>{
-    password = vailidateString(password, 'password', false)
+const encryptObject = ( password, obj ) => {
+    assertTypes.isStringWithValue(password)
+    assertTypes.isObject(obj)
+
     const encrypted = CryptoJS.AES.encrypt(JSON.stringify(obj), password, { format: JsonFormatter }).toString();
     return encrypted;
-});
+};
 
 /*
     Decrypt an Object using a password string 
     Return: Decrypted Object (obj)
 */
-const decryptObject = typedFunction( [ String, String ],  ( password, objString )=>{
-    password = vailidateString(password, 'password', false)
-    objString = vailidateString(objString, 'objString', false)
+const decryptObject = ( password, objString )  => {
+    assertTypes.isStringWithValue(password)
+    assertTypes.isStringWithValue(objString)
+
     try{
         const decrypt = CryptoJS.AES.decrypt(objString, password, { format: JsonFormatter })
         return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypt));
     } catch (e){
+        console.log(e)
         return false;
     }
-});
+};
 
 /*
-    Validates a string proprty isn't empty, and also trims leading and trailing whitespace
-    Return: Trimmed String (str)
+    Create a hash from a string
+    Return: MD5 hash
 */
-const vailidateString = typedFunction( [ String, String, Boolean ],  (  string, propertyName, trim )=>{
-    if (trim) string = string.trim()
-    if (string.length === 0) {
-      throw new Error(`${propertyName} field cannot be empty`)
-    }
-    return string;
-});
+const hashStringValue = (string)  => {
+    return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
+}
 
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
-    encryptObject, decryptObject,
-    vailidateString
+    encryptObject, decryptObject, hashStringValue
   }

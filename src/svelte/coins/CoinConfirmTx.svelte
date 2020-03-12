@@ -28,10 +28,6 @@
     
 }
 
-.content{
-    padding-left: 55px;
-}
-
 .details{
     padding: 5px 0 57px 76px;
     margin-top: 17px;
@@ -67,7 +63,7 @@
 </style>
 
 <div class="confirm-tx flex-column">
-    <div class="content flex-column">
+    <div class="flex-column">
         <h5>Confirm Transaction</h5>
         <h4 class="no-bottom-margin">Your Public Key</h4>
         <div id="sender-key" class="values text-body1 values">{yourKey}</div>
@@ -81,7 +77,7 @@
                     </div>
                 {:else}
                     <div class="values text-body1">
-                        {detail.name.includes('fixedPoint') ? parseFloat(detail.value).toFixed(8).toString() : detail.value}
+                        {detail.value}
                     </div>
                 {/if}
             {/each}

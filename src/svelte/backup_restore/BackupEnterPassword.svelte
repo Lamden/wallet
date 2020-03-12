@@ -2,11 +2,14 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
+
+    //Utils
+    import { hashStringValue } from '../../js/utils.js'
 
     //Context
     const { changeStep } = getContext('functions');
@@ -23,33 +26,26 @@
                 ]
             });
     })
-    function handleSubmit(){
-        if (!CoinStore.validatePassword(pwdObj.value)) {
-            pwdObj.setCustomValidity("Incorrect Password");
-        } else {
-            pwdObj.setCustomValidity('');
-        }
-        pwdObj.reportValidity()
-        if (formObj.checkValidity()){
-            changeStep(2);
-        }
+
+    const handleSubmit = () => {
+        chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(pwdObj.value)}, (valid) => {
+            if (!valid || chrome.runtime.lastError){
+                pwdObj.setCustomValidity("Incorrect Password");
+            } else {
+                pwdObj.setCustomValidity('');
+            }
+            pwdObj.reportValidity()
+            if (formObj.checkValidity()){
+                changeStep(2);
+            }
+        })
     }
 
-
-    function validatePassword(e){
-        let obj = e.detail;
-        if (!CoinStore.validatePassword(obj.value)) {
-            obj.setCustomValidity("Incorrect Wallet Password");
-        } else {
-            obj.setCustomValidity('');
-        }
-    }
-
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => {
         if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         e.detail.target.setCustomValidity('');
     }
 
@@ -93,7 +89,8 @@ a{
             on:changed={refreshValidity}
             on:keyup={refreshValidityKeyup}
             inputType={"password"}
-            required={true} />
+            required={true}
+            autofocus={true} />
 
         <div class="buttons flex-column">
             <input  class="button__solid button__purple submit submit-button submit-button-text submit-button-size"

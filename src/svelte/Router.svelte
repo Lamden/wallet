@@ -57,6 +57,8 @@ import RestoreComplete from './backup_restore/RestoreComplete.svelte';
 
 //History
 import HistoryMain from './history/HistoryMain.svelte';
+import PendingTransactions from './history/PendingTransactions.svelte'
+import PendingTransaction from './history/PendingTransaction.svelte'
 
 //DevTools
 import DevToolsMain from './devtools/DevToolsMain.svelte';
@@ -76,12 +78,14 @@ import Card from './components/Card.svelte';
 import Modal from './components/Modal.svelte';
 import DropDown from './components/DropDown.svelte';
 import MessageBox from './components/MessageBox.svelte';
+import TxInfoBox from './components/TxInfoBox.svelte';
 import ResultBox from './components/ResultBox.svelte';
 import StrongPW from './components/StrongPW.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
 import IdeErrorsBox from './IDE/IdeErrorsBox.svelte';
+import IdeGetVariable from './IDE/IdeGetVariable.svelte';
 import IdeMethods from './IDE/IdeMethods.svelte';
 import IdeMonacoEditor from './IDE/IdeMonacoEditor.svelte';
 import IdeTabs from './IDE/IdeTabs.svelte';
@@ -167,6 +171,7 @@ export const Modals = {
     CoinConfirmTx,
     CoinSendingTx,
     ResultBox,
+    TxInfoBox,
     MessageBox,
     CoinDeleting,
     DevToolsDeleteNetwork,
@@ -185,9 +190,9 @@ export {
     Restore,
     LockScreen,
     Modal,
-    HistoryMain,
+    HistoryMain, PendingTransactions, PendingTransaction,
     Transaction,
     About,
-    IdeMain, IdeMethods, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
+    IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
 };
 </script>

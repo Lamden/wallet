@@ -14,7 +14,7 @@
     const { getModalData } = getContext('app_functions');
 
     //Props
-    export let message  = getModalData();;
+    export let message  = getModalData();
 
     $: text = message.text;
     $: type = message.type;

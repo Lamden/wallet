@@ -9,7 +9,7 @@
     const { Button } = Components;
 
     //Context
-    const { setKeys, changeStep, nextPage } = getContext('functions');
+    const { setKeys, changeStep, nextPage, cancel } = getContext('functions');
 
     //DOM nodes
     let formObj;
@@ -26,12 +26,12 @@
         });
     });
 
-    function nextStep(){
+    const nextStep = () => {
         setKeys(keys);
         nextPage();
     }
 
-    function selectAllKeys(ev){
+    const selectAllKeys = (ev) => {
         if (ev.target.checked){
             for (const i in keys.keyList){
                 keys.keyList[i].checked = true;
@@ -147,8 +147,13 @@ input[type="checkbox"]{
                 classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Restore Wallets"
-                disabled={false}
                 click={() => nextStep()} />
+
+        <Button id={'cancel-btn'}
+                classes={`button__solid`}
+                styles={'margin-bottom: 16px;'}
+                name="Cancel"
+                click={() => cancel()} />
 
         <a  class="text-caption text-secondary" 
             href="https://www.lamden.io" 

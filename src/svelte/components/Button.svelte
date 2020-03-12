@@ -1,11 +1,12 @@
 <script>
     //Props
     export let id;
-    export let name;
+    export let name = '';
     export let click;
     export let icon = '';
     export let iconWidth = '14px';
     export let iconPosition = 'before';
+    export let iconInvert = false;
     export let width = 'unset';
     export let height = 'unset';
     export let padding = '13px 16px';
@@ -53,20 +54,28 @@
 .icon-after{
     flex-direction: row-reverse;
 }
+
+.icon-invert{
+    filter: invert(1);
+}
+
 </style>
 
 <button class={`${classes}`}
         id={id}
         on:click={click}
         disabled={disabled}
-        style="width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
+        style="min-width: fit-content; width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
         class:icon-after={iconAfter}
         tabIndex={tabIndex}
         type="button"
     >
 
     {#if icon !== ''}
-        <div class="icon" style={`width: ${iconWidth};`} class:icon-left={!iconAfter} class:icon-right={iconAfter}>{@html icon}</div>
+        <div class="icon" style={`width: ${iconWidth}; fill:${'blue'};`} 
+            class:icon-left={!iconAfter} 
+            class:icon-right={iconAfter}
+            class:icon-invert={iconInvert}>{@html icon}</div>
     {/if}
 
     <div class="text-button" class:lable-left={iconAfter} class:lable-right={!iconAfter}> {name} </div>

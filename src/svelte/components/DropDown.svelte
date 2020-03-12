@@ -11,6 +11,7 @@
     export let items = [];
     export let styles = '';
     export let width = '100%';
+    export let margin = 'unset'
     export let innerHeight = '46px'
     export let classes = '';
     export let required = false;
@@ -33,21 +34,22 @@
         }
     })
 
-    function dispatchSelected() {
+
+    const dispatchSelected = ()  => {
         if (selectElm.selectedIndex >= 0) dispatch('selected', {id, selected: items[selectElm.selectedIndex]});
     }
 
-    function handleClick(option, index){
+    const handleClick = (option, index) => {
         selectElm.options[index].selected = true;
         dispatchSelected()
         toggleBox();
     }
 
-    function toggleBox(){
+    const toggleBox = () => {
         if (items.length > 0) hideBox = !hideBox;
     }
 
-    function handleWindowClick(event) {
+    const handleWindowClick = (event) => {
         if (!customSelectElm) return;
         if (customSelectElm.contains(event.target)) return;
         hideBox = true;
@@ -150,7 +152,7 @@ label{
 
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
-<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; `}>
+<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; margin:${margin}`}>
     <label>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}
