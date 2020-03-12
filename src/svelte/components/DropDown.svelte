@@ -23,6 +23,7 @@
     let hideBox = true;
 
     $: selctedBoxTop = `${parseInt(innerHeight.split('px')[0]) + 15}px`;
+    $: displayItems = [...items]
 
     onMount(()=>{
         if (selectElm.options){
@@ -32,6 +33,7 @@
             dispatchSelected();
         }
     })
+
 
     const dispatchSelected = ()  => {
         if (selectElm.selectedIndex >= 0) dispatch('selected', {id, selected: items[selectElm.selectedIndex]});
@@ -165,14 +167,14 @@ label{
              class:open={!hideBox}
              on:click={() => toggleBox()}
              >
-            {selectElm.options.length > 0 ? selectElm.options[selectElm.selectedIndex].innerHTML : defaultText}
+            {selectElm.options.length > 0 ? displayItems[selectElm.selectedIndex].name : defaultText}
         </div>
         <div class="select-items" style={`top: ${selctedBoxTop}`} class:select-hide={hideBox}>
-            {#each items as item, index }
+            {#each displayItems as item, index }
                 <div class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}
                     >
-                     {selectElm.options[index].innerHTML}
+                     {item.name}
                 </div>
             {/each}  
         </div>
