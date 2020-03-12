@@ -2,7 +2,7 @@
     import { getContext  } from 'svelte';
 
     //Stores
-	import { currentPage, CoinStore, needsBackup } from '../../js/stores/stores.js';
+	import { currentPage, needsBackup } from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -18,7 +18,7 @@
     $: isSelected = $currentPage.name === menuItem.page.name;
     $: backupPage = menuItem.name === 'Backup Wallet'
 
-    function menuAction(){
+    const menuAction = () => {
         if (menuItem.page.name === "LockScreen") {
             chrome.runtime.sendMessage({type: 'lockWallet'});
             return

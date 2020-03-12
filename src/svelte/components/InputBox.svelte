@@ -21,11 +21,11 @@
 
     export let thisInput;
 
-    function dispatchChanged(e) {
+    const dispatchChanged = (e) => {
         dispatch('changed', e);
     }
 
-    function dispatchKeyUp(e){
+    const dispatchKeyUp = (e) => {
         dispatch('keyup', e);
     }
 

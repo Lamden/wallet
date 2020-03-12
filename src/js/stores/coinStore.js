@@ -12,37 +12,16 @@ export const createCoinStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"coins": []}, function(getValue) {
             initialized = true;
-            console.log(getValue.coins)
             CoinStore.set(getValue.coins)
         });
     }
 
     //Create Intial Store
     const CoinStore = writable([]);
-    /*
-    //This is called everytime the CoinStore updated
-    CoinStore.subscribe(current => {
-        if (!initialized) {
-            return current
-        }
-        //Only accept and Array Object to be saved to the storage and only
-        //if store has already been initialized
-        if (validateTypes.isArray(current)) {
-            console.log('setting to storage from CoinStore')
-            console.log(current)
-            //chrome.storage.local.set({"coins": current});
-        }else{
-            //If non-object found then set the store back to the previous local store value
-            getStore()
-            console.log('Recovered from bad Coin Store Value')
-        }
-    });
-*/
+
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
-            console.log(changes)
             if (key === 'coins') {
-                console.log('setting CoinStore from listener')
                 if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(CoinStore))) {
                     CoinStore.set(changes[key].newValue)
                 }
@@ -113,20 +92,6 @@ export const createCoinStore = () => {
 }
 //Create CoinStore instance
 export const CoinStore = createCoinStore();
-
-//Create a derived store to total all wallets
-export const balanceTotal = derived(CoinStore, ($CoinStore) => {
-    let totals = {};
-    $CoinStore.forEach(coin =>{
-        if (coin.balances){
-            Object.keys(coin.balances).forEach(key => {
-                if (!totals[key]) totals[key] = 0;
-                totals[key] = totals[key] + coin.balances[key];
-            })
-        }
-    })
-    return totals;
-});
 
 //Create a derived store to total all wallets
 export const coinsDropDown = derived(CoinStore, ($CoinStore) => {

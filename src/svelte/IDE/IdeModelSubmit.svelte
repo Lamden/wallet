@@ -2,7 +2,7 @@
     import { setContext, getContext } from 'svelte';
 
 	//Stores
-    import { CoinStore, FilesStore, SettingsStore, TxStore, currentNetwork } from '../../js/stores/stores.js';
+    import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Modals, Components }  from '../Router.svelte';
@@ -39,16 +39,16 @@
         }
     }
 
-    function nextPage(){
+    const nextPage = () => {
         currentStep = currentStep + 1
     }
 
-    function handleSaveTxDetails(e){
+    const handleSaveTxDetails = (e) => {
         txData = {...e.detail};
         currentStep = currentStep + 1; 
     }
 
-    function createTxDetails(){
+    const createTxDetails = () => {
         let txDetails = [
             {name:'Contract Name', value: txData.txInfo.contractName},
             {name:'Function', value: txData.txInfo.methodName},
@@ -61,19 +61,18 @@
         return txDetails
     }
 
-    function resultDetails(e){
+    const resultDetails = (e) => {
         resultInfo = e.detail.resultInfo;
         if (resultInfo.type === 'success') addFile()
         resultInfo.buttons = buttons;
         nextPage();
     }
 
-    async function addFile(){
+    const addFile = async () => {
         let contractName = ''
         try {
             contractName = txData.txInfo.args.name;
         } catch (e) {
-            console.log(e)
             return
         }
 
@@ -82,9 +81,7 @@
             try {
                 let methods = await $currentNetwork.API.getContractMethods(contractInfo.name, contractInfo.code)
                 FilesStore.addFile(contractInfo.name, contractInfo.code, methods, $currentNetwork);
-            } catch (e) {
-               console.log(e)
-            }
+            } catch (e) {}
         }
     }
 </script>

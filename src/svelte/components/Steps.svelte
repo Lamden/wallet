@@ -19,7 +19,7 @@
 
     $: noSteps = $steps.stepList.length === 0;
     
-    function goBack(){
+    const goBack = () => {
         changeStep(-1)
     }
 

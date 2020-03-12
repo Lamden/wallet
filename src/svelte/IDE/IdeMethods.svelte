@@ -19,7 +19,10 @@
         address: 'text',
         text: 'textarea',
         number: 'number',
-        bool: trueFalseList()
+        bool: [
+            {name:'true', value: true, selected: true}, 
+            {name: 'false', value:false, selected: false}
+        ]
     }
     let defaultValues = {
         address: '',
@@ -31,7 +34,7 @@
     $: argValues = {}
     $: newMethods = [...methods]
 
-    function typesList(argValue){
+    const typesList = (argValue) => {
         let returnList = dataTypes.map(type => {
             return {
                 value: type,
@@ -42,12 +45,12 @@
         return returnList;
     }
 
-    function saveArgType(index, arg, e){
+    const saveArgType = (index, arg, e) => {
         methods[index].args[arg].type = e;
         methods[index].args[arg].value = defaultValues[e]
     }
 
-    function saveArgValue(index, arg, e){
+    const saveArgValue = (index, arg, e) => {
         let newValue;
         if (!e.detail)
             newValue = e;
@@ -57,19 +60,12 @@
         methods[index].args[arg].value = newValue;
     }
 
-    function trueFalseList(){
-        return [
-            {name:'true', value: true, selected: true}, 
-            {name: 'false', value:false, selected: false}
-        ]
-    }
-
-    function clearValidation(e){
+    const clearValidation = (e) => {
         e.detail.target.setCustomValidity('')
         e.detail.target.reportValidity();
     }
 
-    function handleRun(index){
+    const handleRun = (index) => {
         let kwargs = {};
         Object.keys(methods[index].args).map(arg => {
             let argValue = methods[index].args[arg]

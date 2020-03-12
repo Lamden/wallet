@@ -31,7 +31,7 @@
         });   
     });
 
-    function done(){
+    const done = () => {
         if (restore) changeStep(7);
         else switchPage('CoinsMain');
     }

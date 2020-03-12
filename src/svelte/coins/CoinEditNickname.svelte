@@ -17,9 +17,8 @@
     
     //Props
     export let coin;
-    $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
-    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
+    
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
 
     let returnMessage = {};
     
@@ -32,7 +31,7 @@
         nicknameObj.value = coin.nickname;
     })
 
-    function saveNickName(){
+    const saveNickName = () => {
         CoinStore.update( current => {
             let coinMatch = current.find( c => coin.network === c.network && coin.symbol === c.symbol && coin.vk === c.vk)
             if (coinMatch) {
@@ -44,7 +43,7 @@
         setPage(6);
     }
 
-    function sendMessage(){
+    const sendMessage = () => {
             returnMessage.type = 'success';
             returnMessage.text = `Wallet Nickname changed!`;
         setMessage(returnMessage)
@@ -73,7 +72,7 @@
     <div id={'modify-edit-info'} class="coin-info text-subtitle3">
         {coin.name}
         <strong>
-            {`${coin.symbol} - ${balance.toLocaleString('en')} ${coin.symbol}`}
+            {`${balance} ${$currentNetwork.currencySymbol}`}
         </strong> 
     </div>
 

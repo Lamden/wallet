@@ -26,12 +26,12 @@
         });
     });
 
-    function nextStep(){
+    const nextStep = () => {
         setKeys(keys);
         nextPage();
     }
 
-    function selectAllKeys(ev){
+    const selectAllKeys = (ev) => {
         if (ev.target.checked){
             for (const i in keys.keyList){
                 keys.keyList[i].checked = true;

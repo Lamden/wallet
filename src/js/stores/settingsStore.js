@@ -69,16 +69,6 @@ const createSettingsStore = () => {
                 return settingsStore;
             })
         },
-        //Set a new theme in the setting store
-        changeTheme: (theme) => {
-            //Reject undefined or missing info.
-            if (!validateTypes.isStringWithValue(theme)) return;
-            SettingsStore.update(settingsStore => {
-                //Set theme in Settings store
-                settingsStore.themeStyle = theme;
-                return settingsStore;
-            })
-        },
         setLastBackupDate: () => {
             SettingsStore.update(settingsStore => {
                 settingsStore.lastBackupDate = new Date().toLocaleString()
@@ -111,13 +101,7 @@ export const currentPage = derived(
 	$SettingsStore => { return $SettingsStore.currentPage }
 );
 
-//Derived Store to return the themeStyle
-export const themeStyle = derived(
-	SettingsStore,
-	$SettingsStore => { return $SettingsStore.themeStyle }
-);
-
-//Derived Store to return the themeStyle
+//Derived Store to return if the user needs to make another backup
 export const needsBackup = derived(
 	SettingsStore,
 	$SettingsStore => {

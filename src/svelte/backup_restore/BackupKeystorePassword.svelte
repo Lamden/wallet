@@ -28,7 +28,7 @@
         });
     })
 
-	function formValidation(){
+	const formValidation = () => {
 		pwdInput2.setCustomValidity("")
 		if (formField.checkValidity()){
 				if (pwdInput1.value === pwdInput2.value){
@@ -41,17 +41,17 @@
 		}
 	}
 	
-	function pwd1Validity(){
+	const pwd1Validity = () => {
 		pwdInput1.checkValidity()
 		pwdInput1.reportValidity()
 	}
 	
-	function pwd2Validity(){
+	const pwd2Validity = () => {
 		pwdInput2.checkValidity()
 		pwdInput2.reportValidity()
     }
 
-    function strongPasswordUpdate(){
+    const strongPasswordUpdate = () => {
         pwd = pwdInput1.value;
     }
 

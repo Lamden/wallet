@@ -8,7 +8,7 @@
     import squares_bg from '../../img/backgrounds/squares_bg.png';
 
     //Context
-    const { approve, close, openNewTab } = getContext('confirm_functions');
+    const { approveApp, close, openNewTab } = getContext('confirm_functions');
 
     export let confirmData;
 
@@ -111,17 +111,18 @@ input[type="checkbox"]{
                 name="Approve"
                 width={'175px'}
                 height={'42px'}
-                click={approve} />
+                click={approveApp} />
         </div>
         <div>
             <a class="text-subtitle4 copy-link" href="www.lamden.io">help?</a>
         </div>   
     </div>
-
+<!--
     <div class="flex-row">
         <input type="checkbox" bind:checked={prevent}>
         <small class="checkbox-words text-primary-dark">{`prevent this website from creating further requests`}</small>
     </div>
+-->
 </div>
 
 

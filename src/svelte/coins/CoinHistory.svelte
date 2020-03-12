@@ -2,15 +2,18 @@
     import { onMount, beforeUpdate, afterUpdate } from 'svelte';
     
     //Stores
-    import { breadcrumbs, TxStore } from '../../js/stores/stores.js';
+    import { breadcrumbs } from '../../js/stores/stores.js';
 
 	//Components
     import { Transaction, PendingTransactions }  from '../Router.svelte'
+
+    //Images
+    import refresh from '../../img/menu_icons/icon_refresh.svg';
     
     //Props
     export let txList;
     export let all = false;
-    export let pendingTxList
+    export let pendingTxList;
 
     $: sortedList = [];
     $: txByDay = txList.length > 0 ? groupByDate() : {};
@@ -53,7 +56,11 @@
 
 
 <div class="history text-primary">
-    <h4>Pending Transactions</h4>
+    <div class="flex-row">
+        <div><h4>Pending Transactions</h4></div>
+        <div>{@html refresh}</div>
+    </div>
+    
     <PendingTransactions pendingTransactions={pendingTxList} />
     {#if Object.keys(txByDay).length === 0}
         <h4>No Transaction History</h4>

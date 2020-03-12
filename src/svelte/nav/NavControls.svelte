@@ -1,9 +1,8 @@
 <script>
     import { getContext, onMount, afterUpdate } from 'svelte';
-    import { themes } from '../../js/themes.js';
 
 	//Stores
-    import { SettingsStore, currentNetwork, themeStyle } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
     
 	//Components
     import { NavStatus }  from '../Router.svelte'
@@ -25,10 +24,6 @@
         status = await $currentNetwork.ping() ? 'online' : 'offline'
     }
 
-    const toggleTheme = (event) => {
-        SettingsStore.changeTheme(event.detail ? 'light' : 'dark')
-        document.querySelector("html").style = themes[$themeStyle];
-    }
 </script>
 
 <style>

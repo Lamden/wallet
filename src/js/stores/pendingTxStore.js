@@ -4,8 +4,6 @@ export const createPendingTxStore = () => {
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"pendingTxs": []}, function(getValue) {
-            console.log('getting pending tx store value')
-            console.log(getValue.pendingTxs)
             PendingTxStore.set(getValue.pendingTxs)
         });
     }
@@ -16,8 +14,6 @@ export const createPendingTxStore = () => {
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'pendingTxs') {
-                console.log('setting PendingTxStore from listener')
-                console.log(changes[key])
                 if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(PendingTxStore))) {
                     PendingTxStore.set(changes[key].newValue)
                 }

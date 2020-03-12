@@ -15,11 +15,11 @@
         breadcrumbs.set([{name: 'History', page: {name: ''}},]);   
     });
 
-    function sortTxList(txList){
+    const sortTxList = (txList) => {
         return txList.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }
 
-    function groupByDate(txList){
+    const groupByDate = (txList) => {
         if (!txList) return {};
         let txDict = {};
         sortTxList(txList).map(tx => {
@@ -34,7 +34,7 @@
         return txDict
     }
 
-    function flattenObject(txList){
+    const flattenObject = (txList) => {
         let flatList = []
         if (!txList) return flatList;
         Object.keys(txList).map(vk => {

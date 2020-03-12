@@ -1,17 +1,11 @@
 <script>
 	import { onMount, setContext } from 'svelte';
-	import { themes } from '../js/themes.js'
 
 	//Utils
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import {
-			CoinStore,
-			SettingsStore, 
-			currentPage, 
-			themeStyle, 
-			password} from '../js/stores/stores.js';
+	import { SettingsStore, currentPage } from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
@@ -38,9 +32,7 @@
 		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 			walletIsLocked = locked;
 		})
-
 		checkFirstRun();
-		document.querySelector("html").style = themes[$themeStyle];
 	});
 
 	setContext('app_functions', {

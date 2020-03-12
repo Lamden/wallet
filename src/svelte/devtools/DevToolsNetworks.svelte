@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { NetworksStore, currentNetwork, networksDropDownList, CoinStore, CacheStore, networkTypesDropDownList } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, networkTypesDropDownList } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte';
@@ -17,20 +17,22 @@
     let name = ''
     let host = ''
     let port = '8000'
+    let currencySymbol = 'mTAU'
     let type = 'mockchain'
     let checking = false;
     let added = false;
 
     $: addButtonColor = checking ? '' : 'button__purple';
     $: buttonName = checking ? 'Checking For Network' : added ? 'Added!' : 'Add Network';
-    $: network = {name, host, port, type, lamden: false, selected: false}
+    $: network = {name, host, port, currencySymbol, type, lamden: false, selected: false}
 
-    async function formValidation(){
+    const formValidation = async () => {
         if (formField.checkValidity()){
             checking = true;
             let networkActive = await $currentNetwork.ping()
             checking = false;
             if (networkActive){
+                currencySymbol = currencySymbol === '' ? 'mTAU' : currencySymbol
                 let response = NetworksStore.addNetwork(network);
                 if (response.added){
                     clearFields();
@@ -46,30 +48,30 @@
         
     }
 
-    function clearFields(){
+    const clearFields = () => {
         host = ''
         port = ''
         name = ''
+        currencySymbol = 'mTau'
     }
 
-    function clearIPValidation(){
+    const clearIPValidation = () => {
         reportValidityMessage(hostField, '')
     }
 
-    function handleSelected(e){
-        console.log(e)
+    const handleSelected = (e) => {
         NetworksStore.setCurrentNetwork(e.detail.selected.value)
     }
 
-    function handleTypeSelected(e){
+    const handleTypeSelected = (e) => {
         type = e.detail.selected.value
     }
 
-    function clearCache(){
+    const clearCache = () => {
         CacheStore.refreshNetwork($currentNetwork.name)
     }
 
-    function reportValidityMessage(node, message){
+    const reportValidityMessage = (node, message) => {
         node.setCustomValidity(message);
         node.reportValidity();
     }
@@ -163,16 +165,26 @@
             required={true}
             spellcheck={false}
         />
-        <InputBox 
-            label="Port"
-            placeholder={"Enter Port"}
-            bind:value={port}
-            on:keyup={() => clearIPValidation()}
-            width="125px"
-            styles={'margin-bottom: 20px'}
-            required={true}
-            spellcheck={false}
-        />
+        <div class="flex-row">
+            <InputBox 
+                label="Port"
+                placeholder={"Enter Port"}
+                bind:value={port}
+                on:keyup={() => clearIPValidation()}
+                width="125px"
+                required={true}
+                spellcheck={false}
+            />
+            <InputBox 
+                label="Network Symbol"
+                placeholder={"mTAU"}
+                bind:value={currencySymbol}
+                on:keyup={() => clearIPValidation()}
+                width="115px"
+                styles={'margin: 0 0 20px 10px'}
+                spellcheck={false}
+            />
+        </div>
         <input 
             id="add-network"
             on:click={() => formValidation()}

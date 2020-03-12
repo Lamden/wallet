@@ -20,7 +20,7 @@
 
     let passwordOkay = false;
 
-    function handleSubmit(form){
+    const handleSubmit = (form) => {
         if (passwordOkay){
             if (formObj.checkValidity()){
                 setPage(4);
@@ -37,12 +37,12 @@
         }
     }
 
-    function setValidity(node, message){
+    const setValidity = (node, message) => {
         node.setCustomValidity(message);
         node.reportValidity();
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => {
         if (e.detail.keyCode !== 13) setValidity(passwordObj, '')
     }
 </script>

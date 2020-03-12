@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps, currentNetwork, NetworksStore, SettingsStore } from '../../js/stores/stores.js';
+    import { CoinStore, steps, NetworksStore, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -41,11 +41,11 @@
         })
     });
 
-    function dispatchState(step) {
+    const dispatchState = (step) => {
         dispatch('toggleStep', step);
     }
 
-    function createStartingWallets(){
+    const createStartingWallets = () => {
         let keyPair = keysFromNew('lamden', 'TAU');
         chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
             if (encryptedSk){

@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../Router.svelte'
@@ -27,7 +27,7 @@
             });
     })
 
-    function handleSubmit(){
+    const handleSubmit = () => {
         chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(pwdObj.value)}, (valid) => {
             if (!valid || chrome.runtime.lastError){
                 pwdObj.setCustomValidity("Incorrect Password");
@@ -41,11 +41,11 @@
         })
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => {
         if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         e.detail.target.setCustomValidity('');
     }
 

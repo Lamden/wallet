@@ -1,11 +1,12 @@
 import { writable, get, derived } from 'svelte/store';
 
+import * as validators from 'types-validate-assert'
+const { validateTypes } = validators; 
+
 export const createBalancesStore = () => {
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"balances": []}, function(getValue) {
-            console.log('getting balances store value')
-            console.log(getValue.balances)
             BalancesStore.set(getValue.balances)
         });
     }
@@ -16,8 +17,6 @@ export const createBalancesStore = () => {
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'balances') {
-                console.log('setting BalancesStore from listener')
-                console.log(changes[key])
                 if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(BalancesStore))) {
                     BalancesStore.set(changes[key].newValue)
                 }
@@ -35,7 +34,18 @@ export const createBalancesStore = () => {
     return {
         subscribe,
         set,
-        update
+        update,
+        getBalance: (netkey, vk) => {
+            if (validateTypes.isStringWithValue(netkey) && validateTypes.isStringWithValue(vk)){
+                const balanceStore = get(BalancesStore)
+                if (!balanceStore[netkey]) return 0
+                if (!balanceStore[netkey][vk]) return 0
+                if (!balanceStore[netkey][vk].balance) return 0
+                return balanceStore[netkey][vk].balance
+            }else{
+                return 0;
+            }
+        }
     };
 }
 //Create BalancesStore instance
@@ -47,9 +57,10 @@ export const balanceTotal = derived(BalancesStore, ($BalancesStore) => {
     Object.keys($BalancesStore).forEach(network =>{
         totals[network] = 0;
         Object.keys($BalancesStore[network]).forEach(vk => {
-            totals[network] = totals[network] + $BalancesStore[network][vk];
+            if (!$BalancesStore[network][vk].watchOnly){
+                totals[network] = totals[network] + $BalancesStore[network][vk].balance;
+            }  
         })
     })
-    console.log(totals)
     return totals;
 });

@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps } from '../../js/stores/stores.js';
+    import { steps } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
@@ -34,7 +34,7 @@
         })
     })
 
-    function getLogo(coin){
+    const getLogo = (coin) => {
         return logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
     }
 </script>

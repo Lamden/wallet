@@ -1,6 +1,5 @@
 <script>
 	import { onMount, setContext } from 'svelte';
-	import { themes } from '../js/themes.js'
 
     //Images
     import lamden_logo from '../img/nav/lamden_logo_new.svg';
@@ -11,7 +10,8 @@
 	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
 	
 	setContext('confirm_functions', {
-		approve: () => sendApprove(),
+		approveApp: () => sendApproveApp(),
+		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
 		openNewTab: (url) => openNewTab(url)
 	});
@@ -26,11 +26,15 @@
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
 			if (response) confirmData = response
 		})
-		document.querySelector("html").style = themes['dark'];
 	});
 
-	const sendApprove = () => {
-		chrome.runtime.sendMessage({type: 'approveConfirm'})
+	const sendApproveApp = () => {
+		chrome.runtime.sendMessage({type: 'approveDapp'})
+		closePopup()
+	}
+
+	const sendApprovetx = () => {
+		chrome.runtime.sendMessage({type: 'approveTransaction'})
 		closePopup()
 	}
 

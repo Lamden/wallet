@@ -4,7 +4,6 @@ import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
 import { networkKey } from './stores.js';
-import { isNetworkObj } from '../objectValidations';
 
 const createTxStore = () => {
     let initialized = false;
@@ -54,29 +53,12 @@ const createTxStore = () => {
         subscribe,
         set,
         update,
-        getTxList: (networkObj, vk) => {
+        clearTx: (network, vk) => {
             //Return if arguments are undefined and incorrect types
-            if (!isNetworkObj(networkObj) || !validateTypes.isStringWithValue(vk)) return;
-
-            //Create Network Key
-            let netKey = networkKey(networkObj);
-
-            //Get the txStore Value
-            let txstore = get(TxStore);
-
-            //Return empty lists if the keys can't be found
-            if (!txstore[netKey]) return [];
-            if (!txstore[netKey][vk]) return [];
-
-            //List is found so return it
-            return txstore[netKey][vk]
-        },
-        clearTx: (networkObj, vk) => {
-            //Return if arguments are undefined and incorrect types
-            if (!isNetworkObj(networkObj) || !validateTypes.isStringWithValue(vk)) return;
+            if (!validateTypes.isSpecificClass(network, 'Network') || !validateTypes.isStringWithValue(vk)) return;
 
             //Create network Key
-            let netKey = networkKey(networkObj)
+            let netKey = networkKey(network)
             
             TxStore.update(txstore => {
                 //If the key paths don't exists then just return

@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
     
 	//Stores
-    import { CoinStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
+    import { BalancesStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -23,18 +23,18 @@
     let selectedWallet;
     let stampLimit = 50000;
 
-    function handleSelectedWallet(e){
+    const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
     }
 
-    function handleSubmit(){
+    const handleSubmit = () => {
         if(formObj.checkValidity()){
             sendTx();
         }
     }
 
-    function sendTx(){
+    const sendTx = () => {
         txData.sender = selectedWallet;
         txData.txInfo.stampLimit = stampLimit;
         txData.txInfo.senderVk = txData.sender.vk
@@ -102,7 +102,11 @@
         />
         <div class="coin-info text-subtitle3">
             {#if selectedWallet}
-                {`${selectedWallet.name} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`
+                    ${selectedWallet.name} - 
+                    ${BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'}
+                    ${$currentNetwork.currencySymbol}
+                `}
             {/if}
         </div>
         <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">

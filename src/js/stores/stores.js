@@ -1,12 +1,10 @@
-import { readable, writable} from 'svelte/store';
-import { coin, pubkey } from './defaults.js';
+import { writable} from 'svelte/store';
 
 export { obscure, supportedCoins } from './defaults.js';
-export { coinMeta } from './coinMeta.js';
 export { CoinStore, coinsDropDown } from './coinStore.js';
 export { BalancesStore, balanceTotal} from './balancesStore.js';
 export { PendingTxStore} from './pendingTxStore.js';
-export { SettingsStore, themeStyle, currentPage, needsBackup  } from './settingsStore.js';
+export { SettingsStore, currentPage, needsBackup  } from './settingsStore.js';
 export { DappStore } from './dappStore.js';
 export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList  } from './networksStore.js';
 export { TxStore }  from './txStore.js';
@@ -15,7 +13,6 @@ export { CacheStore }  from './cacheStore.js';
 
 //MISC Stores
 export const CURRENT_KS_VERSION = writable("1.0");
-export const defaultOjects = readable({coin, pubkey });
 export const breadcrumbs = writable([]);
 export const steps = writable({current:0, stepList:[]});
 

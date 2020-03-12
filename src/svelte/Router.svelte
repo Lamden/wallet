@@ -78,6 +78,7 @@ import Card from './components/Card.svelte';
 import Modal from './components/Modal.svelte';
 import DropDown from './components/DropDown.svelte';
 import MessageBox from './components/MessageBox.svelte';
+import TxInfoBox from './components/TxInfoBox.svelte';
 import ResultBox from './components/ResultBox.svelte';
 import StrongPW from './components/StrongPW.svelte';
 
@@ -170,6 +171,7 @@ export const Modals = {
     CoinConfirmTx,
     CoinSendingTx,
     ResultBox,
+    TxInfoBox,
     MessageBox,
     CoinDeleting,
     DevToolsDeleteNetwork,

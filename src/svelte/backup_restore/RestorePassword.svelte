@@ -30,7 +30,7 @@
         });
     });
 
-    function handleSubmit(){
+    const handleSubmit = () => {
         if (decryptObject(pwdObj.value, keystoreFile.data)) {
             pwdObj.setCustomValidity('');
         } else {
@@ -43,11 +43,11 @@
         }
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         e.detail.target.setCustomValidity('');
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => {
         if (e.detail.keyCode !== 13) pwdObj.setCustomValidity('');
     }
     

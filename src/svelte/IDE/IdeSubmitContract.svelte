@@ -3,7 +3,7 @@
     const dispatch = createEventDispatcher();
     
 	//Stores
-    import { CoinStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
+    import { BalancesStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -31,12 +31,12 @@
     let owner = "";
     let constructorArgs = "";
 
-    function handleSelectedWallet(e){
+    const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
     }
 
-    async function handleSubmit(){
+    const handleSubmit = async () => {
         if (contractNameField.value !== ""){
             let exists = await $currentNetwork.API.contractExists(contractNameField.value)
             if (exists){
@@ -51,7 +51,7 @@
         }
     }
 
-    function sendTx(){
+    const sendTx = () => {
         txData.sender = selectedWallet;
         txData.txInfo.senderVk = txData.sender.vk;
         txData.txInfo.stampLimit = stampLimit;
@@ -61,18 +61,16 @@
         dispatch('saveTxDetails', txData);
     }
 
-    function setValidation(node, message){
+    const setValidation = (node, message) => {
         node.setCustomValidity(message)
         node.reportValidity();
     }
 
-    function clearValidation(e){
+    const clearValidation = (e) => {
         if (e.detail.keyCode === 13) return;
         e.detail.target.setCustomValidity('')
         e.detail.target.reportValidity();
     }
-
-
 </script>
 
 <style>
@@ -125,7 +123,11 @@
         />
         <div class="coin-info text-subtitle3">
             {#if selectedWallet}
-                {`${selectedWallet.name} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`
+                    ${selectedWallet.name} - 
+                    ${BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'}
+                    ${$currentNetwork.currencySymbol}
+                `}
             {/if}
         </div>
         <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">

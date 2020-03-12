@@ -2,15 +2,12 @@
 	import { onMount, getContext } from 'svelte';
 
 	//Stores
-	import {SettingsStore, 
-			coinList, 
+	import { 
 			CoinStore,
 			balanceTotal,
-			numberOfCoins,
 			breadcrumbs,
-			password,
-			currentNetwork,
-			NetworksStore, needsBackup } from '../../js/stores/stores.js';
+			currentNetwork
+		} from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
@@ -138,7 +135,7 @@
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
 		<div class="balance-words text-body3">
-			{`TAU`}
+			{`${$currentNetwork.currencySymbol}`}
 		</div>
 		<div class="flex-row balance-total text-title">
 			{`${totalBalance.toLocaleString('en')}`}
@@ -157,15 +154,15 @@
 				icon={plus}/>
 		</div>
 	</div>
-	<div class="header header-text divider">
-		<div class="header-name header-text">Name</div>
-		<div class="header-amount header-text">Amount</div>
-		<div class="header-percent header-text">Portfolio %</div>
-	</div>
 	{#if $currentNetwork}
 		{#if $CoinStore.length === 0}
 			<CoinEmpty />
 		{:else}
+			<div class="header header-text divider">
+				<div class="header-name header-text">Name</div>
+				<div class="header-amount header-text">Amount</div>
+				<div class="header-percent header-text">Portfolio %</div>
+			</div>
 			{#each $CoinStore as coin, id}
 				<Coin {coin} {id} />
 				<CoinDivider />

@@ -18,11 +18,11 @@
         });
     });
 
-    function accept(){
+    const accept = () => {
         changeStep(4)
     }
 
-    function startOver(){
+    const startOver = () => {
         changeStep(0);
     }
 

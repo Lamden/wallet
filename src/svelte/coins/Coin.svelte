@@ -1,8 +1,8 @@
 <script>
-    import { getContext, setContext} from 'svelte';
+    import { getContext, setContext, afterUpdate } from 'svelte';
 
     //Stores
-    import { SettingsStore, currentNetwork, themeStyle, CoinStore, BalancesStore, balanceTotal } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, balanceTotal } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
@@ -15,16 +15,21 @@
     const { switchPage } = getContext('app_functions');
     
     $: watching = coin.sk === 'watchOnly';
-    $: symbol = coin.symbol;
-    $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
-    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
+    $: balanceStr = balance.toLocaleString('en')
     $: percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
 
-    function toPercentString(){
-        if (isNaN((balance / $balanceTotal[$currentNetwork.url]))) return '0 %'
-        return ((balance / $balanceTotal[$currentNetwork.url])* 100).toFixed(1).toString() + ' %'
+    afterUpdate(() => {
+        balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
+        balanceStr = balance.toLocaleString('en')
+        percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
+    })
+
+    const toPercentString = () => {
+        if (isNaN((balance / $balanceTotal[$currentNetwork.url]))) return '0.0 %'
+        return ((balance / $balanceTotal[$currentNetwork.url])* 100).toFixed(2).toString() + ' %'
     }
+    
 </script>
 
 <style>
@@ -71,6 +76,11 @@
 	width: 90px;
 }
 
+.watching-text{
+    display: flex;
+    align-items: center;
+}   
+
 </style>
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
@@ -89,11 +99,12 @@
     </div>
 
     <div class="amount flex-column">
-        <div class="text-body1">{`${ balance.toLocaleString('en') } ${ symbol }`}</div>
-        {#if watching}
-            <div class="text-body2 text-primary-dark">{"Watching Wallet"}</div>
-        {/if}
+        <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
     </div>
-
-    <div class="percent text text-body1"> {`${percent}`}</div>
+        {#if watching}
+            <div class="text-body2 text-primary-dark watching-text">{"watching"}</div>
+        {:else}
+            <div class="percent text text-body1"> {`${percent}`}</div>
+        {/if}
+    
 </div>

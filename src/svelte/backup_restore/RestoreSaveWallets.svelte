@@ -44,7 +44,7 @@
         })
     });
 
-    function addKeys(resolve){
+    const addKeys = (resolve) => {
         keys.keyList.map( key => {
             if (key.checked) {
                 chrome.runtime.sendMessage({type: 'encryptSk', data: key.sk}, (encryptedSk) => {

@@ -4,7 +4,7 @@
 
     export let checked;
 
-    function dispatchState() {
+    const dispatchState = () => {
 		  dispatch('toggleState', checked);
 	  }
 </script>

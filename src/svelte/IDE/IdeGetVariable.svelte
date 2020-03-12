@@ -1,6 +1,7 @@
 <script>
     //Stores
     import { currentNetwork } from '../../js/stores/stores.js'
+    
 	//Components
     import { Components }  from '../Router.svelte';
     const { InputBox, Button } = Components;
@@ -11,7 +12,7 @@
     let key = '';
     let result = '';
 
-    async function handleRun(){
+    const handleRun = async () => {
         try{
             result = JSON.parse(await $currentNetwork.API.getVariable(contractName, variableName, key))
         } catch (e) {

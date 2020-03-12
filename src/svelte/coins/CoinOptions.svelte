@@ -32,24 +32,24 @@
 
     $: coin = getModalData();
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
-    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
 
-    function showEdit(){
+    const showEdit = () => {
         setSelectedCoin(selectedWallet);
         setPage(2);
     }
 
-    function showDelete(){
+    const showDelete = () => {
         setSelectedCoin(selectedWallet);
         setPage(3);
     }
-    function copyWalletAddress(){
+
+    const copyWalletAddress = () => {
         copyToClipboard(selectedWallet.vk)
         copySuccessful = true;
     }
 
-    function coinList(){
+    const coinList = () => {
         return $CoinStore.map(c => {
             return {
                 value: c,
@@ -59,7 +59,7 @@
         })
     }
 
-    function clearTxHistory(){
+    const clearTxHistory = () => {
         TxStore.clearTx($currentNetwork, selectedWallet.vk)
     }
 </script>
@@ -125,7 +125,7 @@
         {#if selectedWallet}
             {selectedWallet.name}
             <strong>
-                {`${selectedWallet.symbol} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
+                {`${selectedWallet.symbol} - ${balance} ${$currentNetwork.currencySymbol}`}
             </strong> 
         {/if}
     </div>

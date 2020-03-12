@@ -6,7 +6,7 @@
 
 
 	//Stores
-    import { CoinStore, coinsDropDown, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
+    import { coinsDropDown, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
     import { Components }  from '../Router.svelte'
@@ -24,6 +24,14 @@
     export let currentPage;
 
     const MethodStore = writable([])
+    const trueFalseList = (arg = undefined) => {
+        if (arg == null) return [{name:'true', value: true}, {name: 'false', value:false}]
+        let selectedValue = argValueTracker[contractName][methodName][arg]['bool'].value
+        return [
+            {name:'true', value: true, selected: selectedValue === true}, 
+            {name: 'false', value:false, selected: selectedValue === false}
+        ]
+    }
 
     let selectedWallet;
     let contractError = false;
@@ -49,15 +57,13 @@
     $: methodName  = ''
     $: argValueTracker = {};
     $: methodArgs = [];
-    $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
-    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     
     onMount(() => {
         getMethods(contractName)
     });
 
-    function coinList(){
+    const coinList = () => {
         let returnList = $coinsDropDown.map(c => {
             if (c.value){
                 c.selected = c.value.network === coin.network && c.value.symbol === coin.symbol && c.value.vk === coin.vk
@@ -68,7 +74,7 @@
         return returnList
     }
 
-    function methodList(methods){
+    const methodList = (methods) => {
         if (!methods) return [];
         return methods.map(method => {
             return {
@@ -78,7 +84,7 @@
         })
     }
 
-    function typesList(arg){
+    const typesList = (arg) => {
         return dataTypes.map(type => {
             return {
                 value: type,
@@ -88,16 +94,7 @@
         })
     }
 
-    function trueFalseList(arg = undefined){
-        if (arg == null) return [{name:'true', value: true}, {name: 'false', value:false}]
-        let selectedValue = argValueTracker[contractName][methodName][arg]['bool'].value
-        return [
-            {name:'true', value: true, selected: selectedValue === true}, 
-            {name: 'false', value:false, selected: selectedValue === false}
-        ]
-    }
-
-    function setArgs(method, contract){
+    const setArgs = (method, contract) => {
         if (!method) return;
         methodName = method.name;
         methodArgs = [...method.arguments];
@@ -116,7 +113,7 @@
         contractName = contract;
     }
 
-    function getStartingType(arg){
+    const getStartingType = (arg) => {
         let type = 'text';
         let numberArgs = ['number', 'value', 'amount', 'stamps', 'tau', 'decimal']
         numberArgs.map(str => arg.includes(str) ? type = 'number' : null)
@@ -126,7 +123,7 @@
         return type;
     }
 
-    function saveArgValue(arg, e){
+    const saveArgValue = (arg, e) => {
         let selectedType = argValueTracker[contractName][methodName][arg].selectedType
         if (selectedType === 'data' || selectedType === 'address'){
             if (!validateTypes.isStringHex(e.detail.target.value)){
@@ -142,7 +139,7 @@
         if (selectedType !== 'bool')  argValueTracker[contractName][methodName][arg][selectedType].target = e.detail.target;
     }
 
-    function saveArgType(arg, e){
+    const saveArgType = (arg, e) => {
         let type = e.detail.selected.value;
         argValueTracker[contractName][methodName][arg].selectedType = type;
         if (!argValueTracker[contractName][methodName][arg][type]){
@@ -150,13 +147,13 @@
         }
     }
 
-    async function getMethods(contract){
+    const getMethods = async (contract) => {
         let methods = await $currentNetwork.API.getContractMethods(contract)
         MethodStore.set(methods)
         if (methods.length > 0) setArgs(methods[0], contract)
     }
 
-    function handleNext(){
+    const handleNext = () => {
         if (validateFields()){
             dispatch('contractDetails', {
                 sender: selectedWallet,
@@ -171,7 +168,7 @@
         }
     }
 
-    function validateFields(){
+    const validateFields = () => {
         stampsField.setCustomValidity('')
         if (stampLimit <= 0) {
             stampsField.setCustomValidity('Stamps must be greater than 0')
@@ -193,12 +190,12 @@
         return validity;
     }
 
-    function clearValidation(e){
+    const clearValidation = (e) => {
         e.detail.target.setCustomValidity('')
         e.detail.target.reportValidity();
     }
 
-    function getKwargs(){
+    const getKwargs = () => {
         let kwargs = {}
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             if (arg !== 'selectedType'){
@@ -211,7 +208,7 @@
         return kwargs;
     }
 
-    function handleSelectedWallet(e){
+    const handleSelectedWallet = (e) => {
         selectedWallet = e.detail.selected.value
     }
 </script>
@@ -253,7 +250,7 @@
 
     <div class="coin-info text-subtitle3">
         {#if selectedWallet}
-            {`${selectedWallet.name} - ${!selectedWallet.balances[$currentNetwork.url] ? 0 : selectedWallet.balances[$currentNetwork.url].toLocaleString('en')} ${selectedWallet.symbol}`}
+            {`${selectedWallet.name} - ${balance} ${$currentNetwork.currencySymbol}`}
         {/if}
     </div>
 

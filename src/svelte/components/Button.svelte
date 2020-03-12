@@ -65,7 +65,7 @@
         id={id}
         on:click={click}
         disabled={disabled}
-        style="width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
+        style="min-width: fit-content; width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
         class:icon-after={iconAfter}
         tabIndex={tabIndex}
         type="button"

@@ -1,8 +1,5 @@
 <script>
     import { onMount, getContext, setContext } from 'svelte';
-    
-	//Stores
-    import { CoinStore, coinMeta, password, breadcrumbs } from '../../js/stores/stores.js';
 
     //Components
     import { Modals, Components } from '../Router.svelte';
@@ -35,7 +32,7 @@
     ]
     let currentStep = 1;
 
-    function deleteCoin(resolve){
+    const deleteCoin = (resolve) => {
         chrome.runtime.sendMessage({type: 'coinStoreDelete', data: selectedCoin}, (result) => {
             if (!result || chrome.runtime.lastError) {
                 resolve(false)

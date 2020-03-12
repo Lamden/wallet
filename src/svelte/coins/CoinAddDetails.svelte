@@ -2,7 +2,7 @@
     import { getContext, onMount } from 'svelte';
     
 	//Stores
-    import { SettingsStore, CoinStore, coinMeta, password, supportedCoins, allNetworks, currentNetwork } from '../../js/stores/stores.js';
+    import { SettingsStore, CoinStore,  supportedCoins, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components, Modals } from '../Router.svelte';
@@ -70,7 +70,6 @@
             keyPair.vk = pubFromPriv(selected.network, selected.symbol, privateKeyObj.value);
             keyPair.sk = privateKeyObj.value;
         } catch (e) {
-            console.log(e)
             privateKeyObj.setCustomValidity(e);
         }
         privateKeyObj.reportValidity()
@@ -81,7 +80,6 @@
         try{
             keyPair.vk = validateAddress(selected.network, publicKeyObj.value);
         } catch (e) {
-            console.log(e)
             publicKeyObj.setCustomValidity(e);
         }
         publicKeyObj.reportValidity()
@@ -138,7 +136,6 @@
             keyPair = keysFromNew(selected.network, selected.symbol);
             saveKeys();
         } catch (e){
-            console.log(e)
             returnMessage = {type:'error', text: e}
         }
         
@@ -155,7 +152,9 @@
     }
 
     const mintTestCoins = async (coin) => {
-        let mintOkay = await $currentNetwork.API.mintTestNetCoins(coin.vk, 1000000);
+        try{
+            $currentNetwork.API.mintTestNetCoins(coin.vk, 1000000);
+        }catch(e){}
     }
 
     const finish = () => {

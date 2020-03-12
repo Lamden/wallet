@@ -6,7 +6,7 @@
     export let cardInfo;
     export let width = 'unset';
 
-    function openLink(url){
+    const openLink = (url) => {
         window.open(url, '_blank');
     }
 

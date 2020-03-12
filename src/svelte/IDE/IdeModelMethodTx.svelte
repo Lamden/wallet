@@ -32,16 +32,16 @@
         txInfo: modalData
     }
 
-    function nextPage(){
+    const nextPage = () => {
         currentStep = currentStep + 1
     }
 
-    function handleSaveTxDetails(e){
+    const handleSaveTxDetails = (e) => {
         txData = {...e.detail};
         currentStep = currentStep + 1; 
     }
 
-    function createTxDetails(){
+    const createTxDetails = () => {
         let txDetails = [
             {name:'Contract Name', value: txData.txInfo.contractName},
             {name:'Function', value: txData.txInfo.methodName},
@@ -54,7 +54,7 @@
         return txDetails
     }
 
-    function resultDetails(e){
+    const resultDetails = (e) => {
         resultInfo = e.detail.resultInfo;
         resultInfo.buttons = buttons;
         nextPage();

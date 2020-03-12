@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore, CURRENT_KS_VERSION, password, obscure, steps } from '../../js/stores/stores.js';
+    import { CURRENT_KS_VERSION, obscure, steps } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -35,7 +35,7 @@
         })
     });
 
-    function createKeystore() {
+    const createKeystore = () => {
         ksPwdInfo.obscure = obscure
         ksPwdInfo.version = $CURRENT_KS_VERSION
         chrome.runtime.sendMessage({type: 'backupCoinstore', data: ksPwdInfo}, (file) => {

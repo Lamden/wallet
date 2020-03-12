@@ -16,12 +16,12 @@
 
     let contractName = "";
 
-    function newTabFile(){
+    const newTabFile = () => {
         FilesStore.addDefaultFile();
         closeModal();
     }
 
-    async function newTabContract(){
+    const newTabContract = async () => {
         if (contractName === "") {
             setValidity('Cannot be Empty');
             return;
@@ -42,17 +42,17 @@
         } catch (e){}
     }
 
-    function refreshValidity(e){
+    const refreshValidity = (e) => {
         contractField.setCustomValidity('');
         contractField.reportValidity();
     }
 
-    function setValidity(message){
+    const setValidity = (message) => {
         contractField.setCustomValidity(message);
         contractField.reportValidity();
     }
 
-    function refreshValidityKeyup(e){ 
+    const refreshValidityKeyup = (e) => { 
         if (e.detail.keyCode !== 13) {
             contractField.reportValidity();
             contractField.setCustomValidity('');

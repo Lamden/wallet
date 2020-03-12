@@ -6,8 +6,6 @@
         CoinStore, 
         SettingsStore, 
         currentNetwork, 
-        previousPage, 
-        getCoinReference, 
         breadcrumbs, 
         TxStore, networkKey, 
         BalancesStore,
@@ -36,11 +34,9 @@
         {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__purple'},
     ]
 
-    $: coin = CoinStore.getCoin($SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
+    $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
     $: symbol = coin.symbol;
-    $: coinBalances = !coin.balances ? {} : coin.balances
-    $: balanceStore = !$BalancesStore[$currentNetwork.url] ? {[coin.vk]: 0} : $BalancesStore[$currentNetwork.url];
-    $: balance = !balanceStore[coin.vk] ? 0 : balanceStore[coin.vk];
+    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
     $: txList = () =>  {
         if (!$TxStore[networkKey($currentNetwork)]) return [];
@@ -50,7 +46,7 @@
     $: pendingTxList = () => {
         let pendingList = []
         $PendingTxStore.forEach(tx => {
-            if (tx.txInfo.senderVk = coin.vk) pendingList.push(tx)
+            if (tx.txInfo.senderVk === coin.vk) pendingList.push(tx)
         })
         return pendingList
     }
@@ -151,8 +147,8 @@
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <div class="amount-box">
             <div class="nickname text-body3">{coin.nickname}</div>
-            <div class="text-body1"> {symbol} </div>
-            <div class="amount"> {balance.toLocaleString('en')} </div>
+            <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
+            <div class="amount"> {balance} </div>
         </div>
         <div class="buttons">
         	<Button
@@ -179,5 +175,5 @@
 				/>
         </div>
     </div>
-    <CoinHistory txList={txList()} {pendingTxList} />
+    <CoinHistory txList={txList()} pendingTxList={pendingTxList()} />
 </div>

@@ -33,23 +33,21 @@
         }
     })
 
- 
-
-    function dispatchSelected() {
+    const dispatchSelected = ()  => {
         if (selectElm.selectedIndex >= 0) dispatch('selected', {id, selected: items[selectElm.selectedIndex]});
     }
 
-    function handleClick(option, index){
+    const handleClick = (option, index) => {
         selectElm.options[index].selected = true;
         dispatchSelected()
         toggleBox();
     }
 
-    function toggleBox(){
+    const toggleBox = () => {
         if (items.length > 0) hideBox = !hideBox;
     }
 
-    function handleWindowClick(event) {
+    const handleWindowClick = (event) => {
         if (!customSelectElm) return;
         if (customSelectElm.contains(event.target)) return;
         hideBox = true;

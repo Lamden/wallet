@@ -13,7 +13,6 @@
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === "txStatus"){
-            console.log(message.data)
             dispatch('txResult', message.data)
         }
         sendResponse('ok');
@@ -21,7 +20,6 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
-            console.log(response)
             message = response.status
         })
     })

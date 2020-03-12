@@ -2,7 +2,7 @@
     import { getContext } from 'svelte'
 
 	//Stores
-    import { FilesStore, currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { FilesStore } from '../../js/stores/stores.js';
 
 	//Components
     import { IdeTab }  from '../Router.svelte'

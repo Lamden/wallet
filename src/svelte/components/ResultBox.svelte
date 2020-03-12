@@ -29,6 +29,10 @@
     min-width: 600px;
 }
 
+.error-box{
+    align-items: center;
+}
+
 .icon{
     margin-right: 10px;
     width: 20px;

@@ -36,12 +36,12 @@
 		}
 	})
 
-	function editorLoaded(){
+	const editorLoaded = () => {
 		editorIsLoaded = true;
 		if ($activeTab.type === 'local') lint();
 	}
 
-	async function lint(callback){
+	const lint = async (callback) => {
 		let mockchain = $currentNetwork
 		if ($currentNetwork.type !== 'mockchain') mockchain = NetworksStore.getPublicMockchain()
 		lintErrors = await mockchain.API.lintCode($activeTab.name, $activeTab.code)
@@ -50,7 +50,7 @@
 		} catch (e){}
 	}
 
-	function submit(res){
+	const submit = (res) => {
 		if (res.violations === null){
 			openModal('IdeModelSubmit', {
 				'contractName': 'submission', 
@@ -63,7 +63,7 @@
 		}
 	}
 
-	function reformatMethodObject(methods){
+	const reformatMethodObject = (methods) => {
         methods.map(method => {
             if (!method.args) method.args = {};
             method.arguments.map((arg, index) => {
@@ -73,16 +73,16 @@
         return [...methods]
 	}
 
-	function handleMethodClick(e){
+	const handleMethodClick = (e) => {
 		openModal('IdeModelMethodTx', e.detail)
 	}
 
-	async function getContract(contractName, options){
+	const getContract = async (contractName, options) => {
 		let contractInfo = await $currentNetwork.API.getContractInfo(contractName)
 		if (contractInfo) options.callback(contractInfo, !options.data ? undefined : options.data);
 	}
 	
-    async function addFileToStore(contractName, contractCode){
+    const addFileToStore = async (contractName, contractCode) => {
 		let methods =  await $currentNetwork.API.getContractMethods(contractName)
 		FilesStore.addFile(contractName, contractCode, methods, $currentNetwork);
 	}
