@@ -190,22 +190,24 @@ const balancesStoreUpdateOne = (vk, networkInfo) => {
 }
 
 const balancesStoreUpdateAll = (networkInfo) => {
-    const coinsToProcess = coinStore.length; 
-    if (coinsToProcess > 0){
-        let coinsProcessed = 0;
-        updatingBalances = true;
-        coinStore.forEach((coin) => {
-            const watchOnly = coin.sk === "watchOnly"
-            balancesStoreUpdateVk(coin.vk, networkInfo, watchOnly)
-            .then(() => {
-                coinsProcessed = coinsProcessed + 1
-                if (coinsProcessed >= coinsToProcess){
-                    chrome.storage.local.set({"balances": balancesStore}, () =>{
-                        updatingBalances = false;
-                    });
-                }
+    if (typeof coinStore !== 'undefined'){
+        const coinsToProcess = coinStore.length; 
+        if (coinsToProcess > 0){
+            let coinsProcessed = 0;
+            updatingBalances = true;
+            coinStore.forEach((coin) => {
+                const watchOnly = coin.sk === "watchOnly"
+                balancesStoreUpdateVk(coin.vk, networkInfo, watchOnly)
+                .then(() => {
+                    coinsProcessed = coinsProcessed + 1
+                    if (coinsProcessed >= coinsToProcess){
+                        chrome.storage.local.set({"balances": balancesStore}, () =>{
+                            updatingBalances = false;
+                        });
+                    }
+                })
             })
-        })
+        }
     }
 }
 
@@ -266,7 +268,6 @@ const coinStoreDelete = (coinInfo) => {
     coinStore.forEach((coin, index) => {
         if (coin.vk === coinInfo.vk) coinStore.splice(index, 1);
     })
-    coinStore.splice(coinStore.indexOf(coinInfo), 1);
     if (coinStore.length < before){
         chrome.storage.local.set({"coins": coinStore});
         TxStoreDeleteAll(coinInfo.vk)

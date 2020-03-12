@@ -9,15 +9,14 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 import Lamden from 'lamden-js'
 
 const lamdenNetworks = [
-    {name: 'Lamden Public Mockchain', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true, currencySymbol: 'mTAU'},
-    {name: 'Lamden Testnet', host:'http://138.68.43.35', port: '18080', type:'testnet', lamden: true, currencySymbol: 'dTAU'}
-
+    {name: 'Lamden Testnet', host:'http://138.68.43.35', port: '18080', type:'testnet', lamden: true, currencySymbol: 'dTAU'},
+    {name: 'Lamden Public Mockchain', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true, currencySymbol: 'mTAU'}
 ]
 
 const defualtNetworksStore = {
     lamden: [],
     user : [],
-    current: 'https://testnet.lamden.io:443'
+    current: 'http://138.68.43.35:18080'
 }
 
 const makeList = (networkStore) => {
