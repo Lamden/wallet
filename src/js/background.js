@@ -263,6 +263,9 @@ const coinStoreAddNewCoin = (coinInfo) => {
 
 const coinStoreDelete = (coinInfo) => {
     const before = coinStore.length
+    coinStore.forEach((coin, index) => {
+        if (coin.vk === coinInfo.vk) coinStore.splice(index, 1);
+    })
     coinStore.splice(coinStore.indexOf(coinInfo), 1);
     if (coinStore.length < before){
         chrome.storage.local.set({"coins": coinStore});
