@@ -3,7 +3,6 @@ import '../img/icon-34.png'
 
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue } from './utils.js';
 import Lamden from 'lamden-js'
-import Lamden2 from '../../../lamden-js/dist/lamden'
 
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators
@@ -214,9 +213,9 @@ const balancesStoreUpdateAll = (networkInfo) => {
 const balancesStoreUpdateVk = async (vk, networkInfo, watchOnly) => {
     let network;
     if (networkInfo){
-        network = new Lamden2.Network(networkInfo)
+        network = new Lamden.Network(networkInfo)
     } else {
-        network = new Lamden2.Network(getCurrentNetwork())
+        network = new Lamden.Network(getCurrentNetwork())
     }
     if (!balancesStore[network.url]) balancesStore[network.url] = {}
     if (!balancesStore[network.url][vk]) balancesStore[network.url][vk] = {}
@@ -240,7 +239,7 @@ const getWallet = (vk) => {
 }
 
 const coinStoreAddNewLamdenCoin = (name) => {
-    let keyPair = Lamden2.wallet.new_wallet()
+    let keyPair = Lamden.wallet.new_wallet()
     keyPair.sk = encryptString(keyPair.sk)
     if (keyPair.sk){
         const coinInfo = {
@@ -305,7 +304,7 @@ const isAcceptedNetwork = (networkType) => {
 const contractExists = (networkType, contractName) => {
     const networkInfo = getLamdenNetwork(networkType)
     if (!networkInfo) return false;
-    const network = new Lamden2.Network(networkInfo)
+    const network = new Lamden.Network(networkInfo)
     return network.API.contractExists(contractName)
 }
 
@@ -355,7 +354,7 @@ const checkPendingTransactions = () => {
         const transactionsToProcess = pendingTxStore.length; 
         let transactionsProcessed = 0; 
         pendingTxStore.forEach(async (tx) => {
-            const txBuilder = new Lamden2.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
+            const txBuilder = new Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
             await txBuilder.checkForTransactionResult()
             .then(() => {
                 transactionsProcessed = transactionsProcessed + 1
@@ -449,7 +448,7 @@ const promptApproveDapp = async (sender, messageData) => {
         const errors = [`contractName: '${messageData.contractName}' does not exists on '${messageData.networkType}' network.`]
         sendMessageToTab(sender.url, 'sendErrorsToTab', {errors})
     }else{
-        const keypair = Lamden2.wallet.new_wallet()
+        const keypair = Lamden.wallet.new_wallet()
         const windowId = hashStringValue(keypair.vk)
         txToConfirm[windowId] = {
             type: 'ApproveConnection',
@@ -464,7 +463,7 @@ const promptApproveDapp = async (sender, messageData) => {
 }
 
 const promptApproveTransaction = async (sender, messageData) => {
-    const keypair = Lamden2.wallet.new_wallet()
+    const keypair = Lamden.wallet.new_wallet()
     const windowId = hashStringValue(keypair.vk)
     txToConfirm[windowId] = {
         type: 'ApproveTransaction',
@@ -505,7 +504,7 @@ const approveTransaction = (sender) => {
     if (!walletIsLocked){
         const txData = confirmData.messageData.txData;
         const wallet = confirmData.messageData.wallet;
-        const txBuilder = new Lamden2.TransactionBuilder(txData.networkInfo, txData.txInfo)
+        const txBuilder = new Lamden.TransactionBuilder(txData.networkInfo, txData.txInfo)
         sendTx(txBuilder, wallet.sk, sender.url)
     }else{
         const errors = ['Tried to send transaction app but wallet was locked']
@@ -731,7 +730,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     if (!wallet) sendResponse({status: `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`});
                     try{
                         txInfo.uid = encryptString(wallet.vk, 'tracking-id')
-                        let txBuilder = new Lamden2.TransactionBuilder(getCurrentNetwork(), txInfo)
+                        let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
                         sendResponse({status: "Transaction Sent, Awaiting Response"})
                         sendTx(txBuilder, wallet.sk, sender.url)
                     }catch (err){
@@ -825,7 +824,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             //Set the contract name to the one approved by the user for the dApp
                             txInfo.contractName = dappInfo[txInfo.networkType].contractName
                             //Create a Lamden Transaction
-                            const txBuilder = new Lamden2.TransactionBuilder(network, txInfo)
+                            const txBuilder = new Lamden.TransactionBuilder(network, txInfo)
                             //Send dummp response so message tunnel doesn't error
                             sendResponse("ok")
                             const info = (({ appName, url }) => ({ appName, url }))(dappInfo);
@@ -873,7 +872,7 @@ let timerId2 = setTimeout(async function sendATx() {
     }
     
     if (txSentNum === 0) {
-        let txBuilder1 = new Lamden2.TransactionBuilder(getCurrentNetwork(), txInfo)
+        let txBuilder1 = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
         await txBuilder1.getNonce()
         //console.log(txBuilder1)
         startingNonce = txBuilder1.nonce
@@ -883,7 +882,7 @@ let timerId2 = setTimeout(async function sendATx() {
     txInfo.nonce = startingNonce + txSentNum
     txInfo.processor = processor
     //console.log(txInfo)
-    let txBuilder = new Lamden2.TransactionBuilder(getCurrentNetwork(), txInfo)
+    let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
     //console.log('sending')
     txSentNum = txSentNum + 1
     sendTx(txBuilder, wallet.sk, `${window.location.origin}/app.html`)
