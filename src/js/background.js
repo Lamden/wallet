@@ -605,7 +605,6 @@ const approveTransaction = (sender) => {
 
 const DappStoreAddNew = (appUrl, vk, messageData) => {
     //remvove trailing slash from url
-    appUrl = removeCharAtEnd(appUrl, '/')
     if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
     if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
     dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
