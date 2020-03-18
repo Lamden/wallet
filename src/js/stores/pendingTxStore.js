@@ -3,8 +3,8 @@ import { writable, get } from 'svelte/store';
 export const createPendingTxStore = () => {
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
-        chrome.storage.local.get({"pendingTxs": []}, function(getValue) {
-            PendingTxStore.set(getValue.pendingTxs)
+        chrome.storage.local.get({"txBatcherToCheck": []}, function(getValue) {
+            PendingTxStore.set(getValue.txBatcherToCheck)
         });
     }
 

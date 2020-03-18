@@ -1,7 +1,4 @@
-import { writable } from 'svelte/store';
-
-import * as validators from 'types-validate-assert'
-const { validateTypes } = validators; 
+import { writable, get } from 'svelte/store';
 
 export const createDappStore = () => {
     let initialized = false;
@@ -18,26 +15,10 @@ export const createDappStore = () => {
     //Create Intial Store
     const DappStore = writable(startValue);
 
-    //This is called everytime the DappStore updated
-    DappStore.subscribe(current => {
-        if (!initialized) {
-            return current
-        }
-        // Dapp Store should only every accept an array
-        // if store has already been initialized
-        if (validateTypes.isObject(current)){
-            chrome.storage.local.set({"dapps": current});
-        }else{
-            //If non-object found then set the store back to the previous local store value
-            getStore();
-            console.log('Recovered from Bad Dapps Store Value')
-        }
-    });
-
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'dapps') {
-                if (changes[key].newValue !== get(DappStore)) DappStore.set(changes[key].newValue)
+                DappStore.set(changes[key].newValue)
             }
         }
     });
@@ -57,5 +38,5 @@ export const createDappStore = () => {
 }
 
 //Networks Stores
-export const DappStore = '' //createDappStore();
+export const DappStore = createDappStore();
 
