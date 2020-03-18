@@ -1,5 +1,5 @@
 <script>
-    import { getContext } from 'svelte'
+    import { getContext, onMount } from 'svelte'
 
 	//Stores
     import { allNetworks, CoinStore } from '../../js/stores/stores.js';

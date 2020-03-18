@@ -81,6 +81,7 @@ import MessageBox from './components/MessageBox.svelte';
 import TxInfoBox from './components/TxInfoBox.svelte';
 import ResultBox from './components/ResultBox.svelte';
 import StrongPW from './components/StrongPW.svelte';
+import Transaction from './components/Transaction.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -98,7 +99,7 @@ import IdeMethodTx from './IDE/IdeMethodTx.svelte';
 
 //Misc
 import LockScreen from './misc/LockScreen.svelte';
-import Transaction from './misc/Transaction.svelte';
+import Transactions from './misc/Transactions.svelte';
 import About from './misc/About.svelte';
 
 export const RestorePages = {
@@ -156,7 +157,8 @@ export const Components = {
     Card,
     Modal,
     DropDown,
-    StrongPW
+    StrongPW,
+    Transaction
 };
 
 export const Modals = {
@@ -191,7 +193,7 @@ export {
     LockScreen,
     Modal,
     HistoryMain, PendingTransactions, PendingTransaction,
-    Transaction,
+    Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
 };

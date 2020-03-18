@@ -64,26 +64,19 @@
     padding: 42px 0;
     justify-content: center;
 }
+
+.send-details{
+    margin-bottom: 1rem;
+}
 </style>
 
 <div class="message-box flex-column">
-    <h1>Transaction Information</h1>
-    <div class="flex-row text-body2">
-        {#if typeof txData.hash !== 'undefined'}
-            <div class="item-title">Hash</div>
-            <div class="text-body2 text-primary-dark">{txData.hash}</div>
-        {/if}
-    </div>
-    <div class="flex-row text-body2">
-        <div class="item-title">TimeStamp</div>
-        <div class="text-primary-dark">{timestamp}</div>
-    </div>
     <div class="result-info flex-column">
         <div class="result-message flex-row text-body2">
             {#if type === 'error'}<div id={"error"} class="icon">{@html errorCircle}</div>{/if}  
             {#if type === 'warning'}<div id={"warning"} class="icon">{@html warning}</div>{/if}
             {#if type === 'success'}<div id={"success"} class="icon checkmark">{@html successCircle}</div>{/if}
-            <h4>{resultInfo.title}</h4>
+            <h1>{resultInfo.title}</h1>
         </div>
         <div class="text-subtitle3">{resultInfo.subtitle}</div>
         <div class="text-subtitle2">{resultInfo.message}</div>
@@ -98,6 +91,22 @@
     {/if}
 
     <h4>Transaction Details</h4>
+    <div class="send-details">
+        <div class="flex-row text-body2">
+            {#if typeof txData.hash !== 'undefined'}
+                <div class="item-title">Hash</div>
+                <div class="text-body2 text-primary-dark">{txData.hash}</div>
+            {/if}
+        </div>
+        <div class="flex-row text-body2">
+            <div class="item-title">TimeStamp</div>
+            <div class="text-primary-dark">{timestamp}</div>
+        </div>
+        <div class="flex-row text-body2">
+            <div class="item-title">Nonce</div>
+            <div class="text-primary-dark">{txData.nonce}</div>
+        </div>   
+    </div>
     <div>
         <div class="flex-row text-body2">
             <div class="item-title">Wallet Nickname</div>

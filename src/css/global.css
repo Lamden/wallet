@@ -13,14 +13,16 @@ html, body, input  {
 
 body{
     --primary-color: #461BC2;  
-    --secondary-color: #818cab; 
+    --secondary-color: #818cab;
     --font-primary: #E0E0E0; 
     --font-primary-dark: #e0e0e08a; 
     --font-primary-darker: rgba(218, 218, 218, 0.16); 
     --font-primary-light: #ffffff99; 
     --font-secondary: #D1D1D1;
+    --font-accent: #4FB8FF;
     --bg-color: #151515; 
     --bg-color-grey: #303030;
+    --bg-menu-grey: #262626a3;
     --bg-color-dark: #121212;
     --heading-color: #818cab;
     --divider-color: #e0e0e029;
@@ -189,7 +191,7 @@ body{
 
 
 .button__hover_blue:hover{
-    background-color: #4FB8FF;
+    background-color: var(--font-accent);
 }
 
 .button__text{
@@ -229,7 +231,7 @@ body{
 }
 
 .button__blue:hover{
-    border: 1px solid #4FB8FF;
+    border: 1px solid var(--font-accent);
 }
 
 .button__red{
@@ -317,7 +319,7 @@ button {
 }
 
 .outside-link{
-    color: cyan;
+    color: var(--font-accent);
     cursor: pointer;
 }
 
@@ -334,7 +336,7 @@ button {
 }
 
 .appurl-link:hover {
-    color: cyan;
+    color: var(--font-accent);
     
 }
 
@@ -351,7 +353,7 @@ button {
 }
 
 .hash-link:hover {
-    color: cyan;
+    color: var(--font-accent);
     
 }
 
@@ -360,7 +362,13 @@ button {
     color: var(--secondary-color);
 }
 
+.menu-icon{
+    fill: var(--font-primary)
+}
 
+.menu-icon:hover{
+    fill: var(--font-accent)
+}
 
 input[type="checkbox"]{
     width: 18px;

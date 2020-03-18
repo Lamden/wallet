@@ -3,7 +3,8 @@
 
     //Stores
     import { 
-        CoinStore, 
+        CoinStore,
+        DappStore, 
         SettingsStore, 
         currentNetwork, 
         breadcrumbs, 
@@ -12,7 +13,8 @@
         PendingTxStore } from '../../js/stores/stores.js';
 
     //Components
-	import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
+    import Charms  from '../components/Charms.svelte'
+    import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
     const { Button } = Components;
     
     //Images
@@ -35,6 +37,9 @@
     ]
 
     $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
+    $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
+    $: dappLogo = dappInfo ? dappInfo.logo || false : false;
+    $: background = dappInfo ? `${dappInfo.url}${dappInfo.background}` || squares_bg : squares_bg
     $: symbol = coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
@@ -63,6 +68,10 @@
         chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin.vk})
     }
 
+    const getDappInfo = (dappStore) => {
+        return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
+    }
+
     const copyWalletAddress = () => {
         copyToClipboard(coin.vk)
         openModal('MessageBox', {
@@ -75,14 +84,7 @@
 </script>
 
 <style>
-.coin-details{
-	display: flex;
-	flex-direction: column;
-}
-
 .hero-rec{
-    display: flex;
-    flex-direction: column;
 	box-sizing: border-box;
 	min-height: 247px;
 	border-radius: 4px;
@@ -92,13 +94,16 @@
     background-repeat: no-repeat;
 }
 
-.nickname{
-    margin-bottom: 20px;
+.wallet-details{
+    flex-grow: 1;
 }
 
-.amount-box{
-    display: flex;
-	flex-direction: column;
+.dapp-logo{
+    width: 150px;
+}
+
+.nickname{
+    margin-bottom: 20px;
 }
 
 .amount{
@@ -143,13 +148,28 @@
 
 </style>
 
-<div class="coin-details text-primary">
-	<div class="hero-rec" style="background-image: url({squares_bg});">
-        <div class="amount-box">
-            <div class="nickname text-body3">{coin.nickname}</div>
-            <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
-            <div class="amount"> {balance} </div>
+<div id="coin-details" class="flex-column text-primary">
+	<div class="hero-rec flex-column" style="background-image: url({background});">
+        <div class="flex-row">
+            <div class="flex-column wallet-details">
+                <div class="nickname text-body3">
+                    {#if dappInfo}
+                        {dappInfo.appName}
+                    {:else}
+                        {coin.nickname}
+                    {/if}
+                
+                </div>
+                <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
+                <div class="amount"> {balance} </div>
+            </div>
+            {#if dappLogo}
+                <div>
+                    <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp-logo" />
+                </div>
+            {/if}
         </div>
+
         <div class="buttons">
         	<Button
                 id={'send-coin-btn'} 
@@ -175,5 +195,8 @@
 				/>
         </div>
     </div>
+    {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
+        <Charms dappInfo={dappInfo} />
+    {/if}
     <CoinHistory txList={txList()} pendingTxList={pendingTxList()} />
 </div>

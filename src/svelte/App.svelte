@@ -191,6 +191,7 @@
 	.content-pane{
 		padding: 21px 61px 0;
 		flex-grow: 1;
+		min-width: fit-content;
 	}
 	.components{
 		flex-grow: 1;
