@@ -14,10 +14,10 @@
 
     $: page = 0
     $: numPerPage = 25
-    $: maxPages = parseInt(transactionsList.length / numPerPage)
-    $: lastPage = page === maxPages
+    $: maxPages = parseInt(transactionsList.length / numPerPage)  + Math.ceil((transactionsList.length / numPerPage) % 1) || 1
+    $: lastPage = page + 1 >= maxPages
     $: startingIndex = page * numPerPage
-    $: endIndex = (startingIndex + numPerPage) - 1
+    $: endIndex = (startingIndex + numPerPage)
     $: endNumber = endIndex > transactionsList.length ? transactionsList.length : endIndex;
     $: txChunk = sortTxList(transactionsList).slice(startingIndex, endIndex)
     $: txByDay = groupByDate(txChunk);
@@ -42,10 +42,10 @@
     }
 
     const pageUp = () => {
-        if (page <  maxPages ) page = page + 1 
+        if (!lastPage) page = page + 1 
     }
     const pageDown = () => {
-        if (page > 0) page = page - 1
+        if (page !== 0) page = page - 1
          
     }
 </script>
@@ -79,6 +79,7 @@
 .arrow.left{
     margin-right: 10px;
 }
+
 .page-details{
     margin: 0 22px 0 0;
 }
@@ -93,22 +94,22 @@
 <h4>Results</h4>
 <div class="text-body2 flex-column">
     <div class="flex-row flex-end">
-        <button class="arrow left" on:click={pageDown} class:text-primary-dark={page === 0}>
+        <button class="arrow left" on:click={pageDown}>
             <div class="icon left">
                 {@html chevronLeft}
             </div>
         </button>
         <div class="page-words">
-            {`page ${page + 1} of ${maxPages + 1}`}
+            {`page ${page + 1} of ${maxPages}`}
         </div>
-        <button class="arrow right" on:click={pageUp} class:text-primary-dark={lastPage}>
+        <button class="arrow right" on:click={pageUp}>
             <div class="icon right">
                 {@html chevronRight}
             </div>
         </button>
     </div>
     <div class="flex-end text-primary-dark page-details">
-        {`${startingIndex} to ${endNumber} of  ${transactionsList.length}`}
+        {`${startingIndex + 1 } - ${endNumber} /  ${transactionsList.length}`}
     </div>
 </div>
 

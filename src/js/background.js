@@ -28,6 +28,7 @@ let txSaveList = [];
 let txToConfirm = {};
 let nonceCache = {};
 let current = '';
+let lastSentDate = new Date()
 let walletIsLocked = true;
 let updatingBalances = false;
 let checkingTransactions = false;
@@ -320,9 +321,16 @@ const contractExists = (networkType, contractName) => {
  * Transaction Functions
  ***********************************************************************/
 const sendTx = (txBuilder, sk, sentFrom) => {
+    lastSentDate = new Date()
     //Get current nonce from the masternode
     txBuilder.getNonce()
     .then(() => {
+        if (txBuilder.preApproved && dappIsOverApprovedAmount(txBuilder.sender, txBuilder.type)){
+            //** TO DO REACT TO ASYNC PRE-AUTH EXCEEDED - for not just ignore transaction*/
+            //promptApproveTransaction(sender, {txData, wallet, dappInfo: info})\
+            return
+        }
+
         //If no nonce exists in the cache for this vk then set what was recieved from the masternode as the baseline
         if (!nonceCache[txBuilder.sender]) {
             nonceCache[txBuilder.sender] = {current: txBuilder.nonce, modifier: 0}
@@ -424,7 +432,7 @@ const checkPendingTransactions = () => {
     if (!checkingTransactions){
         checkingTransactions = true;
         chrome.storage.local.set({"pendingTxs": pendingTxStore}, () => {
-            const transactionsToCheck = pendingTxStore.length; 
+            const transactionsToCheck = pendingTxStore.length;
             let transactionsChecked = 0;
             pendingTxStore.forEach(async (tx) => {
                 const txBuilder = new Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
@@ -433,6 +441,7 @@ const checkPendingTransactions = () => {
                     transactionsChecked = transactionsChecked + 1
                     const dappInfo = getDappInfoByVK(txBuilder.sender)
                     if (dappInfo) sendMessageToTab(dappInfo.url, 'txStatus', txBuilder.getAllInfo())
+                    addStampsUsedToDapp(dappInfo.url, txBuilder)
                     addToTxSaveList(txBuilder)
                     if (transactionsChecked >= transactionsToCheck){
                         pendingTxStore = pendingTxStore.slice(transactionsToCheck)
@@ -475,13 +484,23 @@ const validateConnectionMessage = (data) => {
     if (!validateTypes.isStringWithValue(messageData.logo)) {
         errors.push("'logo' <string> required to process connect request")
     }
-    if (typeof messageData.reapprove !== 'undefined') {
+    if (typeof messageData.reapprove !== 'undefined'){
         if (!validateTypes.isBoolean(messageData.reapprove)) {
             errors.push(`'reapprove' <boolean> can not be ${typeof messageData.reapprove}`)
+        }else{
+            if (typeof messageData.newKeypair !== 'undefined'){
+                if (!validateTypes.isBoolean(messageData.newKeypair)) {
+                    errors.push(`'reapprove' <boolean> can not be ${typeof messageData.reapprove}`)
+                }
+            }else{
+                messageData.newKeypair = false;
+            }
         }
     }else{
         messageData.reapprove = false;
+        messageData.newKeypair = false;
     }
+
     if (validateTypes.isStringWithValue(messageData.networkType)){
         if (!isAcceptedNetwork(messageData.networkType)){
             errors.push(`'networkType' <string> '${messageData.networkType}' is not a valid network type. Valid Types are ${LamdenNetworkTypes}.`)
@@ -507,6 +526,22 @@ const validateConnectionMessage = (data) => {
                 }
             }
         })
+    }
+    if (validateTypes.isObject(messageData.preApproval)){
+        if (!validateTypes.hasKeys(messageData.preApproval, ['stampsToPreApprove', 'message'])){
+            errors.push(`Invalid preApproval request. Must have 'stampsToPreApprove' <int> and 'message' <string? properties`)
+        }else{
+            if (!validateTypes.isStringWithValue(messageData.preApproval.message)){
+                errors.push(`'preApproval.message' must be a <string> and not empty.`)
+            }
+            if (!validateTypes.isInteger(messageData.preApproval.stampsToPreApprove)){
+                errors.push(`'preApproval.stampsToPreApprove' must be an <integer>.`)
+            }else{
+                if(messageData.preApproval.stampsToPreApprove === 0){
+                    errors.push(`'preApproval.stampsToPreApprove' must be an integer greater than 0.`)
+                }
+            }
+        }
     }
     if (errors.length > 0) {
         return {'errors': errors}
@@ -567,27 +602,29 @@ const promptApproveTransaction = async (sender, messageData) => {
     });
 }
 
-const approveDapp = (sender) => {
+const approveDapp = (sender, approveAmount) => {
     const confirmData = txToConfirm[getSenderHash(sender)]
     if (!walletIsLocked){
-        const dappInfo = getDappInfo(sender)
-        if (dappInfo){
-            DappStoreUpdateApproval(confirmData.url, messageData.networkType, messageData.contractName)
+        const dappInfo = getDappInfo(confirmData.url)
+        const messageData = confirmData.messageData
+        let newWallet = {};
+        if ((dappInfo && messageData.newKeypair) || !dappInfo){
+            newWallet = coinStoreAddNewLamdenCoin(messageData.appName)
+        }else{
+            newWallet.vk = dappInfo.vk
+        }
+        if (newWallet){
+            DappStoreAddNew(confirmData.url, newWallet.vk, messageData, approveAmount)
             sendMessageToTab(confirmData.url, 'sendWalletInfo')
         }else{
-            const messageData = confirmData.messageData
-            const newWallet = coinStoreAddNewLamdenCoin(messageData.appName)
-            if (newWallet){
-                DappStoreAddNew(confirmData.url, newWallet.vk, messageData)
-                sendMessageToTab(confirmData.url, 'sendWalletInfo')
-            }else{
-                throw new Error('Unable to encrypt private key while approving dapp')
-            }
+            delete txToConfirm[getSenderHash(sender)]
+            throw new Error('Unable to encrypt private key while approving dapp')
         }
     }else{
         const errors = ['Tried to approve app but wallet was locked']
         sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
     }
+    delete txToConfirm[getSenderHash(sender)]
 }
 
 const approveTransaction = (sender) => {
@@ -601,13 +638,18 @@ const approveTransaction = (sender) => {
         const errors = ['Tried to send transaction app but wallet was locked']
         sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
     }
+    delete txToConfirm[getSenderHash(sender)]
 }
 
-const DappStoreAddNew = (appUrl, vk, messageData) => {
+const DappStoreAddNew = (appUrl, vk, messageData, approveAmount) => {
     //remvove trailing slash from url
     if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
     if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
     dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
+    if (validateTypes.isObject(messageData.preApproval)){
+        dappsStore[appUrl][messageData.networkType].stampPreApproval = approveAmount;
+        dappsStore[appUrl][messageData.networkType].stampsUsed = 0;
+    }
     //Remove slashes at start of icon paths
     if (validateTypes.isArrayWithValues(messageData.charms)){
         messageData.charms.forEach(charm => {
@@ -627,9 +669,31 @@ const DappStoreAddNew = (appUrl, vk, messageData) => {
     chrome.storage.local.set({"dapps": dappsStore});
 }
 
-const DappStoreUpdateApproval = (appUrl, network, contractName) => {
-    dappsStore[appUrl][network].contractName = contractName
-    chrome.storage.local.set({"dapps": dappsStore}); 
+const DappStoreDelete = (vk) => {
+    let dappInfo = getDappInfoByVK(vk)
+    if (dappInfo) {
+        delete dappsStore[dappInfo.url]
+        chrome.storage.local.set({"dapps": dappsStore});
+    }
+}
+
+const DappStoreRevoke = (data) => {
+    try{
+        data.networks.forEach(networkType => {
+            delete dappsStore[data.dappInfo.url][networkType]
+        })
+        chrome.storage.local.set({"dapps": dappsStore});
+    }catch(e){
+        return false
+    }
+    return true
+}
+
+const addStampsUsedToDapp = (appUrl, txBuilder) => {
+    try {
+        dappsStore[appUrl][txBuilder.type].stampsUsed = dappsStore[appUrl][txBuilder.type].stampsUsed + txBuilder.resultInfo.stampsUsed
+        chrome.storage.local.set({"dapps": dappsStore});
+    }catch(e){}
 }
 
 /***********************************************************************
@@ -659,6 +723,15 @@ const getDappInfoByVK = (vk) => {
     let dapp = Object.keys(dappsStore).find(f => dappsStore[f].vk === vk )
     if (dapp) return dappsStore[dapp]
     return false
+}
+
+const dappIsOverApprovedAmount = (vk, networkType) => {
+    const dappInfo = getDappInfoByVK(vk)
+    if (!dappInfo) return false;
+    if (!validateTypes.isObject(dappInfo[networkType])) return false;
+    if (!validateTypes.isInteger(dappInfo[networkType].stampPreApproval)) return false;
+    if (dappInfo[networkType].stampsUsed < dappInfo[networkType].stampPreApproval) return false;
+    return true;
 }
 
 const fromConfirm = (url) => {
@@ -749,7 +822,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         sendResponse({errors:[
                             `Your dDapp was previoulsy approved but no matching vk is currently found in the wallet.  
                              Prompt the user to restore their keypair for ${dappInfo.vk}, 
-                             or send a "reapprove request" to have another keypair generated.`
+                             or send a "reapprove request, newKeypair = true" to have another keypair generated.`
                         ]})
                     }
                     sendApproval = false;
@@ -835,6 +908,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         sendResponse({status: `Error: Failed to create Tx - ${err}`})
                     }
                 }
+                if (message.type === 'setPreApproval'){
+                    const data = message.data
+                    try{
+                        dappsStore[data.dappUrl][data.networkType].stampPreApproval = data.preApproveAmount
+                        dappsStore[data.dappUrl][data.networkType].stampsUsed = 0
+                        chrome.storage.local.set({"dapps": dappsStore});
+                        sendResponse(true)
+                    }catch (e){
+                        sendResponse(false)
+                    }
+                }
+                if (message.type === 'revokeDappAccess') sendResponse(DappStoreRevoke(message.data))
             }
         }
 
@@ -853,7 +938,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
 
             if (message.type === 'approveDapp'){
-                approveDapp(sender)
+                approveDapp(sender, message.data)
             }
 
             if (message.type === 'approveTransaction'){
@@ -927,7 +1012,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             sendResponse("ok")
                             const info = (({ appName, url }) => ({ appName, url }))(dappInfo);
                             const txData = txBuilder.getAllInfo()
-                            promptApproveTransaction(sender, {txData, wallet, dappInfo: info})
+                            if (dappInfo[txBuilder.type].stampsUsed < dappInfo[txBuilder.type].stampPreApproval){
+                                txBuilder.preApproved = true;
+                                sendTx(txBuilder, wallet.sk, dappInfo.url)
+                            }else{
+                                promptApproveTransaction(sender, {txData, wallet, dappInfo: info})
+                            }
                         }catch (err){
                             sendTxErrorResponse(errorStatus, ['Unable to Build Lamden Transaction', err.message], rejectedTx, sendResponse);
                         }
@@ -941,6 +1031,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Timer to check pending transacations
 let timerId = setTimeout(async function resolvePendingTxs() {
+    if (Object.keys(nonceCache).length > 0){
+        if ((new Date().getTime() - new Date(lastSentDate).getTime() > 10000) && !checkingTransactions ){
+            nonceCache = {}
+        }
+    }
     if (!checkingTransactions && pendingTxStore.length > 0){
         checkPendingTransactions()
     }

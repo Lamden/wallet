@@ -55,6 +55,10 @@ body{
     color: var(--primary-color);
 }
 
+.text-cyan{
+    color: var(--font-accent);
+}
+
 .text-primary{
     color: var(--font-primary);
 }

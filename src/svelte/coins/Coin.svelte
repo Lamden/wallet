@@ -104,6 +104,9 @@
     margin-top: 5px;
     padding: 6px 14px;
 }
+p > a {
+    margin: 0 5px;
+}
 </style>
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
@@ -141,7 +144,9 @@
 </div>
 {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
     <div class="dapp-info">
-        <p>{`Created for dapp at ${dappInfo.url}`}</p>
+        <p>{`Created for dapp at`}
+            <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
+        </p>
     </div>
 {/if}
 

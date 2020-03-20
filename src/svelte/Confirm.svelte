@@ -10,7 +10,7 @@
 	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
 	
 	setContext('confirm_functions', {
-		approveApp: () => sendApproveApp(),
+		approveApp: (approveAmount) => sendApproveApp(approveAmount),
 		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
 		openNewTab: (url) => openNewTab(url)
@@ -28,8 +28,8 @@
 		})
 	});
 
-	const sendApproveApp = () => {
-		chrome.runtime.sendMessage({type: 'approveDapp'})
+	const sendApproveApp = (approveAmount) => {
+		chrome.runtime.sendMessage({type: 'approveDapp', data: approveAmount})
 		closePopup()
 	}
 

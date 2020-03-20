@@ -23,7 +23,7 @@
     $: coin = $CoinStore.find(f => f.vk === senderVk);
     $: coinNickname = typeof coin === 'undefined' ? '*deleted wallet' : coin.nickname; 
     $: error = txData.resultInfo.type === "error";
-    $: stampsUsed = txData.resultInfo.stampUsed
+    $: stampsUsed = txData.resultInfo.stampsUsed
     $: network = $allNetworks.find(f => `${f.host}:${f.port}` === txData.network)
     $: currencySymbol = network.currencySymbol || ''
     $: errorInfo = txData.resultInfo.errorInfo || []

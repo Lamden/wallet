@@ -21,6 +21,8 @@
     import squares_bg from '../../img/backgrounds/squares_bg.png';
     import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
     import arrowDown from '../../img/menu_icons/icon_arrow-down.svg';
+    import settings from '../../img/menu_icons/icon_settings.svg';
+    import options from '../../img/menu_icons/icon_options.svg';
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js'
@@ -55,13 +57,19 @@
         })
         return pendingList
     }
+    $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
+    $: stampPreApproval = thisNetworkApproved ? parseInt(dappInfo[$currentNetwork.type].stampPreApproval) || 0 : 0
+    $: stampsUsed = thisNetworkApproved ? parseInt(dappInfo[$currentNetwork.type].stampsUsed) || 0 : 0
+    $: stampsRemaining = thisNetworkApproved ? stampPreApproval - stampsUsed : 0
+    $: stampRatio = 1
 
 	onMount(() => {
         breadcrumbs.set([
             {name: 'Holdings', page: {name: 'CoinsMain'}},
-            {name: `${coin.name} ${symbol}`, page: {name: ''}},
+            {name: `${coin.nickname}`, page: {name: ''}},
         ]);
         getBalance()
+        $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
     });
 
     const getBalance = async () => {
@@ -106,6 +114,13 @@
     margin-bottom: 20px;
 }
 
+small > a {
+    margin: 0 5px;
+}
+small.flex-row{
+    align-items: center;
+}
+
 .amount{
     font-style: normal;
     font-weight: normal;
@@ -146,6 +161,7 @@
   }
 }
 
+
 </style>
 
 <div id="coin-details" class="flex-column text-primary">
@@ -153,17 +169,33 @@
         <div class="flex-row">
             <div class="flex-column wallet-details">
                 <div class="nickname text-body3">
-                    {#if dappInfo}
+                    {#if thisNetworkApproved && dappInfo}
                         {dappInfo.appName}
                     {:else}
-                        {coin.nickname}
+                        <div>{coin.nickname}</div>
+                        {#if dappInfo}
+                            <small class="text-subtitle2">
+                                {`${dappInfo.appName} has not requested access to Lamden's ${$currentNetwork.type.toUpperCase()}`}
+                            </small>
+                            <small class="flex-row text-subtitle2">
+                                {`See`}
+                                <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
+                                {`for details`}
+                            </small>
+                        {/if}
                     {/if}
-                
                 </div>
                 <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
                 <div class="amount"> {balance} </div>
+                {#if thisNetworkApproved}
+                    <div class="text-body2">{`
+                        pre-approved stamps left: ${stampsRemaining.toLocaleString()} 
+                         (${parseFloat(stampsRemaining/stampRatio).toLocaleString()} ${$currentNetwork.currencySymbol})
+                        `}
+                    </div>
+                {/if}
             </div>
-            {#if dappLogo}
+            {#if thisNetworkApproved && dappLogo }
                 <div>
                     <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp-logo" />
                 </div>
@@ -175,27 +207,45 @@
                 id={'send-coin-btn'} 
                 classes={'button__transparent button__blue'}
 				name="Send Tx"
-                margin={'0 20px 0.5rem 0'}
+                padding={"12px"}
+                margin={'0 15px 15px 0'}
 		 		click={() => openModal(sendPage, coin)} 
 				icon={arrowUp}/>
             <Button
                 id={'send-coin-btn'} 
                 classes={'button__transparent button__blue'}
                 name="Receive Coin"
-                margin={'0 20px 0.5rem 0'}
+                padding={"12px"}
+                margin={'0 15px 15px 0'}
 		 		click={() => copyWalletAddress()} 
 				icon={arrowDown}/>
 
 		    <Button 
                 id={'modify-coin-btn'} 
                 classes={'button__transparent button__blue'}
-				name="Coin Options"
-                margin={'0 0 0.5rem 0'}
+                icon={options}
+				name="Options"
+                padding={"12px"}
+                margin={'0 15px 15px 0'}
 		 		click={() => openModal('CoinModify', coin)}
 				/>
-        </div>
+            </div>
+            {#if thisNetworkApproved && $currentNetwork.lamden}
+                <div>
+                    <Button 
+                        id={'dapp-options-btn'} 
+                        classes={'button__transparent button__blue'}
+                        name="dApp Settings"
+                        icon={settings}
+                        padding={"12px"}
+                        margin={'0 0 15px 0'}
+                        click={() => openModal('CoinDappOptions', {coin, dappInfo, startPage: 1})}
+                        />
+                </div>
+            {/if}
+        
     </div>
-    {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
+    {#if thisNetworkApproved && $currentNetwork.lamden}
         <Charms dappInfo={dappInfo} />
     {/if}
     <CoinHistory txList={txList()} pendingTxList={pendingTxList()} />
