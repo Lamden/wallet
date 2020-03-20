@@ -822,7 +822,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         sendResponse({errors:[
                             `Your dDapp was previoulsy approved but no matching vk is currently found in the wallet.  
                              Prompt the user to restore their keypair for ${dappInfo.vk}, 
-                             or send a "reapprove request, newKeypair = true" to have another keypair generated.`
+                             or add "reapprove = true, newKeypair = true" to your approve request to have a new keypair generated.`
                         ]})
                     }
                     sendApproval = false;
