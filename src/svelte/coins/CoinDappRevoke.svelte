@@ -1,5 +1,8 @@
 <script>
     import { getContext } from 'svelte';
+    
+	//Stores
+    import { currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -11,19 +14,43 @@
     //Images
     import warning from '../../img/menu_icons/icon_warning.svg';
 
-	//Context
-    const { switchPage } = getContext('app_functions');
-    const { home, setPage } = getContext('coinmodify_functions');
+    //Context
+    const { appHome } = getContext('app_functions');
+    const { setMessage, setPage, home, close } = getContext('coinDappOptions_functions');
 
     //DOM Nodes
     let formObj, passwordObj;
 
+    //Props
+    export let dappInfo
+
     let passwordOkay = false;
+    let revokeAllAccess = false;
+    const buttons = [
+        {id: 'close-btn', name: 'ok', click: () => appHome(), class: 'button__solid button__purple'}
+    ]
+    let message = {buttons, type: 'success'}
+    let allNetworks = ['mockchain', 'testnet', 'mainnet']
 
     const handleSubmit = (form) => {
         if (passwordOkay){
             if (formObj.checkValidity()){
-                setPage(4);
+                let networks = [$currentNetwork.type]
+                if (revokeAllAccess){
+                    networks = allNetworks
+                }
+                chrome.runtime.sendMessage({type: 'revokeDappAccess', data: {dappInfo, networks}}, (response) => {
+                    if (!response || chrome.runtime.lastError){
+                        message.text =`There was an error removing access for ${dappInfo.appName}`
+                        message.type = 'error'
+                        setMessage(message)
+                        setPage(4);
+                    } else {
+                        message.text =`${dappInfo.appName}'s Wallet Access Has Been Revoked`
+                        setMessage(message)
+                        setPage(5);
+                    }
+                })  
             }
         }else{
             chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(passwordObj.value)}, (valid) => {
@@ -50,9 +77,21 @@
 <style>
 .buttons{
     align-items: center;
-    margin: 37px 0 13px;
+    margin: 0 0 1rem;
 }
-
+.bullets {
+    border-left: 1px solid var(--divider-color);
+    padding-left: 20px;
+}
+.bullets p > a{
+    margin: 0 5px;
+}
+.bullets > .flex-row{
+    align-items: center;
+}
+.flex-row > .text-cyan{
+    margin-left: 5px;
+}
 .button-red{
     color: #FFFFFF;
     background: red;
@@ -63,17 +102,8 @@
     background: var(--primary-color);
 }
 
-.back-it-up{
-    cursor: pointer;
-    color: cyan;
-}
-
-.subtitle{
-    height: 60px;
-}
-
 .content-box{
-    height: 70px;
+    margin: 1rem 0;
 }
 
 .warning-message{
@@ -92,13 +122,18 @@
 </style>
 
 <div class="coin-delete">
-    <h5> Delete Wallet </h5>
-
-
-    <div class="subtitle text-subtitle3">
-        Deleting this wallet will remove it from your Lamden Wallet.
-        If you have currency on it, remember to
-        <span class="back-it-up" on:click={() => switchPage('Backup')}> back it up</span> 
+    <h1> {`${dappInfo.appName} - Revoke Wallet Access`} </h1>
+    <h2>You are about to do the following:</h2>
+    <div class="bullets text-subtitle2">
+        <div class="flex-row">
+            <p class="flex-row">
+                {`Prevent `}
+                <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
+                {`from sending transactions through your wallet on Lamden's`}
+            </p>
+            <div class="text-cyan">{`${$currentNetwork.type.toUpperCase()}`}</div>
+        </div>
+        <p>{`You will NOT delete the keypair from your Lamden Wallet`}</p>
     </div>
 
     <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
@@ -117,7 +152,7 @@
             {:else}
                 <div id={'warning-msg'} class="warning-message flex-row">
                     <div class="icon" >{@html warning}</div>
-                    <h6>Please Confirm Wallet Deletion</h6>
+                    <h6>{`Please Confirm ${dappInfo.appName} Access Removal`}</h6>
                 </div>
             {/if}
         </div>
@@ -126,7 +161,7 @@
                     class:button-red={passwordOkay}
                     class:button-purple={!passwordOkay}
                     type="submit" 
-                    value={passwordOkay ? "Confirm Wallet Deletion" : "Validate Wallet Password"}>
+                    value={passwordOkay ? "Revoke Access" : "Validate Wallet Password"}>
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__purple'} 

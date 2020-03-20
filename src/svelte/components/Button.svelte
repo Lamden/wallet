@@ -21,9 +21,10 @@
 </script>
 
 <style>
-.button{
+button{
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .label{
@@ -40,7 +41,7 @@
 }
 
 .icon {
-    width: 16px;
+    /*width: 16px;*/
 }
 
 .icon-left {

@@ -59,11 +59,6 @@
     border-right: none;
 }
 
-input[type="checkbox"]{
-    width: 12px;
-    height: 12px;
-}
-
 .kwargs {
     align-items: flex-start;
     max-height: 175px;
@@ -77,10 +72,6 @@ input[type="checkbox"]{
 
 .kwarg-value:last-child{
     margin-bottom: unset;
-}
-
-.checkbox-words{
-    margin-top: 1px;
 }
 
 .text-subtitle4.copy-link{
@@ -143,12 +134,6 @@ input[type="checkbox"]{
             <a class="text-subtitle4 copy-link" href="www.lamden.io">help?</a>
         </div>   
     </div>
-<!--
-    <div class="flex-row">
-        <input type="checkbox" bind:checked={prevent}>
-        <small class="checkbox-words text-primary-dark">{`prevent this website from creating further requests`}</small>
-    </div>
--->
 </div>
 
 

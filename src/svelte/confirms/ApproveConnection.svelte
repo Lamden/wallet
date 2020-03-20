@@ -3,6 +3,7 @@
 
     //Components
     import Button from '../components/Button.svelte'
+    import InputBox from '../components/InputBox.svelte'
 
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
@@ -10,9 +11,18 @@
     //Context
     const { approveApp, close, openNewTab } = getContext('confirm_functions');
 
+    //DOM NODES
+    let stampPreApprovalInput;
+
     export let confirmData;
 
-    let prevent = false
+    let approvePreApprove = false;
+    const preApproval = confirmData.messageData.preApproval || false
+
+    const sendApprove = () => {
+        if (approvePreApprove) approveApp(stampPreApprovalInput.value)
+        else approveApp(0)
+    }
 
 </script>
 
@@ -21,8 +31,7 @@
     align-items: center;
     flex-grow: 1;
     justify-content: space-between;
-    padding: 20px;
-    text-align: center;
+    padding: 0 20px 20px 20px;
 }
 
 .hero-rec{
@@ -30,6 +39,7 @@
     height: 125px;
     padding: 15px 20px;
     justify-content: space-between;
+    align-items: center;
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -40,6 +50,7 @@
 
 .approve-items{
     justify-content: center;
+    text-align: center;
     align-content: space-around;
     width: 100%;
     padding-bottom: 20px;
@@ -54,21 +65,23 @@
     border-right: 1px solid gray;
 }
 
-input[type="checkbox"]{
-    width: 12px;
-    height: 12px;
+.pre-approval{
+    border: 1px solid grey;
+    border-radius: 20px;
+    background: #2b2b2b;
+    box-sizing: border-box;
+    padding: 15px;
 }
 
-.checkbox-words{
-    margin-top: 1px;
+.checkbox-row{
+    justify-content: center;
+    align-items: center;
 }
-
-.text-subtitle4.copy-link{
-    margin-top: 1rem;
-}
-
 .buttons{
     margin-bottom: 0.5rem;
+}
+.help-link{
+    text-align: center;
 }
 
 </style>
@@ -77,7 +90,7 @@ input[type="checkbox"]{
     <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
         <h1>{`App Connection Request From`}</h1>
         <div class="text-body3 dapp-name">{`${confirmData.messageData.appName}`}</div>
-        <div class=" appurl-link text-body2 text-primary-dark" on:click={() => openNewTab(confirmData.url)}>{`source ${confirmData.url}`}</div>
+        <a class="outside-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{`source ${confirmData.url}`}</a>
     </div>
 
     <div class="description text-subtitle2">
@@ -94,6 +107,29 @@ input[type="checkbox"]{
             <div>{confirmData.messageData.networkType.toUpperCase()}</div>
         </div>
     </div>
+    {#if preApproval}
+    <div class="pre-approval flex-column">
+        <div class="text-subtitle2">
+            {preApproval.message}
+        </div> 
+        <InputBox
+            id="preapproval-input"
+            value={preApproval.stampsToPreApprove}
+            bind:thisInput={stampPreApprovalInput}
+            width="50%"
+            margin={"0 auto 1rem"}
+            backgroundColor={"#2b2b2b"}
+            label={`Stamps`}
+            inputType= 'number'
+            autofocus={true}
+        />
+        <div class="checkbox-row flex-row">
+            <input type="checkbox" bind:checked={approvePreApprove}>
+            <span class="text-subtitle2">{`pre-approve stamp amount`}</span>
+        </div>
+    </div>
+
+    {/if}
     <div class="flex-column">
         <div class="buttons flex-row">
             <Button 
@@ -111,18 +147,12 @@ input[type="checkbox"]{
                 name="Approve"
                 width={'175px'}
                 height={'42px'}
-                click={approveApp} />
+                click={sendApprove} />
         </div>
-        <div>
-            <a class="text-subtitle4 copy-link" href="www.lamden.io">help?</a>
+        <div class="help-link">
+            <a class="outside-link" href="www.lamden.io">learn more about approving dApps</a>
         </div>   
     </div>
-<!--
-    <div class="flex-row">
-        <input type="checkbox" bind:checked={prevent}>
-        <small class="checkbox-words text-primary-dark">{`prevent this website from creating further requests`}</small>
-    </div>
--->
 </div>
 
 

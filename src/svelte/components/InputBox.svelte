@@ -14,6 +14,7 @@
     export let width = '100%';
     export let height = '46px';
     export let margin = 'unset';
+    export let backgroundColor = '';
     export let spellcheck = false;
     export let rows = '1'
     export let readonly = false
@@ -40,7 +41,6 @@ label{
     font-weight: normal;
     font-size: 12px;
     line-height: 16px;
-    background: var(--bg-color);
     padding: 0 4px;
     color: var(--font-primary);
 }
@@ -69,7 +69,6 @@ label{
 .mainbox:focus{
     outline: none; 
     border: 1px solid var(--primary-color);
-
 }
 
 .mainbox::-webkit-input-placeholder { 
@@ -107,7 +106,7 @@ label{
 </style>
 <div class="inputbox" style={`margin: ${margin}; width: ${width};`}>
 
-    <label> {label} </label>
+    <label style={`background: ${backgroundColor || 'var(--bg-color)'};`}> {label} </label>
     {#if inputType === "password"}
         <!-- svelte-ignore a11y-autofocus -->
         <input
