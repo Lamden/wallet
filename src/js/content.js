@@ -13,7 +13,7 @@ const getWalletInfo = () => {
         }
     });
 }
-document.addEventListener('getLamdenWalletInfo', () => getWalletInfo());
+document.addEventListener('lamdenWalletGetInfo', () => getWalletInfo());
 
 const lamdenWalletConnect = (detail) => {  
     chrome.runtime.sendMessage({type: 'lamdenWalletConnect', data: detail}, (response) => {
@@ -46,7 +46,7 @@ document.addEventListener('lamdenWalletSendTx', (event) => {
 const lamdenWalletSendTx = (detail) => {  
     chrome.runtime.sendMessage({type: 'dAppSendLamdenTransaction', data: detail}, (response) => {
         if(!chrome.runtime.lastError){
-            document.dispatchEvent(new CustomEvent('txStatus', {detail: response}));
+            document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: response}));
         }
     });
 }
@@ -60,7 +60,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (typeof detail.status === 'undefined' && typeof detail.data.resultInfo !== 'undefined'){
             detail.status = detail.data.resultInfo.type
         }
-        document.dispatchEvent(new CustomEvent('txStatus', {detail}));
+        document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail}));
     }
 
     if (message.type === "sendWalletInfo"){
