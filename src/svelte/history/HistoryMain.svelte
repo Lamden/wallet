@@ -15,7 +15,7 @@
 
     const flattenObject = (txList) => {
         let flatList = []
-        if (!txList) return flatList;
+        if (typeof txList[$currentNetwork.url] === 'undefined') return flatList;
         Object.keys(txList[$currentNetwork.url]).map(vk => {
             flatList.push(...txList[$currentNetwork.url][vk])
         })
