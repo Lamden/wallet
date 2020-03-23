@@ -105,7 +105,8 @@
 			}
 		})
 
-		container.style.width = `${window.innerWidth - 402}px`;
+		if (window.innerWidth < 900) container.style.width = `${window.innerWidth - 186}px`;
+		else container.style.width = `${window.innerWidth - 402}px`;
 	}
 
 	const updateCode = () => {
@@ -113,7 +114,8 @@
 	}
 
 	const handler = (e) => {
-		container.style.width = `${e.target.innerWidth - 402}px`;
+		if (e.target.innerWidth < 900) container.style.width = `${e.target.innerWidth - 186}px`;
+		else container.style.width = `${e.target.innerWidth - 402}px`;
 		container.style.fontFamily = "'Courier Prime', monospace"
 	}
 
@@ -256,6 +258,6 @@
 </style>
 
 
-<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left`} />
+<div class="monaco-container" bind:this={container} style={`height: ${editorHeight}; text-align: left; min-width: 457px;`} />
 <svelte:window on:resize={handler}/>
 
