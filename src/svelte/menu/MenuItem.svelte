@@ -57,9 +57,7 @@
 }
 
 .name{
-    font-size: 14px;
-    width: 180px;
-    line-height: 20px;
+    display: none
 }
 
 .selected{
@@ -71,6 +69,14 @@
     margin-left: -47px;
 }
 
+@media (min-width: 900px) {
+    .name{
+        display: block;
+        font-size: 14px;
+        width: 180px;
+        line-height: 20px;
+    }
+}
 </style>
 
 

@@ -31,6 +31,7 @@
     justify-content: center;
     align-items: flex-end;
     padding: 0 61px 0 30px;
+    min-width: fit-content;
 }
 </style>
 

@@ -44,13 +44,20 @@
 
 <style>
 .menus{
-    display:flex;
-    flex-direction: column;
     padding: 21px 0px 0px 40px;
+    width: 46px;
+    
 }
+
+@media (min-width: 900px) {
+    .menus{
+        width: unset;
+    }
+}
+
 </style>
 
-<div class="menus text-primary">
+<div class="menus flex-column text-primary">
     {#each menus as menu}
         <MenuBox heading={menu.heading} menuItems={menu.items} />
     {/each}

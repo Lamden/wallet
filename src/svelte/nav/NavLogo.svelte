@@ -19,10 +19,9 @@
 
 <style>
 .box{
-    min-width: 354px;
+    width: 354;
+    min-width: 200px;
     height: 100%;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
 }
 
@@ -43,7 +42,7 @@
 
 </style>
 
-<div class="box">
+<div class="box flex-column">
     <div class="brand flex-row" class:clickable={clickable} on:click={() => goHome()}>
         <div class="logo">{@html lamden_logo}</div>
         <div class="words">{@html lamden_words}</div>

@@ -185,7 +185,7 @@
 	}
 
 	.menu-pane{
-		min-width: 280px;
+		min-width: 83px;
 	}
 
 	.content-pane{
@@ -211,5 +211,11 @@
 		position: relative;
 		width: 13px;
 		top: 1px;
+	}
+
+	@media (min-width: 900px) {
+		.menu-pane{
+			min-width: 280px;
+		}
 	}
 </style>

@@ -19,10 +19,17 @@
 }
 
 .header{
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    margin-left: 31px;
+    display: none;
+
+}
+
+@media (min-width: 900px) {
+    .header{
+        display: flex;
+        flex-direction: row;
+        align-content: center;
+        margin-left: 31px;
+    }
 }
 </style>
 
