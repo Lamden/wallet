@@ -49,11 +49,9 @@
 }
 
 .logo{
-    position: relative;
-    top: -1px;
-    width: 14px;
-    height: 14px;
-    margin-right: 15px;
+    width: 18px;
+    height: 18px;
+    margin: 0 auto;
 }
 
 .name{
@@ -67,6 +65,7 @@
     width: 18px;
     margin-right: 29px;
     margin-left: -47px;
+    z-index: 10;
 }
 
 @media (min-width: 900px) {
@@ -76,6 +75,13 @@
         width: 180px;
         line-height: 20px;
     }
+    .logo{
+        position: relative;
+        top: -1px;
+        width: 14px;
+        height: 14px;
+        margin-right: 15px;
+    }
 }
 </style>
 
@@ -84,7 +90,7 @@
     <div class="logo">{@html menuItem.logo}</div>
     <span class="name"> {menuItem.name} </span>
     {#if backupPage && $needsBackup}
-        <div class="warning-icon">
+        <div class="warning-icon" title={menuItem.name}>
             {@html warningIcon}
         </div>
     {/if}
