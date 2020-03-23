@@ -67,6 +67,19 @@ const createFilesStore = () => {
                 return filesstore;
             })
         },
+        //Add a new default file to the internal store
+        addBlankFile: () => {
+            FilesStore.update(filesstore => {
+                //Make all files unselected
+                filesstore.map(file => file.selected = false)
+                let newFile = JSON.parse(JSON.stringify(defaultFile))
+                newFile.code = ''
+                filesstore.push(newFile)
+                //Make the new file selected
+                filesstore[filesstore.length - 1].selected = true;
+                return filesstore;
+            })
+        },
         //Add a file to the file store by specifying the information
         addFile: (name, code, methods, networkObj) => {
             //Return if arguments are undefined and incorrect types
