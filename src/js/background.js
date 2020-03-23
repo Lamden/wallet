@@ -372,6 +372,7 @@ const sendTx = (txBuilder, sk, sentFrom) => {
         }
         //Send transaction
         txBuilder.send(decryptString(sk), () => {
+            txBuilder.sentFrom = sentFrom;
             processSendResponse(txBuilder);
             sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
         })
@@ -381,7 +382,9 @@ const sendTx = (txBuilder, sk, sentFrom) => {
 const processSendResponse = (txBuilder) => {
     const result = txBuilder.txSendResult;
     if (result.hash){
-        pendingTxStore.push(txBuilder.getAllInfo());
+        let txData = txBuilder.getAllInfo();
+        txData.sentFrom = txBuilder.sentFrom;
+        pendingTxStore.push(txData);
     }else{
         addToTxSaveList(txBuilder)
     }
@@ -439,9 +442,9 @@ const checkPendingTransactions = () => {
                 await txBuilder.checkForTransactionResult()
                 .then(() => {
                     transactionsChecked = transactionsChecked + 1
+                    sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
                     const dappInfo = getDappInfoByVK(txBuilder.sender)
-                    if (dappInfo) sendMessageToTab(dappInfo.url, 'txStatus', txBuilder.getAllInfo())
-                    addStampsUsedToDapp(dappInfo.url, txBuilder)
+                    if (dappInfo) addStampsUsedToDapp(dappInfo.url, txBuilder)
                     addToTxSaveList(txBuilder)
                     if (transactionsChecked >= transactionsToCheck){
                         pendingTxStore = pendingTxStore.slice(transactionsToCheck)

@@ -13,9 +13,13 @@
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === "txStatus"){
-            dispatch('txResult', message.data)
+            if (typeof message.data.resultInfo !== 'undefined'){
+                if (message.data.resultInfo.title !== "Transaction Pending"){
+                    dispatch('txResult', message.data)
+                }                
+            }
+            sendResponse('ok');      
         }
-        sendResponse('ok');
     });
 
     onMount(() => {

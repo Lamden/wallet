@@ -44,14 +44,17 @@
 	const lint = async (callback) => {
 		let mockchain = $currentNetwork
 		if ($currentNetwork.type !== 'mockchain') mockchain = NetworksStore.getPublicMockchain()
-		lintErrors = await mockchain.API.lintCode($activeTab.name, $activeTab.code)
+		if ($activeTab.code === '') lintErrors = {violations: null}
+		else {
+			lintErrors = await mockchain.API.lintCode($activeTab.name, $activeTab.code)
+		}
 		try {
 			callback(lintErrors);
 		} catch (e){}
 	}
 
 	const submit = (res) => {
-		if (res.violations === null){
+		if (res.violations === null && $activeTab.code !== ''){
 			openModal('IdeModelSubmit', {
 				'contractName': 'submission', 
 				'methodName': 'submit_contract', 

@@ -98,6 +98,7 @@
 }
 .submit{
     height: 42px;
+    width: 250px;
 }
 </style>
 
