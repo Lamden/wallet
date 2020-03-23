@@ -44,6 +44,22 @@
     border-radius: 3px;
 }
 
+.item:hover > .floating-label{
+    display: block;
+    position: absolute;
+    top: inherit;
+    left: 90px;
+    z-index: 100;
+    width: fit-content;
+    width: 110px;
+    background-color: var(--bg-menu-grey);
+    padding: 9px
+}
+
+.floating-label{
+    display: none;
+}
+
 .notselected:hover{
     background-color: var(--bg-color-grey);
 }
@@ -69,6 +85,13 @@
 }
 
 @media (min-width: 900px) {
+    .floating-label{
+        display: none;
+    }
+    .item:hover > .floating-label{
+        display: none;
+        background-color: unset;
+    }
     .name{
         display: block;
         font-size: 14px;
@@ -86,7 +109,12 @@
 </style>
 
 
-<div id={menuItem.id} class="item" class:selected={isSelected} class:notselected={!isSelected} on:click={ () => menuAction() }>
+<div id={menuItem.id} 
+     class="item" 
+     class:selected={isSelected} 
+     class:notselected={!isSelected} 
+     on:click={ () => menuAction() }
+    >
     <div class="logo">{@html menuItem.logo}</div>
     <span class="name"> {menuItem.name} </span>
     {#if backupPage && $needsBackup}
@@ -94,4 +122,6 @@
             {@html warningIcon}
         </div>
     {/if}
+    <div class="floating-label text-subtitle2 ">{menuItem.name}</div>
 </div>
+
