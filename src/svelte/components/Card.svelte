@@ -28,7 +28,8 @@
 .image{
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 4px;
+    background-size: cover;
+    border-radius: 4px 4px 0 0;
     height: 232px;
 }
 

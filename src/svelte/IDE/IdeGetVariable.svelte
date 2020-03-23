@@ -8,15 +8,16 @@
 
     export let contractName
 
-    let variableName = '';
+    let variableName = 'state';
     let key = '';
     let result = '';
 
     const handleRun = async () => {
         try{
-            result = JSON.parse(await $currentNetwork.API.getVariable(contractName, variableName, key))
+            $currentNetwork.API.getVariable(contractName, variableName, key)
+            .then(res => result = res)
         } catch (e) {
-            result = null
+            result = ''
         }
     }
 </script>
@@ -46,6 +47,7 @@
     <div class="flex-row">
         <InputBox
             on:changed={(e) => {variableName = e.detail.target.value}}
+            value = {variableName}
             label={'Variable Name'}
             placeholder={'Enter Variable Name'}
             width={'300px'}
@@ -55,8 +57,8 @@
         />
         <InputBox 
             on:changed={(e) => {key = e.detail.target.value}}
-            label={'Key'}
-            placeholder={'Enter Key'}
+            label={'keys (comma separated)'}
+            placeholder={'key1,key2.. etc'}
             width={'300px'}
             height={'42px'}
             styles={'min-width: 200px;'}

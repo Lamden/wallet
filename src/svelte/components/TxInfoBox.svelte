@@ -19,6 +19,7 @@
     $: type = txData.resultInfo.type;
     $: resultInfo = txData.resultInfo;
     $: errorInfo = resultInfo.errorInfo || [];
+    $: statusCode = resultInfo.statusCode || false;
     $: timestamp = new Date(txData.timestamp).toLocaleString()
 
 </script>
@@ -98,6 +99,12 @@
                 <div class="text-body2 text-primary-dark">{txData.hash}</div>
             {/if}
         </div>
+        {#if statusCode}
+            <div class="flex-row text-body2">
+                <div class="item-title">Status Code</div>
+                <div class="text-primary-dark">{statusCode}</div>
+            </div>
+        {/if}
         <div class="flex-row text-body2">
             <div class="item-title">TimeStamp</div>
             <div class="text-primary-dark">{timestamp}</div>
