@@ -41,7 +41,7 @@
     $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
-    $: background = dappInfo ? `${dappInfo.url}${dappInfo.background}` || squares_bg : squares_bg
+    $: background = dappInfo ? dappInfo.background ? `${dappInfo.url}${dappInfo.background}` : squares_bg : squares_bg
     $: symbol = coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
