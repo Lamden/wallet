@@ -8,6 +8,7 @@ const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators
 
 //Settings
+const appRoute = 'app.html'
 let hash;
 let firstRun;
 let nonceRetryTimes = 5
@@ -106,14 +107,14 @@ const stripRef = (value) => {
     return JSON.parse(JSON.stringify(value))
 }
 
-const removeCharAtEnd = (string, char) => {
-    if (string.charAt(string.length-1) === char) return string.substring(0, string.length - 1)
-    return string
+const addCharAtEnd = (string, char) => {
+    if (string.charAt(string.length-1) === char) return string
+    return string + char
 }
 
-const removeCharAtStart = (string, char) => {
-    if (string.charAt(0) === char) return string.substring(1)
-    return string
+const addCharAtStart = (string, char) => {
+    if (string.charAt(0) === char) return string
+    return char + string
 }
 
 /***********************************************************************
@@ -575,14 +576,14 @@ const promptApproveDapp = async (sender, messageData) => {
     let exists = await contractExists(messageData.networkType, messageData.contractName)
     if (!exists) {
         const errors = [`contractName: '${messageData.contractName}' does not exists on '${messageData.networkType}' network.`]
-        sendMessageToTab(sender.url, 'sendErrorsToTab', {errors})
+        sendMessageToTab(sender.origin, 'sendErrorsToTab', {errors})
     }else{
         const keypair = Lamden.wallet.new_wallet()
         const windowId = hashStringValue(keypair.vk)
         txToConfirm[windowId] = {
             type: 'ApproveConnection',
             messageData,
-            url: sender.url
+            url: sender.origin
         };
     
         chrome.windows.create({
@@ -597,7 +598,7 @@ const promptApproveTransaction = async (sender, messageData) => {
     txToConfirm[windowId] = {
         type: 'ApproveTransaction',
         messageData,
-        url: sender.url
+        url: sender.origin
     };
 
     chrome.windows.create({
@@ -656,14 +657,14 @@ const DappStoreAddNew = (appUrl, vk, messageData, approveAmount) => {
     //Remove slashes at start of icon paths
     if (validateTypes.isArrayWithValues(messageData.charms)){
         messageData.charms.forEach(charm => {
-            charm.iconPath = removeCharAtStart(charm.iconPath, '/')
+            charm.iconPath = addCharAtStart(charm.iconPath, '/')
         })
         dappsStore[appUrl][messageData.networkType].charms = messageData.charms
     }
     dappsStore[appUrl].appName = messageData.appName
-    dappsStore[appUrl].logo = removeCharAtStart(messageData.logo, '/')
+    dappsStore[appUrl].logo = addCharAtStart(messageData.logo, '/')
     if (validateTypes.isStringWithValue(messageData.background)){
-        dappsStore[appUrl].background = removeCharAtStart(messageData.background, '/')
+        dappsStore[appUrl].background = addCharAtStart(messageData.background, '/')
     }
     dappsStore[appUrl].url = appUrl
     dappsStore[appUrl].vk = vk
@@ -751,16 +752,26 @@ const sendTxErrorResponse = (status, errors, rejected, sendResponse) => {
 
 //Send a message to the tab that the App currently open in
 const sendMessageToApp = (type, data) => {
-    const appTab = `${window.location.origin}/app.html`
-    sendMessageToTab(appTab, type, data)
-}
-
-//Send a message to a dApp open in tab
-const sendMessageToTab = (url, type, data) => {
+    const appTab = `${window.location.origin}/${appRoute}`
     chrome.windows.getAll({populate:true},function(windows){
         windows.forEach((window) => {
             window.tabs.forEach((tab) => {
-                if (url === tab.url){
+                var urlObj = new URL(tab.url)
+                if (appTab === urlObj.href){
+                    chrome.tabs.sendMessage(tab.id, {type, data});  
+                }
+            });
+        });
+    });
+}
+
+//Send a message to a dApp open in tab
+const sendMessageToTab = (url, type, data, route) => {
+    chrome.windows.getAll({populate:true},function(windows){
+        windows.forEach((window) => {
+            window.tabs.forEach((tab) => {
+                var urlObj = new URL(tab.url)
+                if (url === urlObj.origin){
                     chrome.tabs.sendMessage(tab.id, {type, data});  
                 }
             });
@@ -774,7 +785,8 @@ const sendMessageToAllDapps = (type, data) => {
         windows.forEach((window) => {
             window.tabs.forEach((tab) => {
                 Object.keys(dappsStore).forEach(dapp => {
-                    if (tab.url === dapp){
+                    var urlObj = new URL(tab.url)
+                    if (urlObj.origin === dapp){
                         chrome.tabs.sendMessage(tab.id, {type, data});  
                     }
                 })
@@ -790,8 +802,8 @@ const sendMessageToAllDapps = (type, data) => {
  *****************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (chrome.runtime.lastError) return;
-    const isFromAuthorizedDapp = fromAuthorizedDapp(sender.url);
-    const dappInfo = isFromAuthorizedDapp ? getDappInfo(sender.url) : undefined;
+    const isFromAuthorizedDapp = fromAuthorizedDapp(sender.origin);
+    const dappInfo = isFromAuthorizedDapp ? getDappInfo(sender.origin) : undefined;
     const isFromApp = fromApp(sender.url);
     const isFromConfirm = fromConfirm(sender.url);
 
@@ -823,7 +835,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         ]})
                     }else{
                         sendResponse({errors:[
-                            `Your dDapp was previoulsy approved but no matching vk is currently found in the wallet.  
+                            `Your dApp was previously approved but no matching vk is currently found in the wallet.  
                              Prompt the user to restore their keypair for ${dappInfo.vk}, 
                              or add "reapprove = true, newKeypair = true" to your approve request to have a new keypair generated.`
                         ]})
@@ -906,7 +918,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         txInfo.uid = encryptString(wallet.vk, 'tracking-id')
                         let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
                         sendResponse({status: "Transaction Sent, Awaiting Response"})
-                        sendTx(txBuilder, wallet.sk, sender.url)
+                        sendTx(txBuilder, wallet.sk, sender.origin)
                     }catch (err){
                         sendResponse({status: `Error: Failed to create Tx - ${err}`})
                     }
@@ -953,11 +965,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
          ** MESSAGES FROM AUTHORIZED DAPPs
         **************************************************/
         if (isFromAuthorizedDapp){
+            console.log(isFromAuthorizedDapp)
+            console.log(dappVkInWallet(dappInfo.vk))
+            console.log(dappInfo)
             if (!dappVkInWallet(dappInfo.vk)){
                 sendResponse({errors:[
-                    `Your dDapp was previoulsy approved but no matching vk is currently found in the wallet.  
-                     Prompt the user to restore their keypair for ${dappInfo.vk}, 
-                     or send a "reapprove request" to have another keypair generated.`
+                    `Your dApp was previously approved but no matching vk is currently found in the wallet.  
+                    Prompt the user to restore their keypair for ${dappInfo.vk}, 
+                    or add "reapprove = true, newKeypair = true" to your approve request to have a new keypair generated.`
                 ]})
             }else{
                 //Send specifics about the wallet that the dApp may need to handle
