@@ -40,7 +40,7 @@
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",
-    "cypress": "^3.8.2",
+    "cypress": "^4.3.0",
     "cypress-file-upload": "^3.5.0",
     "cypress-localstorage-commands": "^1.1.4",
     "cypress-log-to-output": "^1.0.7",
@@ -59,9 +59,11 @@
   "dependencies": {
     "cypress-svelte-unit-test": "^1.5.0",
     "lamden-js": "^1.2.5",
+    "metamask-extension-provider": "^1.1.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",
     "node-cryptojs-aes": "^0.4.0",
-    "types-validate-assert": "^1.0.1"
+    "types-validate-assert": "^1.0.1",
+    "web3": "^1.2.6"
   }
 }

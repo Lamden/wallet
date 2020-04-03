@@ -3,6 +3,11 @@ import '../img/icon-34.png'
 
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue } from './utils.js';
 import Lamden from 'lamden-js'
+import Ethereum from './crypto/ethereum'
+
+console.log(Ethereum.requestAccount().then(res => console.log(res)))
+
+
 
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators

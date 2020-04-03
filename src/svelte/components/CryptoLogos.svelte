@@ -1,7 +1,7 @@
 <script>
     //Images
-    import defaultLogoLamden from '../../img/coin_logos/lamden_logo_new.svg';
     import TAU from '../../img/coin_logos/lamden_logo_new.svg';
+    import ETH from '../../img/coin_logos/ethereum.svg';
 
     //Props
     export let coin;
@@ -12,8 +12,12 @@
 
     const logos = {
         'lamden': {
-            'default' : defaultLogoLamden,
+            'default' : TAU,
             TAU
+        },
+        'ethereum': {
+            'default' : ETH,
+            ETH
         },
     }
 </script>

@@ -1,4 +1,6 @@
 const Lamden = require('lamden-js')
+const Web3 = require('Web3')
+const web3 = new Web3()
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators;
 const lamdenWallet = Lamden.wallet
@@ -16,8 +18,53 @@ const pubFromPriv = ( network, symbol, privateKey ) => {
 		if (validateTypes.isStringHex(privateKey) && privateKey.length === 64) return lamdenWallet.get_vk(privateKey);
         throw new Error(`Invalid ${network} privateKey`);
     }
+
+    if (network === 'ethereum') {
+        try{
+            return web3.eth.accounts.privateKeyToAccount(privateKey).address
+        } catch (e){
+            throw new Error(`Invalid ${network} privateKey`);
+        }
+    }
     
     throw new Error(`${network} is not a supported network `);
+};
+
+/*
+    Gets the Public Address of a Coin from the Private Key
+    Return: Public Address (str)
+*/
+const keysFromPriv = ( network, symbol, privateKey ) => {
+    assertTypes.isStringWithValue(network)
+    assertTypes.isStringWithValue(symbol)
+    assertTypes.isStringWithValue(privateKey)
+
+    let keyPair
+
+	if (network === 'lamden') {
+		if (validateAddress(privateKey)){
+            keyPair = lamdenWallet.format_to_keys(privateKey)
+        }else{
+            throw new Error(`Invalid ${network} privateKey`);
+        }
+    }
+
+    if (network === 'ethereum') {
+        try{
+            keyPair = web3.eth.accounts.privateKeyToAccount(privateKey)
+        } catch (e){
+            throw new Error(`Invalid ${network} privateKey`);
+        }
+        keyPair.vk =  keyPair.address
+        keyPair.sk =  keyPair.privateKey
+    }
+    if (!keyPair.vk || !keyPair.sk){
+		throw new Error(`${network} is not a supported network `);
+    }
+    
+    keyPair.network = network.toLowerCase();
+    keyPair.symbol = symbol.toUpperCase();
+    return keyPair
 };
 
 /*
@@ -32,15 +79,24 @@ const keysFromNew = ( network, symbol ) => {
 
 	if (network === 'lamden'){
 		keyPair = lamdenWallet.new_wallet();
-		if (!keyPair) throw new Error(`Error creating lamden network wallet`);
+		if (!keyPair) throw new Error(`Error creating ${network} network wallet`);
+    }
+    
+    if (network === 'ethereum'){
+        ethAccount = web3.eth.accounts.create()
+        keyPair = {
+            vk: ethAccount.address,
+            sk: ethAccount.privateKey
+        }
+		if (!keyPair) throw new Error(`Error creating ${network} network wallet`);
 	}
 
 	if (!keyPair.vk || !keyPair.sk){
 		throw new Error(`${network} is not a supported network`);
 	}
 
-	keyPair.network = network;
-	keyPair.symbol = symbol;
+	keyPair.network = network.toLowerCase();
+	keyPair.symbol = symbol.toUpperCase();
 	return keyPair;
 };
 
@@ -55,6 +111,11 @@ const validateAddress = ( network, wallet_address ) => {
     
     if (network === "lamden"){
         if (validateTypes.isStringHex(wallet_address) && wallet_address.length === 64) return wallet_address;
+        throw new Error(`Invalid ${network} wallet address`);
+    }
+
+    if (network === 'ethereum'){
+        if (web3.utils.isAddress(wallet_address)) return web3.utils.toChecksumAddress(wallet_address)
         throw new Error(`Invalid ${network} wallet address`);
     }
 
@@ -78,5 +139,6 @@ module.exports = {
     pubFromPriv,
     signTx,
     validateAddress, 
-    keysFromNew
+    keysFromNew,
+    keysFromPriv
 }
