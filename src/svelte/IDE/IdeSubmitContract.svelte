@@ -38,7 +38,7 @@
 
     const handleSubmit = async () => {
         if (contractNameField.value !== ""){
-            if (contractNameField.value.substring(0,3) !== 'con_'){
+            if (contractNameField.value.substring(0,4) !== 'con_'){
                 setValidation(contractNameField, 'Contract Name must start with "con_"')
                 return
             }
