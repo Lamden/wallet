@@ -17,7 +17,7 @@
 	import squares_bg from '../../img/backgrounds/squares_bg.png';
 	import refresh from '../../img/menu_icons/icon_refresh.svg';
 	import plus from '../../img/menu_icons/icon_plus.svg';
-	import swap from '../../img/menu_icons/icon_swap.svg';
+
 
 	//Utils
 	import { decryptObject } from '../../js/utils.js';
@@ -154,14 +154,6 @@
 		 		click={() => openModal('CoinAdd')} 
 				icon={plus}
 				iconWidth={'19px'}
-			/>
-			<Button id={'add-btn'}
-				classes={'button__transparent button__blue'}
-				name={`${$currentNetwork.currencySymbol} Swap`}
-				width={'155px'}
-		 		click={() => openModal('')} 
-				icon={swap}
-				iconWidth={'24px'}
 			/>
 		</div>
 

@@ -5,10 +5,6 @@ import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStrin
 import Lamden from 'lamden-js'
 import Ethereum from './crypto/ethereum'
 
-console.log(Ethereum.requestAccount().then(res => console.log(res)))
-
-
-
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators
 
@@ -940,6 +936,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                 }
                 if (message.type === 'revokeDappAccess') sendResponse(DappStoreRevoke(message.data))
+                if (message.type === 'connectMetamask') {
+                    sendResponse('ok')
+                    Ethereum.requestAccount().then(res => sendMessageToApp('metamaskConnected', res))
+                }
             }
         }
 
