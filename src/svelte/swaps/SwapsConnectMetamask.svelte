@@ -24,7 +24,7 @@
     $: metamaskInfo = null;
     $: installStatus = !metamaskInfo ? 'Not Installed' : 'Installed'
     $: isCorrectNetwork = !metamaskInfo ? false : metamaskInfo.chainInfo.tauSymbol === $currentNetwork.currencySymbol
-    $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : 'Connect Again'
+    $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : isCorrectNetwork ? 'Connected' : 'Connect Again'
     $: address = !metamaskInfo ? '' : metamaskInfo.address
 
     onDestroy(() =>{
@@ -41,7 +41,6 @@
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
-            console.log(message)
             metamaskInfo = message.data
         }
     }
@@ -120,12 +119,12 @@ p.green {
 
         <div class="buttons">
             <Button id={'connect-btn'}
-                    classes={`button__solid ${installStatus === "Connected" ? 'button__green' : 'button__purple'}`}
+                    classes={`button__solid ${installStatus === "Installed" && isCorrectNetwork ? 'button__green' : 'button__purple'}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={metaMaskButton}
                     click={connectMetaMask}
-                    icon={installStatus === "Connected" ? checkmarkWhite : ''}
+                    icon={installStatus === "Installed" && isCorrectNetwork ? checkmarkWhite : ''}
                     iconPosition={'after'}
                     iconWidth={'19px'}/>
             <Button id={'continue-btn'}

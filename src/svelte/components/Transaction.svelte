@@ -156,6 +156,7 @@
                 name={"tx details"}
                 classes="button__transparent button__blue"
                 padding={'5px 10px'}
+                height={'30px'}
                 margin={'0 0 0 10px'}
                 click={() => openModal('TxInfoBox', {txData, coin, closeModal})}
             />
