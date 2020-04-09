@@ -936,9 +936,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                 }
                 if (message.type === 'revokeDappAccess') sendResponse(DappStoreRevoke(message.data))
-                if (message.type === 'connectMetamask') {
+                if (message.type === 'connectToMetamask') {
                     sendResponse('ok')
-                    Ethereum.requestAccount().then(res => sendMessageToApp('metamaskConnected', res))
+                    Ethereum.requestAccount().then(async address => {
+                        let metaMaskInfo = {address}
+                        metaMaskInfo.chainInfo = await Ethereum.getChainId().catch(err => console.log(err))
+                        metaMaskInfo.tauBalance = await Ethereum.balanceOfTAU(address).catch(err => console.log(err))
+                        sendMessageToApp('metamaskConnected', metaMaskInfo)
+                    })
                 }
             }
         }

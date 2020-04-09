@@ -22,7 +22,7 @@
     let ethAddress = ''
 
     let SwapsSteps = [
-        {page: 'SwapsIntro', hideSteps: false, back: 0},
+        {page: 'SwapsConnectMetamask', hideSteps: false, back: 0},
         {page: 'SwapsSendApproval', hideSteps: false, back: 0},
     ]
 

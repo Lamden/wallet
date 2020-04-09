@@ -1,5 +1,5 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onDestroy } from 'svelte';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -16,25 +16,37 @@
     const { changeStep, storeAddress } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
-    $: installStatus = 'Not Installed'
-    $: address = ''
+    const ethNetworkTypes = {
+        'dTAU' : ['Kovan Network'],
+        'TAU' : ['Main Network']
+    }
 
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-		if (message.type === 'metamaskConnected') {
-            installStatus = 'Connected'
-            address = message.data
-            
-        }
-	})
+    $: metamaskInfo = null;
+    $: installStatus = !metamaskInfo ? 'Not Installed' : 'Installed'
+    $: isCorrectNetwork = !metamaskInfo ? false : metamaskInfo.chainInfo.tauSymbol === $currentNetwork.currencySymbol
+    $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : 'Connect Again'
+    $: address = !metamaskInfo ? '' : metamaskInfo.address
 
+    onDestroy(() =>{
+        chrome.runtime.onMessage.removeListener(metamaskConnected)
+    })
     const connectMetaMask = () => {
-        chrome.runtime.sendMessage({type: 'connectMetamask', data: {}})
+        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}})
     }
 
     const nextPage = () => {
         storeAddress(address)
         changeStep(1)
     }
+
+    const metamaskConnected = (message, sender, sendResponse) => {
+		if (message.type === 'metamaskConnected') {
+            console.log(message)
+            metamaskInfo = message.data
+        }
+    }
+
+    chrome.runtime.onMessage.addListener(metamaskConnected)
 
 </script>
 
@@ -111,7 +123,7 @@ p.green {
                     classes={`button__solid ${installStatus === "Connected" ? 'button__green' : 'button__purple'}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name="Connect MetaMask" 
+                    name={metaMaskButton}
                     click={connectMetaMask}
                     icon={installStatus === "Connected" ? checkmarkWhite : ''}
                     iconPosition={'after'}
@@ -121,7 +133,7 @@ p.green {
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Continue" 
-                    disabled={installStatus === 'Not Installed'}
+                    disabled={!isCorrectNetwork}
                     click={nextPage} />
             <Button id={'back-btn'}
                     classes={'button__solid'} 
@@ -142,16 +154,22 @@ p.green {
         <div class="metamask-logo">
             {@html MetaMask}
         </div>
+        <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
         <p  class="text-body1"
             class:red={installStatus === 'Not Installed'}
-            class:green={installStatus === 'Connected'}>
+            class:green={installStatus === 'Installed'}>
             {`MetaMask is ${installStatus}`}
         </p>
         {#if address !== ''}
             <p class="address">{address}</p>
         {/if}
-        <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
-        
+        {#if installStatus === 'Installed'}
+            {#if isCorrectNetwork}
+                <p>{`Connected to Ethereum ${ethNetworkTypes[$currentNetwork.currencySymbol]}`}</p>
+            {:else}
+                <p class="red">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
+            {/if}
+        {/if}
     </div>
 </div>
 

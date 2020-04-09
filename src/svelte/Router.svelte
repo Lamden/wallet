@@ -109,7 +109,7 @@ import About from './misc/About.svelte';
 //Swaps
 import Swaps from './swaps/Swaps.svelte';
 import SwapsMain from './swaps/SwapsMain.svelte';
-import SwapsIntro from './swaps/SwapsIntro.svelte';
+import SwapsConnectMetamask from './swaps/SwapsConnectMetamask.svelte';
 import SwapsSendApproval from './swaps/SwapsSendApproval.svelte';
 
 export const RestorePages = {
@@ -144,7 +144,7 @@ export const FirstRun = {
 };
 
 export const SwapsPages = { 
-    SwapsIntro, SwapsSendApproval
+    SwapsConnectMetamask, SwapsSendApproval
 };
 
 export const Pages = { 

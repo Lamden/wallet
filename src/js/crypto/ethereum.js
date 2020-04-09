@@ -11,12 +11,14 @@ const ethNetworks = {
     '1': {
         tauContract: '0xc27a2f05fa577a83ba0fdb4c38443c0718356501',
         controller: '0x00000C8e84545a5aF04a308D4c1F2e42Ff1B6C05',
-        chainName: 'Main Network'
+        chainName: 'Main Network',
+        tauSymbol: 'TAU'
     },
     '42': {
         tauContract: '0x3e26ae9e0ad08de30f28f1f12a73e776729131bd',
         controller: '0x00000C8e84545a5aF04a308D4c1F2e42Ff1B6C05',
-        chainName: 'Kovan Network'
+        chainName: 'Kovan Network',
+        tauSymbol: 'dTAU'
     }
 }
 
@@ -54,7 +56,9 @@ const requestAccount = async () => {
 const getChainId = async () => {
     const chainID = await web3.eth.getChainId()
     if (typeof ethNetworks[chainID] === 'undefined') throw Error(`Unsupported Chain ${chainID}.  Please swich you network in Metamask to Kovan or MainNet.`)
-    return chainID;
+    let chainInfo = {};
+    if (typeof ethNetworks[chainID] !== 'undefined')  chainInfo = ethNetworks[chainID]
+    return {chainID, ...chainInfo};
 }
 
 
@@ -63,9 +67,10 @@ const sendAllowance = async (userEthAddress, amount) => {
     let decimals = web3.utils.toBN(18);
     let tokenAmount = web3.utils.toBN(amount);
 
-    let chainID = await getChainId()
-    if (chainID !== 42) throw Error('Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.')
-    let ethNetwork = ethNetworks[`${chainID}`]
+    let chainInfo = await getChainId()
+    if (typeof chainInfo === 'undefined') throw Error('Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.')
+    if (chainInfo.chainID !== 42) throw Error('Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.')
+    let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
 
     // Get ERC20 Token contract instance
     let contract = new web3.eth.Contract(ABIs.ERC20, ethNetwork.tauContract);
@@ -82,8 +87,8 @@ const balanceOfToken = async (ethAddress, contractAddress) => {
 }
 
 const balanceOfTAU = async (userEthAddress) => {
-    let chainID = await getChainId()
-    let ethNetwork = ethNetworks[`${chainID}`]
+    let chainInfo = await getChainId()
+    let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
     let balance = await balanceOfToken(userEthAddress, ethNetwork.tauContract).catch(err => console.log(err))
     return balance
 }
