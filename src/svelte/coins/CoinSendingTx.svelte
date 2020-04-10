@@ -1,5 +1,5 @@
 <script>
-    import { onMount, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
     
@@ -11,7 +11,19 @@
     export let txData;
     let message = 'Sending Transaction'
 
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener(txStatus);
+
+    onMount(() => {
+        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
+            message = response.status
+        })
+    })
+
+    onDestroy(() => {
+        chrome.runtime.onMessage.removeListener(txStatus)
+    })
+
+    const txStatus = (message, sender, sendResponse) => {
         if (message.type === "txStatus"){
             if (typeof message.data.resultInfo !== 'undefined'){
                 if (message.data.resultInfo.title !== "Transaction Pending"){
@@ -20,13 +32,8 @@
             }
             sendResponse('ok');      
         }
-    });
-
-    onMount(() => {
-        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
-            message = response.status
-        })
-    })
+    }
+    chrome.runtime.onMessage.addListener(txStatus)
 
 </script>
 

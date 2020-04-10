@@ -2,10 +2,8 @@ const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators;
 const ABIs = require('./eth-abis')
 const createMetaMaskProvider = require('metamask-extension-provider')
-const provider = createMetaMaskProvider()
 const Web3 = require('Web3')
-const web3 = new Web3(provider)
-console.log(web3)
+var web3;
 
 const ethNetworks = {
     '1': {
@@ -22,10 +20,6 @@ const ethNetworks = {
     }
 }
 
-provider.on('error', (error) => {
-  throw new Error(error)
-})
-
 const testSendAllowance = (amount) => {
     requestAccount()
     .then(address => {
@@ -40,20 +34,31 @@ const testSendAllowance = (amount) => {
     .catch(err => console.log(err))
 }
 
+const getWeb3 = () => {
+    if (typeof web3 === 'undefined'){
+        const provider = createMetaMaskProvider()
+        web3 = new Web3(provider)
+        return web3
+    }
+    return web3
+}
+
 const requestAccount = async () => {
+    let web3 = getWeb3();
     const getAddress = (address) => {
         if (validateTypes.isArrayWithValues(address)) return address[0]
         else if(validateTypes.isArrayWithValues(address)) return address
         return null
     }
-    if (web3.currentProvider.isConnected() && web3.currentProvider.isMetaMask){
+    try {
         return await web3.eth.requestAccounts().then(address => getAddress(address))
-    }else{
-        return null
+    }catch (e){
+        throw new Error(e.message)
     }
 }
 
 const getChainId = async () => {
+    let web3 = getWeb3();
     const chainID = await web3.eth.getChainId()
     if (typeof ethNetworks[chainID] === 'undefined') throw Error(`Unsupported Chain ${chainID}.  Please swich you network in Metamask to Kovan or MainNet.`)
     let chainInfo = {};
@@ -63,9 +68,11 @@ const getChainId = async () => {
 
 
 const sendAllowance = async (userEthAddress, amount) => {
+    let web3 = getWeb3();
     // Use BigNumber
     let decimals = web3.utils.toBN(18);
-    let tokenAmount = web3.utils.toBN(amount);
+    let amountToWei = web3.utils.toWei(amount, 'ether')
+    let tokenAmount = web3.utils.toBN(amountToWei);
 
     let chainInfo = await getChainId()
     if (typeof chainInfo === 'undefined') throw Error('Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.')
@@ -81,6 +88,7 @@ const sendAllowance = async (userEthAddress, amount) => {
 }
 
 const balanceOfToken = async (ethAddress, contractAddress) => {
+    let web3 = getWeb3();
     let contract = new web3.eth.Contract(ABIs.ERC20, contractAddress);
     return await contract.methods.balanceOf(ethAddress).call()
                     .then(res => res / Math.pow(10, 18))

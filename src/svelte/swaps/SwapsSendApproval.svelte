@@ -1,27 +1,57 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onDestroy } from 'svelte';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
 	import { Components }  from '../Router.svelte'
-    const { Button } = Components;
+    const { Button, InputBox, Loading } = Components;
+
+    //Images
+    import flag from '../../img/menu_icons/icon_flag.svg'
 
     //Context
-    const { changeStep } = getContext('functions');
+    const { changeStep, getAddress, getTokenBalance, getChainInfo } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
+    //DOM Nodes
+    let inputNode
+
+    $: metamaskTxResponse = null;
+    $: sending = false;
+    $: sent = metamaskTxResponse && !sending
+
     const nextPage = () => {
+        setMetamaskTxResponse(setMetamaskTxResponse)
         changeStep(2)
     }
+
+    onDestroy(() =>{
+        chrome.runtime.onMessage.removeListener(tokenApprovalSent)
+    })
+
+    const sendTokenApproval = () => {
+        console.log(inputNode)
+        console.log(inputNode.value)
+        chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getAddress(), amount: inputNode.value }}, () => sending = true)
+    }
+
+    const tokenApprovalSent = (message, sender, sendResponse) => {
+		if (message.type === 'tokenApprovalSent') {
+            console.log(message.data)
+            metamaskTxResponse = message.data
+            sending = false
+        }
+    }
+    chrome.runtime.onMessage.addListener(tokenApprovalSent)
 
 </script>
 
 <style>
 .swaps-intro{
     flex-grow:1;
-    padding-top: 156px;
+    padding-top: 10%;
 }
 .content-left{
     box-sizing: border-box;
@@ -31,11 +61,22 @@
 }
 .content-right{
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     flex-grow: 1;
 }
 .text-box{
-    margin-bottom: 8px;
+    margin: 1rem 0;
+    
+}
+.buttons{
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+.sent-message{
+    align-items: center;
+}
+.flag{
+    width: 20vw;
 }
 
 @media (min-width: 900px) {
@@ -52,15 +93,35 @@
         <h6>Send Token Approval</h6>
     
         <div class="text-box text-body1 text-primary">
-            {`In this step you send a transactions using MetaMask that will grant the Lamden Token Controller access to your Ethereum Tokens`}
+            {`Lamden required access to your tokens to complete the swap process.`}
         </div>
 
-        <div class="buttons">
+        <div>
+            {`Current ${getChainInfo().tauSymbol} Balance: ${getTokenBalance()}`}
+        </div>
+
+        <InputBox 
+            bind:thisInput={inputNode}
+            label={`Approve ${getChainInfo().tauSymbol}`}
+            inputType={'number'}
+            value={`${getTokenBalance()}`}
+            placeholder={`${getChainInfo().tauSymbol} Amount`}
+            margin={'1rem 0'}
+        />
+
+        <div class="flex-column buttons">
+            <Button id={'continue-btn'}
+                    classes={'button__solid button__purple'}
+                    styles={'margin-bottom: 16px;'}
+                    width={'100%'}
+                    name="Send Approval" 
+                    click={sendTokenApproval} />
             <Button id={'continue-btn'}
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Continue" 
+                    disabled={!sent}
                     click={nextPage} />
             <Button id={'back-btn'}
                     classes={'button__solid'} 
@@ -68,17 +129,26 @@
                     width={'100%'}
                     name="Back" 
                     click={() => switchPage('Swaps')} />  
-        </div>
+       
 
-        <a  class="text-caption text-secondary" 
-            href="https://www.lamden.io" 
-            target="_blank" 
-            rel="noopener noreferrer" >
-            Help & FAQ
-        </a>
+            <a  class="text-caption text-secondary" 
+                href="https://www.lamden.io" 
+                target="_blank" 
+                rel="noopener noreferrer" >
+                Help & FAQ
+            </a>
+         </div>
     </div>
     <div class="flex-column content-right">
-
+        {#if sending}
+            <Loading message="Waiting for reponse from MetaMask..."/>
+        {/if}
+        {#if sent}
+            <div class="flex-column sent-message">
+                <div class="flag">{@html flag}</div>
+                <h2>{'Tokan Approval Sent!'}</h2>
+            </div>
+        {/if}
     </div>
 </div>
 

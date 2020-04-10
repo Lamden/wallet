@@ -15,11 +15,17 @@
             else if (step === -1) currentStep = back;
             else currentStep = step;
         },
-        storeAddress: (address) => {ethAddress = address}
+        setSwapInfo: (info) => {console.log(info); swapInfo = info},
+        setMetamaskTxResponse: (txResponse) => {console.log(txResponse); metamaskTxResponse = txResponse},
+        getSwapInfo: () => { return swapInfo },
+        getAddress: () => { return swapInfo.address },
+        getTokenBalance: () => { return swapInfo.tokenBalance },
+        getChainInfo: () => { console.log(swapInfo.chainInfo); return swapInfo.chainInfo} 
     });
 
     let currentStep = 0;
-    let ethAddress = ''
+    let swapInfo = {};
+    let metamaskTxResponse = {};
 
     let SwapsSteps = [
         {page: 'SwapsConnectMetamask', hideSteps: false, back: 0},

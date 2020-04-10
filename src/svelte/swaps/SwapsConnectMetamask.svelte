@@ -13,7 +13,7 @@
     import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
 
     //Context
-    const { changeStep, storeAddress } = getContext('functions');
+    const { changeStep, setSwapInfo } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
     const ethNetworkTypes = {
@@ -30,17 +30,19 @@
     onDestroy(() =>{
         chrome.runtime.onMessage.removeListener(metamaskConnected)
     })
-    const connectMetaMask = () => {
-        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}})
-    }
 
     const nextPage = () => {
-        storeAddress(address)
+        setSwapInfo(metamaskInfo)
         changeStep(1)
+    }
+
+    const connectMetaMask = () => {
+        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, (res) => console.log(res))
     }
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
+            console.log(message.data)
             metamaskInfo = message.data
         }
     }
@@ -52,7 +54,7 @@
 <style>
 .swaps-intro{
     flex-grow:1;
-    padding-top: 156px;
+    padding-top: 10%;
 }
 .content-left{
     box-sizing: border-box;
@@ -72,6 +74,10 @@
 .text-box2{
     color: cyan;
     margin-bottom: 60px;
+}
+.buttons{
+    flex-grow:1;
+    justify-content: flex-end;
 }
 
 a{
@@ -117,7 +123,7 @@ p.green {
             </span>
         </div>
 
-        <div class="buttons">
+        <div class="flex-column buttons">
             <Button id={'connect-btn'}
                     classes={`button__solid ${installStatus === "Installed" && isCorrectNetwork ? 'button__green' : 'button__purple'}`}
                     styles={'margin-bottom: 16px;'}
@@ -140,14 +146,16 @@ p.green {
                     width={'100%'}
                     name="Back" 
                     click={() => switchPage('Swaps')} />  
+
+            <a  class="text-caption text-secondary" 
+                href="https://www.lamden.io" 
+                target="_blank" 
+                rel="noopener noreferrer" >
+                Help & FAQ
+            </a>
         </div>
 
-        <a  class="text-caption text-secondary" 
-            href="https://www.lamden.io" 
-            target="_blank" 
-            rel="noopener noreferrer" >
-            Help & FAQ
-        </a>
+
     </div>
     <div class="flex-column content-right">
         <div class="metamask-logo">
