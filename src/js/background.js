@@ -57,7 +57,7 @@ chrome.storage.local.get(
         balancesStore = getValue.balances;
         txStore = getValue.txs;
         networksStore = getValue.networks;
-        settingsStore = getValue.settings; good
+        settingsStore = getValue.settings;
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
     }
