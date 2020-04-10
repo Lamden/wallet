@@ -35,19 +35,6 @@ let updatingBalances = false;
 let checkingTransactions = false;
 let savingTransactions = false;
 const LamdenNetworkTypes = ['mainnet','testnet','mockchain']
-/*
-chrome.storage.local.set(
-    {
-        // "hash": "",
-        // "coins": [],
-        // "txs": {},
-        // "pendingTxs": [],
-        // "networks":{},
-        // "dapps":{},
-        // "settings": undefined
-    }
-)
-*/
 
 /********************************************************************
  *  Storage handlers to persist the Lamden Wallet in chrome.storage.local
@@ -70,7 +57,7 @@ chrome.storage.local.get(
         balancesStore = getValue.balances;
         txStore = getValue.txs;
         networksStore = getValue.networks;
-        settingsStore = getValue.settings; 
+        settingsStore = getValue.settings; good
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
     }
@@ -1049,16 +1036,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Timer to check pending transacations
 let timerId = setTimeout(async function resolvePendingTxs() {
-    if (Object.keys(nonceCache).length > 0){
-        if ((new Date().getTime() - new Date(lastSentDate).getTime() > 10000) && !checkingTransactions ){
-            nonceCache = {}
+    let nextRun = 500;
+    if (txSaveList.length === 'undefined') txSaveList = []
+    if (typeof pendingTxStore.length === 'undefined'){
+        nextRun = 2000;
+        pendingTxStore = []
+        chrome.storage.local.set({"pendingTxs": pendingTxStore})
+    } else {
+        if (Object.keys(nonceCache).length > 0){
+            if ((new Date().getTime() - new Date(lastSentDate).getTime() > 10000) && !checkingTransactions ){
+                nonceCache = {}
+            }
         }
-    }
-    if (!checkingTransactions && pendingTxStore.length > 0){
-        checkPendingTransactions()
-    }
-    if (!savingTransactions && txSaveList.length > 0){
-        processTxSaveList()
-    }
-    timerId = setTimeout(resolvePendingTxs, 500);
+        if (!checkingTransactions && pendingTxStore.length > 0){
+            checkPendingTransactions()
+        }
+        if (!savingTransactions && txSaveList.length > 0){
+            processTxSaveList()
+        }
+    } 
+    timerId = setTimeout(resolvePendingTxs, nextRun);
 }, 1000);
