@@ -11,8 +11,6 @@
     export let txData;
     let message = 'Sending Transaction'
 
-    chrome.runtime.onMessage.addListener(txStatus);
-
     onMount(() => {
         chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
             message = response.status
@@ -25,6 +23,7 @@
 
     const txStatus = (message, sender, sendResponse) => {
         if (message.type === "txStatus"){
+            console.log(message.data)
             if (typeof message.data.resultInfo !== 'undefined'){
                 if (message.data.resultInfo.title !== "Transaction Pending"){
                     dispatch('txResult', message.data)

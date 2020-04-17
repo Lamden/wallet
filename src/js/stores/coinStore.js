@@ -103,7 +103,7 @@ export const coinsDropDown = derived(CoinStore, ($CoinStore) => {
     $CoinStore.map(c => {
         returnList.push({
             value: c,
-            name: `${c.nickname} \n${c.vk.substring(0, 52)}...`,
+            name: `${c.nickname} ${c.vk}`,
             selected: false
         })
     })

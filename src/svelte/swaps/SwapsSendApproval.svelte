@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onDestroy } from 'svelte';
+    import { getContext, onMount, onDestroy } from 'svelte';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -9,10 +9,11 @@
     const { Button, InputBox, Loading } = Components;
 
     //Images
-    import flag from '../../img/menu_icons/icon_flag.svg'
+    import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
+    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
 
     //Context
-    const { changeStep, getAddress, getTokenBalance, getChainInfo } = getContext('functions');
+    const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskTxResponse } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
     //DOM Nodes
@@ -23,23 +24,29 @@
     $: sent = metamaskTxResponse && !sending
 
     const nextPage = () => {
-        setMetamaskTxResponse(setMetamaskTxResponse)
-        changeStep(2)
+        setMetamaskTxResponse(metamaskTxResponse)
+        changeStep(3)
     }
+
+    onMount(() => {
+        steps.update(stepsStore => {
+            stepsStore.currentStep = 3;
+            return stepsStore
+        })
+    })
 
     onDestroy(() =>{
         chrome.runtime.onMessage.removeListener(tokenApprovalSent)
     })
 
     const sendTokenApproval = () => {
-        console.log(inputNode)
-        console.log(inputNode.value)
-        chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getAddress(), amount: inputNode.value }}, () => sending = true)
+        if (!sent){
+            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, () => sending = true)
+        }
     }
 
     const tokenApprovalSent = (message, sender, sendResponse) => {
 		if (message.type === 'tokenApprovalSent') {
-            console.log(message.data)
             metamaskTxResponse = message.data
             sending = false
         }
@@ -49,43 +56,12 @@
 </script>
 
 <style>
-.swaps-intro{
-    flex-grow:1;
-    padding-top: 10%;
-}
-.content-left{
-    box-sizing: border-box;
-    padding: 0px 24px 0 60px;
-    width: 300px;
-    justify-content: flex-start;
-}
-.content-right{
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-}
-.text-box{
-    margin: 1rem 0;
-    
-}
-.buttons{
-    flex-grow: 1;
-    justify-content: flex-end;
-}
 .sent-message{
     align-items: center;
 }
-.flag{
-    width: 20vw;
+.circle-checkmark{
+    width: 16vw;
 }
-
-@media (min-width: 900px) {
-    .content-left{
-        padding: 0px 24px 0 242px;
-        width: 498px;
-    }
-}
-
 </style>
 
 <div class="flex-row swaps-intro">
@@ -110,11 +86,15 @@
         />
 
         <div class="flex-column buttons">
-            <Button id={'continue-btn'}
-                    classes={'button__solid button__purple'}
+            <Button id={'send-approval-btn'}
+                    classes={`button__solid ${sent ? 'button__green' : 'button__purple'}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name="Send Approval" 
+                    name={sent ? "Approved" : sending ? "Sending" : "Send Approval"}
+                    icon={sent ? checkmarkWhite : ''}
+                    iconPosition={'after'}
+                    iconWidth={'19px'}
+                    disabled={sending}
                     click={sendTokenApproval} />
             <Button id={'continue-btn'}
                     classes={'button__solid button__purple'}
@@ -127,7 +107,7 @@
                     classes={'button__solid'} 
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name="Back" 
+                    name="Cancel" 
                     click={() => switchPage('Swaps')} />  
        
 
@@ -141,12 +121,14 @@
     </div>
     <div class="flex-column content-right">
         {#if sending}
-            <Loading message="Waiting for reponse from MetaMask..."/>
+            <Loading message="Waiting for response from MetaMask..."
+                     subMessage="check your metamask to confirm"
+            />
         {/if}
         {#if sent}
             <div class="flex-column sent-message">
-                <div class="flag">{@html flag}</div>
-                <h2>{'Tokan Approval Sent!'}</h2>
+                <div class="circle-checkmark">{@html circleCheck}</div>
+                <h2>{'Approved!'}</h2>
             </div>
         {/if}
     </div>

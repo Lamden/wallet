@@ -93,7 +93,6 @@
         <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
         <DropDown  
             items={$coinsDropDown}
-            innerHeight={'70px'}
             id={'mycoins'} 
             label={'Select Wallet to Send From'}
             styles="margin-bottom: 19px;"

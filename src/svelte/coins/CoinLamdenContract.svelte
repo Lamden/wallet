@@ -241,7 +241,6 @@
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
-        innerHeight={'70px'}
         label={'Select Wallet to Send From'}
         styles="margin-bottom: 19px;"
         required={true}

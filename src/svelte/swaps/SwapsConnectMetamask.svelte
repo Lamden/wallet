@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onDestroy } from 'svelte';
+    import { getContext, onMount, onDestroy, afterUpdate } from 'svelte';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -27,13 +27,20 @@
     $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : isCorrectNetwork ? 'Connected' : 'Connect Again'
     $: address = !metamaskInfo ? '' : metamaskInfo.address
 
+    onMount(() => {
+        steps.update(stepsStore => {
+            stepsStore.currentStep = 2;
+            return stepsStore
+        })
+    })
+
     onDestroy(() =>{
         chrome.runtime.onMessage.removeListener(metamaskConnected)
     })
 
     const nextPage = () => {
         setSwapInfo(metamaskInfo)
-        changeStep(1)
+        changeStep(2)
     }
 
     const connectMetaMask = () => {
@@ -42,7 +49,6 @@
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
-            console.log(message.data)
             metamaskInfo = message.data
         }
     }
@@ -52,34 +58,10 @@
 </script>
 
 <style>
-.swaps-intro{
-    flex-grow:1;
-    padding-top: 10%;
-}
-.content-left{
-    box-sizing: border-box;
-    padding: 0px 24px 0 60px;
-    width: 300px;
-    justify-content: flex-start;
-}
-.content-right{
-    align-items: center;
-    justify-content: flex-start;
-    flex-grow: 1;
-}
-.text-box{
-    margin-bottom: 8px;
-}
-
 .text-box2{
     color: cyan;
     margin-bottom: 60px;
 }
-.buttons{
-    flex-grow:1;
-    justify-content: flex-end;
-}
-
 a{
     text-decoration: unset;
 }
@@ -100,13 +82,6 @@ p.green {
     color: green;
 }
 
-@media (min-width: 900px) {
-    .content-left{
-        padding: 0px 24px 0 242px;
-        width: 498px;
-    }
-}
-
 </style>
 
 <div class="flex-row swaps-intro">
@@ -124,7 +99,7 @@ p.green {
         </div>
 
         <div class="flex-column buttons">
-            <Button id={'connect-btn'}
+            <Button id={'check-btn'}
                     classes={`button__solid ${installStatus === "Installed" && isCorrectNetwork ? 'button__green' : 'button__purple'}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
@@ -144,7 +119,7 @@ p.green {
                     classes={'button__solid'} 
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name="Back" 
+                    name="Cancel" 
                     click={() => switchPage('Swaps')} />  
 
             <a  class="text-caption text-secondary" 

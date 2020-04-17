@@ -42,8 +42,11 @@
     }
 
     const saveTxDetails = (e) => {
+        console.log(e)
         txData = {...e.detail};
+        console.log(txData)
         currentStep = currentStep + 1; 
+        
     }
 
     const createTxDetails = () => {

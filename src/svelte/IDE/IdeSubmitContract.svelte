@@ -118,7 +118,6 @@
         <div>* signifies manditory field</div>
         <DropDown  
             items={$coinsDropDown}
-            innerHeight={'70px'}
             margin={'1rem 0 7px'}
             id={'mycoins'} 
             label={'* Send Transaction From'}

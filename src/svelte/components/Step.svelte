@@ -16,6 +16,7 @@
 
 <style>
 .step{
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,9 +27,9 @@
     content: "";
     width: 50px;
     border-bottom: 1px solid #848484;
-    position: relative;
+    position: absolute;
     top: 16px;
-    left: -39px;
+    left: 0px;
     z-index: -1;
 }
 
@@ -36,10 +37,9 @@
     content: "";
     width: 50px;
     border-bottom: 1px solid #848484;
-    position: relative;
-    top: -65px;
-    left: 39px;
-    z-index: -1;
+    position: absolute;
+    top: 16px;
+    left: 80px;
     z-index: -1;
 }
 
@@ -47,9 +47,9 @@
     content: "";
     width: 50px;
     border-bottom: 1px solid #848484;
-    position: relative;
+    position: absolute;
     top: 16px;
-    left: -39px;
+    left: 0px;
     z-index: -1;
 }
 
@@ -57,9 +57,9 @@
     content: "";
     width: 50px;
     border-bottom: 1px solid #848484;
-    position: relative;
-    top: -64px;
-    left: 39px;
+    position: absolute;
+    top: 16px;
+    left: 80px;
     z-index: -1;
 }
 
@@ -90,6 +90,10 @@
 
 .done{
     background: #3fa23f
+}
+div.text-body1, div.text-body2{
+    word-break: break-word;
+    text-align: center;
 }
 
 </style>

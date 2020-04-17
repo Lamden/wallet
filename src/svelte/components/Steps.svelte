@@ -27,13 +27,10 @@
 
 <style>
 .steps{
-    display: flex;
-    flex-direction: row;
+    margin: 2rem 60px 0;
 }
 
 .back-box{
-    display: flex;
-    flex-direction: row;
     padding-top: 8px;
 }
 
@@ -57,8 +54,8 @@
     display: none;
 }
 </style>
-<div class="steps" class:hide={noSteps}>
-    <div class="back-box" class:hide={$steps.currentStep >= $steps.stepList.length }>
+<div class="flex-row steps" class:hide={noSteps}>
+    <div class="flex-row back-box" class:hide={$steps.currentStep >= $steps.stepList.length }>
         <div class="back-arrow">{@html chevronRight}</div>
         <div class="back-button text-button" on:click={() => goBack()}>{'BACK'}</div>
     </div>

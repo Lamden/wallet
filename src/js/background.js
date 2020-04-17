@@ -189,6 +189,7 @@ const balancesStoreUpdateOne = (vk, networkInfo) => {
 
 const balancesStoreUpdateAll = (networkInfo) => {
     if (typeof coinStore !== 'undefined'){
+        balancesStore = {};
         const coinsToProcess = coinStore.length; 
         if (coinsToProcess > 0){
             let coinsProcessed = 0;
@@ -940,6 +941,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     Ethereum.sendAllowance(address, amount).then(async res => {
                         console.log(res)
                         sendMessageToApp('tokenApprovalSent', res)
+                    })   
+                }
+                if (message.type === 'checkEthTxStatus'){
+                    sendResponse('ok')
+                    const { hash } = message.data;
+                    Ethereum.checkTxStatus(hash).then(async res => {
+                        console.log(res)
+                        sendMessageToApp('ethTxStatus', res)
                     })   
                 }
             }

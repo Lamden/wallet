@@ -94,7 +94,7 @@ label{
 }
 
 .select-selected:after {
-    margin-top: 3px;
+    margin-top: 2px;
     content: "";
     border: 6px solid transparent;
     border-color: var(--font-primary-dark) transparent transparent transparent;
@@ -105,21 +105,21 @@ label{
 
 .select-selected.select-arrow-active:after {
     border-color: transparent transparent var(--font-primary-dark) transparent;
-    margin-bottom: 8px;
-    margin-top: 0px;
+    margin-top: -5px;
 }
 
 .select-items div,.select-selected {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    max-width: 100%;
     min-height: 42px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 
     box-sizing: border-box;
     transition: border 0.5s;
     border-radius: 4px;
-    padding: 10px 12px;
+    padding: 10px 32px 10px 12px;
 
     font-style: normal;
     font-weight: normal;
