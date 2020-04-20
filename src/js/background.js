@@ -25,7 +25,8 @@ let txStore;
 let pendingTxStore;
 
 
-//Misc Values
+//Misc Values.
+let vaultNotCreated = false;
 let txSaveList = [];
 let txToConfirm = {};
 let nonceCache = {};
@@ -55,13 +56,24 @@ chrome.storage.local.get(
     function(getValue) {
         hash = getValue.hash
         firstRun = hash === "" ? true : false;
-        coinStore = getValue.coins;
         balancesStore = getValue.balances;
         txStore = getValue.txs;
         networksStore = getValue.networks;
         settingsStore = getValue.settings; 
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
+
+        if (validateTypes.isArray(getValue.coins)){
+            getValue.coins.forEach(coin => {
+                if (typeof coin.sk !== undefined) {
+                    vaultNotCreated = true;
+                    coinStore = getValue.coins
+                }
+            })
+            console.log(vaultNotCreated)
+            if (vaultNotCreated) coinStore = getValue.coins
+            else coinStore = []
+        }
     }
 )
 
@@ -71,7 +83,6 @@ chrome.storage.local.get(
  ********************************************************************/
 chrome.storage.onChanged.addListener(function(changes) {
     for (let key in changes) {
-        if (key === 'coins') coinStore = changes[key].newValue;
         if (key === 'settings') settingsStore = changes[key].newValue;
         if (key === 'dapps') dappsStore = changes[key].newValue;
         if (key === 'networks') networksStore = changes[key].newValue;
@@ -259,7 +270,8 @@ const coinStoreAddNewLamdenCoin = (name) => {
 
 const coinStoreAddNewCoin = (coinInfo) => {
     coinStore.push(coinInfo)
-    chrome.storage.local.set({"coins": coinStore});
+    setVaultStorage();
+    setCoinsStorage();
 }
 
 const coinStoreDelete = (coinInfo) => {
@@ -268,12 +280,27 @@ const coinStoreDelete = (coinInfo) => {
         if (coin.vk === coinInfo.vk) coinStore.splice(index, 1);
     })
     if (coinStore.length < before){
-        chrome.storage.local.set({"coins": coinStore});
+        setVaultStorage();
+        setCoinsStorage();
         TxStoreDeleteAll(coinInfo.vk)
         return true
     }else{
         return false
     }
+}
+
+const setVaultStorage = () => {
+    chrome.storage.local.set({"vault": encryptObject(current, {data: coinStore})})    
+}
+
+const setCoinsStorage = () => {
+    let storeCopy = JSON.parse(JSON.stringify(coinStore))
+    storeCopy.forEach(coin => delete coin.sk)
+    chrome.storage.local.set({"coins": storeCopy});
+}
+
+const wipeCoinsStorage = () => {
+    chrome.storage.local.set({"coins": []});
 }
 
 
@@ -871,8 +898,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 //Validate the password is correct first
                 if (validatePassword(message.data)){
                     current = message.data
-                    //Unlock wallet
-                    setWalletIsLocked(false)
+                    if (vaultNotCreated){
+                        setVaultStorage();
+                        vaultNotCreated = false;
+                    }
+                    chrome.storage.local.get({"vault":""}, (getValue) => {
+                        console.log(getValue)
+                        console.log(current)
+                        try {
+                            let decryptedStore = decryptObject(current, getValue.vault)
+                            console.log(decryptedStore)
+                            if (typeof decryptedStore.data === "undefined") throw new Error('Could not get vault data')
+                            coinStore = decryptedStore.data
+                        }catch (e){
+                            throw new Error('Could not get vault data')
+                        }
+                        setCoinsStorage()
+                        //Unlock wallet
+                        setWalletIsLocked(false)
+                    })
                 }
                 sendResponse(walletIsLocked)
             }
@@ -881,7 +925,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             //Respond to request checking if the wallet is locked
             if (message.type === 'walletIsLocked') sendResponse(walletIsLocked)
             //Lock the wallet
-            if (message.type === 'lockWallet') setWalletIsLocked(true)
+            if (message.type === 'lockWallet') {
+                wipeCoinsStorage()
+                setWalletIsLocked(true)
+            }
             //encrypt a passed in string with the user's hashed password (should be an sk)
             if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
 
@@ -893,6 +940,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if (message.type === 'backupCoinstore') sendResponse(createKeystore(message.data))
                 //Decrypt all keys, for use when user wants to view their secret keys in the UI
                 if (message.type === 'decryptStore') sendResponse(decryptedKeys())
+                //Add a Lamnden Coin to the coinStore
+                if (message.type === 'coinStoreAddNewLamden') sendResponse(coinStoreAddNewLamdenCoin(message.data))
                 //Delete a coin/wallet from the coinStore
                 if (message.type === 'coinStoreDelete') sendResponse(coinStoreDelete(message.data))
                 //Call the currentNetwork API to refresh all balances in the coinStore

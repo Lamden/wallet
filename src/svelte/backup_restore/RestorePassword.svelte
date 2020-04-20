@@ -97,7 +97,7 @@ a{
 
     <div class="caption-box text-caption text-secondary">
         <strong>last modified date:</strong> 
-        <div class="text-primary-dark">{file.lastModifiedDate} </div>
+        <div id="last-modified" class="text-primary-dark">{file.lastModifiedDate} </div>
     </div>
 
     <div class="caption-box text-caption text-secondary" class:hide={pwdHint === ""}>

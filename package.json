@@ -6,7 +6,9 @@
   "license": "",
   "scripts": {
     "build": "node utils/build.js",
-    "test": "mocha --recursive --timeout 10000 selenium/tests/*.js",
+    "test" : "mocha --recursive --timeout 10000 selenium/tests/**/**/*.js",
+    "test-firstrun": "mocha --recursive --timeout 10000 selenium/tests/firstrun/*.js",
+    "test-swaps": "mocha --recursive --timeout 10000 selenium/tests/ui/swaps/*.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {

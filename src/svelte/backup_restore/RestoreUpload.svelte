@@ -115,7 +115,7 @@ span{
 </style>
 
 <div class="restore-upload">
-    <h6>Welcome!</h6>
+    <h6>Restore Wallets</h6>
     
     <div class="text-box text-body1 text-primary">
         To restore your wallet, please upload the file we provided you and choose a new password.
