@@ -33,14 +33,20 @@ describe('Complete First Run Setup', function () {
         await driver.findElement(By.id('save-pwd')).click()
         await driver.findElement(By.id('i-understand')).click()
         sleep(5)
-        await driver.executeScript(`document.getElementById('pwd-input').value='${walletPassword}'`);
-        await driver.findElement(By.id('login-btn')).click()
+        //await driver.executeScript(`document.getElementById('pwd-input').value='${walletPassword}'`);
+        //await driver.findElement(By.id('login-btn')).click()
         
-    });
+    });/*
     it('Renders Swaps.svelte', async function() {
         await driver.findElement(By.id('token-swap')).click();
         await driver.findElement(By.id('start-swap-btn')).getAttribute('innerText').then(text => {
             assert.equal(text, 'START SWAP');
-        })
+        }).click()
     });
+    it('Renders SwapsChooseLamden.svelte', async function() {
+        let continue_Button = await driver.findElement(By.id('continue-btn'))
+        await continue_Button.getAttribute('disabled').then(disabled => {
+            assert.equal(disabled, 'true');
+        })
+    });*/
 })

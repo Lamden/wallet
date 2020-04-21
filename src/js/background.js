@@ -16,7 +16,8 @@ let nonceRetryTimes = 5
 let nonceRetryWaitTime = 1000
 
 //Background Data Stores
-let coinStore;
+let vault
+let coinStore = [];
 let dappsStore;
 let settingsStore;
 let networksStore;
@@ -44,7 +45,8 @@ const LamdenNetworkTypes = ['mainnet','testnet','mockchain']
  ********************************************************************/
 chrome.storage.local.get(
     {
-        "hash": "",
+        "hash": "",  //depreciated for vault storage
+        "vault": "", 
         "coins": [],
         "txs": {},
         "balances":{},
@@ -54,26 +56,16 @@ chrome.storage.local.get(
         "settings": {}
     },
     function(getValue) {
-        hash = getValue.hash
-        firstRun = hash === "" ? true : false;
+        hash = getValue.hash  //depreciated for vault storage
+        vault = getValue.vault
+        if (vault === "" && validateTypes.isStringWithValue(hash)) coinStore = getValue.coins;
+        firstRun = hash === "" && vault === "" ? true : false;
         balancesStore = getValue.balances;
         txStore = getValue.txs;
         networksStore = getValue.networks;
         settingsStore = getValue.settings; 
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
-
-        if (validateTypes.isArray(getValue.coins)){
-            getValue.coins.forEach(coin => {
-                if (typeof coin.sk !== undefined) {
-                    vaultNotCreated = true;
-                    coinStore = getValue.coins
-                }
-            })
-            console.log(vaultNotCreated)
-            if (vaultNotCreated) coinStore = getValue.coins
-            else coinStore = []
-        }
     }
 )
 
@@ -83,6 +75,7 @@ chrome.storage.local.get(
  ********************************************************************/
 chrome.storage.onChanged.addListener(function(changes) {
     for (let key in changes) {
+        if (key === 'vault') vault = changes[key].newValue;
         if (key === 'settings') settingsStore = changes[key].newValue;
         if (key === 'dapps') dappsStore = changes[key].newValue;
         if (key === 'networks') networksStore = changes[key].newValue;
@@ -120,9 +113,16 @@ const addCharAtStart = (string, char) => {
 /***********************************************************************
  * Password Functions
  ***********************************************************************/
-const validatePassword = (testPassword) => {
+const validatePasswordFromHash = (testPassword) => {
     try{
         return decryptObject(testPassword, hash).valid
+    } catch (e) {}
+    return false
+}
+
+const validatePasswordFromVault = (testPassword) => {
+    try{
+        return  validateTypes.isObject(decryptObject(testPassword, hash))
     } catch (e) {}
     return false
 }
@@ -140,6 +140,10 @@ const setDissmissFlag = (value) => {
  ***********************************************************************/
 const setWalletIsLocked = (status) => {
     walletIsLocked = status;
+    if (walletIsLocked) wipeCoinsStorage()
+    else setCoinsStorage()
+    console.log('unlocking')
+    console.log(coinStore)
     sendMessageToApp('walletIsLocked', walletIsLocked)
     sendMessageToAllDapps('sendWalletInfo')
 }
@@ -261,15 +265,27 @@ const coinStoreAddNewLamdenCoin = (name) => {
             'vk': keyPair.vk,
             'sk': keyPair.sk
         }
+        console.log(coinInfo)
         coinStoreAddNewCoin(coinInfo)
-        return coinInfo
+        return coinInfo.vk
     }else{
         return false
     }
 }
 
+const updateWatchedCoin = (coinInfo) => {
+    let coinFound = coinStore.find( f => f.vk === coinInfo.vk);
+    if (coinFound){
+        coinFound.sk = coinInfo.sk;
+    }
+    console.log(coinStore)
+    setVaultStorage();
+    return 'ok'
+}   
+
 const coinStoreAddNewCoin = (coinInfo) => {
     coinStore.push(coinInfo)
+    console.log(coinStore)
     setVaultStorage();
     setCoinsStorage();
 }
@@ -288,9 +304,32 @@ const coinStoreDelete = (coinInfo) => {
         return false
     }
 }
+const vaultCreated = () => {
+    return validateTypes.isStringWithValue(vault)
+}
+
+const createIntialVault = () => {
+    setVaultStorage();
+    chrome.storage.local.remove("hash") 
+}
 
 const setVaultStorage = () => {
-    chrome.storage.local.set({"vault": encryptObject(current, {data: coinStore})})    
+    //Only save the vault if there is a current password
+    if (validateTypes.isStringWithValue(current)){
+        chrome.storage.local.set({"vault": encryptObject(current, {data: coinStore})})  
+    }
+}
+
+const decryptVaultStorage = () => {
+    try {
+        let decryptedStore = decryptObject(current, vault)
+        console.log(decryptedStore)
+        if (typeof decryptedStore.data === "undefined") throw new Error('Could not get vault data')
+        coinStore = decryptedStore.data
+        console.log(coinStore)
+    }catch (e){
+        throw new Error('Could not get vault data')
+    }
 }
 
 const setCoinsStorage = () => {
@@ -818,6 +857,7 @@ const sendMessageToAllDapps = (type, data) => {
  * from outside webpages.  This isolates the sensitive information stored in the background page to the App and autorized Dapps.
  *****************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(message)
     if (chrome.runtime.lastError) return;
     const isFromAuthorizedDapp = fromAuthorizedDapp(sender.origin);
     const dappInfo = isFromAuthorizedDapp ? getDappInfo(sender.origin) : undefined;
@@ -878,14 +918,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
          ** MESSAGES FROM THE LAMDEN WALLET APP 
         **************************************************/
         if (isFromApp){
+            console.log(message)
             //Create password on initial "firstRun" setup
             if(message.type === 'createPassword'){
                 try{
-                    let hashedPW = encryptObject(message.data, {valid: true})
-                    hash = hashedPW
                     current = message.data
+                    walletIsLocked = false;
+                    console.log(current)
+                    setVaultStorage()
                     firstRun = false;
-                    chrome.storage.local.set({"hash" : hashedPW});
                     sendResponse(true)
                 } catch (e){sendResponse(false)}
             }
@@ -896,44 +937,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             //Unlock the wallet
             if (message.type === 'unlockWallet') {
                 //Validate the password is correct first
-                if (validatePassword(message.data)){
-                    current = message.data
-                    if (vaultNotCreated){
-                        setVaultStorage();
-                        vaultNotCreated = false;
+                if (vaultCreated()){
+                    if (validatePasswordFromVault(message.data)){
+                        current = message.data
                     }
-                    chrome.storage.local.get({"vault":""}, (getValue) => {
-                        console.log(getValue)
-                        console.log(current)
-                        try {
-                            let decryptedStore = decryptObject(current, getValue.vault)
-                            console.log(decryptedStore)
-                            if (typeof decryptedStore.data === "undefined") throw new Error('Could not get vault data')
-                            coinStore = decryptedStore.data
-                        }catch (e){
-                            throw new Error('Could not get vault data')
-                        }
-                        setCoinsStorage()
-                        //Unlock wallet
-                        setWalletIsLocked(false)
-                    })
+                }else{
+                    if(validatePasswordFromHash(message.data)){
+                        current = message.data
+                        createIntialVault()
+                    }
+                }
+                if (validateTypes.isStringWithValue(current)){
+                    current = message.data
+                    decryptVaultStorage()
+                    setWalletIsLocked(false)
                 }
                 sendResponse(walletIsLocked)
             }
             //Check the password is correct
-            if (message.type === 'validatePassword') sendResponse(validatePassword(message.data))
+            if (message.type === 'validatePassword') sendResponse(validatePasswordFromVault(message.data))
             //Respond to request checking if the wallet is locked
             if (message.type === 'walletIsLocked') sendResponse(walletIsLocked)
             //Lock the wallet
-            if (message.type === 'lockWallet') {
-                wipeCoinsStorage()
-                setWalletIsLocked(true)
-            }
+            if (message.type === 'lockWallet') {setWalletIsLocked(true); sendResponse('ok')}
             //encrypt a passed in string with the user's hashed password (should be an sk)
             if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
 
             //Only Allow access to these messages processors if the wallet is Unlocked
             if (!walletIsLocked){
+                console.log(message)
                 //decrypt a passed in string using the user's hashed password (should be an sk)
                 if (message.type === 'decryptSk') sendResponse(decryptString(message.data))
                 //Create a keystore file that is encrypted with a new password, decrypting all sk's first
@@ -942,6 +974,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if (message.type === 'decryptStore') sendResponse(decryptedKeys())
                 //Add a Lamnden Coin to the coinStore
                 if (message.type === 'coinStoreAddNewLamden') sendResponse(coinStoreAddNewLamdenCoin(message.data))
+                //Add a coin just for watching
+                if (message.type === 'coinStoreAddWatchOnly') {coinStoreAddNewCoin(message.data); sendResponse('ok')}
+                //Updated the sk of a previously only watched coin
+                if (message.type === 'updateWatchedCoin') sendResponse(updateWatchedCoin(message.data))
                 //Delete a coin/wallet from the coinStore
                 if (message.type === 'coinStoreDelete') sendResponse(coinStoreDelete(message.data))
                 //Call the currentNetwork API to refresh all balances in the coinStore

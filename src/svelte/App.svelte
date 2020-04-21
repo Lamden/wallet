@@ -25,7 +25,13 @@
 	$: firstRun = undefined;
 
 	const walletIsLockedListener = (message, sender, sendResponse) => {
-		if (message.type === 'walletIsLocked') walletIsLocked = message.data;
+		if (message.type === 'walletIsLocked') 
+		{
+			//Make sure the wallet was actually unlocked by the user
+			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
+				walletIsLocked = message.data;
+			})
+		}
 	}
 
 	chrome.runtime.onMessage.addListener(walletIsLockedListener)
