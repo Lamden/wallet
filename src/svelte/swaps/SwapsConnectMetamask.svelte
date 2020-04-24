@@ -26,6 +26,7 @@
     $: isCorrectNetwork = !metamaskInfo ? false : metamaskInfo.chainInfo.tauSymbol === $currentNetwork.currencySymbol
     $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : isCorrectNetwork ? 'Connected' : 'Connect Again'
     $: address = !metamaskInfo ? '' : metamaskInfo.address
+    $: checking = false;
 
     onMount(() => {
         steps.update(stepsStore => {
@@ -44,12 +45,13 @@
     }
 
     const connectMetaMask = () => {
-        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, (res) => console.log(res))
+        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, () => checking = true)
     }
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
             metamaskInfo = message.data
+            checking = false
         }
     }
 
@@ -66,7 +68,7 @@ a{
     text-decoration: unset;
 }
 .metamask-logo{
-    width: 20vw;
+    width: 10vw;
 }
 p{
     width: max-content;
@@ -75,9 +77,6 @@ p{
 p.address{
     margin: 0 0 0.5rem;
 }
-p.red {
-    color:red;
-    }
 p.green {
     color: green;
 }
@@ -138,9 +137,8 @@ p.green {
         </div>
         <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
         <p  class="text-body1"
-            class:red={installStatus === 'Not Installed'}
-            class:green={installStatus === 'Installed'}>
-            {`MetaMask is ${installStatus}`}
+            class:text-green={installStatus === 'Installed'}>
+            {installStatus === 'Installed' ? `MetaMask is Installed`: checking ?  '... checking ...' : ''}
         </p>
         {#if address !== ''}
             <p class="address">{address}</p>

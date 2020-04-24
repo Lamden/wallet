@@ -7,6 +7,7 @@
     //Image
     import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
     import lamdenLogoNew from '../../img/coin_logos/lamden_logo_new.svg'
+    import errorCircle from '../../img/menu_icons/icon_error-circle.svg'
     import flag from '../../img/menu_icons/icon_flag.svg'
 
     //Utils
@@ -39,7 +40,7 @@
 
     $: sending = false;
     $: checking = false;
-    $: success = false;
+    $: success = undefined;
 
     onMount(() => {
         steps.update(stepsStore => {
@@ -154,6 +155,16 @@
 .content-right{
     justify-content: flex-start;
 }
+.loading-column{
+    margin-top: 2rem;
+}
+.loading{
+    margin-bottom: -0.5rem;
+}
+.icon-error{
+    height: 30px;
+    width: 30px;
+}
 .swap-details{
     display: flex;
     flex-direction: column;
@@ -164,13 +175,14 @@
     align-items: center;
 }
 .logo{
-    width: 115px;
+    width: 95px;
     padding: 20px;
 }
 .flag{
-    width: 30%;
-    min-width: 200px;
+    width: 80px;
+    height: 80px;
     margin-bottom: 1rem;
+    margin-left: 2rem;
 }
 .swap-deatils > div {
     align-items: center;
@@ -178,18 +190,31 @@
 span, a, p.text-body2 {
     margin-left: 10px;
 }
-
+span.info-title{
+    min-width: 110px;
+}
+.flex-row.items{
+    max-width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 .detail-value{
     max-width: 100%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    flex-grow: 1;
+    justify-content: center;
 }
 @media (min-width: 1024px) {
     .swap-details{
         flex-direction: row;
         align-items: center;
         justify-content: space-around;
+    }
+    .loading-column{
+        margin-top: 0;
     }
     .swap-deatils > div {
         padding: 20px;
@@ -207,19 +232,25 @@ span, a, p.text-body2 {
         <div class="text-box text-body1 text-primary">
             {`DO NOT CLOSE THIS PAGE`}
         </div>
-        {#if success || errorMsg !== ''}
-            <div class="flex-column buttons">
-                <Button id={'home-btn'}
-                        classes={'button__solid button__purple'} 
-                        styles={'margin-bottom: 16px;'}
-                        width={'100%'}
-                        name="Home" 
-                        click={() => switchPage('CoinsMain')} />  
-            </div>
-        {/if}
+        <div class="flex-column buttons">
+            <Button id={'home-btn'}
+                    classes={'button__solid button__purple'} 
+                    styles={'margin-bottom: 16px;'}
+                    width={'100%'}
+                    name="Home"
+                    disabled={typeof success === 'undefined' && errorMsg === ''}
+                    click={() => switchPage('CoinsMain')} />  
+        </div>
     </div>
     <div class="flex-column content-right">
-        <p class="text-body3">{errorMsg === '' ? swappingMessage : errorMsg}</p>
+        {#if success}
+            <div class="flag">{@html flag}</div>
+        {/if}
+        <p  class="text-body1" 
+            class:text-red={errorMsg !== ''} 
+            class:text-green={swappingMessage == 'Swap is completed.'}>
+            {errorMsg === '' ? swappingMessage : errorMsg}
+        </p>
         {#if !success}
             <div class="swap-details">
                 <div class="flex-column">
@@ -231,8 +262,12 @@ span, a, p.text-body2 {
                         {`${getEthAddress().slice(0, 25)}...`}
                     </a>
                 </div>
-                <div class="flex-column">
-                    <Loading width={'80px'} />
+                <div class="loading-column flex-column">
+                    {#if typeof success === 'undefined'}
+                        <Loading class="loading" width={'30px'} />
+                    {:else}
+                        <div class="loading icon-error">{@html errorCircle}</div>
+                    {/if}
                     <p class="text-subtitle2">{`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}</p>
                 </div>
                 <div class="flex-column">
@@ -246,16 +281,13 @@ span, a, p.text-body2 {
                 </div>
             </div>
         {/if}
-        {#if success}
-            <div class="flag">{@html flag}</div>
-        {/if}
         {#if swapResult}
             {#if swapResult.details}
                 <div class="flex-column detail-value">
                     <p class="text-body2">{'Save the swap information for your records'}</p>
                     {#each Object.keys(swapResult.details) as detail}
                         <div class="flex-row items"> 
-                            <span class="text-body2">{detail === 'uuid' ? 'swap_id' : detail}</span>
+                            <span class="info-title text-body2">{detail === 'uuid' ? 'swap_id' : detail}</span>
                             {#if detail === 'uuid'}
                                 <a href={`http://localhost:8080/lookup?uuid=${swapResult.details[detail]}`}
                                    class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>

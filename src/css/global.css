@@ -55,6 +55,13 @@ body{
     color: var(--primary-color);
 }
 
+.text-red{
+    color: #f72d2d;
+}
+.text-green{
+    color: #31ce31;
+}
+
 .text-cyan{
     color: var(--font-accent);
 }

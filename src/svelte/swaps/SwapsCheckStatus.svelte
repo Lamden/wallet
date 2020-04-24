@@ -101,11 +101,14 @@
     justify-content: space-evenly;
 }
 .logo{
-    width: 115px;
+    width: 95px;
     padding: 20px;
 }
+.arrow-column{
+    margin-top: 2rem;
+}
 .arrow{
-    width: 80px;
+    width: 60px;
     margin-bottom: -1rem;
     transform: rotate(90deg);
 }
@@ -118,6 +121,9 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-around;
+    }
+    .arrow-column{
+        margin-top: 0;
     }
     .arrow{
         transform: unset;
@@ -137,7 +143,7 @@
         </div>
 
         <div class="flex-column buttons">
-            <Button id={'continue-btn'}
+            <Button id={'checking-btn'}
                     classes={`button__solid ${success ? 'button__green' : 'button__purple'}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
@@ -147,7 +153,7 @@
                     iconWidth={'19px'}
                     disabled={!success && checking}
                     click={startChecking} />
-            <Button id={'continue-btn'}
+            <Button id={'initiate-btn'}
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
@@ -187,7 +193,7 @@
                         {`${getEthAddress().slice(0, 25)}...`}
                     </a>
                 </div>
-                <div class="flex-column">
+                <div class="arrow-column flex-column">
                     <div class="arrow">{@html arrowRight2Color}</div>
                     <p class="text-subtitle2">{`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}</p>
                 </div>
