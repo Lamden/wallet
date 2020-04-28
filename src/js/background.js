@@ -961,6 +961,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             //Lock the wallet
             if (message.type === 'lockWallet') {setWalletIsLocked(true); sendResponse('ok')}
             //encrypt a passed in string with the user's hashed password (should be an sk)
+            console.log(message.data)
             if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
 
             //Only Allow access to these messages processors if the wallet is Unlocked

@@ -50,14 +50,15 @@
                 chrome.runtime.sendMessage({type: 'encryptSk', data: key.sk}, (encryptedSk) => {
                     if (encryptedSk){
                         key.sk = encryptedSk
-                        let response = CoinStore.addCoin(key)
-                        if (typeof response.reason !== 'undefined'){
-                            if (response.reason === "duplicate") key.error = "Coin already exists in wallet"
-                            if (response.reason === "new") key.message = `Added ${key.nickname} to your wallet`
-                            if (response.reason.includes('Private Key Updated')) key.message = `Updated wallet ${key.nickname} with private key info`
-                        }else{
-                            key.error = "Unable to add key to wallet due to unknown error"
-                        }
+                        CoinStore.addCoin(key, (response) => {
+                            if (typeof response.reason !== 'undefined'){
+                                if (response.reason === "duplicate") key.error = "Coin already exists in wallet"
+                                if (response.reason === "new") key.message = `Added ${key.nickname} to your wallet`
+                                if (response.reason.includes('Private Key Updated')) key.message = `Updated wallet ${key.nickname} with private key info`
+                            }else{
+                                key.error = "Unable to add key to wallet due to unknown error"
+                            }
+                        })
                     }else{
                         key.error =  `Error encrypting key for ${key.name} - ${key.symbol}`
                     }
@@ -69,7 +70,6 @@
             }
         })
     }
-
 </script>
 
 <style>

@@ -35,12 +35,9 @@
 }
 
 .back-arrow{
-    width: 7px;
+    width: 9px;
     height: 12px;
-    margin-right: 9px;
-    box-sizing: border-box;
-    position: relative;
-    top: 1px;
+    margin-right: 1px;
     transform: scaleX(-1);
 }
 
@@ -50,14 +47,22 @@
     text-align: center;
 }
 
+:global(.back-box:hover .menu-icon){
+    fill: var(--font-accent);
+}
+
+.back-box:hover{
+    color: var(--font-accent);
+}
+
 .hide{
     display: none;
 }
 </style>
 <div class="flex-row steps" class:hide={noSteps}>
-    <div class="flex-row back-box" class:hide={$steps.currentStep >= $steps.stepList.length }>
+    <div class="flex-row back-box" class:hide={$steps.currentStep >= $steps.stepList.length } on:click={() => goBack()}>
         <div class="back-arrow">{@html chevronRight}</div>
-        <div class="back-button text-button" on:click={() => goBack()}>{'BACK'}</div>
+        <div class="back-button text-button">{'BACK'}</div>
     </div>
     {#each $steps.stepList as stepInfo, index}
         <Step {stepInfo} first={index === 0} last={(index + 1) === $steps.stepList.length } />

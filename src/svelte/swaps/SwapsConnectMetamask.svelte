@@ -20,14 +20,16 @@
         'dTAU' : ['Kovan Network'],
         'TAU' : ['Main Network']
     }
-
+    const maxChecks = 30;
     $: metamaskInfo = null;
     $: installStatus = !metamaskInfo ? 'Not Installed' : 'Installed'
     $: isCorrectNetwork = !metamaskInfo ? false : metamaskInfo.chainInfo.tauSymbol === $currentNetwork.currencySymbol
+    $: errorMsg = '';
     $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : isCorrectNetwork ? 'Connected' : 'Connect Again'
     $: address = !metamaskInfo ? '' : metamaskInfo.address
     $: checking = false;
-
+    $: currChecks = 0;
+    
     onMount(() => {
         steps.update(stepsStore => {
             stepsStore.currentStep = 2;
@@ -45,17 +47,59 @@
     }
 
     const connectMetaMask = () => {
-        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, () => checking = true)
+        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, () => {
+            errorMsg = ''
+            checking = true
+            checkForResponses.clear();
+            checkForResponses.start();
+        })
     }
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
             metamaskInfo = message.data
             checking = false
+            errorMsg = ''
         }
     }
 
     chrome.runtime.onMessage.addListener(metamaskConnected)
+
+    const responseChecker = () => {
+        let timerId
+        const clear = () => {
+                console.log('clearing checker')
+                currChecks = 0;
+                clearTimeout(timerId);
+        }
+        const checkIfDone = () => {
+            console.log(`checking: ${currChecks} times`)
+            currChecks = currChecks + 1
+            if (checking){
+                if (currChecks >= maxChecks) {
+                    errorMsg = 'Timed out looking for Metamask plugin. If you have confirmed Metamask is installed and setup then it may be attempting to contact you via a popup window.  Please verify and try again.'
+                    console.log(errorMsg)
+                }
+                else {
+                    console.log('checking again')
+                    timerId = setTimeout(checkIfDone, 1000);;
+                }
+            }
+            else {
+                console.log('done')
+                clear()
+            }
+        }
+
+        return {
+            start: () => {
+                console.log('starting to checker')
+                timerId = setTimeout(checkIfDone, 0);
+            },
+            clear
+        }
+    }
+    let checkForResponses = responseChecker()
 
 </script>
 
@@ -79,6 +123,10 @@ p.address{
 }
 p.green {
     color: green;
+}
+p.error-box{
+    max-width: 300px;
+    text-align: center;
 }
 
 </style>
@@ -106,7 +154,8 @@ p.green {
                     click={connectMetaMask}
                     icon={installStatus === "Installed" && isCorrectNetwork ? checkmarkWhite : ''}
                     iconPosition={'after'}
-                    iconWidth={'19px'}/>
+                    iconWidth={'19px'}
+                    disabled={checking && errorMsg === ''}/>
             <Button id={'continue-btn'}
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
@@ -138,17 +187,20 @@ p.green {
         <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
         <p  class="text-body1"
             class:text-green={installStatus === 'Installed'}>
-            {installStatus === 'Installed' ? `MetaMask is Installed`: checking ?  '... checking ...' : ''}
+            {installStatus === 'Installed' ? `MetaMask is Installed`: checking && errorMsg === '' ?  `checking ${currChecks} / ${maxChecks}` : ''} 
         </p>
         {#if address !== ''}
             <p class="address">{address}</p>
         {/if}
-        {#if installStatus === 'Installed'}
+        {#if installStatus === 'Installed' && errorMsg === ''}
             {#if isCorrectNetwork}
                 <p>{`Connected to Ethereum ${ethNetworkTypes[$currentNetwork.currencySymbol]}`}</p>
             {:else}
-                <p class="red">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
+                <p class="red error-box">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
             {/if}
+        {/if}
+        {#if errorMsg !== ''}
+            <p class="text-red error-box">{errorMsg}</p>
         {/if}
     </div>
 </div>

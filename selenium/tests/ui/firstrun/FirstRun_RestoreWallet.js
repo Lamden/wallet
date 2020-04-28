@@ -207,7 +207,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
             assert.equal(isChecked, 'true');
         })
         await driver.findElement(By.id('restore-btn')).click()
-        sleep(2)
+        sleep(5)
     });
     it('Renders RestoreComplete.svelte', async function() {
         let finish_Button =  await driver.findElement(By.id('home-btn'))
