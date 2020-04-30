@@ -57,9 +57,14 @@
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
-            metamaskInfo = message.data
+            let balance = metamaskInfo.tokenBalance
+            if (typeof balance.error !== 'undefined'){
+                metamaskInfo = message.data
+                errorMsg = ''
+            } else {
+                errorMsg = balance.error
+            }
             checking = false
-            errorMsg = ''
         }
     }
 

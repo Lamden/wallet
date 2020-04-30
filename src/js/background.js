@@ -40,6 +40,8 @@ let savingTransactions = false;
 const LamdenNetworkTypes = ['mainnet','testnet','mockchain']
 
 
+
+
 /********************************************************************
  *  Storage handlers to persist the Lamden Wallet in chrome.storage.local
  ********************************************************************/
@@ -66,8 +68,18 @@ chrome.storage.local.get(
         settingsStore = getValue.settings; 
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
+        /********************************************************************
+         *  Setup for testing
+         ********************************************************************/
+        //Expose Ethereum Controller on window so it can be accesses durring testing
+        if (navigator.webdriver == true && firstRun) {
+            window.walletEthereum = Ethereum
+        }
     }
 )
+
+
+
 
 /*******************************************************************
  * Sync information in the store with the background page everytime new information is saved.
@@ -1015,16 +1027,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     sendResponse('ok')
                     Ethereum.requestAccount().then(async address => {
                         let metaMaskInfo = {address}
-                        metaMaskInfo.chainInfo = await Ethereum.getChainId().catch(err => console.log(err))
-                        metaMaskInfo.tokenBalance = await Ethereum.balanceOfTAU(address).catch(err => console.log(err))
-                        console.log(metaMaskInfo)
+                        metaMaskInfo.chainInfo = await Ethereum.getChainInfo()
+                        metaMaskInfo.tokenBalance = await Ethereum.balanceOfTAU(address)
                         sendMessageToApp('metamaskConnected', metaMaskInfo)
                     })
                 }
                 if (message.type === 'sendTokenApproval'){
                     sendResponse('ok')
                     const {address, amount } = message.data;
-                    Ethereum.sendAllowance(address, amount).then(async res => {
+                    Ethereum.sendControllerApproval(address, amount).then(async res => {
                         console.log(res)
                         sendMessageToApp('tokenApprovalSent', res)
                     })   
