@@ -1,27 +1,13 @@
 const assert = require('assert');
+const path = require('path');
 const {Builder, By} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
+const helpers = require('../../../helpers/helpers')
+const config = require("../../../config/config")
+const walletInfo = require("../../../fixtures/walletInfo")
 
 let chromeOptions = new chrome.Options();
-chromeOptions.addArguments("load-extension=/Users/jeff/Documents/lamden/wallet/build");
-
-const msleep = (n) => {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
-  }
-  const sleep = (n) => {
-    msleep(n*1000);
-}
-
-const keystoreInfo = {
-    keys: {
-        vk: '2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9',
-        sk: 'a57a2c0c7907ec65fddf50302ea4d2e2aa8d66fb2074c5e022052ed695b43d42'
-    },
-    file: process.cwd() + '/selenium/fixtures/testing.keystore',
-    password: "Testing0!234567",
-    hint: "testingPW"
-}
-const walletPassword = "Testing0!2"
+chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
     let driver;
@@ -30,7 +16,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
                 .forBrowser('chrome')
                 .setChromeOptions(chromeOptions)
                 .build();
-        await driver.get('chrome-extension://hiknponkciemeacgombejeookoebjdoe/app.html');
+        await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
     after(() => driver && driver.quit());
@@ -120,8 +106,8 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         })
     })
     it('FirstRunCreatePW.svelte - ACCEPTS correct password', async function() {
-        await driver.executeScript(`document.getElementById('pwd1').value='${walletPassword}'`);
-        await driver.executeScript(`document.getElementById('pwd2').value='${walletPassword}'`);
+        await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
+        await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
         await driver.findElement(By.id('save-pwd')).click()
     })
     it('Renders RestoreUpload.svelte', async function() {
@@ -139,12 +125,12 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         await confirmKeystore_Button.getAttribute('disabled').then(disabled => {
             assert.equal(disabled, 'true');
         })
-        await driver.findElement(By.id('filePicker')).sendKeys(keystoreInfo.file)
+        await driver.findElement(By.id('filePicker')).sendKeys(path.join(config.workingDir, walletInfo.keystoreInfo.file))
         await confirmKeystore_Button.getAttribute('disabled').then(disabled => {
             assert.equal(disabled, null);
         })
         await confirmKeystore_Button.click()
-        sleep(2)
+        await helpers.sleep(2000)
     }); 
     it('Renders RestorePassword.svelte', async function() {
         await driver.findElement(By.id('pwd-btn')).getAttribute('value').then(value => {
@@ -155,7 +141,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
             assert.equal(includesText, true);
         })
         await driver.findElement(By.id('pwd-hint')).getAttribute('innerText').then(text => {
-            assert.equal(text, keystoreInfo.hint);
+            assert.equal(text, walletInfo.keystoreInfo.hint);
         })
         await driver.findElement(By.id('pwd-input')).getAttribute('value').then(value => {
             assert.equal(value, "");
@@ -182,7 +168,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
 
     }); 
     it('RestorePassword.svelte - ACCEPTS correct password', async function() {
-        await driver.executeScript(`document.getElementById('pwd-input').value='${keystoreInfo.password}'`)
+        await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.keystoreInfo.password}'`)
         await driver.findElement(By.id('pwd-btn')).click()
     });
     it('Renders RestoreAddWallets.svelte', async function() {
@@ -194,7 +180,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
             assert.equal(text, 'CANCEL');
         })
         driver.findElement(By.id('div-address-0')).getAttribute('innerText').then(text => {
-            assert.equal(text, keystoreInfo.keys.vk);
+            assert.equal(text, walletInfo.keystoreInfo.keys.vk);
         })
 
     });
@@ -207,7 +193,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
             assert.equal(isChecked, 'true');
         })
         await driver.findElement(By.id('restore-btn')).click()
-        sleep(5)
+        await helpers.sleep(5000)
     });
     it('Renders RestoreComplete.svelte', async function() {
         let finish_Button =  await driver.findElement(By.id('home-btn'))
@@ -222,7 +208,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         })
 
         await finish_Button.click()
-        sleep(5)
+        await helpers.sleep(5000)
     });
     it('Renders Lockscreen.svelte', async function() {
         await driver.findElement(By.id('login-btn')).getAttribute('value').then(value => {
@@ -233,7 +219,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         })
     });
     it('Lockscreen.svelte Can Login', async function() {
-        await driver.executeScript(`document.getElementById('pwd-input').value='${walletPassword}'`);
+        await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
         await driver.findElement(By.id('login-btn')).click()
         await driver.findElement(By.className('coinsmain')).then(element => {
             assert.equal(element.constructor.name, 'WebElement');

@@ -11,6 +11,7 @@
     //Images
     import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
     import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
+    import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
     //Context
     const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskTxResponse } = getContext('functions');
@@ -22,6 +23,7 @@
     $: metamaskTxResponse = null;
     $: sending = false;
     $: sent = metamaskTxResponse && !sending
+    $: errorMsg = ''
 
     const nextPage = () => {
         setMetamaskTxResponse(metamaskTxResponse)
@@ -41,14 +43,21 @@
 
     const sendTokenApproval = () => {
         if (!sent){
-            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, () => sending = true)
+            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, () => {
+                sending = true
+                errorMsg = ''
+            })
         }
     }
 
     const tokenApprovalSent = (message, sender, sendResponse) => {
 		if (message.type === 'tokenApprovalSent') {
-            metamaskTxResponse = message.data
             sending = false
+            if (typeof message.data.error === 'undefined') {
+                metamaskTxResponse = message.data
+            } else {
+                errorMsg = message.data.error
+            }
         }
     }
     chrome.runtime.onMessage.addListener(tokenApprovalSent)
@@ -56,11 +65,15 @@
 </script>
 
 <style>
-.sent-message{
+.result{
     align-items: center;
 }
 .circle-checkmark{
-    width: 16vw;
+    width: 190px;
+}
+.circle-error{
+    width: 100px;
+    margin-bottom: 1rem;
 }
 </style>
 
@@ -86,23 +99,24 @@
         />
 
         <div class="flex-column buttons">
-            <Button id={'send-approval-btn'}
-                    classes={`button__solid ${sent ? 'button__green' : 'button__purple'}`}
+            {#if sent}
+                <Button id={'continue-btn'}
+                        classes={'button__solid button__purple'}
+                        styles={'margin-bottom: 16px;'}
+                        width={'100%'}
+                        name="Continue" 
+                        click={nextPage} />
+            {:else}
+                <Button id={'send-approval-btn'}
+                    classes={`button__solid button__purple`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={sent ? "Approved" : sending ? "Sending" : "Send Approval"}
-                    icon={sent ? checkmarkWhite : ''}
-                    iconPosition={'after'}
-                    iconWidth={'19px'}
                     disabled={sending}
                     click={sendTokenApproval} />
-            <Button id={'continue-btn'}
-                    classes={'button__solid button__purple'}
-                    styles={'margin-bottom: 16px;'}
-                    width={'100%'}
-                    name="Continue" 
-                    disabled={!sent}
-                    click={nextPage} />
+            {/if}
+
+
             <Button id={'back-btn'}
                     classes={'button__solid'} 
                     styles={'margin-bottom: 16px;'}
@@ -122,13 +136,19 @@
     <div class="flex-column content-right">
         {#if sending}
             <Loading message="Waiting for response from MetaMask..."
-                     subMessage="check your metamask to confirm"
+                     subMessage="Check your MetaMask to confirm the transaction"
             />
         {/if}
         {#if sent}
-            <div class="flex-column sent-message">
+            <div class="flex-column result">
                 <div class="circle-checkmark">{@html circleCheck}</div>
                 <h2>{'Approved!'}</h2>
+            </div>
+        {/if}
+        {#if errorMsg !== ''}
+            <div class="flex-column result">
+                <div class="circle-error">{@html iconErrorCircle}</div>
+                <p class="text-red text_body2">{errorMsg}</p>
             </div>
         {/if}
     </div>

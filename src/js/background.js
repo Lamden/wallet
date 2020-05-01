@@ -1027,8 +1027,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     sendResponse('ok')
                     Ethereum.requestAccount().then(async address => {
                         let metaMaskInfo = {address}
-                        metaMaskInfo.chainInfo = await Ethereum.getChainInfo()
-                        metaMaskInfo.tokenBalance = await Ethereum.balanceOfTAU(address)
+                        if (!validateTypes.isStringWithValue(address.error)){
+                            metaMaskInfo.chainInfo = await Ethereum.getChainInfo()
+                            metaMaskInfo.tokenBalance = await Ethereum.balanceOfTAU(address)
+                        }
                         sendMessageToApp('metamaskConnected', metaMaskInfo)
                     })
                 }

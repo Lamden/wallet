@@ -1,43 +1,12 @@
 const assert = require('assert');
-const fs = require('fs');
 const {Builder, By, until} = require('selenium-webdriver');
+const helpers = require('../../helpers/helpers')
 let chrome = require("selenium-webdriver/chrome");
-
-const userFolder = "Users"
-const user = "jeff"
-const walletLocation = "Documents/lamden/wallet"
-const walletBuildDir = "build"
-const metamaskFolder = "Library/Application Support/Google/Chrome/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn"
-const metamaskVersion = "7.7.8_0"
-const metamaskBackupPhrase = "slab tomorrow actual evoke cattle churn brick bus toilet intact zoo erase"
-const metamaskExtention = `/${userFolder}/${user}/${walletLocation}/${walletBuildDir}`
-const walletExtention = `/${userFolder}/${user}/${metamaskFolder}/${metamaskVersion}`
-
-const mmPassword = "Testing0!2"
-const walletPassword = "Testing0!2"
-const swapDetails = {
-    amount: 10,
-    ethAddress: "0x00eB12f5C96B15001bf8f32bEEd970d178719AcC"
-}
-const getTokenAmountTesting ={
-  address: "0x20b367e6EdeC9A06E14CDad7F8B31fCdE5Dada9D",
-  expectedEmount: 100.55
-}
-const checkTxStatusTesting = {
-  successfulTx: "0x126bd4480168b40e3e9a19a32b9eec0fb2c4e7696974d2c27db8850971ad6b3e",
-  failedTx: "0xb23d37386a995802a8e01fa50df960d405d69e0abf4da9fc38e5a7f67b3f70de",
-}
+let config = require("../../config/config")
+let swapInfo = require("../../fixtures/swapInfo.json")
 
 let chromeOptions = new chrome.Options();
-chromeOptions.addArguments(`load-extension=${walletExtention},${metamaskExtention}`);
-
-
-const msleep = (n) => {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
-  }
-  const sleep = (n) => {
-    msleep(n*1000);
-}
+chromeOptions.addArguments(`load-extension=${config.walletPath},${config.metamaskPath}`);
 
 describe('Testing Lamden Wallet Ethereum Controller', function () {
     let driver;
@@ -47,43 +16,41 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
                 .forBrowser('chrome')
                 .setChromeOptions(chromeOptions)
                 .build();
-        await driver.get('chrome-extension://hiknponkciemeacgombejeookoebjdoe/app.html');
+        await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    //after(() => driver && driver.quit());
+    after(() => driver && driver.quit());
 
     it('Setup Metamask Extention', async function() {
-        sleep(2)
-        let winHandles = await driver.getAllWindowHandles()
-        await driver.switchTo().window(winHandles[1])
+        await helpers.sleep(2000)
+        await helpers.switchWindow(driver, 1) 
         await driver.findElement(By.tagName("button")).click()
         await driver.findElement(By.xpath("//button[contains(text(),'Import Wallet')]")).click()
         await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
-        sleep(1)
-        await driver.findElement(By.tagName("textarea")).sendKeys(metamaskBackupPhrase)
-        await driver.findElement(By.id("password")).sendKeys(mmPassword)
-        await driver.findElement(By.id("confirm-password")).sendKeys(mmPassword)
+        await helpers.sleep(1000)
+        await driver.findElement(By.tagName("textarea")).sendKeys(config.metamaskBackupPhrase)
+        await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
+        await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
         await driver.findElement(By.xpath("//div[@role='checkbox']")).click()
-        sleep(1)
+        await helpers.sleep(1000)
         await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
-        sleep(1)
+        await helpers.sleep(1000)
         await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
-        sleep(1)
+        await helpers.sleep(1000)
         await driver.findElement(By.xpath("//div[@title='Main Ethereum Network']")).click()
         await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
         assert.equal(true, true);
     });
 
     it('Ethereum Script is exposed for testing', async function() {
-        let winHandles = await driver.getAllWindowHandles()
-        await driver.switchTo().window(winHandles[0])    
-        await driver.executeScript(`
-            backpage = chrome.extension.getBackgroundPage(); 
-            return backpage.walletEthereum
-          `)
-          .then(eth => {
-            assert.equal(typeof eth !== 'undefined', true);
-          })
+      await helpers.switchWindow(driver, 0)   
+      await driver.executeScript(`
+          backpage = chrome.extension.getBackgroundPage(); 
+          return backpage.walletEthereum
+        `)
+        .then(eth => {
+          assert.equal(typeof eth !== 'undefined', true);
+        })
     });
 
     it('getWeb3(): Can get get a Web3 instance from MetaMask Inpage Provider', async function() {
@@ -101,16 +68,12 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
         backpage = chrome.extension.getBackgroundPage();
         window.requestAccount1 = backpage.walletEthereum.requestAccount();
       `)
-    await new Promise((resolve, reject) => {
-      setTimeout(() => resolve(true), 5000) // resolve
-    });
-    let winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[2])
+    await helpers.sleep(5000, true)
+    await helpers.switchWindow(driver, 2) 
     let popupConfim_Buttom = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Cancel')]")), 10000);
     await popupConfim_Buttom.click()
-    sleep(2)
-    winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[0])
+    await helpers.sleep(2000) 
+    await helpers.switchWindow(driver, 0) 
     let requestResult = await driver.executeScript(`
       return await window.requestAccount1;
     `)
@@ -122,20 +85,16 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
         backpage = chrome.extension.getBackgroundPage();
         window.requestAccount2 = backpage.walletEthereum.requestAccount();
       `)
-    await new Promise((resolve, reject) => {
-      setTimeout(() => resolve(true), 5000) // resolve
-    });
-    let winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[2])
+    await helpers.sleep(5000, true)
+    await helpers.switchWindow(driver, 2) 
     let popupConfim_Buttom = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Connect')]")), 10000);
     await popupConfim_Buttom.click()
-    sleep(2)
-    winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[0])  
+    await helpers.sleep(2000) 
+    await helpers.switchWindow(driver, 0) 
     let address = await driver.executeScript(`
       return await window.requestAccount2;
     `)
-    assert.equal(address, swapDetails.ethAddress);
+    assert.equal(address, config.metamaskAddress);
   });
 
   it('getChainInfo(): Returns correct chain ID from Metamask', async function() {
@@ -152,9 +111,9 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
   it('balanceOfToken(): Returns correct token Amount', async function() {
     await driver.executeScript(`
       backpage = chrome.extension.getBackgroundPage();
-      return await backpage.walletEthereum.balanceOfToken('${getTokenAmountTesting.address}','${kovanChainInfo.tauContract}');
+      return await backpage.walletEthereum.balanceOfToken('${swapInfo.getTokenAmount.address}','${kovanChainInfo.tauContract}');
     `).then(balance => {
-      assert.equal(balance.value, getTokenAmountTesting.expectedEmount);
+      assert.equal(balance.value, swapInfo.getTokenAmount.expectedAmount);
     })
   });
 
@@ -170,7 +129,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
   it('balanceOfToken(): Returns zero balance if invalid contract address is provided', async function() {
     await driver.executeScript(`
       backpage = chrome.extension.getBackgroundPage();
-      return await backpage.walletEthereum.balanceOfToken('${getTokenAmountTesting.address}','thisisnotanaddress');
+      return await backpage.walletEthereum.balanceOfToken('${swapInfo.getTokenAmount.address}','thisisnotanaddress');
     `).then(balance => {
       assert.equal(balance.error, 'Not an ERC20 contract address');
     })
@@ -179,9 +138,9 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
   it('balanceOfTAU(): Returns correct dTAU balance', async function() {
     await driver.executeScript(`
       backpage = chrome.extension.getBackgroundPage();
-      return await backpage.walletEthereum.balanceOfTAU('${getTokenAmountTesting.address}');
+      return await backpage.walletEthereum.balanceOfTAU('${swapInfo.getTokenAmount.address}');
     `).then(balance => {
-      assert.equal(balance.value, getTokenAmountTesting.expectedEmount);
+      assert.equal(balance.value, swapInfo.getTokenAmount.expectedAmount);
     })
   });
 
@@ -197,7 +156,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
   it('checkTxStatus(): Can lookup a txHash and report it is successful', async function() {
     await driver.executeScript(`
       backpage = chrome.extension.getBackgroundPage();
-      return await backpage.walletEthereum.checkTxStatus('${checkTxStatusTesting.successfulTx}');
+      return await backpage.walletEthereum.checkTxStatus('${swapInfo.checkTxStatus.successfulTx}');
     `).then(txInfo => {
       assert.equal(txInfo.status, true);
     })
@@ -206,7 +165,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
   it('checkTxStatus(): Can lookup a txHash and report it failed', async function() {
     await driver.executeScript(`
       backpage = chrome.extension.getBackgroundPage();
-      return await backpage.walletEthereum.checkTxStatus('${checkTxStatusTesting.failedTx}');
+      return await backpage.walletEthereum.checkTxStatus('${swapInfo.checkTxStatus.failedTx}');
     `).then(txInfo => {
       assert.equal(txInfo.status, false);
     })
@@ -225,22 +184,17 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     this.timeout(30000);
     await driver.executeScript(`
         backpage = chrome.extension.getBackgroundPage();
-        window.txResult = backpage.walletEthereum.sendControllerApproval('${swapDetails.ethAddress}','${1}')
+        window.txResult = backpage.walletEthereum.sendControllerApproval('${config.metamaskAddress}','${swapInfo.swapAmount}')
     `)
 
-    await new Promise((resolve, reject) => {
-      setTimeout(() => resolve(true), 5000) // resolve
-    });
-
-    let winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[2])
+    await helpers.sleep(5000, true)
+    await helpers.switchWindow(driver, 2) 
 
     let popupConfim_Button = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Reject')]")), 10000);
     await popupConfim_Button.click()
 
-    sleep(2)
-    winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[0])
+    await helpers.sleep(2000) 
+    await helpers.switchWindow(driver, 0) 
 
     let txInfo = await driver.executeScript(`
       return await window.txResult;
@@ -252,26 +206,20 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     this.timeout(30000);
     await driver.executeScript(`
         backpage = chrome.extension.getBackgroundPage();
-        window.txResult = backpage.walletEthereum.sendControllerApproval('${swapDetails.ethAddress}','${1}')
+        window.txResult = backpage.walletEthereum.sendControllerApproval('${config.metamaskAddress}','${swapInfo.swapAmount}')
     `)
-
-    await new Promise((resolve, reject) => {
-      setTimeout(() => resolve(true), 5000) // resolve
-    });
-
-    let winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[2])
+    await helpers.sleep(5000, true)
+    await helpers.switchWindow(driver, 2) 
 
     let popupConfim_Button = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Confirm')]")), 10000);
     await popupConfim_Button.click()
 
-    sleep(2)
-    winHandles = await driver.getAllWindowHandles()
-    await driver.switchTo().window(winHandles[0])
+    await helpers.sleep(2000) 
+    await helpers.switchWindow(driver, 0) 
     console.log('        o WAITING FOR METAMASK TO COMPLETE TX')
     let txInfo = await driver.executeScript(`
       return await window.txResult;
     `)
     assert.equal(txInfo.status, true);
-  });
+  })
 })

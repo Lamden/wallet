@@ -39,13 +39,13 @@
 
     const checkEthTxStatus = () => {
         if (!success){
-            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash() }}, () => checking = true)
+            checking = true
+            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash() }})
         }
     }
 
     const ethTxStatus = (message, sender, sendResponse) => {
 		if (message.type === 'ethTxStatus') {
-            console.log(message)
             if (typeof message.data.status !== 'undefined'){
                 if (message.data.status){
                     success = true;
@@ -61,35 +61,27 @@
     }
 
     const startChecking = () => {
-        console.log('checking receipt')
-        attempts = 0;
-        new Promise(function(resolve, reject) {
-            let timerId = setTimeout(async function checkStatus() {
-                if (checking){
-                    timerId = setTimeout(checkStatus, 1000);
-                }else{
-                    if (success){
-                        console.log('tx successful, resolving')
-                        resolve()
+        if (!success){
+            attempts = 0;
+            new Promise(function(resolve, reject) {
+                let timerId = setTimeout(async function checkStatus() {
+                    if (checking){
+                        timerId = setTimeout(checkStatus, 1000);
                     }else{
-                        if (attempts >= maxAttempts){
-                            console.log('tried too many times')
-                            reject()
+                        if (success){
+                            resolve()
                         }else{
-                            attempts = attempts + 1;
-                            console.log(`calling check function for the ${attempts} time`)
-                            checkEthTxStatus();
-                        }
-                    } 
-                }               
-            }, 1000);
-        })
-        .then(() => {
-            console.log('success!')
-        })
-        .catch(() => {
-            console.log('max attempts hit')
-        })
+                            if (attempts >= maxAttempts){
+                                reject()
+                            }else{
+                                attempts = attempts + 1;
+                                checkEthTxStatus();
+                            }
+                        } 
+                    }               
+                }, 1000);
+            })
+        }
     }
 </script>
 
@@ -151,7 +143,7 @@
                     icon={success ? checkmarkWhite : ''}
                     iconPosition={'after'}
                     iconWidth={'19px'}
-                    disabled={!success && checking}
+                    disabled={!success && attempts < maxAttempts}
                     click={startChecking} />
             <Button id={'initiate-btn'}
                     classes={'button__solid button__purple'}

@@ -1,0 +1,11 @@
+{
+    "swapAmount": 10,
+    "getTokenAmount": {
+        "address": "0x20b367e6EdeC9A06E14CDad7F8B31fCdE5Dada9D",
+        "expectedAmount": 100.55
+    },
+    "checkTxStatus" : {
+      "successfulTx": "0x126bd4480168b40e3e9a19a32b9eec0fb2c4e7696974d2c27db8850971ad6b3e",
+      "failedTx": "0xb23d37386a995802a8e01fa50df960d405d69e0abf4da9fc38e5a7f67b3f70de"
+    }
+}

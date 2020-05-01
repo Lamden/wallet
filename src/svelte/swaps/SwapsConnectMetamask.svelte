@@ -26,7 +26,8 @@
     $: isCorrectNetwork = !metamaskInfo ? false : metamaskInfo.chainInfo.tauSymbol === $currentNetwork.currencySymbol
     $: errorMsg = '';
     $: metaMaskButton = !metamaskInfo ? "Connect MetaMask" : isCorrectNetwork ? 'Connected' : 'Connect Again'
-    $: address = !metamaskInfo ? '' : metamaskInfo.address
+    $: address = !metamaskInfo ? '' : metamaskInfo.error ? '' : metamaskInfo.address
+    $: blockExplorerURL = !metamaskInfo ? '' : metamaskInfo.error ? '' : metamaskInfo.chainInfo.blockExplorer
     $: checking = false;
     $: currChecks = 0;
     
@@ -57,12 +58,13 @@
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
-            let balance = metamaskInfo.tokenBalance
-            if (typeof balance.error !== 'undefined'){
+            console.log(message.data)
+            let address = message.data.address
+            if (typeof address.error === 'undefined'){
                 metamaskInfo = message.data
                 errorMsg = ''
             } else {
-                errorMsg = balance.error
+                errorMsg = address.error
             }
             checking = false
         }
@@ -73,32 +75,26 @@
     const responseChecker = () => {
         let timerId
         const clear = () => {
-                console.log('clearing checker')
                 currChecks = 0;
                 clearTimeout(timerId);
         }
         const checkIfDone = () => {
-            console.log(`checking: ${currChecks} times`)
             currChecks = currChecks + 1
             if (checking){
                 if (currChecks >= maxChecks) {
                     errorMsg = 'Timed out looking for Metamask plugin. If you have confirmed Metamask is installed and setup then it may be attempting to contact you via a popup window.  Please verify and try again.'
-                    console.log(errorMsg)
                 }
                 else {
-                    console.log('checking again')
                     timerId = setTimeout(checkIfDone, 1000);;
                 }
             }
             else {
-                console.log('done')
                 clear()
             }
         }
 
         return {
             start: () => {
-                console.log('starting to checker')
                 timerId = setTimeout(checkIfDone, 0);
             },
             clear
@@ -151,23 +147,22 @@ p.error-box{
         </div>
 
         <div class="flex-column buttons">
-            <Button id={'check-btn'}
-                    classes={`button__solid ${installStatus === "Installed" && isCorrectNetwork ? 'button__green' : 'button__purple'}`}
-                    styles={'margin-bottom: 16px;'}
-                    width={'100%'}
-                    name={metaMaskButton}
-                    click={connectMetaMask}
-                    icon={installStatus === "Installed" && isCorrectNetwork ? checkmarkWhite : ''}
-                    iconPosition={'after'}
-                    iconWidth={'19px'}
-                    disabled={checking && errorMsg === ''}/>
-            <Button id={'continue-btn'}
+            {#if installStatus === "Installed" && isCorrectNetwork}
+                <Button id={'continue-btn'}
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Continue" 
-                    disabled={!isCorrectNetwork}
                     click={nextPage} />
+            {:else}
+                <Button id={'check-btn'}
+                        classes={`button__solid button__purple`}
+                        styles={'margin-bottom: 16px;'}
+                        width={'100%'}
+                        name={metaMaskButton}
+                        click={connectMetaMask}
+                        disabled={checking && errorMsg === ''}/>
+            {/if}
             <Button id={'back-btn'}
                     classes={'button__solid'} 
                     styles={'margin-bottom: 16px;'}
@@ -195,13 +190,16 @@ p.error-box{
             {installStatus === 'Installed' ? `MetaMask is Installed`: checking && errorMsg === '' ?  `checking ${currChecks} / ${maxChecks}` : ''} 
         </p>
         {#if address !== ''}
-            <p class="address">{address}</p>
+            <span class="text-body2">{`ETH Address `}
+            <a  href={`${blockExplorerURL}/address/${address}`} 
+                class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{` ${address}`}
+            </a></span>
         {/if}
         {#if installStatus === 'Installed' && errorMsg === ''}
             {#if isCorrectNetwork}
                 <p>{`Connected to Ethereum ${ethNetworkTypes[$currentNetwork.currencySymbol]}`}</p>
             {:else}
-                <p class="red error-box">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
+                <p class="text-red error-box">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
             {/if}
         {/if}
         {#if errorMsg !== ''}

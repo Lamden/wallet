@@ -1,18 +1,12 @@
 const assert = require('assert');
 const {Builder, By} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
+const helpers = require('../../../helpers/helpers')
+let config = require("../../../config/config")
+let walletInfo = require("../../../fixtures/walletInfo")
 
 let chromeOptions = new chrome.Options();
-chromeOptions.addArguments("load-extension=/Users/jeff/Documents/lamden/wallet/build");
-
-const msleep = (n) => {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
-  }
-  const sleep = (n) => {
-    msleep(n*1000);
-}
-
-const walletPassword = "Testing0!2"
+chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     let driver;
@@ -21,7 +15,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
                 .forBrowser('chrome')
                 .setChromeOptions(chromeOptions)
                 .build();
-        await driver.get('chrome-extension://hiknponkciemeacgombejeookoebjdoe/app.html');
+        await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
     after(() => driver && driver.quit());
@@ -112,8 +106,8 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
         })
     })
     it('FirstRunCreatePW.svelte - ACCEPTS correct password ', async function() {
-        await driver.executeScript(`document.getElementById('pwd1').value='${walletPassword}'`);
-        await driver.executeScript(`document.getElementById('pwd2').value='${walletPassword}'`);
+        await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
+        await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
         await driver.findElement(By.id('save-pwd')).click()
     })
 
@@ -124,7 +118,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
         })
 
        await iUnderstand_Button.click()
-       sleep(5)
+       await helpers.sleep(5000)
     });
 
     it('Renders Lockscreen.svelte', async function() {
@@ -137,7 +131,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     });
 
     it('Lockscreen.svelte Can Login', async function() {
-        await driver.executeScript(`document.getElementById('pwd-input').value='${walletPassword}'`);
+        await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
         await driver.findElement(By.id('login-btn')).click()
         await driver.findElement(By.className('coinsmain')).then(element => {
             assert.equal(element.constructor.name, 'WebElement');

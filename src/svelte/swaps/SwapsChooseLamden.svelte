@@ -32,19 +32,11 @@
     }
 
     const nextPage = () => {
-        console.log(selectedWallet)
         setLamdenWallet(selectedWallet)
         changeStep(1)
     }
     
 </script>
-
-<style>
-.content-right{
-    justify-content: flex-start;
-}
-
-</style>
 
 <div class="flex-row swaps-intro">
     <div class="flex-column content-left">

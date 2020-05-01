@@ -82,6 +82,10 @@ body{
     color: var(--font-secondary);
 }
 
+.text-bold {
+    font-weight: bold
+}
+
 .text-body1{
     font-style: normal;
     font-weight: normal;

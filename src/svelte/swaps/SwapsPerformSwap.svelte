@@ -179,15 +179,15 @@
     padding: 20px;
 }
 .flag{
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     margin-bottom: 1rem;
     margin-left: 2rem;
 }
 .swap-deatils > div {
     align-items: center;
 }
-span, a, p.text-body2 {
+span, a {
     margin-left: 10px;
 }
 span.info-title{
@@ -204,8 +204,13 @@ span.info-title{
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    flex-grow: 1;
-    justify-content: center;
+    margin-top: 1rem;
+    padding: 20px;
+    border-top: 1px solid var(--divider-color);
+    border-bottom: 1px solid var(--divider-color);
+    border-radius: 5px;
+    height: 153px;
+    justify-content: space-between;
 }
 @media (min-width: 1024px) {
     .swap-details{
@@ -227,11 +232,13 @@ span.info-title{
         <h6>Swapping</h6>
     
         <div class="text-box text-body1 text-primary">
-            {`Swapping your Ethereum ${$currentNetwork.currencySymbol} tokens for Lamden ${$currentNetwork.currencySymbol}`}
+            {`Swapping Ethereum ${$currentNetwork.currencySymbol} for Lamden ${$currentNetwork.currencySymbol}`}
         </div>
-        <div class="text-box text-body1 text-primary">
-            {`DO NOT CLOSE THIS PAGE`}
-        </div>
+        {#if !success && errorMsg === ''}
+            <div class="text-box text-body1 text-red">
+                {`DO NOT CLOSE THIS PAGE`}
+            </div>
+        {/if}
         <div class="flex-column buttons">
             <Button id={'home-btn'}
                     classes={'button__solid button__purple'} 
@@ -284,7 +291,6 @@ span.info-title{
         {#if swapResult}
             {#if swapResult.details}
                 <div class="flex-column detail-value">
-                    <p class="text-body2">{'Save the swap information for your records'}</p>
                     {#each Object.keys(swapResult.details) as detail}
                         <div class="flex-row items"> 
                             <span class="info-title text-body2">{detail === 'uuid' ? 'swap_id' : detail}</span>
@@ -317,6 +323,7 @@ span.info-title{
                         </div>
                     {/each}
                 </div>
+                <h2>{'SAVE THIS INFORMATION FOR YOUR RECORDS'}</h2>
             {/if}
         {/if}
     </div>

@@ -26,7 +26,7 @@
         getLamdenWallet: () => { return lamdenWallet },
         getLamdenAddress: () => { return lamdenWallet.vk },
         getEthAddress: () => { return swapInfo.address },
-        getTokenBalance: () => { return swapInfo.tokenBalance },
+        getTokenBalance: () => { return swapInfo.tokenBalance.value },
         getApprovalAmount: () => { return getApprovalAmount() },
         getChainInfo: () => { console.log(swapInfo.chainInfo); return swapInfo.chainInfo},
         getTxHash: () => { console.log(metamaskTxResponse.transactionHash); return metamaskTxResponse.transactionHash} 
@@ -110,9 +110,9 @@
 }
 :global(.content-right){
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-grow: 1;
-    padding: 1rem 5% 0;
+    padding: 3rem 5% 0;
     width: calc(100vw - 498px);
     max-width: 800px;
 }
@@ -121,7 +121,7 @@
 }
 :global(.content-left > .buttons){
     flex-grow: 1;
-    max-height: 350px;
+    max-height: 250px;
     justify-content: flex-end;
 }
 
