@@ -131,7 +131,7 @@ const validatePasswordFromHash = (testPassword) => {
 
 const validatePasswordFromVault = (testPassword) => {
     try{
-        return  validateTypes.isObject(decryptObject(testPassword, hash))
+        return  validateTypes.isObject(decryptObject(testPassword, vault))
     } catch (e) {}
     return false
 }
