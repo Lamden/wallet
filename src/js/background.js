@@ -151,8 +151,6 @@ const setWalletIsLocked = (status) => {
     walletIsLocked = status;
     if (walletIsLocked) wipeCoinsStorage()
     else setCoinsStorage()
-    console.log('unlocking')
-    console.log(coinStore)
     sendMessageToApp('walletIsLocked', walletIsLocked)
     sendMessageToAllDapps('sendWalletInfo')
 }
@@ -274,7 +272,6 @@ const coinStoreAddNewLamdenCoin = (name) => {
             'vk': keyPair.vk,
             'sk': keyPair.sk
         }
-        console.log(coinInfo)
         coinStoreAddNewCoin(coinInfo)
         return coinInfo.vk
     }else{
@@ -287,14 +284,12 @@ const updateWatchedCoin = (coinInfo) => {
     if (coinFound){
         coinFound.sk = coinInfo.sk;
     }
-    console.log(coinStore)
     setVaultStorage();
     return 'ok'
 }   
 
 const coinStoreAddNewCoin = (coinInfo) => {
     coinStore.push(coinInfo)
-    console.log(coinStore)
     setVaultStorage();
     setCoinsStorage();
 }
@@ -332,10 +327,8 @@ const setVaultStorage = () => {
 const decryptVaultStorage = () => {
     try {
         let decryptedStore = decryptObject(current, vault)
-        console.log(decryptedStore)
         if (typeof decryptedStore.data === "undefined") throw new Error('Could not get vault data')
         coinStore = decryptedStore.data
-        console.log(coinStore)
     }catch (e){
         throw new Error('Could not get vault data')
     }
@@ -866,7 +859,6 @@ const sendMessageToAllDapps = (type, data) => {
  * from outside webpages.  This isolates the sensitive information stored in the background page to the App and autorized Dapps.
  *****************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(message)
     if (chrome.runtime.lastError) return;
     const isFromAuthorizedDapp = fromAuthorizedDapp(sender.origin);
     const dappInfo = isFromAuthorizedDapp ? getDappInfo(sender.origin) : undefined;
@@ -927,13 +919,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
          ** MESSAGES FROM THE LAMDEN WALLET APP 
         **************************************************/
         if (isFromApp){
-            console.log(message)
             //Create password on initial "firstRun" setup
             if(message.type === 'createPassword'){
                 try{
                     current = message.data
                     walletIsLocked = false;
-                    console.log(current)
                     setVaultStorage()
                     firstRun = false;
                     sendResponse(true)
@@ -957,7 +947,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                 }
                 if (validateTypes.isStringWithValue(current)){
-                    current = message.data
                     decryptVaultStorage()
                     setWalletIsLocked(false)
                 }
@@ -970,12 +959,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             //Lock the wallet
             if (message.type === 'lockWallet') {setWalletIsLocked(true); sendResponse('ok')}
             //encrypt a passed in string with the user's hashed password (should be an sk)
-            console.log(message.data)
             if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
 
             //Only Allow access to these messages processors if the wallet is Unlocked
             if (!walletIsLocked){
-                console.log(message)
                 //decrypt a passed in string using the user's hashed password (should be an sk)
                 if (message.type === 'decryptSk') sendResponse(decryptString(message.data))
                 //Create a keystore file that is encrypted with a new password, decrypting all sk's first
@@ -1035,7 +1022,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     sendResponse('ok')
                     const {address, amount } = message.data;
                     Ethereum.sendControllerApproval(address, amount).then(async res => {
-                        console.log(res)
                         sendMessageToApp('tokenApprovalSent', res)
                     })   
                 }
@@ -1043,7 +1029,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     sendResponse('ok')
                     const { hash } = message.data;
                     Ethereum.checkTxStatus(hash).then(async res => {
-                        console.log(res)
                         sendMessageToApp('ethTxStatus', res)
                     })   
                 }
@@ -1077,9 +1062,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
          ** MESSAGES FROM AUTHORIZED DAPPs
         **************************************************/
         if (isFromAuthorizedDapp){
-            console.log(isFromAuthorizedDapp)
-            console.log(dappVkInWallet(dappInfo.vk))
-            console.log(dappInfo)
             if (!dappVkInWallet(dappInfo.vk)){
                 sendResponse({errors:[
                     `Your dApp was previously approved but no matching vk is currently found in the wallet.  

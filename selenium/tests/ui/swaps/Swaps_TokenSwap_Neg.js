@@ -76,7 +76,6 @@ describe('Token Swap Negative Tests', function () {
     it('Renders SwapsConnectMetamask.svelte', async function() {
         let check_Button = await driver.findElement(By.id('check-btn'))
         await check_Button.getAttribute('innerText').then(text => {
-            console.log(text)
             assert.equal(text, 'CONNECT METAMASK');
         })
     });

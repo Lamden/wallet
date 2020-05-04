@@ -15,12 +15,12 @@
             else if (step === -1) currentStep = back;
             else currentStep = step;
         },
-        setSwapInfo: (info) => {console.log(info); swapInfo = info},
+        setSwapInfo: (info) => {swapInfo = info},
         getSwapInfo: () => { return swapInfo },
-        setMetamaskTxResponse: (txResponse) => {console.log(txResponse); metamaskTxResponse = txResponse},
-        setSwapStatus: (info) => {console.log(info); swapStatus = info},
+        setMetamaskTxResponse: (txResponse) => {metamaskTxResponse = txResponse},
+        setSwapStatus: (info) => {swapStatus = info},
         getSwapStatus: () => { return swapStatus },
-        setSwapResult: (info) => {console.log(info); swapResult = info},
+        setSwapResult: (info) => {swapResult = info},
         getSwapResult: () => { return swapResult },
         setLamdenWallet: (wallet) => lamdenWallet = wallet,
         getLamdenWallet: () => { return lamdenWallet },
@@ -28,8 +28,8 @@
         getEthAddress: () => { return swapInfo.address },
         getTokenBalance: () => { return swapInfo.tokenBalance.value },
         getApprovalAmount: () => { return getApprovalAmount() },
-        getChainInfo: () => { console.log(swapInfo.chainInfo); return swapInfo.chainInfo},
-        getTxHash: () => { console.log(metamaskTxResponse.transactionHash); return metamaskTxResponse.transactionHash} 
+        getChainInfo: () => { return swapInfo.chainInfo},
+        getTxHash: () => { return metamaskTxResponse.transactionHash} 
     });
 
     let currentStep = 0;
@@ -56,7 +56,6 @@
         try{
             return metamaskTxResponse.events.Approval.returnValues.value / Math.pow(10, 18)
         }catch (e){
-            console.log(e)
             return 0
         }
     }

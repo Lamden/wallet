@@ -95,13 +95,11 @@
             'vk': keyPair.vk,
         }
         if (addType === 3) coinInfo.sk = 'watchOnly'
-        console.log(coinInfo)
         addToCoinStore(coinInfo);
     }
 
     const addToCoinStore = (coinInfo) => {
         const handleResponse = (response) => {
-            console.log(response)
             if (!response.added){
                 if (response.reason === "duplicate") {
                     returnMessage = {type:'warning', text: "Coin already exists in wallet"} 

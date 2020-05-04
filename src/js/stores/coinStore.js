@@ -46,21 +46,17 @@ export const createCoinStore = () => {
             if (!isCoinInfoObj(coinInfo))  callback({added: false, reason: 'badArg'});
 
             coinInfo = copyItem(coinInfo);
-            console.log(coinInfo)
             //Check if the coin already exists in coinstore
             let coinFound = get(CoinStore).find( f => {
                 return f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
             });
-            console.log(coinFound)
             if (!coinFound){
                 if (coinInfo.sk === "watchOnly") {
-                    console.log('adding watch only')
                     chrome.runtime.sendMessage({type: 'coinStoreAddWatchOnly', data: coinInfo}, (coinInfo) => {
                         if (chrome.runtime.lastError) callback({added: false, reason: 'Error adding new coin to coinStore'})
                         else callback({added: true, reason: 'new'})
                     })
                 }else{
-                    console.log('adding new')
                     //If the coin doesn't exists then push it to the array
                     chrome.runtime.sendMessage({type: 'coinStoreAddNewLamden', data: coinInfo.nickname}, (response) => {
                         if (chrome.runtime.lastError) callback({added: false, reason: 'Error adding new coin to coinStore'})
@@ -71,7 +67,6 @@ export const createCoinStore = () => {
             } else {
                 //Check if we need to update the sk of a previously added "watch only" coin
                 if (coinFound.sk === "watchOnly" && coinInfo.sk !== "watchOnly"){
-                    console.log('updating watched only')
                     chrome.runtime.sendMessage({type: 'updateWatchedCoin', data: coinInfo}, () => {
                         callback({added: true, reason: `${coinFound.nickname}'s Private Key Updated`})
                     })        

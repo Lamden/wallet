@@ -15,7 +15,7 @@
     const handleRun = async () => {
         try{
             $currentNetwork.API.getVariable(contractName, variableName, key)
-            .then(res => {console.log(res); result = res})
+            .then(res => {result = res})
             .catch(err => {console.log(err); result = 'Error: Not Found'})
         } catch (e) {
             console.log(e)

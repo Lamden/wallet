@@ -58,7 +58,6 @@
 
     const metamaskConnected = (message, sender, sendResponse) => {
 		if (message.type === 'metamaskConnected') {
-            console.log(message.data)
             let address = message.data.address
             if (typeof address.error === 'undefined'){
                 metamaskInfo = message.data

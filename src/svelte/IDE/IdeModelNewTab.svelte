@@ -58,7 +58,6 @@
     }
 
     const refreshValidityKeyup = (e) => { 
-        console.log(e)
         if (e.detail.keyCode !== 13) {
             contractField.reportValidity();
             contractField.setCustomValidity('');

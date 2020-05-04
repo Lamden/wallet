@@ -77,7 +77,6 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await helpers.sleep(1000, true)
         let check_Button = await driver.findElement(By.id('check-btn'))
         await check_Button.getAttribute('innerText').then(text => {
-            console.log(text)
             assert.equal(text, 'CONNECT METAMASK');
         })
         await check_Button.click()

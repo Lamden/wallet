@@ -64,7 +64,6 @@
         .then(res => {
             swapStatus = res
             setSwapStatus(swapStatus)
-            console.log(res)
             sending = false
 
             if (swapStatus.error){
@@ -93,7 +92,6 @@
         .then(res => {
             swapResult = res
             setSwapResult(swapResult)
-            console.log(swapResult)
             sending = false
 
             if (swapResult.error){
@@ -120,29 +118,20 @@
     }
     
     const startChecking = () => {
-        console.log('checking receipt')
         attempts = 0;
         new Promise(function(resolve, reject) {
             let timerId = setTimeout(async function checkStatus() {
                 if (attempts >= maxAttempts){
-                    console.log('tried too many times')
-                    reject()
+                    resolve(false)
                 }else{
                     if (errorMsg === ''){
                         attempts = attempts + 1;
-                        console.log(`calling check function for the ${attempts} time`)
                         await getSwapStatus();
-                        if (success) resolve()
+                        if (success) resolve(true)
                         else timerId = setTimeout(checkStatus, 1000);
                     }
                 }              
             }, 1000);
-        })
-        .then(() => {
-            console.log('success!')
-        })
-        .catch(() => {
-            console.log('max attempts hit')
         })
     }
 

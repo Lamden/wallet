@@ -44,7 +44,6 @@
     const createStartingWallet = (resolve) => {
         chrome.runtime.sendMessage({type: 'coinStoreAddNewLamden', data: 'My Lamden Address'}, (newCoinVK) => {
             if (newCoinVK){
-                console.log(newCoinVK)
                 SettingsStore.setLastCoinAddedDate();
                 // Mint coins on mockchain for new wallet
                 let mockchain = NetworksStore.getPublicMockchain()
