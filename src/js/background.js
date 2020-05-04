@@ -78,9 +78,6 @@ chrome.storage.local.get(
     }
 )
 
-
-
-
 /*******************************************************************
  * Sync information in the store with the background page everytime new information is saved.
  * This also will sync data when the svelte stores save to chrome.local.storage
@@ -948,6 +945,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
             //Unlock the wallet
             if (message.type === 'unlockWallet') {
+                console.log(vaultController().getVault());
                 //Validate the password is correct first
                 if (vaultCreated()){
                     if (validatePasswordFromVault(message.data)){
@@ -1185,3 +1183,6 @@ let timerId = setTimeout(async function resolvePendingTxs() {
     } 
     timerId = setTimeout(resolvePendingTxs, nextRun);
 }, 1000);
+
+
+const messageController = new MessageController(vaultController);

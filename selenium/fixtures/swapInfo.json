@@ -7,5 +7,7 @@
     "checkTxStatus" : {
       "successfulTx": "0x126bd4480168b40e3e9a19a32b9eec0fb2c4e7696974d2c27db8850971ad6b3e",
       "failedTx": "0xb23d37386a995802a8e01fa50df960d405d69e0abf4da9fc38e5a7f67b3f70de"
-    }
+    },
+    "lamdenAddress": "6a91a9a65eb80829a360efc0555cad8841af64c78375bbf394f6ecb89d5644ee",
+    "clearingHouseURL": "http://localhost:8080"
 }

@@ -2,7 +2,7 @@ const validators = require('types-validate-assert')
 const { validateTypes } = validators;
 const fetch = require('node-fetch');
 
-export default class ClearingHouse_API{
+module.exports = class ClearingHouse_API{
     constructor(url){
         if(!validateTypes.isStringWithValue(url)) throw new TypeError('Constructor needs a URL String')
         this.url = this.vaidateProtocol(url);
@@ -50,7 +50,7 @@ export default class ClearingHouse_API{
     }
 
     async startSwap(swapObject){
-        if (!validateTypes.isStringWithValue(swapObject.ethAddress)) throw new Error('Cannot Start Swap: Missing paramater Ethereum Address <string>. ')
+        if (!validateTypes.isStringWithValue(swapObject.ethAddress)) throw new Error('Cannot Start Swap: Missing paramater Ethereum Address <string>.')
         if (!validateTypes.isStringWithValue(swapObject.lamdenAddress)) throw new Error('Cannot Start Swap: Missing paramater Lamden Address <string>.')
 
         let parms = {};

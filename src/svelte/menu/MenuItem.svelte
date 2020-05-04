@@ -111,6 +111,7 @@
         width: 18px;
         margin-right: 29px;
         margin-left: -47px;
+        margin-top: 0px;
         z-index: 10;
     }
 }
