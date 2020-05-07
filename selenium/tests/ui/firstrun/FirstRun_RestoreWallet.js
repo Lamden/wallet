@@ -19,7 +19,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    after(() => driver && driver.quit());
+    //after(() => driver && driver.quit());
 
     it('Renders FirstRunIntro.svelte', async function() {
         let restoreWallet_Button =  await driver.findElement(By.id('restore-wallet'))
@@ -137,8 +137,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
             assert.equal(value, 'Confirm Password');
         })
         await driver.findElement(By.id('last-modified')).getAttribute('innerText').then(text => {
-            let includesText = text.includes('Mon Apr 20 2020')
-            assert.equal(includesText, true);
+            assert.equal(text.length > 0, true);
         })
         await driver.findElement(By.id('pwd-hint')).getAttribute('innerText').then(text => {
             assert.equal(text, walletInfo.keystoreInfo.hint);
@@ -210,17 +209,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         await finish_Button.click()
         await helpers.sleep(5000)
     });
-    it('Renders Lockscreen.svelte', async function() {
-        await driver.findElement(By.id('login-btn')).getAttribute('value').then(value => {
-            assert.equal(value, 'Login');
-        })
-        await driver.findElement(By.id('pwd-input')).getAttribute('value').then(value => {
-            assert.equal(value, "");
-        })
-    });
-    it('Lockscreen.svelte Can Login', async function() {
-        await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
-        await driver.findElement(By.id('login-btn')).click()
+    it('Renders Coins Main', async function() {
         await driver.findElement(By.className('coinsmain')).then(element => {
             assert.equal(element.constructor.name, 'WebElement');
         })

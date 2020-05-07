@@ -50,8 +50,6 @@ describe('Token Swap Negative Tests', function () {
         await driver.findElement(By.id('save-pwd')).click()
         await driver.findElement(By.id('i-understand')).click()
         await helpers.sleep(5000)
-        await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
-        await driver.findElement(By.id('login-btn')).click()
         assert.equal(true, true);
     });
     it('Renders Swaps.svelte', async function() {

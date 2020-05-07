@@ -1,11 +1,14 @@
 <script>
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher, getContext } from 'svelte';
     const dispatch = createEventDispatcher();
 
     
     //Components
     import { Components }  from '../Router.svelte';
     const { Loading } = Components;
+
+    //Context
+    const { home } = getContext('tx_functions');
 
     //Props
     export let txData;
@@ -14,6 +17,9 @@
     onMount(() => {
         chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
             message = response.status
+            if (message === "Transaction cancelled by user") {
+                setTimeout(home, 1500);
+            }
         })
     })
 

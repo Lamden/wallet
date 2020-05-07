@@ -149,7 +149,10 @@ const setDissmissFlag = (value) => {
  ***********************************************************************/
 const setWalletIsLocked = (status) => {
     walletIsLocked = status;
-    if (walletIsLocked) wipeCoinsStorage()
+    if (walletIsLocked) {
+        wipeCoinsStorage()
+        current = ""
+    }
     else setCoinsStorage()
     sendMessageToApp('walletIsLocked', walletIsLocked)
     sendMessageToAllDapps('sendWalletInfo')
@@ -546,13 +549,18 @@ const validateConnectionMessage = (data) => {
     if (!validateTypes.isStringWithValue(messageData.logo)) {
         errors.push("'logo' <string> required to process connect request")
     }
+    if (typeof messageData.background !== 'undefined') {
+        if (!validateTypes.isStringWithValue(messageData.background)) {
+            errors.push("'background' <string> was provided but invalid.")
+        }
+    }
     if (typeof messageData.reapprove !== 'undefined'){
         if (!validateTypes.isBoolean(messageData.reapprove)) {
             errors.push(`'reapprove' <boolean> can not be ${typeof messageData.reapprove}`)
         }else{
             if (typeof messageData.newKeypair !== 'undefined'){
                 if (!validateTypes.isBoolean(messageData.newKeypair)) {
-                    errors.push(`'reapprove' <boolean> can not be ${typeof messageData.reapprove}`)
+                    errors.push(`'newKeypair' <boolean> can not be ${typeof messageData.newKeypair}`)
                 }
             }else{
                 messageData.newKeypair = false;
@@ -577,21 +585,31 @@ const validateConnectionMessage = (data) => {
     }else{
         errors.push("'description' <string> required to process connect request")
     }
-    if (validateTypes.isArrayWithValues(messageData.charms)){
-        messageData.charms.forEach((charm, index) => {
-            if (!validateTypes.isObject(charm)) errors.push(`'charm[${index}]' is not an object`)
-            if (!validateTypes.isStringWithValue(charm.name)) errors.push(`'charm[${index}]' no 'name' property defiend`)
-            if (!validateTypes.isStringWithValue(charm.variableName)) errors.push(`'charm[${index}]' no 'variableName' property defiend`)
-            if (!validateTypes.isStringWithValue(charm.formatAs)){
-                if (!formats.includes(charm.formatAs.toLowerCase())) {
-                    errors.push(`'charm[${index}]' formatAs value '${formatAs}' is invalid. Only acceptable values are ${formats}.`)
+    if (typeof messageData.charms !== 'undefined') {
+        if (validateTypes.isArrayWithValues(messageData.charms)){
+            messageData.charms.forEach((charm, index) => {
+                if (!validateTypes.isObject(charm)) errors.push(`'charm[${index}]' is not an object`)
+                else{
+                    if (!validateTypes.isStringWithValue(charm.name)) errors.push(`'charm[${index}]' no 'name' property defiend`)
+                    if (!validateTypes.isStringWithValue(charm.variableName)) errors.push(`'charm[${index}]' no 'variableName' property defiend`)
+                    if (typeof charm.formatAs !== 'undefined') {
+                        if (validateTypes.isStringWithValue(charm.formatAs)){
+                            if (!formats.includes(charm.formatAs.toLowerCase())) {
+                                errors.push(`'charm[${index}]' formatAs value '${charm.formatAs}' is invalid. Only acceptable values are ${formats}.`)
+                            }
+                        }else{
+                            errors.push(`'charm[${index}]' formatAs value '${charm.formatAs}' is invalid. Only acceptable values are ${formats}.`)
+                        }
+                    }
                 }
-            }
-        })
+            })
+        }else{
+            errors.push("If provided, the 'charms' property must be an <array>.")
+        }
     }
     if (validateTypes.isObject(messageData.preApproval)){
         if (!validateTypes.hasKeys(messageData.preApproval, ['stampsToPreApprove', 'message'])){
-            errors.push(`Invalid preApproval request. Must have 'stampsToPreApprove' <int> and 'message' <string? properties`)
+            errors.push(`Invalid preApproval request. Must have 'stampsToPreApprove' <int> and 'message' <string> properties`)
         }else{
             if (!validateTypes.isStringWithValue(messageData.preApproval.message)){
                 errors.push(`'preApproval.message' must be a <string> and not empty.`)
@@ -599,7 +617,7 @@ const validateConnectionMessage = (data) => {
             if (!validateTypes.isInteger(messageData.preApproval.stampsToPreApprove)){
                 errors.push(`'preApproval.stampsToPreApprove' must be an <integer>.`)
             }else{
-                if(messageData.preApproval.stampsToPreApprove === 0){
+                if(messageData.preApproval.stampsToPreApprove < 1){
                     errors.push(`'preApproval.stampsToPreApprove' must be an integer greater than 0.`)
                 }
             }
@@ -623,7 +641,10 @@ const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
         installedStatus.wallets = [dappInfo.vk]
         let approvals = {}
         Object.keys(dappInfo).forEach(key => {
-            if(LamdenNetworkTypes.includes(key)) approvals[key] = dappInfo[key].contractName
+            if(LamdenNetworkTypes.includes(key)) approvals[key] = {
+                contractName: dappInfo[key].contractName,
+                approvalHash: dappInfo[key].approvalHash || ""
+            }
         })
         installedStatus.approvals = approvals
     }
@@ -643,7 +664,6 @@ const promptApproveDapp = async (sender, messageData) => {
             messageData,
             url: sender.origin
         };
-    
         chrome.windows.create({
             url: `/confirm.html#${windowId}`, width: 500, height: 700, type: 'popup',
         });
@@ -669,14 +689,14 @@ const approveDapp = (sender, approveAmount) => {
     if (!walletIsLocked){
         const dappInfo = getDappInfo(confirmData.url)
         const messageData = confirmData.messageData
-        let newWallet = {};
+        let newWallet;
         if ((dappInfo && messageData.newKeypair) || !dappInfo){
             newWallet = coinStoreAddNewLamdenCoin(messageData.appName)
         }else{
-            newWallet.vk = dappInfo.vk
+            newWallet = dappInfo.vk
         }
         if (newWallet){
-            DappStoreAddNew(confirmData.url, newWallet.vk, messageData, approveAmount)
+            DappStoreAddNew(confirmData.url, newWallet, messageData, approveAmount)
             sendMessageToTab(confirmData.url, 'sendWalletInfo')
         }else{
             delete txToConfirm[getSenderHash(sender)]
@@ -686,6 +706,12 @@ const approveDapp = (sender, approveAmount) => {
         const errors = ['Tried to approve app but wallet was locked']
         sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
     }
+    delete txToConfirm[getSenderHash(sender)]
+}
+
+const rejectDapp = (sender) => {
+    const confirmData = txToConfirm[getSenderHash(sender)]
+    sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors: ['User rejected connection request']})
     delete txToConfirm[getSenderHash(sender)]
 }
 
@@ -703,11 +729,22 @@ const approveTransaction = (sender) => {
     delete txToConfirm[getSenderHash(sender)]
 }
 
+const hashApprovalRequest = (messageData) => {
+    let copy = stripRef(messageData)
+    if (validateTypes.isBoolean(copy.reapprove)) delete copy.reapprove
+    if (validateTypes.isBoolean(copy.newKeypair)) delete copy.newKeypair
+    console.log(copy)
+    console.log(JSON.stringify(copy))
+    console.log(hashStringValue(JSON.stringify(copy)))
+    return hashStringValue(JSON.stringify(copy))
+}
+
 const DappStoreAddNew = (appUrl, vk, messageData, approveAmount) => {
     //remvove trailing slash from url
     if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
     if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
     dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
+    dappsStore[appUrl][messageData.networkType].approvalHash = hashApprovalRequest(messageData)
     if (validateTypes.isObject(messageData.preApproval)){
         dappsStore[appUrl][messageData.networkType].stampPreApproval = approveAmount;
         dappsStore[appUrl][messageData.networkType].stampsUsed = 0;
@@ -870,8 +907,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     **************************************************/
     //Process connection messages to have the user authorize an app
     if (message.type === 'lamdenWalletConnect') {
+        console.log(message)
+        console.log(walletIsLocked)
         //Reject if wallet is locked as we won't have the user's password stored to encrypt the new keypair
         if (walletIsLocked){
+            console.log("erroring that wallet is locked")
             sendResponse({errors:["Wallet is Locked"]})
             return
         }
@@ -923,10 +963,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if(message.type === 'createPassword'){
                 try{
                     current = message.data
-                    walletIsLocked = false;
+                    //walletIsLocked = false;
                     setVaultStorage()
                     firstRun = false;
                     sendResponse(true)
+                    setWalletIsLocked(false)
                 } catch (e){sendResponse(false)}
             }
             //Check if the wallet has been setup yet
@@ -957,7 +998,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             //Respond to request checking if the wallet is locked
             if (message.type === 'walletIsLocked') sendResponse(walletIsLocked)
             //Lock the wallet
-            if (message.type === 'lockWallet') {setWalletIsLocked(true); sendResponse('ok')}
+            if (message.type === 'lockWallet') {
+                setWalletIsLocked(true); 
+                sendResponse('ok')
+            }
             //encrypt a passed in string with the user's hashed password (should be an sk)
             if (message.type === 'encryptSk') sendResponse(encryptString(message.data))
 
@@ -968,7 +1012,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 //Create a keystore file that is encrypted with a new password, decrypting all sk's first
                 if (message.type === 'backupCoinstore') sendResponse(createKeystore(message.data))
                 //Decrypt all keys, for use when user wants to view their secret keys in the UI
-                if (message.type === 'decryptStore') sendResponse(decryptedKeys())
+                if (message.type === 'decryptStore') {
+                    var userInput = prompt("Enter your Lamden Wallet Password", "");
+                    if (hashStringValue(userInput) === current) sendResponse(decryptedKeys())
+                    else sendResponse({error: "Incorrect Password"})
+                }
                 //Add a Lamnden Coin to the coinStore
                 if (message.type === 'coinStoreAddNewLamden') sendResponse(coinStoreAddNewLamdenCoin(message.data))
                 //Add a coin just for watching
@@ -983,16 +1031,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if (message.type === 'balancesStoreUpdateOne') sendResponse(balancesStoreUpdateOne(message.data))
                 //Create and Send a transaction to the currentNetwork Masternode
                 if (message.type === 'sendLamdenTransaction'){
-                    let txInfo = message.data;
-                    let wallet = getWallet(txInfo.senderVk);
-                    if (!wallet) sendResponse({status: `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`});
-                    try{
-                        txInfo.uid = encryptString(wallet.vk, 'tracking-id')
-                        let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
-                        sendResponse({status: "Transaction Sent, Awaiting Response"})
-                        sendTx(txBuilder, wallet.sk, sender.origin)
-                    }catch (err){
-                        sendResponse({status: `Error: Failed to create Tx - ${err}`})
+                    //Validate that a physical person is sending this transaction
+                    let userConfirm = confirm('Send Transaction?')
+                    if (userConfirm){
+                        let txInfo = message.data;
+                        let wallet = getWallet(txInfo.senderVk);
+                        if (!wallet) sendResponse({status: `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`});
+                        try{
+                            txInfo.uid = encryptString(wallet.vk, 'tracking-id')
+                            let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
+                            sendResponse({status: "Transaction Sent, Awaiting Response"})
+                            sendTx(txBuilder, wallet.sk, sender.origin)
+                        }catch (err){
+                            sendResponse({status: `Error: Failed to create Tx - ${err}`})
+                        }
+                    }else{
+                        sendResponse({status: `Transaction cancelled by user`})
                     }
                 }
                 if (message.type === 'setPreApproval'){
@@ -1051,6 +1105,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
             if (message.type === 'approveDapp'){
                 approveDapp(sender, message.data)
+            }
+
+            if (message.type === 'rejectDapp'){
+                rejectDapp(sender)
             }
 
             if (message.type === 'approveTransaction'){

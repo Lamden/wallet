@@ -7,7 +7,7 @@
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
 	import { Components }  from '../Router.svelte'
-    const { Button, InputBox } = Components;
+    const { Button, InputBox, Loading } = Components;
 
     //Context
     const { appHome } = getContext('app_functions');
@@ -16,26 +16,41 @@
     //DOM Nodes
     let formObj;
 
-    $: coins = [];
+    $: coins = undefined;
+    $: errorMsg = "";
 
 
     onMount(() => {
-        steps.update(current => {
-            current.currentStep = 3;
-            return current
+        steps.set({
+            currentStep: 1,
+            stepList: [
+                {number: 1, name: 'Verify', desc:'Wallet Password'},
+                {number: 2, name: 'Decrypt', desc:'View Stored Keys'},
+            ]
         });
 
         chrome.runtime.sendMessage({type: 'decryptStore'}, (coinStore) => {
             if (typeof coinStore === 'undefined' || chrome.runtime.lastError) {
                 throw new Error('unable to decrypt keystore')
             } else {
-                coins = [...coinStore];
+                if (typeof coinStore.error !== 'undefined') errorMsg = coinStore.error
+                else {
+                    coins = [...coinStore];
+                    steps.update(current => {
+                        current.currentStep = 2;
+                        return current
+                    });
+                }
             }
         })
     })
 
     const getLogo = (coin) => {
         return logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default ;
+    }
+
+    const watchOnly = (sk) => {
+        return sk.includes("watchOnly")
     }
 </script>
 
@@ -53,28 +68,27 @@
     flex-direction: column;
     padding: 0px 24px 0 242px;
     width: 498px;
-    justify-content: center;
-}
-
-.spacer{
-    flex-grow: 1;
-    max-width: 314px;
+    min-width: 498px;
+    justify-content: flex-start;
 }
 
 .key-box{
     display: flex;
     flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 820px;
 }
 
 .header{
     display: flex;
     flex-direction: row;
-    margin-left: 53px;
+    margin-left: 40px;
     border-bottom: 2px solid var(--font-primary-darker);
 }
 
 .header-name{
-    width: 175px;
+    width: 213px;
 }
 
 .header-address{
@@ -83,11 +97,12 @@
 
 .name{
     display: flex;
-    width: 160px;
+    width: 200px;
     height: 88px;
     margin-right: 16px;
     border-bottom: 1px dashed var(--font-primary-darker);
     align-items: center;
+    word-break: break-word;
 }
 
 .keys{
@@ -97,11 +112,6 @@
     height: 88px;
     border-bottom: 1px dashed var(--font-primary-darker);
     flex-grow: 1;
-}
-
-.logo{
-    margin-right: 21px;
-    width: 20px;
 }
 
 .key-row{
@@ -119,6 +129,11 @@ a{
     color: #ffffff99;
 }
 
+p.text-red{
+    margin-left: 40px;
+    padding: 10px 0;
+}
+
 </style>
 
 <div class="backup-keys">
@@ -132,6 +147,7 @@ a{
         <Button classes={`button__solid button__purple`}
                 styles={'margin-bottom: 16px;'}
                 name="Backup Keys"
+                disabled={typeof coins === 'undefined'}
                 click={() => changeStep(3)} />
 
         <Button classes={`button__solid`}
@@ -146,26 +162,27 @@ a{
             Help & FAQ
         </a>
     </div>
-
-    <div class="spacer"></div>
-
     <div class="key-box flex-column">
         <div class="header text-subtitle2 text-primary-light">
-            <div class="header-name">{'Wallet Name'}</div>
-            <div class="header-address">{'Keys'}</div>
+            <div class="header-name">{'Nickname'}</div>
+            <div class="header-address">{'Key Pair'}</div>
         </div>
-
-        {#each coins as coin}
-            <div class="key-row">
-                <div>
-                    <CryptoLogos {coin} black={true} styles={`margin-right: 21px; width: 20px;`}/>
+        {#if coins}
+            {#each coins as coin}
+                <div class="key-row">
+                    <div>
+                        <CryptoLogos {coin} black={true} styles={`margin-right: 21px; width: 20px;`}/>
+                    </div>
+                    <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
+                    <div class="keys text-body2">
+                        <div>{`vk: ${coin.vk}`}</div>
+                        <div class=" text-primary-dark">{`sk: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</div>
+                    </div>
                 </div>
-                <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
-                <div class="keys text-body2">
-                    <div>{`vk: ${coin.vk}`}</div>
-                    <div class=" text-primary-dark">{`sk: ${coin.sk}`}</div>
-                </div>
-            </div>
-        {/each}
+            {/each}
+        {/if}
+        {#if errorMsg !== ""}
+            <p class="text-body2 text-red">{errorMsg}</p>
+        {/if}
     </div>
 </div>

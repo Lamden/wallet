@@ -1,3 +1,5 @@
+import { resource } from "selenium-webdriver/http"
+
 //For security only messages in JSON string messages will be passed to the application
 const isJSON = (json) => {
 	if (Object.prototype.toString.call(json) !== "[object String]") return false
@@ -17,6 +19,7 @@ document.addEventListener('lamdenWalletGetInfo', () => getWalletInfo());
 
 const lamdenWalletConnect = (detail) => {  
     chrome.runtime.sendMessage({type: 'lamdenWalletConnect', data: detail}, (response) => {
+        console.log(response)
         if(!chrome.runtime.lastError && response !== 'ok'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
         }

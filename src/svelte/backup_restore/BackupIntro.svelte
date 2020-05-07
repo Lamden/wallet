@@ -61,7 +61,7 @@ a{
                 styles={'margin-bottom: 16px;'}
                 width={'100%'}
                 name="View Stored Keys" 
-                click={() => changeStep(1)} />
+                click={() => changeStep(2)} />
         <Button id={'back-btn'}
                 classes={'button__solid'} 
                 styles={'margin-bottom: 16px;'}

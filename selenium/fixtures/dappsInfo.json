@@ -1,0 +1,21 @@
+{
+    "basicConnectionInfo": {
+        "appName": "Dapp Testing",
+        "description": "This is a Unit Test of the Dapp connection API. This has more than 60 characters.",
+        "contractName": "currency",
+        "networkType": "testnet",
+        "logo": "/images/logo.png"
+    },
+    "preApprovalInfo": {
+        "stampsToPreApprove": 1000000, 
+        "message": "Please approve this amount of stamps"
+    },
+    "charmsInfo": [{
+        "formatAs": "number",
+        "iconPath": "/images/charm.png",
+        "variableName": "balances",
+        "key": "<wallet vk>",
+        "name": "Balance"
+    }],
+    "background": "/images/background.png"
+}

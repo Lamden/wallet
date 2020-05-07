@@ -21,7 +21,7 @@ describe('Testing Clearinghouse API Handler', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    //after(() => driver && driver.quit());
+    after(() => driver && driver.quit());
 
     it('Setup Metamask Extention', async function() {
         await helpers.sleep(2000)

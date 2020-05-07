@@ -119,6 +119,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
 
        await iUnderstand_Button.click()
        await helpers.sleep(5000)
+       await helpers.lockWallet(driver, 0)
     });
 
     it('Renders Lockscreen.svelte', async function() {

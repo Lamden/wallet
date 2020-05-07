@@ -50,8 +50,6 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.findElement(By.id('save-pwd')).click()
         await driver.findElement(By.id('i-understand')).click()
         await helpers.sleep(5000)
-        await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
-        await driver.findElement(By.id('login-btn')).click()
         assert.equal(true, true);
     });
     it('Renders Swaps.svelte', async function() {
@@ -111,7 +109,7 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('SwapsSendApproval.svelte - Waits for metamask to return tx status', async function() {
         await helpers.switchWindow(driver, 0) 
-        await driver.wait(until.elementLocated(By.className("circle-checkmark")), 8000);
+        await driver.wait(until.elementLocated(By.className("circle-checkmark")), 30000);
         let continue_Button = await driver.findElement(By.id('continue-btn'))
         await continue_Button.getAttribute('disabled').then(disabled => {
             assert.equal(disabled, null);
