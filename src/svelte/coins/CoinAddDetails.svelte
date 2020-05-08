@@ -93,34 +93,23 @@
             'nickname' : nickname,
             'symbol': selected.symbol,
             'vk': keyPair.vk,
+            'sk': keyPair.sk
         }
         if (addType === 3) coinInfo.sk = 'watchOnly'
-        addToCoinStore(coinInfo);
-    }
-
-    const addToCoinStore = (coinInfo) => {
-        const handleResponse = (response) => {
-            if (!response.added){
-                if (response.reason === "duplicate") {
-                    returnMessage = {type:'warning', text: "Coin already exists in wallet"} 
-                }
-                if (response.reason === "missingArg") {
-                    returnMessage = {type:'error', text: "Coin definition missing information"}
-                }
-            } else {
-                if (response.reason === "new") {
-                    returnMessage = {type:'success', text: `${selected.name} (${selected.symbol}) New Wallet Added`}
-                    if (addType === 1) mintTestCoins(coinInfo);
-                }
-                if (response.reason.includes('Private Key Updated')) {
-                    returnMessage = {type:'success', text: response.reason} 
-                }
+        console.log(coinInfo)
+        chrome.runtime.sendMessage({type: 'walletAddOne', data: coinInfo}, (result) => {
+            console.log(result)
+            if (result.added){
+                returnMessage = {type:'success', text: result.reason}
+                //mintTestCoins(coinInfo)
             }
-            if (returnMessage.type === 'success') SettingsStore.setLastCoinAddedDate()
-            finish();
-        }
-        CoinStore.addCoin(coinInfo, handleResponse)
 
+            if (!result.added){
+                if (result.reason.includes("already exists")) returnMessage = {type:'warning', text: result.reason}
+                else returnMessage = {type:'error', text: result.reason}
+            }
+            finish();
+        })
     }
 
     const createAndSaveKeys = () => {

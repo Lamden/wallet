@@ -1,10 +1,5 @@
 import { writable, get, derived } from 'svelte/store';
 
-import * as validators from 'types-validate-assert'
-const { validateTypes } = validators; 
-import { copyItem } from './stores.js';
-import { isCoinInfoObj } from '../objectValidations';
-
 export const createCoinStore = () => {
     let initialized = false;
 
@@ -40,42 +35,6 @@ export const createCoinStore = () => {
         subscribe,
         set,
         update,
-        //Add a coin to the internal coin storage
-        addCoin: (coinInfo, callback) => {
-            //Reject missing or undefined arguments
-            if (!isCoinInfoObj(coinInfo))  callback({added: false, reason: 'badArg'});
-
-            coinInfo = copyItem(coinInfo);
-            //Check if the coin already exists in coinstore
-            let coinFound = get(CoinStore).find( f => {
-                return f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
-            });
-            if (!coinFound){
-                if (coinInfo.sk === "watchOnly") {
-                    chrome.runtime.sendMessage({type: 'coinStoreAddWatchOnly', data: coinInfo}, (coinInfo) => {
-                        if (chrome.runtime.lastError) callback({added: false, reason: 'Error adding new coin to coinStore'})
-                        else callback({added: true, reason: 'new'})
-                    })
-                }else{
-                    //If the coin doesn't exists then push it to the array
-                    chrome.runtime.sendMessage({type: 'coinStoreAddNewLamden', data: coinInfo.nickname}, (response) => {
-                        if (chrome.runtime.lastError) callback({added: false, reason: 'Error adding new coin to coinStore'})
-                        else callback({added: true, reason: 'new'})
-                    })
-                }
-
-            } else {
-                //Check if we need to update the sk of a previously added "watch only" coin
-                if (coinFound.sk === "watchOnly" && coinInfo.sk !== "watchOnly"){
-                    chrome.runtime.sendMessage({type: 'updateWatchedCoin', data: coinInfo}, () => {
-                        callback({added: true, reason: `${coinFound.nickname}'s Private Key Updated`})
-                    })        
-                } else {
-                    //Reject adding a dupliate Coin
-                    callback({added: false, reason: 'duplicate'})
-                }
-            }
-        }
     };
 }
 //Create CoinStore instance

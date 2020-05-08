@@ -19,7 +19,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    //after(() => driver && driver.quit());
+    after(() => driver && driver.quit());
 
     it('Renders FirstRunIntro.svelte', async function() {
         let restoreWallet_Button =  await driver.findElement(By.id('restore-wallet'))

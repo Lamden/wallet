@@ -98,6 +98,7 @@
 .name{
     display: flex;
     width: 200px;
+    min-width: 200px;
     height: 88px;
     margin-right: 16px;
     border-bottom: 1px dashed var(--font-primary-darker);

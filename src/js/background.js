@@ -74,6 +74,7 @@ chrome.storage.local.get(
         //Expose Ethereum Controller on window so it can be accesses durring testing
         if (navigator.webdriver == true && firstRun) {
             window.walletEthereum = Ethereum
+            window.deleteCoin = coinStoreDelete
         }
     }
 )
@@ -263,38 +264,72 @@ const getWallet = (vk) => {
 	return coinStore.find(coin => coin.vk === vk)
 }
 
-const coinStoreAddNewLamdenCoin = (name) => {
-    let keyPair = Lamden.wallet.new_wallet()
-    keyPair.sk = encryptString(keyPair.sk)
-    if (keyPair.sk){
-        const coinInfo = {
-            'network': 'lamden',
-            'name': "Lamden",
-            'nickname' : name,
-            'symbol': "TAU",
-            'vk': keyPair.vk,
-            'sk': keyPair.sk
-        }
-        coinStoreAddNewCoin(coinInfo)
-        return coinInfo.vk
-    }else{
-        return false
+const coinStoreAddNewLamdenCoin = (nickname) => {
+    const keyPair = Lamden.wallet.new_wallet()
+    const coinInfo = {
+        'network': 'lamden',
+        'name': "Lamden",
+        nickname,
+        'symbol': "TAU",
+        'vk': keyPair.vk,
+        'sk': keyPair.sk
+    }
+    let result = coinStoreAddCoin(coinInfo)
+    result.vk = coinInfo.vk 
+    try{
+        return result
+    }finally{
+        refreshCoinStore();
+    }
+}
+const coinStoreAddOne = (coinInfo) => {
+    console.log(coinInfo)
+    let result = coinStoreAddCoin(coinInfo)
+    try{
+        return result
+    }finally{
+        if (result.added) refreshCoinStore();
     }
 }
 
-const updateWatchedCoin = (coinInfo) => {
-    let coinFound = coinStore.find( f => f.vk === coinInfo.vk);
-    if (coinFound){
-        coinFound.sk = coinInfo.sk;
+const coinStoreAddMany = (coins) => {
+    console.log(coins)
+    if (!validateTypes.isArray(coins)) return {error: `Error processing keyStore. Expected Array of coins but got <${typeof coins}> instead.`}
+    let coinAdded = false
+    coins.forEach(coin => {
+        coin.result = coinStoreAddCoin(coin)
+        if (coin.result.added) coinAdded = true
+    })
+    try{
+        return coins
+    }finally{
+        if (coinAdded) refreshCoinStore();
     }
-    setVaultStorage();
-    return 'ok'
+}
+
+const updateWatchedCoin = (coinFound, coinInfo) => {
+    if (coinInfo.sk === 'watchOnly') return false
+    if (coinFound.sk === 'watchOnly'){
+        coinFound.sk = encryptString(coinInfo.sk)
+        return true
+    }
+    return false
 }   
 
-const coinStoreAddNewCoin = (coinInfo) => {
-    coinStore.push(coinInfo)
-    setVaultStorage();
-    setCoinsStorage();
+const coinStoreAddCoin = (coinInfo) => {
+    let coinFound = getWallet(coinInfo.vk)
+    if (coinFound){
+        if(updateWatchedCoin(coinFound, coinInfo)) return {added: true, reason: `Updated the private key for '${coinFound.nickname}'`}
+        else return {added: false, reason: `Keypair already exists as '${coinFound.nickname}'`}
+    }else{
+        try{
+            if (coinInfo.sk !== 'watchOnly') coinInfo.sk = encryptString(coinInfo.sk)
+            coinStore.push(coinInfo)
+            return {added: true, reason: `Added ${coinInfo.nickname} to your wallet`}
+        }catch (e){
+            return {added: false, reason: e.message}
+        }
+    }
 }
 
 const coinStoreDelete = (coinInfo) => {
@@ -303,8 +338,7 @@ const coinStoreDelete = (coinInfo) => {
         if (coin.vk === coinInfo.vk) coinStore.splice(index, 1);
     })
     if (coinStore.length < before){
-        setVaultStorage();
-        setCoinsStorage();
+        refreshCoinStore();
         TxStoreDeleteAll(coinInfo.vk)
         return true
     }else{
@@ -345,6 +379,11 @@ const setCoinsStorage = () => {
 
 const wipeCoinsStorage = () => {
     chrome.storage.local.set({"coins": []});
+}
+
+const refreshCoinStore = () => {
+    setVaultStorage();
+    setCoinsStorage();
 }
 
 
@@ -691,7 +730,7 @@ const approveDapp = (sender, approveAmount) => {
         const messageData = confirmData.messageData
         let newWallet;
         if ((dappInfo && messageData.newKeypair) || !dappInfo){
-            newWallet = coinStoreAddNewLamdenCoin(messageData.appName)
+            newWallet = coinStoreAddNewLamdenCoin(messageData.appName).vk
         }else{
             newWallet = dappInfo.vk
         }
@@ -733,9 +772,6 @@ const hashApprovalRequest = (messageData) => {
     let copy = stripRef(messageData)
     if (validateTypes.isBoolean(copy.reapprove)) delete copy.reapprove
     if (validateTypes.isBoolean(copy.newKeypair)) delete copy.newKeypair
-    console.log(copy)
-    console.log(JSON.stringify(copy))
-    console.log(hashStringValue(JSON.stringify(copy)))
     return hashStringValue(JSON.stringify(copy))
 }
 
@@ -763,8 +799,7 @@ const DappStoreAddNew = (appUrl, vk, messageData, approveAmount) => {
     }
     dappsStore[appUrl].url = appUrl
     dappsStore[appUrl].vk = vk
-    
-
+    console.log(dappsStore)
     chrome.storage.local.set({"dapps": dappsStore});
 }
 
@@ -933,9 +968,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         ]})
                     }else{
                         sendResponse({errors:[
-                            `Your dApp was previously approved but no matching vk is currently found in the wallet.  
-                             Prompt the user to restore their keypair for ${dappInfo.vk}, 
-                             or add "reapprove = true, newKeypair = true" to your approve request to have a new keypair generated.`
+                            "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
+                             `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
+                             "or add 'reapprove = true, newKeypair = true' to your approve request to have a new keypair generated."
                         ]})
                     }
                     sendApproval = false;
@@ -1020,9 +1055,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 //Add a Lamnden Coin to the coinStore
                 if (message.type === 'coinStoreAddNewLamden') sendResponse(coinStoreAddNewLamdenCoin(message.data))
                 //Add a coin just for watching
-                if (message.type === 'coinStoreAddWatchOnly') {coinStoreAddNewCoin(message.data); sendResponse('ok')}
+                if (message.type === 'walletAddOne') {sendResponse(coinStoreAddOne(message.data))}
                 //Updated the sk of a previously only watched coin
-                if (message.type === 'updateWatchedCoin') sendResponse(updateWatchedCoin(message.data))
+                if (message.type === 'updateWatchedCoin') sendResponse(coinStoreAddOne(message.data))
+                //Process a keystore file
+                if (message.type === "walletAddMany") sendResponse(coinStoreAddMany(message.data))
                 //Delete a coin/wallet from the coinStore
                 if (message.type === 'coinStoreDelete') sendResponse(coinStoreDelete(message.data))
                 //Call the currentNetwork API to refresh all balances in the coinStore

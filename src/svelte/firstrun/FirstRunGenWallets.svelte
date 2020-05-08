@@ -42,16 +42,20 @@
     }
 
     const createStartingWallet = (resolve) => {
-        chrome.runtime.sendMessage({type: 'coinStoreAddNewLamden', data: 'My Lamden Address'}, (newCoinVK) => {
-            if (newCoinVK){
-                SettingsStore.setLastCoinAddedDate();
-                // Mint coins on mockchain for new wallet
-                let mockchain = NetworksStore.getPublicMockchain()
-                mockchain.API.mintTestNetCoins(newCoinVK, 100000)
+        chrome.runtime.sendMessage({type: 'coinStoreAddNewLamden', data: 'My Lamden Address'}, (result) => {
+            console.log(result)
+            if (result.error){
+                message = result.error
             }else{
-                message = 'Critical Failure: Could not encrypt key for intial wallet'
+                if (result.added){
+                SettingsStore.setLastCoinAddedDate();
+                resolve()
+                // Mint coins on mockchain for new wallet
+                //let mockchain = NetworksStore.getPublicMockchain()
+                //mockchain.API.mintTestNetCoins(newCoinVK, 100000)
+                }
+                message = result.reason
             }
-            resolve()
         })
     }
 </script>

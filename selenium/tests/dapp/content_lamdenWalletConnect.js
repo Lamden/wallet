@@ -60,11 +60,13 @@ describe('Content Script - Testing Dapp API', function () {
         httpServer.close()
      });
 
-    it('Test Setup: First Run Setup of wallet', async function() {
-        await driver.executeScript("window.open('http://localhost:5959','_blank');");
-        await helpers.switchWindow(driver, 1)
-        assert.equal(true, true)
-
+     context('Test Setup', function() {
+        it('Load Test Website', async function() {
+            await driver.executeScript("window.open('http://localhost:5959','_blank');");
+            await helpers.switchWindow(driver, 1)
+            assert.equal(true, true)
+    
+        });
     });
     context('lamdenWalletConnect', function() {
         it('Event Listener rejects non JSON detail', async function() {
@@ -414,6 +416,12 @@ describe('Content Script - Testing Dapp API', function () {
             assert.equal(response.approvals['testnet'].contractName, 'currency');
             assert.equal(response.approvals['testnet'].approvalHash, approvalHash);
         });
+        it('Send error if already authorized for a network/contract combo', async function() {
+            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
+            let response = await sendConnectRequest(connection, true)
+            assert.equal(response.errors.length, 1);
+            assert.equal(response.errors.includes(`App is already authorized to use ${connection.contractName} on ${connection.networkType}`), true);
+        });
         it('POPUP: Can Re-approve connection', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.contractName = "submission" 
@@ -455,6 +463,19 @@ describe('Content Script - Testing Dapp API', function () {
             assert.equal(response.approvals['testnet'].contractName, 'currency');
             assert.equal(response.approvals['testnet'].approvalHash, approvalHash);
             connectionInfo = response;
+        });
+        it('Sends error if the dapp was previously approved but the wallet has no keypair for it anymore', async function() {
+            await helpers.switchWindow(driver, 0)
+            await driver.executeScript(`
+                backpage = chrome.extension.getBackgroundPage();
+                backpage.deleteCoin({vk: "${connectionInfo.wallets[0]}"})
+            `);
+            await helpers.switchWindow(driver, 1)
+            await helpers.sleep(2000, true)
+            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
+            let response = await sendConnectRequest(connection, true)
+            assert.equal(response.errors.length, 1);
+            assert.equal(response.errors[0].includes(`Prompt the user to restore their keypair for vk '${connectionInfo.wallets[0]}'`), true);
         });
     })
 })
