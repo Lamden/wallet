@@ -39,9 +39,6 @@ let checkingTransactions = false;
 let savingTransactions = false;
 const LamdenNetworkTypes = ['mainnet','testnet','mockchain']
 
-
-
-
 /********************************************************************
  *  Storage handlers to persist the Lamden Wallet in chrome.storage.local
  ********************************************************************/
@@ -65,7 +62,7 @@ chrome.storage.local.get(
         balancesStore = getValue.balances;
         txStore = getValue.txs;
         networksStore = getValue.networks;
-        settingsStore = getValue.settings; 
+        settingsStore = getValue.settings;
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
         /********************************************************************
