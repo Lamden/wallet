@@ -89,21 +89,10 @@ describe('Testing Clearinghouse API Handler', function () {
         assert.equal(txInfo.status, true);
     })
 
-
-    it('clearingHouseAPI.js: Will throw an error if no clearinghouse URL us provided', function() {
-        let error;
-        try{
-            new ClearingHouse_API()
-        }catch (e) {
-            error = e.message
-        }
-        assert.equal(error, "Constructor needs a URL String");
-    })
-
     it('clearingHouseAPI.js: Can create a new class instance', function() {
         let error;
         try{
-            CH_API = new ClearingHouse_API(swapInfo.clearingHouseURL)
+            CH_API = new ClearingHouse_API()
         }catch (e) {
             error = e.message
         }

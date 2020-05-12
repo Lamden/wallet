@@ -3,16 +3,10 @@ const { validateTypes } = validators;
 const fetch = require('node-fetch');
 
 module.exports = class ClearingHouse_API{
-    constructor(url){
-        if(!validateTypes.isStringWithValue(url)) throw new TypeError('Constructor needs a URL String')
-        this.url = this.vaidateProtocol(url);
+    constructor(){
+        this.url = 'http://167.99.173.97/swap'
     }
 
-    vaidateProtocol(url){
-        let protocols = ['https://', 'http://']
-        if (protocols.map(protocol => url.includes(protocol)).includes(true)) return url
-        throw new Error('URL String must include http:// or https://')
-    }
     //This will throw an error if the protocol wasn't included in the host string
     send(method, path, data, callback){
         let parms = '';

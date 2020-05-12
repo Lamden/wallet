@@ -49,7 +49,7 @@
         })
         startChecking();
         try{
-            clearingHouseAPI = new ClearingHouse_API('http://localhost:8080')
+            clearingHouseAPI = new ClearingHouse_API()
             sendSwapInfo();
         }catch (e){console.log(e)}
     })
