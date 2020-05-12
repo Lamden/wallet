@@ -283,7 +283,6 @@ const coinStoreAddNewLamdenCoin = (nickname) => {
     }
 }
 const coinStoreAddOne = (coinInfo) => {
-    console.log(coinInfo)
     let result = coinStoreAddCoin(coinInfo)
     try{
         return result
@@ -293,7 +292,6 @@ const coinStoreAddOne = (coinInfo) => {
 }
 
 const coinStoreAddMany = (coins) => {
-    console.log(coins)
     if (!validateTypes.isArray(coins)) return {error: `Error processing keyStore. Expected Array of coins but got <${typeof coins}> instead.`}
     let coinAdded = false
     coins.forEach(coin => {
@@ -754,6 +752,13 @@ const rejectDapp = (sender) => {
     delete txToConfirm[getSenderHash(sender)]
 }
 
+const rejectTx = (sender) => {
+    const confirmData = txToConfirm[getSenderHash(sender)]
+    const { txInfo }  = confirmData.messageData.txData
+    sendMessageToTab(confirmData.url, 'txStatus', {status: 'Transaction Cancelled', errors: ['User closed Popup window'], rejected: JSON.stringify(txInfo) })
+    delete txToConfirm[getSenderHash(sender)]
+}
+
 const approveTransaction = (sender) => {
     const confirmData = txToConfirm[getSenderHash(sender)]
     if (!walletIsLocked){
@@ -799,7 +804,6 @@ const DappStoreAddNew = (appUrl, vk, messageData, approveAmount) => {
     }
     dappsStore[appUrl].url = appUrl
     dappsStore[appUrl].vk = vk
-    console.log(dappsStore)
     chrome.storage.local.set({"dapps": dappsStore});
 }
 
@@ -877,7 +881,7 @@ const getSenderHash = (sender) => {
 }
 
 const sendTxErrorResponse = (status, errors, rejected, sendResponse) => {
-    sendResponse({status, errors, rejected});
+    sendResponse({data:{status, errors, rejected}});
 }
 
 //Send a message to the tab that the App currently open in
@@ -932,21 +936,40 @@ const sendMessageToAllDapps = (type, data) => {
  *****************************************************************************/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (chrome.runtime.lastError) return;
-    const isFromAuthorizedDapp = fromAuthorizedDapp(sender.origin);
+    const isFromAuthorizedDapp = fromAuthorizedDapp(sender.origin); 
     const dappInfo = isFromAuthorizedDapp ? getDappInfo(sender.origin) : undefined;
     const isFromApp = fromApp(sender.url);
     const isFromConfirm = fromConfirm(sender.url);
+
+
+    //Error on Stale dApp Approval (dApp was approved by the vk no longer exists in the uesr's wallet for whatever reason)
+    if (isFromAuthorizedDapp && !dappVkInWallet(dappInfo.vk)){
+        let staleWallet = false;
+        //Don't error if this is a reconnect attempt to rectify this issue
+        try{
+            if (message.type !== 'lamdenWalletConnect') throw new Error('Stale Wallet')
+            let messageData = JSON.parse(message.data)
+            if (!messageData.reapprove || !messageData.newKeypair) throw new Error('Stale Wallet')
+        }catch (e){
+            staleWallet = true;
+        }
+        if (staleWallet) {
+            sendResponse({errors:[
+                "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
+                 `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
+                 "or add 'reapprove = true, newKeypair = true' to your approve request to have a new keypair generated."
+            ]})
+            return
+        }
+    }
 
    /*************************************************
     ** AUTHORIZATION MESSAGES
     **************************************************/
     //Process connection messages to have the user authorize an app
     if (message.type === 'lamdenWalletConnect') {
-        console.log(message)
-        console.log(walletIsLocked)
         //Reject if wallet is locked as we won't have the user's password stored to encrypt the new keypair
         if (walletIsLocked){
-            console.log("erroring that wallet is locked")
             sendResponse({errors:["Wallet is Locked"]})
             return
         }
@@ -956,38 +979,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse(connectionMessage)
             return
         }else{
-            let sendApproval = true;
             try{
-                //Check if the dApp is already authorized on the requested network and this isn't a "reapproval"
-                if (dappInfo[connectionMessage.networkType].contractName === connectionMessage.contractName && !connectionMessage.reapprove){
-                    //If it is check to see if there is a vk for it
-                    //If not it will need a "re-approval"
-                    if (dappVkInWallet(dappInfo.vk)){
+                //If this dApp is already approved then let it know that so we don't bother the user again
+                if (dappInfo[connectionMessage.networkType].contractName === connectionMessage.contractName){
+                    //Ignore if this is a reapprove request
+                    if (!connectionMessage.reapprove) {
                         sendResponse({errors:[
                             `App is already authorized to use ${connectionMessage.contractName} on ${connectionMessage.networkType}`
                         ]})
-                    }else{
-                        sendResponse({errors:[
-                            "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
-                             `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
-                             "or add 'reapprove = true, newKeypair = true' to your approve request to have a new keypair generated."
-                        ]})
+                        return
                     }
-                    sendApproval = false;
                 }
             }catch (e){}
-            if (sendApproval){
-                //Open Confirm popup to the user to approve the app
-                promptApproveDapp(sender, connectionMessage)
-                sendResponse("ok")
-            }
+
+            promptApproveDapp(sender, connectionMessage)
+            return
         }
     }
 
     //Reject any messages not from the App itself of from the autorized Dapp List.
     if (!isFromAuthorizedDapp && !isFromApp && !isFromConfirm){
         sendResponse({errors:[
-            `You must be an authorized dApp to send message type ${message.type}. Send 'lamdenWalletConnect' event first to authorize.`
+            `You must be an authorized dApp to send this message type. Send 'lamdenWalletConnect' event first to authorize.`
         ]})
     }else{
         /*************************************************
@@ -1144,8 +1157,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 approveDapp(sender, message.data)
             }
 
-            if (message.type === 'rejectDapp'){
-                rejectDapp(sender)
+            if (message.type === 'denyPopup'){
+                if (message.data === 'ApproveConnection') rejectDapp(sender)
+                if (message.data === 'ApproveTransaction') rejectTx(sender)
             }
 
             if (message.type === 'approveTransaction'){
@@ -1158,11 +1172,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         **************************************************/
         if (isFromAuthorizedDapp){
             if (!dappVkInWallet(dappInfo.vk)){
-                sendResponse({errors:[
-                    `Your dApp was previously approved but no matching vk is currently found in the wallet.  
-                    Prompt the user to restore their keypair for ${dappInfo.vk}, 
-                    or add "reapprove = true, newKeypair = true" to your approve request to have a new keypair generated.`
-                ]})
+                let errorMsg = [
+                    "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
+                     `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
+                     "or add 'reapprove = true, newKeypair = true' to your approve request to have a new keypair generated."
+                ]
+                if (message.type === 'dAppSendLamdenTransaction'){
+                    sendTxErrorResponse('Unable to process transaction', errorMsg, message.data, sendResponse)
+                }else{
+                    sendResponse({errors: errorMsg})
+                }
+
             }else{
                 //Send specifics about the wallet that the dApp may need to handle
                 if (message.type === 'getWalletInfo') sendResponse_WalletInfo(dappInfo, sendResponse);
@@ -1183,30 +1203,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         try{
                             //Make sure the txInfo was a JSON string (for security)
                             txInfo = JSON.parse(message.data)
-                            //Validate a network Name was passed as it will be needed later
-                            assertTypes.isStringWithValue(txInfo.networkType)
                         } catch (err) {
                             sendTxErrorResponse(errorStatus, ['Failed to Parse JSON object', err.message], rejectedTx, sendResponse)
+                            return
                         }
-                        //Reject transaction attempt if network type has not been approved
-                        if (!dappInfo[txInfo.networkType]) {
-                            errors = [`Transactions on ${txInfo.networkType} have not been approved for ${dappInfo.url}.`]
-                            sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse)
+
+                        //Validate networkType was provided
+                        if (!validateTypes.isStringWithValue(txInfo.networkType)) {
+                            sendTxErrorResponse(errorStatus, ['networkType <string> required but not provided'], rejectedTx, sendResponse);
+                            return
                         }
-                        
-                        //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
-                        const wallet = getWallet(dappInfo.vk);
-                        errors = [`Error: Expected to find entry in Lamden Wallet for dApp ${dappInfo.url} but no matching keypair exists for vk: ${dappInfo.vk}.  Submit new Connection request to have a new one created.`]
-                        if (!wallet) sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse)
                         
                         //Get the Lamden Network Object for the network types specified in the txInfo request 
-                        const network = getLamdenNetwork(txInfo.networkType)
+                        const network = getLamdenNetwork(txInfo.networkType.toLowerCase())
                         if (!network) {
                             errors = [`'networkType' <string> '${txInfo.networkType}' is not a valid network type. Valid types are ${LamdenNetworkTypes}.`]
                             sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse);
+                            return
+                        }
+
+                        //Reject transaction attempt if network type has not been approved
+                        if (!dappInfo[txInfo.networkType.toLowerCase()]) {
+                            errors = [`Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`]
+                            sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse)
+                            return
                         }
                         
                         try{
+                            //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
+                            const wallet = getWallet(dappInfo.vk);
                             //Create a unique ID for this transaction for reference later if needed
                             txInfo.uid = encryptString(wallet.vk, 'tracking-id')
                             //Set senderVk to the one assocated with this dapp

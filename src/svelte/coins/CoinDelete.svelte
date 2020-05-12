@@ -122,7 +122,8 @@
             {/if}
         </div>
         <div class="buttons flex-column">
-            <input  class="button__solid submit submit-button submit-button-text submit"
+            <input  id={"validate-btn"}
+                    class="button__solid submit submit-button submit-button-text submit"
                     class:button-red={passwordOkay}
                     class:button-purple={!passwordOkay}
                     type="submit" 

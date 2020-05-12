@@ -14,7 +14,7 @@ const { validateTypes } = validators
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
-describe('Content Script - Testing Dapp API', function () {
+describe('Content Script - Testing Dapp GetInfo API', function () {
     let driver;
     let httpServer;
 
@@ -34,7 +34,7 @@ describe('Content Script - Testing Dapp API', function () {
                 response.writeHeader(200, {"Content-Type": "text/html"});  
                 response.write(html);  
                 response.end();
-            }).listen(5959)
+            }).listen(5960)
         });
         await helpers.completeFirstRunSetup(driver, walletInfo.walletPassword, false)
     });
@@ -44,26 +44,28 @@ describe('Content Script - Testing Dapp API', function () {
         httpServer.close()
      });
 
-     context('Test Setup', function() {
+    // context('Test Setup', function() {
         it('Load Test Website', async function() {
+
+
             await driver.executeScript("window.open('http://localhost:5959','_blank');");
             await helpers.switchWindow(driver, 1)
             assert.equal(true, true)
         });
-     })
+     //})
 
-    context('lamdenWalletGetInfo', function() {
+    //context('lamdenWalletGetInfo', function() {
         it('Returns error if wallet is not authorized', async function() {
             let response = await helpers.sendGetInfoRequest(driver)
             assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("You must be an authorized dApp to send message type getWalletInfo. Send 'lamdenWalletConnect' event first to authorize."), true)
+            assert.equal(response.errors[0], "You must be an authorized dApp to send this message type. Send 'lamdenWalletConnect' event first to authorize.")
     
         });
 
         it('Create conenction with wallet to our teset dApp website', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approveDappConnection(driver, 2, 1)
+            await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors, null);
         });
@@ -87,6 +89,6 @@ describe('Content Script - Testing Dapp API', function () {
             assert.equal(response.locked, true)
             assert.equal(response.version.length > 0, true)
             assert.equal(response.wallets.length === 0, true)
-        });
-    })
+        });       
+    //})
 })

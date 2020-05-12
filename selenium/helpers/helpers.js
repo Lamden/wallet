@@ -21,8 +21,10 @@ const sleep = async (seconds, async) => {
 }
 
 const switchWindow = async (driver, windowNum) => {
+    await sleep(1000, true)
     let winHandles = await driver.getAllWindowHandles()
     await driver.switchTo().window(winHandles[windowNum])
+    await sleep(1000, true)
 }
 
 const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
@@ -84,47 +86,77 @@ const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 
-const approveDappConnection = async (driver, popupWindow, switchback) => {
-    await sleep(2000, true)
+const approvePopup = async (driver, popupWindow, switchback, preApprove = false) => {
+    //await sleep(1000, true)
     await switchWindow(driver, popupWindow)
-    let popupDeny_Buttom = await driver.wait(until.elementLocated(By.id("approve-btn")), 5000);
-    await popupDeny_Buttom.click()
-    await sleep(2000, true)
+    if (preApprove){
+        let chkBox = await driver.wait(until.elementLocated(By.id("pre-approve-chk")), 5000);
+        await chkBox.click()
+    }
+    let popupApprove_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 5000);
+    await popupApprove_Button.click()
+    //await sleep(1000, true)
     await switchWindow(driver, switchback)
-    await sleep(2000, true)
+    //await sleep(1000, true)
+}
+
+const denyPopup = async (driver, popupWindow, switchback) => {
+    //await sleep(1000, true)
+    await switchWindow(driver, popupWindow)
+    let popupDeny_Button = await driver.wait(until.elementLocated(By.id("deny-btn")), 5000);
+    await popupDeny_Button.click()
+    //await sleep(1000, true)
+    await switchWindow(driver, switchback)
+    //await sleep(2000, true)
 }
 
 const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) => {
     return driver.executeScript(`
-        window.walletResponse = new Promise((resolve, reject) => {window.resolver = resolve})
+        window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
         document.addEventListener('lamdenWalletInfo', (response) => {
             window.resolver(response.detail)
         });
         document.dispatchEvent( new CustomEvent('lamdenWalletConnect', {detail: '${JSON.stringify(connectionInfo)}'} ));
-        ${awaitResponse ? "return await window.walletResponse" : ""}
+        ${awaitResponse ? "return await window.walletInfoResponse" : ""}
     `);
 }
 
 const sendGetInfoRequest = async (driver, awaitResponse = true) => {
     return driver.executeScript(`
-        window.walletResponse = new Promise((resolve, reject) => {window.resolver = resolve})
+        window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
         document.addEventListener('lamdenWalletInfo', (response) => {
             window.resolver(response.detail)
         });
         document.dispatchEvent( new CustomEvent('lamdenWalletGetInfo'));
-        ${awaitResponse ? "return await window.walletResponse" : ""}
+        ${awaitResponse ? "return await window.walletInfoResponse" : ""}
     `);
 }
 
 const getWalletResponse = async (driver) => {
     return driver.executeScript(`
-        return await window.walletResponse
+        return await window.walletInfoResponse
+    `);
+}
+
+const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
+    return driver.executeScript(`
+        window.walletTxResult = new Promise((resolve, reject) => {window.txResolver = resolve})
+        document.addEventListener('lamdenWalletTxStatus', (response) => {
+            window.txResolver(response.detail)
+        });
+        document.dispatchEvent( new CustomEvent('lamdenWalletSendTx', {detail: '${JSON.stringify(transactionInfo)}'} ));
+        ${awaitResponse ? "return await window.walletTxResult" : ""}
+    `);
+}
+
+const getTxResult = async (driver) => {
+    return driver.executeScript(`
+        return await window.walletTxResult
     `);
 }
 
 const closeTest = (driver, httpServer = undefined) => {
-    driver && driver.quit();
-    if (httpServer) httpServer.close();
+
 }
 module.exports = {
     sleep,
@@ -134,8 +166,9 @@ module.exports = {
     hashStringValue,
     unlockWallet, lockWallet,
     sendConnectRequest, sendGetInfoRequest,
-    approveDappConnection,
+    approvePopup, denyPopup,
     getWalletResponse,
-    closeTest
+    closeTest,
+    sendTx, getTxResult
 
 }

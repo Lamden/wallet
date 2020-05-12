@@ -56,7 +56,7 @@
 	}
 
 	const sendRejection = () => {
-		if (!confirmed) chrome.runtime.sendMessage({type: 'rejectDapp'})
+		if (!confirmed) chrome.runtime.sendMessage({type: 'denyPopup', data: confirmData.type})
 	}
 
 	window.addEventListener("beforeunload", sendRejection);
