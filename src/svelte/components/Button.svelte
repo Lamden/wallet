@@ -8,8 +8,8 @@
     export let iconPosition = 'before';
     export let iconInvert = false;
     export let width = 'unset';
-    export let height = 'unset';
-    export let padding = '13px 16px';
+    export let height = '42px';
+    export let padding = '0 16px';
     export let margin = 'unset';
     export let classes = 'button__solid';
     export let styles = '';
@@ -40,10 +40,6 @@ button{
     margin: 0 11px 0 0; 
 }
 
-.icon {
-    /*width: 16px;*/
-}
-
 .icon-left {
     margin: 0 8px 0 0;   
 }
@@ -59,21 +55,32 @@ button{
 .icon-invert{
     filter: invert(1);
 }
+.disabled{
+    color: grey;
+}
+.disabled.button__purple:hover{
+    background: #461bc233;
+}
+.disabled.button__purple{
+    background: #461bc233;
+}
 
 </style>
 
-<button class={`${classes}`}
+<button 
+        class={`${disabled ? 'disabled ' : ''}${classes}`}
         id={id}
         on:click={click}
         disabled={disabled}
         style="min-width: fit-content; width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
         class:icon-after={iconAfter}
+        
         tabIndex={tabIndex}
         type="button"
     >
 
     {#if icon !== ''}
-        <div class="icon" style={`width: ${iconWidth}; fill:${'blue'};`} 
+        <div style={`width: ${iconWidth};`} 
             class:icon-left={!iconAfter} 
             class:icon-right={iconAfter}
             class:icon-invert={iconInvert}>{@html icon}</div>

@@ -71,6 +71,7 @@
     background: #2b2b2b;
     box-sizing: border-box;
     padding: 15px;
+    margin-bottom: 1rem;
 }
 
 .checkbox-row{
@@ -124,7 +125,7 @@
             autofocus={true}
         />
         <div class="checkbox-row flex-row">
-            <input type="checkbox" bind:checked={approvePreApprove}>
+            <input id="pre-approve-chk" type="checkbox" bind:checked={approvePreApprove}>
             <span class="text-subtitle2">{`pre-approve stamp amount`}</span>
         </div>
     </div>

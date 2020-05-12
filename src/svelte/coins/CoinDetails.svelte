@@ -97,7 +97,7 @@
 	min-height: 247px;
 	border-radius: 4px;
 	margin-bottom: 18px;
-    padding: 40px;
+    padding: 40px 40px 26px;
     background-size: cover;
     background-repeat: no-repeat;
 }

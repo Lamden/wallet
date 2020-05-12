@@ -1,10 +1,5 @@
 import { writable, get, derived } from 'svelte/store';
 
-import * as validators from 'types-validate-assert'
-const { validateTypes } = validators; 
-import { copyItem } from './stores.js';
-import { isCoinInfoObj } from '../objectValidations';
-
 export const createCoinStore = () => {
     let initialized = false;
 
@@ -40,54 +35,6 @@ export const createCoinStore = () => {
         subscribe,
         set,
         update,
-        //Add a coin to the internal coin storage
-        addCoin: (coinInfo) => {
-            //Reject missing or undefined arguments
-            if (!isCoinInfoObj(coinInfo)) return {added: false, reason: 'badArg'};
-
-            //Set the coin to watch only if no private key supplied
-            if (!coinInfo.sk) coinInfo.sk = 'watchOnly'
-            
-            coinInfo = copyItem(coinInfo);
-            //Check if the coin already exists in coinstore
-            let coinFound = get(CoinStore).find( f => {
-                return f.network === coinInfo.network && f.symbol === coinInfo.symbol && f.vk === coinInfo.vk;
-            });
-            if (!coinFound){
-                //If the coin doesn't exists then push it to the array
-                CoinStore.update(coinstore => {
-                    coinstore.push(coinInfo)
-                    chrome.storage.local.set({"coins": coinstore});
-                    return coinstore;
-                })
-                return {added: true, reason: 'new'}
-            } else {
-                //Check if we need to update the sk of a previously added "watch only" coin
-                if (coinFound.sk === "watchOnly" && coinInfo.sk !== "watchOnly"){
-                    CoinStore.update(coinstore => {
-                        coinstore.map( coin => {
-                            if(coin.network === coinInfo.network && coin.symbol === coinInfo.symbol && coin.vk === coinInfo.vk){
-                                coin.sk = coinInfo.sk;
-                            }
-                        });
-                        chrome.storage.local.set({"coins": coinstore});
-                        return coinstore;
-                    })
-                    return {added: true, reason: `${coinFound.nickname}'s Private Key Updated`}
-                } else {
-                    //Reject adding a dupliate Coin
-                    return {added: false, reason: 'duplicate'}
-                }
-            }
-        },
-        //Retrive a specific coin from the Coin Store
-        getCoin: (vk) => {
-            //Reject missing or undefined arguments
-            if (!validateTypes.isStringWithValue(vk)) return;
-
-            //Return the matching coin (will be undefined if not matched)
-            return get(CoinStore).find( f => f.vk === vk);
-        }
     };
 }
 //Create CoinStore instance
@@ -103,7 +50,7 @@ export const coinsDropDown = derived(CoinStore, ($CoinStore) => {
     $CoinStore.map(c => {
         returnList.push({
             value: c,
-            name: `${c.nickname} \n${c.vk.substring(0, 52)}...`,
+            name: `${c.nickname} ${c.vk}`,
             selected: false
         })
     })

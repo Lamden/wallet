@@ -4,6 +4,8 @@
     
 
     export let message = '';
+    export let subMessage = '';
+    export let width = '89px';
 
 </script>
 
@@ -18,8 +20,6 @@
 }
 
 .spinner{
-    width: 89px;
-    height: 89px;
 	animation: rotation 5s infinite linear;
 }
 
@@ -39,6 +39,7 @@
 </style>
 
 <div class="loading">
-    <div class="spinner" >{@html spinner}</div>
+    <div class="spinner" style={`width: ${width}; height: ${width};`}>{@html spinner}</div>
     {#if message !== ''}<h6 class="message text-primary">{message}</h6>{/if}
+    {#if subMessage !== ''}<p class="text-primary text-subtitle2">{subMessage}</p>{/if}
 </div>

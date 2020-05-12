@@ -44,6 +44,7 @@
     const saveTxDetails = (e) => {
         txData = {...e.detail};
         currentStep = currentStep + 1; 
+        
     }
 
     const createTxDetails = () => {

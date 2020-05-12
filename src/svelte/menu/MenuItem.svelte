@@ -77,11 +77,12 @@
 .selected{
     background-color: #461BC2;
 }
+
 .warning-icon{
-    width: 18px;
-    margin-right: 29px;
-    margin-left: -47px;
-    z-index: 10;
+    position: absolute;
+    width: 13px;
+    margin-left: -6px;
+    margin-top: -4px;
 }
 
 @media (min-width: 900px) {
@@ -105,6 +106,14 @@
         height: 14px;
         margin-right: 15px;
     }
+    .warning-icon{
+        display: block;
+        width: 18px;
+        margin-right: 29px;
+        margin-left: -47px;
+        margin-top: 0px;
+        z-index: 10;
+    }
 }
 </style>
 
@@ -118,10 +127,12 @@
     <div class="logo">{@html menuItem.logo}</div>
     <span class="name"> {menuItem.name} </span>
     {#if backupPage && $needsBackup}
-        <div class="warning-icon" title={menuItem.name}>
+        <div class="warning-icon">
             {@html warningIcon}
         </div>
     {/if}
-    <div class="floating-label text-subtitle2 ">{menuItem.name}</div>
+    <div class="floating-label text-subtitle2 ">
+        {menuItem.name}
+    </div>
 </div>
 

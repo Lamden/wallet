@@ -19,7 +19,7 @@
 
 <style>
 .box{
-    width: 354;
+    width: 354px;
     min-width: 200px;
     height: 100%;
     justify-content: center;

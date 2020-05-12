@@ -92,43 +92,22 @@
             'name': selected.name,
             'nickname' : nickname,
             'symbol': selected.symbol,
-            'vk': keyPair.vk
+            'vk': keyPair.vk,
+            'sk': keyPair.sk
         }
-        if (addType !== 3) {
-             chrome.runtime.sendMessage({type: 'encryptSk', data: keyPair.sk}, (encryptedSk) => {
-                if (encryptedSk){
-                    coinInfo.sk = encryptedSk;
-                    addToCoinStore(coinInfo);
-                }else{
-                    returnMessage = {type:'error', text: `Error encrypting key for ${coinInfo.name} - ${coinInfo.symbol}`}
-                    finish()
-                }
-            })
-        }else{
-            addToCoinStore(coinInfo);
-        } 
-    }
+        if (addType === 3) coinInfo.sk = 'watchOnly'
+        chrome.runtime.sendMessage({type: 'walletAddOne', data: coinInfo}, (result) => {
+            if (result.added){
+                returnMessage = {type:'success', text: result.reason}
+                //mintTestCoins(coinInfo)
+            }
 
-    const addToCoinStore = (coinInfo) => {
-        let response = CoinStore.addCoin(coinInfo)
-        if (!response.added){
-            if (response.reason === "duplicate") {
-                returnMessage = {type:'warning', text: "Coin already exists in wallet"} 
+            if (!result.added){
+                if (result.reason.includes("already exists")) returnMessage = {type:'warning', text: result.reason}
+                else returnMessage = {type:'error', text: result.reason}
             }
-            if (response.reason === "missingArg") {
-                returnMessage = {type:'error', text: "Coin definition missing information"}
-            }
-        } else {
-            if (response.reason === "new") {
-                returnMessage = {type:'success', text: `${selected.name} (${selected.symbol}) New Wallet Added`}
-                if (addType === 1) mintTestCoins(coinInfo);
-            }
-            if (response.reason.includes('Private Key Updated')) {
-                returnMessage = {type:'success', text: response.reason} 
-            }
-        }
-        if (returnMessage.type === 'success') SettingsStore.setLastCoinAddedDate()
-        finish();
+            finish();
+        })
     }
 
     const createAndSaveKeys = () => {

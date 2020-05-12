@@ -106,6 +106,15 @@ import LockScreen from './misc/LockScreen.svelte';
 import Transactions from './misc/Transactions.svelte';
 import About from './misc/About.svelte';
 
+//Swaps
+import Swaps from './swaps/Swaps.svelte';
+import SwapsMain from './swaps/SwapsMain.svelte';
+import SwapsConnectMetamask from './swaps/SwapsConnectMetamask.svelte';
+import SwapsChooseLamden from './swaps/SwapsChooseLamden.svelte';
+import SwapsSendApproval from './swaps/SwapsSendApproval.svelte';
+import SwapsCheckStatus from './swaps/SwapsCheckStatus.svelte';
+import SwapsPerformSwap from './swaps/SwapsPerformSwap.svelte';
+
 export const RestorePages = {
     RestoreMain, 
     RestoreUpload, 
@@ -137,12 +146,18 @@ export const FirstRun = {
     ...RestorePages
 };
 
+export const SwapsPages = { 
+    SwapsConnectMetamask, SwapsChooseLamden, SwapsSendApproval, SwapsCheckStatus, SwapsPerformSwap
+};
+
 export const Pages = { 
     CoinsMain, CoinDetails, 
     LockScreen, 
-    BackupMain, 
+    BackupMain,
+    SwapsMain, 
     Restore,
     Backup,
+    Swaps,
     DevToolsMain, 
     HistoryMain, 
     About, 
@@ -197,6 +212,7 @@ export {
     HistoryMain, PendingTransactions, PendingTransaction,
     Transactions, Transaction,
     About,
-    IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx
+    IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
+    Swaps
 };
 </script>

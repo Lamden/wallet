@@ -1,5 +1,6 @@
 # Lamden Wallet
-version: 0.9.24
+
+version: 0.10.0
 
 ## Install
 
@@ -36,15 +37,4 @@ npm run build
 When you want to start developing the extension and want to enable live reload use
 ```
 npm run dev
-```
-
-## Unit Testing
-```
-npm run test-all-stores
-npm run test-all-helpers
-npm run test-all-lamden
-```
-To run these tests you need to comment out the Monaco import in ./src/svelte/components/Monaco.svelte and uncomment the dummy export
-```
-npm run test-all-workflows
 ```

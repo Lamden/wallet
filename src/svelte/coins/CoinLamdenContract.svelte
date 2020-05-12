@@ -202,6 +202,7 @@
                 let argValue = argValueTracker[contractName][methodName][arg]
                 if (argValue[argValue.selectedType].value !== ""){
                     kwargs[arg] = argValue[argValue.selectedType].value
+                    if (argValue.selectedType === 'text') kwargs[arg] = kwargs[arg].trim()
                 }
             }
         })
@@ -241,7 +242,6 @@
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
-        innerHeight={'70px'}
         label={'Select Wallet to Send From'}
         styles="margin-bottom: 19px;"
         required={true}

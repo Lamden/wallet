@@ -1,5 +1,5 @@
 <script>
-	import { onMount, setContext } from 'svelte';
+	import { onMount, onDestroy, setContext } from 'svelte';
 
     //Images
     import lamden_logo from '../img/nav/lamden_logo_new.svg';
@@ -21,19 +21,28 @@
 		ApproveTransaction
 	}
 	let confirmData;
+	let confirmed = false;
 
 	onMount(() => {
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
 			if (response) confirmData = response
 		})
+
+		return () => {
+			window.removeEventListener("beforeunload", sendRejection);
+		}
 	});
 
+	const confirm = () => confirmed = true;
+
 	const sendApproveApp = (approveAmount) => {
+		confirm();
 		chrome.runtime.sendMessage({type: 'approveDapp', data: approveAmount})
 		closePopup()
 	}
 
 	const sendApprovetx = () => {
+		confirm();
 		chrome.runtime.sendMessage({type: 'approveTransaction'})
 		closePopup()
 	}
@@ -45,6 +54,12 @@
 	const openNewTab = (url) => {
 		window.open(url, '_blank');
 	}
+
+	const sendRejection = () => {
+		if (!confirmed) chrome.runtime.sendMessage({type: 'denyPopup', data: confirmData.type})
+	}
+
+	window.addEventListener("beforeunload", sendRejection);
 </script>
 
 <style>

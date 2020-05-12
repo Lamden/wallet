@@ -47,13 +47,15 @@
 .content{
     box-sizing: border-box;
     padding: 0px 24px 0 242px;
+    min-width: 498px;
     width: 498px;
     justify-content: center;
 }
 
-.spacer{
-    flex-grow: 1;
-    max-width: 314px;
+.key-box{
+    width: 100%;
+    margin: 0 auto;
+    max-width: 820px;
 }
 
 .header{
@@ -186,7 +188,6 @@ label.css-label-error {
     width: 18px;
     height: 18px;
 }
-
 </style>
 
 <div class="restore-complete flex-row">
@@ -211,42 +212,48 @@ label.css-label-error {
             Help & FAQ
         </a>
     </div>
-    <div class="spacer"></div>
-    <div class="flex-column">
+    <div class="key-box flex-column">
         <div class="flex-row header text-subtitle2 text-primary-light">
             <div class="header-name">{'Name'}</div>
             <div class="header-address">{'Address'}</div>
         </div>
-        {#each keys.keyList as key, i}
-            {#if key.message}
-                <div class="flex-row key-row">
-                    <div class="checkbox-box">
-                        <input type="checkbox" class="css-checkbox" bind:checked={keys.keyList[i].checked} class:added={key.added}>
-                        <label class="css-label"></label>
-                        <div class="checkmark-icon">{@html checkmarkWhite}</div>
-                    </div>
-                    <div class="name">{`${key.name}`}</div>
-                    <div class="flex-column result-box text-subtitle1 text-primary-dark">
-                        <div>{`${key.vk}`}</div>
-                        <div class="message">{key.message}</div>
-                    </div>
-                    
+        {#if keys.error}
+            <div class="flex-row key-row">
+                <div class="error-icon">
+                    {@html errorIcon}
                 </div>
-            {/if}
-            {#if key.error}
-                <div class="flex-row key-row">
-                    <div class="error-icon">
-                        {@html errorIcon}
+                <p class="text-red text-body2">{keys.error}</p>
+            </div>
+        {:else}
+            {#each keys.keyList as key, i}
+                {#if key.result.added}
+                    <div class="flex-row key-row">
+                        <div class="checkbox-box">
+                            <input type="checkbox" class="css-checkbox" bind:checked={keys.keyList[i].checked} class:added={key.added}>
+                            <label class="css-label"></label>
+                            <div class="checkmark-icon">{@html checkmarkWhite}</div>
+                        </div>
+                        <div class="name">{`${key.name}`}</div>
+                        <div class="flex-column result-box text-subtitle1 text-primary-dark">
+                            <div>{`${key.vk}`}</div>
+                            <div class="message">{key.result.reason}</div>
+                        </div>
                     </div>
-                    <div class="name">{`${key.name}`}</div>
-                    <div class="flex-column result-box text-subtitle1 text-primary-dark ">
-                        <div>{key.vk}</div>
-                        <div class="error">{key.error}</div>
+                {:else}
+                    <div class="flex-row key-row">
+                        <div class="error-icon">
+                            {@html errorIcon}
+                        </div>
+                        <div class="name">{`${key.name}`}</div>
+                        <div class="flex-column result-box text-subtitle1 text-primary-dark ">
+                            <div>{key.vk}</div>
+                            <div class="error">{key.result.reason}</div>
+                        </div>
+                        
                     </div>
-                    
-                </div>
-            {/if}
-        {/each}
+                {/if}
+            {/each}
+        {/if}
     </div>
 
 </div>

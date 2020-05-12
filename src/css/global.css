@@ -55,6 +55,13 @@ body{
     color: var(--primary-color);
 }
 
+.text-red{
+    color: #f72d2d;
+}
+.text-green{
+    color: #31ce31;
+}
+
 .text-cyan{
     color: var(--font-accent);
 }
@@ -73,6 +80,10 @@ body{
 
 .text-secondary{
     color: var(--font-secondary);
+}
+
+.text-bold {
+    font-weight: bold
 }
 
 .text-body1{
@@ -226,12 +237,21 @@ body{
 }
 
 .button__purple{
-    color: #FFFFFF;
+    color: #f0ecff;
     background: var(--primary-color);
 }
 
 .button__purple:hover{
     background: #5120e0;
+}
+
+.button__green{
+    color: #f0fff2;
+    background: #1bc231;
+}
+
+.button__green:hover{
+    background: #4ed660;
 }
 
 .button__blue:hover{

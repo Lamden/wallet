@@ -1,5 +1,5 @@
 <script>
-	import { onMount, setContext } from 'svelte';
+	import { onMount, onDestroy, setContext } from 'svelte';
 
 	//Utils
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
@@ -19,14 +19,22 @@
 	let showModal = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain']
+	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain']
 
 	$: walletIsLocked = true;
 	$: firstRun = undefined;
 
-	chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-		if (message.type === 'walletIsLocked') walletIsLocked = message.data;
-	})
+	const walletIsLockedListener = (message, sender, sendResponse) => {
+		if (message.type === 'walletIsLocked') 
+		{
+			//Make sure the wallet was actually unlocked by the user
+			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
+				walletIsLocked = message.data;
+			})
+		}
+	}
+
+	chrome.runtime.onMessage.addListener(walletIsLockedListener)
 
 	onMount(() => {
 		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
@@ -34,6 +42,10 @@
 		})
 		checkFirstRun();
 	});
+
+	onDestroy(() =>{
+        chrome.runtime.onMessage.removeListener(walletIsLockedListener)
+    })
 
 	setContext('app_functions', {
 		switchPage: (name, data) => switchPage(name, data),
@@ -44,6 +56,7 @@
 		appHome: () => switchPage('CoinsMain'),
 		checkFirstRun: () => checkFirstRun()
 	});
+
 
 	const checkFirstRun = () => {
 		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {

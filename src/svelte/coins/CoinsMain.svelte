@@ -18,6 +18,7 @@
 	import refresh from '../../img/menu_icons/icon_refresh.svg';
 	import plus from '../../img/menu_icons/icon_plus.svg';
 
+
 	//Utils
 	import { decryptObject } from '../../js/utils.js';
 
@@ -103,18 +104,17 @@
 	width: 203px;
 }
 .buttons{
-	flex-grow: 1;
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: column;
+	
 }
 .balance-words{
 	padding-left: 42px;
 	margin: 14px 0;
+	
 }
 .balance-total{
 	padding-left: 42px;
-	align-items: center;
+	align-items: flex-start;
+	flex-grow: 1;
 }
 
 .spinner{
@@ -145,14 +145,18 @@
 				 {@html refresh} 
 			</div>
 		</div>
-		<div class="buttons">
+		<div class="flex-row buttons">
 			<Button id={'add-btn'}
 				classes={'button__transparent button__blue'}
 				name="Add Wallet"
 				width={'155px'}
+				margin={'0 20px 0 0'}
 		 		click={() => openModal('CoinAdd')} 
-				icon={plus}/>
+				icon={plus}
+				iconWidth={'19px'}
+			/>
 		</div>
+
 	</div>
 	{#if $currentNetwork}
 		{#if $CoinStore.length === 0}

@@ -17,6 +17,8 @@
     //Props
     export let keys;
     export let restore = false;
+    let done = false;
+    let errorMsg = ""
     let completedKeys = 0;
     let count = 0;
     let timeoutCount = 15;
@@ -25,7 +27,7 @@
         new Promise(function(resolve) {
             addKeys();
             let timerId = setTimeout(function checkProcessing() {
-                if (completedKeys === keys.keyList.length){
+                if (done){
                     clearTimeout(timerId);
                     resolve()
                 }else{
@@ -33,43 +35,27 @@
                     if (count < timeoutCount) timerId = setTimeout(checkProcessing, 1000);
                     else {
                         clearTimeout(timerId);
+                        keys.error = "Unknown Error: Timed out waiting for keys to be added."
                         resolve()
                     }
                 }
             }, 1000);
         })
         .then(res => {
-            setKeys(keys);
-            nextPage();
+            setKeys(keys)
+            nextPage();  
         })
     });
 
     const addKeys = (resolve) => {
-        keys.keyList.map( key => {
-            if (key.checked) {
-                chrome.runtime.sendMessage({type: 'encryptSk', data: key.sk}, (encryptedSk) => {
-                    if (encryptedSk){
-                        key.sk = encryptedSk
-                        let response = CoinStore.addCoin(key)
-                        if (typeof response.reason !== 'undefined'){
-                            if (response.reason === "duplicate") key.error = "Coin already exists in wallet"
-                            if (response.reason === "new") key.message = `Added ${key.nickname} to your wallet`
-                            if (response.reason.includes('Private Key Updated')) key.message = `Updated wallet ${key.nickname} with private key info`
-                        }else{
-                            key.error = "Unable to add key to wallet due to unknown error"
-                        }
-                    }else{
-                        key.error =  `Error encrypting key for ${key.name} - ${key.symbol}`
-                    }
-                    completedKeys = completedKeys + 1
-                })
-            }else{
-                key.message =  "skipped"
-                completedKeys = completedKeys + 1
-            }
+        let checkedKeys = keys.keyList.filter(key => key.checked)
+        chrome.runtime.sendMessage({type: 'walletAddMany', data: checkedKeys}, (result) => {
+            if (!result.error)keys.keyList = result
+            else keys.error = result.error
+            done = true;
         })
-    }
 
+    }
 </script>
 
 <style>

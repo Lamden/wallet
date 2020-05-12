@@ -36,39 +36,53 @@ document.addEventListener('lamdenWalletConnect', (event) => {
 document.addEventListener('lamdenWalletSendTx', (event) => {
     const detail = event.detail
     //If a detail value was passed validate it is a JSON string.  If not then pass back an error to the webpage
-    if (isJSON(detail)) lamdenWalletSendTx(detail)
+    if (isJSON(detail)) {
+        lamdenWalletSendTx(detail)}
     else{
         const errors = ['Expected event detail to be JSON string']
-        document.dispatchEvent(new CustomEvent('txStatus', {detail: {errors, rejected: detail}}));
+        document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: {errors, rejected: detail}}));
         return
     }
 });
+
 const lamdenWalletSendTx = (detail) => {  
     chrome.runtime.sendMessage({type: 'dAppSendLamdenTransaction', data: detail}, (response) => {
-        if(!chrome.runtime.lastError){
-            document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: response}));
+        if (chrome.runtime.lastError) return
+        if(response !== 'ok'){
+            returnTxStatusToPage(response)
         }
     });
 }
 
+const returnTxStatusToPage = (txResult) => {
+    
+    if (typeof txResult.data === 'undefined' && typeof txResult.errors !== 'undefined'){
+        txResult = { status: "error", errors: txResult.errors}
+    }else{
+        try{
+            txResult.status = txResult.data.resultInfo.type
+        }catch (e) {
+            txResult.status = txResult.data.status
+        }
+    }
+    document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: txResult}));
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "txStatus"){
-        let detail = {
-            status: message.status,
-            data: message.data
+    //Accept only messages from extention background script
+    if(sender.id === chrome.runtime.id && sender.origin === "null"){
+        if (message.type === "txStatus"){
+            delete message.type
+            returnTxStatusToPage(message)
         }
-        if (typeof detail.status === 'undefined' && typeof detail.data.resultInfo !== 'undefined'){
-            detail.status = detail.data.resultInfo.type
+
+        if (message.type === "sendWalletInfo"){
+            getWalletInfo();
         }
-        document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail}));
-    }
 
-    if (message.type === "sendWalletInfo"){
-        getWalletInfo();
-    }
-
-    if (message.type === 'sendErrorsToTab'){
-        document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: message.data}));
-        sendResponse('ok')
+        if (message.type === 'sendErrorsToTab'){
+            document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: message.data}));
+            sendResponse('ok')
+        }
     }
 });

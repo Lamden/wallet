@@ -1,0 +1,30 @@
+{
+    "basicConnectionInfo": {
+        "appName": "Dapp Testing",
+        "description": "This is a Unit Test of the Dapp connection API. This has more than 60 characters.",
+        "contractName": "con_wallet_testing",
+        "networkType": "testnet",
+        "logo": "/images/logo.png"
+    },
+    "preApprovalInfo": {
+        "stampsToPreApprove": 1000000, 
+        "message": "Please approve this amount of stamps"
+    },
+    "charmsInfo": [{
+        "formatAs": "string",
+        "iconPath": "/images/charm.png",
+        "variableName": "yourState",
+        "key": "wallet_testing",
+        "name": "Testing Value"
+    }],
+    "background": "/images/background.png",
+    "basicTransactionInfo":{
+        "methodName": "set_value",
+        "networkType": "testnet",
+        "kwargs":{
+            "key_name": "wallet_testing",
+            "key_value" : ""
+        },
+        "stampLimit": 1000000
+    }
+}
