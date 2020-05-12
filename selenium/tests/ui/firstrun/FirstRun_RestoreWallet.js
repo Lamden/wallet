@@ -9,7 +9,7 @@ const walletInfo = require("../../../fixtures/walletInfo")
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
-describe('FirstRun_RestoreWallet - Complete First Run Setup', function () {
+describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file', function () {
     let driver;
     before(async function() {
         driver = await new Builder()

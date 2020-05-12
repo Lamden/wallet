@@ -202,6 +202,7 @@
                 let argValue = argValueTracker[contractName][methodName][arg]
                 if (argValue[argValue.selectedType].value !== ""){
                     kwargs[arg] = argValue[argValue.selectedType].value
+                    if (argValue.selectedType === 'text') kwargs[arg] = kwargs[arg].trim()
                 }
             }
         })

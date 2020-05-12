@@ -232,6 +232,11 @@ const balancesStoreUpdateAll = (networkInfo) => {
                     }
                 })
             })
+        }else{
+            updatingBalances = true;
+            chrome.storage.local.set({"balances": balancesStore}, () =>{
+                updatingBalances = false;
+            });
         }
     }
 }
