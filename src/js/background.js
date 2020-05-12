@@ -370,7 +370,7 @@ const decryptVaultStorage = () => {
         if (typeof decryptedStore.data === "undefined") throw new Error('Could not get vault data')
         coinStore = decryptedStore.data
     }catch (e){
-        throw new Error('Could not get vault data')
+        console.log(e.message)
     }
 }
 
