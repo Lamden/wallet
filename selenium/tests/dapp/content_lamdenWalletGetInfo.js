@@ -5,11 +5,6 @@ let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
 let walletInfo = require("../../fixtures/walletInfo")
 let dappsInfo = require("../../fixtures/dappsInfo.json")
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
-var validators = require('types-validate-assert');
-const { validateTypes } = validators
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -19,38 +14,27 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
     let httpServer;
 
     before(async function() {
+        httpServer = await helpers.startServer(config.port)
         driver = await new Builder()
                 .forBrowser('chrome')
                 .setChromeOptions(chromeOptions)
                 .build();
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
-        const htmlPath = path.resolve(config.workingDir, 'selenium', 'fixtures', 'index.html')
-        fs.readFile(htmlPath, function (err, html) {
-            if (err) {
-                console.log(err)
-            }       
-            httpServer = http.createServer(function(request, response) {  
-                response.writeHeader(200, {"Content-Type": "text/html"});  
-                response.write(html);  
-                response.end();
-            }).listen(5960)
-        });
         await helpers.completeFirstRunSetup(driver, walletInfo.walletPassword, false)
     });
 
     after(() => {
-        driver && driver.quit();
-        httpServer.close()
+        return helpers.closeTest(driver, httpServer)
      });
 
     // context('Test Setup', function() {
-        it('Load Test Website', async function() {
-
-
-            await driver.executeScript("window.open('http://localhost:5959','_blank');");
+        it('Loads Test Website', async function() {
+            await driver.executeScript(`window.open('http://localhost:${config.port}','_blank');`);
             await helpers.switchWindow(driver, 1)
-            assert.equal(true, true)
+            await driver.findElement(By.id('wallet-tests')).then(element => {
+                assert.ok(element)
+            })
         });
      //})
 

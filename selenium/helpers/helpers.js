@@ -1,5 +1,6 @@
 const {By, until} = require('selenium-webdriver');
 const nodeCryptoJs = require("node-cryptojs-aes")
+const server = require('./server')
 const path = require('path')
 const { CryptoJS } = nodeCryptoJs;
 
@@ -155,9 +156,18 @@ const getTxResult = async (driver) => {
     `);
 }
 
-const closeTest = (driver, httpServer = undefined) => {
+const startServer = (port) => {return server.startServer(port)}
 
-}
+const closeTest = (driver, httpServer) => {return new Promise(async (resolve, reject) => {
+    const stop = async () => {
+        return await httpServer.close()
+    }
+    await stop().catch((err) => reject(err))
+    driver && driver.quit();
+    await sleep(1000, true)
+    resolve()
+})}
+
 module.exports = {
     sleep,
     switchWindow,
@@ -168,7 +178,7 @@ module.exports = {
     sendConnectRequest, sendGetInfoRequest,
     approvePopup, denyPopup,
     getWalletResponse,
-    closeTest,
-    sendTx, getTxResult
+    startServer, closeTest,
+    sendTx, getTxResult,
 
 }

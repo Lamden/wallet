@@ -12,6 +12,7 @@
     "test-crypto": "mocha --recursive --timeout 30000 selenium/tests/crypto/*.js",
     "test-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
     "test-dapps": "mocha --recursive --timeout 30000 selenium/tests/dapp/*.js",
+    "test-server": "mocha --recursive --timeout 30000 selenium/tests/testserver/*.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {

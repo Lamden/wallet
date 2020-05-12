@@ -5,11 +5,6 @@ let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
 let walletInfo = require("../../fixtures/walletInfo")
 let dappsInfo = require("../../fixtures/dappsInfo.json")
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
-var validators = require('types-validate-assert');
-const { validateTypes } = validators
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -17,9 +12,10 @@ chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 describe('Content Script - Testing Dapp Connection API', function () {
     let driver;
     let connectionInfo;
-    let httpServer1;
+    let httpServer;
 
     before(async function() {
+        httpServer = await helpers.startServer(config.port)
         driver = await new Builder()
                 .forBrowser('chrome')
                 .setChromeOptions(chromeOptions)
@@ -27,35 +23,23 @@ describe('Content Script - Testing Dapp Connection API', function () {
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
         await helpers.completeFirstRunSetup(driver, walletInfo.walletPassword)
-
-        
-        const htmlPath = path.resolve(config.workingDir, 'selenium', 'fixtures', 'index.html')
-        fs.readFile(htmlPath, function (err, html) {
-            if (err) {
-                console.log(err)
-            }       
-            httpServer1 = http.createServer(function(request, response) {  
-                response.writeHeader(200, {"Content-Type": "text/html"});  
-                response.write(html);  
-                response.end();
-            }).listen(5959)
-        });
     });
 
-    after(function() {
-        driver && driver.quit();
-        httpServer1.close();
+    after(() => {
+        return helpers.closeTest(driver, httpServer)
      });
 
-     //context('Test Setup', function() {
-        it('Load Test Website', async function() {
-            await driver.executeScript("window.open('http://localhost:5959','_blank');");
+     context('Test Setup', function() {
+        it('Loads Test Website', async function() {
+            await driver.executeScript(`window.open('http://localhost:${config.port}','_blank');`);
             await helpers.switchWindow(driver, 1)
-            assert.equal(true, true)
-    
+            await driver.findElement(By.id('wallet-tests')).then(element => {
+                assert.ok(element)
+            })
         });
-    //});
-    //context('lamdenWalletConnect', function() {
+     })
+
+    context('lamdenWalletConnect', function() {
         it('Event Listener rejects non JSON detail', async function() {
             let response = await driver.executeScript(`
                 window.walletResponse = new Promise((resolve, reject) => {window.resolver = resolve})
@@ -435,5 +419,5 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors[0].includes(`Prompt the user to restore their keypair for vk '${connectionInfo.wallets[0]}'`), true);
         });
-    //})
+    })
 })
