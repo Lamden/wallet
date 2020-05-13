@@ -131,7 +131,7 @@
         <h6>Checking For Tx Success</h6>
     
         <div class="text-box text-body1 text-primary">
-            {`Your Approval Treansaction was posted to the Ethereum nextwork.  Validating it was successful...`}
+            {`Your Approval Transaction was posted to the Ethereum network.  Validating it was successful...`}
         </div>
 
         <div class="flex-column buttons">

@@ -44,8 +44,7 @@
         {page: 'SwapsConnectMetamask', hideSteps: false, back: 0},
         {page: 'SwapsSendApproval', hideSteps: false, back: 1},
         {page: 'SwapsCheckStatus', hideSteps: false, back: 2},
-        {page: 'SwapsPerformSwap', hideSteps: false, back: 0},
-        {page: 'SwapsFinish', hideSteps: false, back: 0},
+        {page: 'SwapsPerformSwap', hideSteps: false, back: 0}
     ]
 
     $: currentPage = SwapsSteps[currentStep].page;

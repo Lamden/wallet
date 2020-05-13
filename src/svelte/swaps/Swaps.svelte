@@ -60,7 +60,7 @@
         <div class="subtext text-body2 text-primary-dark">
             {`
                 During this process you will give Lamden access to spend your Ethereum tokens.  
-                Lamden will burn them and send you the equivilent number of Lamden Tokens.
+                Lamden will burn them and send you the equivalent number of Lamden Tokens.
             `}
         </div>
         <div class="buttons">

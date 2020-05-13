@@ -82,7 +82,7 @@
         <h6>Send Token Approval</h6>
     
         <div class="text-box text-body1 text-primary">
-            {`Lamden required access to your tokens to complete the swap process.`}
+            {`Lamden requires access to your tokens to complete the swap process.`}
         </div>
 
         <div>
