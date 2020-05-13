@@ -945,7 +945,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
     //Error on Stale dApp Approval (dApp was approved by the vk no longer exists in the uesr's wallet for whatever reason)
-    if (isFromAuthorizedDapp && !dappVkInWallet(dappInfo.vk)){
+    if (isFromAuthorizedDapp && !dappVkInWallet(dappInfo.vk) && !walletIsLocked){
         let staleWallet = false;
         //Don't error if this is a reconnect attempt to rectify this issue
         try{
@@ -1173,7 +1173,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
          ** MESSAGES FROM AUTHORIZED DAPPs
         **************************************************/
         if (isFromAuthorizedDapp){
-            if (!dappVkInWallet(dappInfo.vk)){
+            if (!dappVkInWallet(dappInfo.vk) && !walletIsLocked){
                 let errorMsg = [
                     "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
                      `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
