@@ -1,4 +1,4 @@
-import { writable, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 export const createDappStore = () => {
     let initialized = false;
@@ -40,3 +40,16 @@ export const createDappStore = () => {
 //Networks Stores
 export const DappStore = createDappStore();
 
+//Create a derived store to total all wallets
+export const dappsDropDown = derived(DappStore, ($DappStore) => {
+    let returnList = []
+    Object.keys($DappStore).forEach(d => {
+        let value = $DappStore[d]
+        returnList.push({
+            value,
+            name: value.appName,
+            selected: false
+        })
+    })
+    return returnList;
+});
