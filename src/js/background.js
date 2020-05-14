@@ -829,6 +829,17 @@ const DappStoreRevoke = (data) => {
     return true
 }
 
+const DappStoreReassign = (data) => {
+    const { dappInfo, newVk } = data;
+    try{
+        dappsStore[dappInfo.url].vk = newVk
+        chrome.storage.local.set({"dapps": dappsStore});
+    }catch(e){
+        return false
+    }
+    return true
+}
+
 const addStampsUsedToDapp = (appUrl, txBuilder) => {
     try {
         dappsStore[appUrl][txBuilder.type].stampsUsed = dappsStore[appUrl][txBuilder.type].stampsUsed + txBuilder.resultInfo.stampsUsed
@@ -1113,6 +1124,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                 }
                 if (message.type === 'revokeDappAccess') sendResponse(DappStoreRevoke(message.data))
+                if (message.type === 'reassignDappAccess') {
+                    let userConfirm = confirm(`Associate this wallet with ${message.data.dappInfo.appName}?`)
+                    if (userConfirm) sendResponse(DappStoreReassign(message.data))
+                    else sendResponse('canceled')
+                }
+                    
                 if (message.type === 'connectToMetamask') {
                     sendResponse('ok')
                     Ethereum.requestAccount().then(async address => {

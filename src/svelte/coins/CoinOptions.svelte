@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { CoinStore, TxStore, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
+    import { CoinStore, TxStore, currentNetwork, BalancesStore, dappsDropDown } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -19,7 +19,7 @@
 
 	//Context
     const { getModalData } = getContext('app_functions');
-    const { close, setPage, setSelectedCoin } = getContext('coinmodify_functions');
+    const { close, setPage, setSelectedCoin, setMessage } = getContext('coinmodify_functions');
 
     let selectedWallet;
     let copySuccessful;
@@ -29,10 +29,16 @@
         {id: 'delete-tx-btn', name: 'Purge Transactions', desc: 'Clear Tx History', icon: del, color: 'grey', click: () => clearTxHistory() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
     ]
+    const buttons = [
+        {id: 'close-btn', name: 'Close', click: () => close(), class: 'button__solid button__purple'}
+    ]
+    let message = {buttons}
 
     $: coin = getModalData();
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: dAppList = makeDappList($dappsDropDown)
+    $: dAppInfo = undefined;
 
     const showEdit = () => {
         setSelectedCoin(selectedWallet);
@@ -57,6 +63,51 @@
                 selected: coin === c ? true : false
             }
         })
+    }
+
+    const makeDappList = (dAppsList) => {
+        if (!selectedWallet) return []
+        dAppInfo = undefined;
+        let list = [...dAppsList]
+        list.forEach(dapp => {
+            if (dapp.value.vk === selectedWallet.vk) dAppInfo = {...dapp.value};
+        });
+        if (!dAppInfo) {
+            list.unshift({
+                value: undefined,
+                name: "Select from approved dApps",
+                selected: true,
+            });
+            return list
+        }
+        return []
+    }
+
+    const associateDapp = (dapp) => {
+        if (dapp){
+            let data = {
+                dappInfo: dapp,
+                newVk: selectedWallet.vk
+            }
+            chrome.runtime.sendMessage({type: 'reassignDappAccess', data}, (dappAdded) => {
+                if (dappAdded !== 'canceled'){
+                    if (!dappAdded || chrome.runtime.lastError) {
+                        message.text = 'Unable to create dApp relationship'
+                        message.type = 'error'
+                    }else{
+                        message.text = `This wallet is now associated with ${dapp.appName}`
+                        message.type = 'success'
+                    }
+                    setMessage(message)
+                    setPage(6)  
+                }
+            })
+        }
+    }
+
+    const setSelectedWallet = (wallet) => {
+        selectedWallet = wallet;
+        dAppList = makeDappList($dappsDropDown)
     }
 
     const clearTxHistory = () => {
@@ -109,18 +160,20 @@
 .icon{
     width: 20px;
 }
+.relationship{
+    margin-top: 0;
+}
 </style>
 
 <div id="coin-options" class="text-primary">
-    <h5> {`Recieve ${coin.name} ${coin.symbol}`} </h5>
+    <h5> {`${coin.name} ${coin.symbol} Options`} </h5>
     <DropDown
         id={'wallets-dd'}
         items={coinList()} 
         label={'Wallets'}
         styles="margin-bottom: 19px;"
-        on:selected={(e) => selectedWallet = e.detail.selected.value}
+        on:selected={(e) => setSelectedWallet(e.detail.selected.value)}
     />
-
     <div class="coin-info text-subtitle3">
         {#if selectedWallet}
             {selectedWallet.name}
@@ -129,6 +182,20 @@
             </strong> 
         {/if}
     </div>
+    {#if dAppInfo}
+        <p class="text-body1 relationship">{`dApp Relationship: ${dAppInfo.appName}`}</p>
+    {/if}
+
+    {#if dAppList.length > 0}
+        <DropDown
+            id={'dapps-dd'}
+            items={dAppList} 
+            label={'Create dApp relationship'}
+            styles="margin-bottom: 19px;"
+            on:selected={(e) => associateDapp(e.detail.selected.value)}
+        />
+    {/if}
+
     <div class="options-box flex-row">
         {#each options as option}
             <div id={option.id} class="options flex-column"
