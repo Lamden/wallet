@@ -284,7 +284,7 @@ span.info-title{
                         <div class="flex-row items"> 
                             <span class="info-title text-body2">{detail === 'uuid' ? 'swap_id' : detail}</span>
                             {#if detail === 'uuid'}
-                                <a href={`http://localhost:8080/lookup?uuid=${swapResult.details[detail]}`}
+                                <a href={`${ClearingHouse_API.url}/lookup?uuid=${swapResult.details[detail]}`}
                                    class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>
                             {/if}
                             {#if detail === 'eth_address'}
