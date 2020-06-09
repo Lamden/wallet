@@ -9,7 +9,13 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 import Lamden from 'lamden-js'
 
 const lamdenNetworks = [
-    {name: 'Lamden Testnet', host:'http://167.172.126.5', port: '18080', type:'testnet', lamden: true, currencySymbol: 'dTAU'}
+    {name: 'Lamden Testnet', 
+    host:'http://167.172.126.5', 
+    port: '18080', 
+    type:'testnet', 
+    lamden: true, 
+    currencySymbol: 'dTAU',
+    blockExplorer: 'https://explorer.lamden.io'}
 ]
 
 const defualtNetworksStore = {

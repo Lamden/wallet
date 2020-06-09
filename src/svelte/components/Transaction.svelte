@@ -2,7 +2,7 @@
     import { getContext, onMount } from 'svelte'
 
 	//Stores
-    import { allNetworks, CoinStore } from '../../js/stores/stores.js';
+    import { allNetworks, CoinStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -30,7 +30,9 @@
     $: errorMsg = typeof errorInfo[0] === 'undefined' ? "" : errorInfo[0]
 
     const openHashLink = () => {
-        window.open(`${txData.network}/tx?hash=${txData.hash}`, '_blank');
+        console.log($currentNetwork)
+        if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
+        else window.open(`${txData.network}/tx?hash=${txData.hash}`, '_blank');
     }
 
     const processErrorMessage = (err) => {
