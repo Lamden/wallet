@@ -80,16 +80,6 @@
 		}
 	}
 
-	const reformatMethodObject = (methods) => {
-        methods.map(method => {
-            if (!method.args) method.args = {};
-            method.arguments.map((arg, index) => {
-			   if (!method.args[arg]) method.args[arg] = {type: "text", value: ''}
-            })
-		})
-        return [...methods]
-	}
-
 	const handleMethodClick = (e) => {
 		openModal('IdeModelMethodTx', e.detail)
 	}
@@ -155,7 +145,7 @@
 		{/if}
 		{#if editorIsLoaded && $activeTab.methods}
 			<IdeGetVariable contractName={$activeTab.name}/>
-			<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
+			<IdeMethods methods={$activeTab.methods} />
 		{/if}
 	</div>
 {:else}
