@@ -175,13 +175,11 @@
     const getKwargs = () => {
         let kwargs = {}
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
-            console.log(argValueTracker[contractName][methodName][arg])
             const argValue = argValueTracker[contractName][methodName][arg].value
             if (argValue !== ""){
                 kwargs[arg] = argValue
             }
         })
-        console.log(kwargs)
         return kwargs;
     }
 

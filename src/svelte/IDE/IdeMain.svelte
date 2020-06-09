@@ -61,7 +61,6 @@
 			.catch(err => console.log(err))
 			.then(res => res.json())
 			.then(json =>{
-				console.log(json)
 				sendCallback(json)
 				lintErrors = json
 			})

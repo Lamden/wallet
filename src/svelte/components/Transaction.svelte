@@ -30,7 +30,6 @@
     $: errorMsg = typeof errorInfo[0] === 'undefined' ? "" : errorInfo[0]
 
     const openHashLink = () => {
-        console.log($currentNetwork)
         if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
         else window.open(`${txData.network}/tx?hash=${txData.hash}`, '_blank');
     }
