@@ -49,9 +49,6 @@
                 if (result.added){
                 SettingsStore.setLastCoinAddedDate();
                 resolve()
-                // Mint coins on mockchain for new wallet
-                //let mockchain = NetworksStore.getPublicMockchain()
-                //mockchain.API.mintTestNetCoins(newCoinVK, 100000)
                 }
                 message = result.reason
             }

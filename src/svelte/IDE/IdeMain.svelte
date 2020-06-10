@@ -21,6 +21,7 @@
 	let editorIsLoaded = false;  
 	let monaco;
 	let monacoComponent;
+	let CONTRACTING_API = "http://167.99.173.97/contracting"
 
 	onMount(() =>{
 		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
@@ -42,15 +43,28 @@
 	}
 
 	const lint = async (callback) => {
-		let mockchain = $currentNetwork
-		if ($currentNetwork.type !== 'mockchain') mockchain = NetworksStore.getPublicMockchain()
-		if ($activeTab.code === '') lintErrors = {violations: null}
-		else {
-			lintErrors = await mockchain.API.lintCode($activeTab.name, $activeTab.code)
+		const sendCallback = (data) => {
+			if (Object.prototype.toString.call(callback) === '[object Function]') callback(data)
 		}
-		try {
-			callback(lintErrors);
-		} catch (e){}
+		if ($activeTab.code === '') {
+			sendCallback({violations: null})
+			lintErrors = {violations: null}
+		}else{
+			let response = fetch(`${CONTRACTING_API}/lint`,{
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					name: $activeTab.name, 
+					code: $activeTab.code
+				})
+			})
+			.catch(err => console.log(err))
+			.then(res => res.json())
+			.then(json =>{
+				sendCallback(json)
+				lintErrors = json
+			})
+		}
 	}
 
 	const submit = (res) => {
@@ -64,16 +78,6 @@
 				}
 			})
 		}
-	}
-
-	const reformatMethodObject = (methods) => {
-        methods.map(method => {
-            if (!method.args) method.args = {};
-            method.arguments.map((arg, index) => {
-			   if (!method.args[arg]) method.args[arg] = {type: "text", value: ''}
-            })
-		})
-        return [...methods]
 	}
 
 	const handleMethodClick = (e) => {
@@ -141,7 +145,7 @@
 		{/if}
 		{#if editorIsLoaded && $activeTab.methods}
 			<IdeGetVariable contractName={$activeTab.name}/>
-			<IdeMethods methods={reformatMethodObject($activeTab.methods)} />
+			<IdeMethods methods={$activeTab.methods} />
 		{/if}
 	</div>
 {:else}

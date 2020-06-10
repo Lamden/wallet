@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -9,10 +9,12 @@
     "tests": "mocha --recursive --timeout 30000 selenium/tests/",
     "test-firstrun": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/*.js",
     "test-swaps": "mocha --recursive --timeout 30000 selenium/tests/ui/swaps/*.js",
+    "test-swaps-main": "mocha  --timeout 30000 selenium/tests/ui/swaps/Swaps_TokenSwap.js",
     "test-crypto": "mocha --recursive --timeout 30000 selenium/tests/crypto/*.js",
     "test-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
     "test-dapps": "mocha --recursive --timeout 30000 selenium/tests/dapp/*.js",
-    "test-server": "mocha --recursive --timeout 30000 selenium/tests/testserver/*.js",
+    "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",
+    "test-dapps-send-tx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -20,7 +22,7 @@
     "url": "https://github.com/Lamden/wallet.git"
   },
   "devDependencies": {
-    "chromedriver": "^81.0.0",
+    "chromedriver": "^83.0.0",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",
@@ -39,7 +41,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
-    "lamden-js": "^1.2.5",
+    "lamden-js": "^1.5.5",
     "metamask-extension-provider": "^1.1.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",

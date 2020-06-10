@@ -15,10 +15,8 @@ const wait_async = async (seconds) => {
 }
 
 const sleep = async (seconds, async) => {
-    //console.log(`sleeping ${seconds/1000} seconds`, new Date().toLocaleTimeString())
     if (async) await wait_async(seconds)
     else await wait_sync(seconds)
-    //console.log('done', new Date().toLocaleTimeString())
 }
 
 const switchWindow = async (driver, windowNum) => {

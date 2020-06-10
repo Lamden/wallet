@@ -35,7 +35,7 @@
     let txData = {};
     let resultInfo = {};
 
-    $: coin = modalData;
+    $: coin = modalData.coin;
 
     const nextPage = () => {
         currentStep = currentStep + 1
@@ -63,6 +63,7 @@
     const resultDetails = (e) => {
         resultInfo = e.detail.resultInfo;
         resultInfo.buttons = buttons;
+        if (resultInfo.stampsUsed > 0) modalData.refreshTx();
         nextPage();
     }
 </script>

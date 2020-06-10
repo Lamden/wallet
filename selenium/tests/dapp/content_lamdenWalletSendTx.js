@@ -90,11 +90,11 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.networkType = "mockchain"
             transaction.kwargs.key_value = keyHash
-            let response = await helpers.sendTx(driver, transaction, true)
 
+            let response = await helpers.sendTx(driver, transaction, true)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
-            assert.equal(response.data.errors[0].includes("Transactions on 'mockchain' have not been approved"), true);
+            assert.equal(response.data.errors[0].includes("'networkType' <string> 'mockchain' is not a valid network type."), true);
             assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
         });
         it('Forwards error from lamden.js if issues occur building transaction', async function() {

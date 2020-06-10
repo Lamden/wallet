@@ -38,20 +38,28 @@
     let transaction;
     let dataTypes = ['text', 'address', 'data', 'number', 'bool']
     let typeToInputTypeMAP = {
-        address: 'text',
-        text: 'textarea',
-        data: 'text',
-        number: 'number',
+        Any: 'textarea',
+        str: 'text',
+        float: 'number',
+        int: 'number',
         bool: trueFalseList()
     }
+    // TODO: ADD ALL TYPES {'dict', 'list', 'str', 'int', 'float', 'bool', 'timedelta', 'datetime', 'Any'}
     let defaultValues = {
-        address: '',
-        text: '',
-        data: '',
-        number: 0,
-        bool: true 
+        str: '',
+        float: 0.0,
+        int: 0,
+        bool: true,
+        Any: ''
     }
-    let stampLimit = 50000;
+    let longFormTypes = {
+        str: 'text',
+        float: 'decimal',
+        int: 'integer',
+        bool: 'true/false',
+        Any: 'any'
+    }
+    let stampLimit = 150000;
     
     $: contractName = 'currency'
     $: methodName  = ''
@@ -97,19 +105,17 @@
     const setArgs = (method, contract) => {
         if (!method) return;
         methodName = method.name;
-        methodArgs = [...method.arguments];
         if (!argValueTracker[contract]) argValueTracker[contract] = {};
         if (!argValueTracker[contract][methodName]) argValueTracker[contract][methodName] = {};
         
-        methodArgs.map(arg => {
-            if (!argValueTracker[contract][methodName][arg]) {
-                let startingType = getStartingType(arg);
-                argValueTracker[contract][methodName][arg] = {};
-                argValueTracker[contract][methodName][arg].selectedType = startingType;
-                argValueTracker[contract][methodName][arg][startingType] = {};
-                argValueTracker[contract][methodName][arg][startingType].value = defaultValues[startingType];
+        method.arguments.map(arg => {
+            if (!argValueTracker[contract][methodName][arg.name]) {
+                argValueTracker[contract][methodName][arg.name] = {
+                    type: arg.type,
+                    value: defaultValues[arg.type]}
             }
         })
+        methodArgs = [...method.arguments];
         contractName = contract;
     }
 
@@ -124,27 +130,10 @@
     }
 
     const saveArgValue = (arg, e) => {
-        let selectedType = argValueTracker[contractName][methodName][arg].selectedType
-        if (selectedType === 'data' || selectedType === 'address'){
-            if (!validateTypes.isStringHex(e.detail.target.value)){
-                e.detail.target.setCustomValidity('Invalid Format: Must be HEX')
-                e.detail.target.reportValidity()
-            }
-        }
-        let argValue = selectedType === 'bool' ?  e.detail.selected.value : e.detail.target.value;
-        if (selectedType === 'number'){
-            argValue = parseFloat(argValue)
-        }
-        argValueTracker[contractName][methodName][arg][selectedType].value = argValue;
-        if (selectedType !== 'bool')  argValueTracker[contractName][methodName][arg][selectedType].target = e.detail.target;
-    }
-
-    const saveArgType = (arg, e) => {
-        let type = e.detail.selected.value;
-        argValueTracker[contractName][methodName][arg].selectedType = type;
-        if (!argValueTracker[contractName][methodName][arg][type]){
-            argValueTracker[contractName][methodName][arg][type] = {value: defaultValues[type]}
-        }
+        if (arg.type === 'bool')  argValueTracker[contractName][methodName][arg.name].value = e.detail.target;
+        if (arg.type === 'int') argValueTracker[contractName][methodName][arg.name].value = parseInt(e.detail.target.value)
+        if (arg.type === 'float') argValueTracker[contractName][methodName][arg.name].value = parseFloat(e.detail.target.value)
+        else argValueTracker[contractName][methodName][arg.name].value = e.detail.target.value
     }
 
     const getMethods = async (contract) => {
@@ -175,19 +164,7 @@
             stampsField.reportValidity()
             return false;
         }
-        let validity = true;
-        Object.keys(argValueTracker[contractName][methodName]).map(arg => {
-            if (arg !== 'selectedType'){
-                let argValue = argValueTracker[contractName][methodName][arg];
-                if (argValue[argValue.selectedType].target){
-                    if (!argValue[argValue.selectedType].target.checkValidity()){
-                        validity = false;
-                        argValue[argValue.selectedType].target.reportValidity()
-                    }
-                }
-            }
-        })
-        return validity;
+        return true
     }
 
     const clearValidation = (e) => {
@@ -198,12 +175,9 @@
     const getKwargs = () => {
         let kwargs = {}
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
-            if (arg !== 'selectedType'){
-                let argValue = argValueTracker[contractName][methodName][arg]
-                if (argValue[argValue.selectedType].value !== ""){
-                    kwargs[arg] = argValue[argValue.selectedType].value
-                    if (argValue.selectedType === 'text') kwargs[arg] = kwargs[arg].trim()
-                }
+            const argValue = argValueTracker[contractName][methodName][arg].value
+            if (argValue !== ""){
+                kwargs[arg] = argValue
             }
         })
         return kwargs;
@@ -220,7 +194,7 @@
     }
     
     .contract-details{
-        padding: 28px 103px 30px 0;
+        padding: 28px 103px 0 0;
         margin-right: 25px;
         border-right: 1px solid var(--font-primary-darker)
     }
@@ -276,57 +250,32 @@
             on:keyup={(e) => clearValidation(e)}
             required={true}
         />
-        <div class="args">
-            {#if $MethodStore.length === 0 }
-                <DropDown id="no-methods-dd"  label={'Function Name'}  defaultText={'No Functions'}/>
-            {:else}
-                <DropDown
-                    items={methodList($MethodStore)} 
-                    id={'methods'}
-                    label={'Function Name'} 
-                    styles={`margin-bottom: 40px;`}
-                    required={true}
-                    on:selected={(e) => setArgs(e.detail.selected.value, contractNameField.value)} />
+        {#if $MethodStore.length === 0 }
+            <DropDown id="no-methods-dd"  label={'Function Name'}  defaultText={'No Functions'}/>
+        {:else}
+            <DropDown
+                items={methodList($MethodStore)} 
+                id={'methods'}
+                label={'Function Name'} 
+                styles={`margin-bottom: 40px;`}
+                required={true}
+                on:selected={(e) => setArgs(e.detail.selected.value, contractNameField.value)} />
 
-                {#each methodArgs as arg, index}
-                    <div class="flex-row">
-                        <DropDown
-                                id={`${arg}-dd`}
-                                items={typesList(arg)}
-                                label={'Type'}
-                                width="160px"
-                                innerHeight="46px"
-                                styles="border-radius: 4px 0 0 4px;"
-                                on:selected={(e) => saveArgType(arg, e)}
-                                sideBox={true} />
-                        {#if argValueTracker[contractName][methodName][arg].selectedType === 'bool'}
-                            <DropDown
-                                id={`${arg}-dd`}
-                                items={trueFalseList(arg)}
-                                label={arg}
-                                width="380px"
-                                innerHeight={'46px'}
-                                styles={'border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
-                                on:selected={(e) => saveArgValue(arg, e)}
-                                required={true} />
-                        {:else}
-                            <InputBox
-                                id={`input-${arg}`}
-                                bind:value={argValueTracker[contractName][methodName][arg][argValueTracker[contractName][methodName][arg].selectedType].value}
-                                width="380px"
-                                styles={'height: 46px; border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; max-width: 380px; min-width: 380px; margin-left: -1px;'}
-                                label={arg}
-                                inputType={typeToInputTypeMAP[argValueTracker[contractName][methodName][arg].selectedType]}
-                                on:changed={(e) => saveArgValue(arg, e)}
-                                on:keyup={(e) => clearValidation(e)}
-                                required={true} />
-                        {/if}
-
-                    </div>        
-                {/each}
+            {#if methodArgs.length > 0}
+                <h3>Transaction Arguments</h3>
             {/if}
-        </div>
 
+            {#each methodArgs as arg, index}
+                <InputBox
+                    id={`input-${arg}`}
+                    bind:value={argValueTracker[contractName][methodName][arg.name].value}
+                    styles={'height: 46px; border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; margin-left: -1px;'}
+                    label={`${arg.name.toUpperCase()} (${longFormTypes[arg.type]})`}
+                    inputType={typeToInputTypeMAP[argValueTracker[contractName][methodName][arg.name].type]}
+                    on:changed={(e) => saveArgValue(arg, e)}
+                    required={true} /> 
+            {/each}
+        {/if}
     </div>
     <div class="buttons">
         <Button id="lamden-tx-next-btn"

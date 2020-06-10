@@ -9,8 +9,13 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 import Lamden from 'lamden-js'
 
 const lamdenNetworks = [
-    {name: 'Lamden Testnet', host:'http://167.172.126.5', port: '18080', type:'testnet', lamden: true, currencySymbol: 'dTAU'},
-    {name: 'Lamden Public Mockchain', host:'https://testnet.lamden.io', port: '443', type:'mockchain', lamden: true, currencySymbol: 'mTAU'}
+    {name: 'Lamden Testnet', 
+    host:'http://167.172.126.5', 
+    port: '18080', 
+    type:'testnet', 
+    lamden: true, 
+    currencySymbol: 'dTAU',
+    blockExplorer: 'https://explorer.lamden.io'}
 ]
 
 const defualtNetworksStore = {
@@ -125,10 +130,6 @@ export const createNetworksStore = () => {
                 })
                 return networksStore;
             })
-        },
-        //Returns the current network Object
-        getPublicMockchain: () => {
-            return new Lamden.Network(getNetworkByName(get(NetworksStore), 'Lamden Public Mockchain'))
         },
         //Delete a network from the network list
         deleteNetwork: (networkObj) => {
