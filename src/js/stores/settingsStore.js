@@ -10,7 +10,7 @@ import { isSettingsStoreObj,  isPageInfoObj} from '../objectValidations';
 const defualtSettingsStore = {
     'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
     'themeStyle':'dark',
-    'version':'0.11.0'
+    'version':'0.11.5'
 }
 
 const createSettingsStore = () => {
