@@ -21,7 +21,7 @@
     export let txDetails;
 
     //DOM Nodes
-    let formObj, contractNameField;
+    let formObj, contractNameField, constructorArgsField;
 
     let selectedWallet;
     let contractName;
@@ -30,6 +30,7 @@
     let kwargs = {}
     let owner = "";
     let constructorArgs = "";
+    let constructor_args_obj = {};
 
     const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
@@ -47,6 +48,11 @@
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return
             }
+            try{
+                constructor_args_obj = JSON.parse(constructorArgs)
+            }catch (e) {
+                setValidation(constructorArgsField, 'Not a valid JSON string.')
+            }
             if(await formObj.checkValidity()){
                 sendTx();
             }
@@ -61,7 +67,7 @@
         txData.txInfo.stampLimit = stampLimit;
         txData.txInfo.kwargs.name = contractNameField.value;
         if (owner !== "") txData.txInfo.kwargs.owner = owner;
-        if (constructorArgs !== "") txData.txInfo.kwargs.constructor_args = constructorArgs;
+        if (constructorArgs !== "") txData.txInfo.kwargs.constructor_args = constructor_args_obj;
         dispatch('saveTxDetails', txData);
     }
 
@@ -172,6 +178,7 @@
                 <InputBox
                     width="100%"
                     margin={'0 0 17px'}
+                    bind:thisInput={constructorArgsField}
                     bind:value={constructorArgs}
                     label={"Constructor Args (Optional)"}
                     inputType={"text"}
