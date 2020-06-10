@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount } from 'svelte'
+    import { getContext } from 'svelte'
 
 	//Stores
     import { allNetworks, CoinStore, currentNetwork } from '../../js/stores/stores.js';
@@ -25,10 +25,6 @@
     $: stampsUsed = txData.stampsUsed
     $: currencySymbol = $currentNetwork.currencySymbol || ''
 
-
-    onMount(() => {
-        console.log(vk === txData.sender)
-    })
     const openHashLink = () => {
         if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
         else window.open(`${$currentNetwork.host}:${$currentNetwork.port}/tx?hash=${txData.hash}`, '_blank');

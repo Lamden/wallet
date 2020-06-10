@@ -63,7 +63,7 @@
     const resultDetails = (e) => {
         resultInfo = e.detail.resultInfo;
         resultInfo.buttons = buttons;
-        if (resultInfo.type === "success") modalData.fetchTransactions();
+        if (resultInfo.stampsUsed > 0) modalData.refreshTx();
         nextPage();
     }
 </script>

@@ -45,7 +45,6 @@
 
     const handleSaveTxDetails = (e) => {
         txData = {...e.detail};
-        console.log(txData)
         currentStep = currentStep + 1; 
     }
 

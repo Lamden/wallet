@@ -43,9 +43,6 @@
     $: argValues = {}
     $: newMethods = [...methods]
 
-    console.log(methods)
-    console.log(methods[0].arguments[0])
-
     const saveArgValue = (methodIndex, argIndex, e) => {
         let newValue;
         if (!e.detail)

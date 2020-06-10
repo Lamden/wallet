@@ -100,6 +100,10 @@
         }
         return [];
     }
+
+    const delayedRefresh = () => {
+        setTimeout(fetchTransactions, 10000)
+    }
 </script>
 
 <style>
@@ -220,7 +224,7 @@ small.flex-row{
 				name="Send Tx"
                 padding={"12px"}
                 margin={'0 15px 15px 0'}
-		 		click={() => openModal(sendPage, {coin, fetchTransactions})} 
+		 		click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
 				icon={arrowUp}/>
             <Button
                 id={'send-coin-btn'} 
