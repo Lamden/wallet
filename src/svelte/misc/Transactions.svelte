@@ -1,17 +1,24 @@
 <script>
+    import { onMount, afterUpdate } from 'svelte'
     //Stores
     import { currentNetwork, networkKey } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte'
-    const { Transaction } = Components;
+    const { Transaction, Button } = Components;
 
     //Images
     import chevronRight from '../../img/menu_icons/icon_chevron-right.svg';
     import chevronLeft from '../../img/menu_icons/icon_chevron-left.svg';
+    import refresh from '../../img/menu_icons/icon_refresh.svg';
 
     export let transactionsList = [];
+    export let vk;
+    export let fetchTransactions;
 
+    let refreshing = false;
+    $: txList = [...transactionsList]
+/*
     $: page = 0
     $: numPerPage = 25
     $: maxPages = parseInt(transactionsList.length / numPerPage)  + Math.ceil((transactionsList.length / numPerPage) % 1) || 1
@@ -21,7 +28,21 @@
     $: endNumber = endIndex > transactionsList.length ? transactionsList.length : endIndex;
     $: txChunk = sortTxList(transactionsList).slice(startingIndex, endIndex)
     $: txByDay = groupByDate(txChunk);
+*/
+    afterUpdate(() => {
+        console.log(transactionsList)
+    })
 
+    const openLink = () => {
+        window.open(`${$currentNetwork.blockExplorer}/address/${vk}`, '_blank');
+    }
+
+    const refreshHistory = () => {
+        refreshing = true;
+        fetchTransactions();
+        setTimeout(() => {refreshing = false}, 2000)
+    }
+    /*
     const sortTxList = (txList) => {
         return txList.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }
@@ -47,7 +68,7 @@
     const pageDown = () => {
         if (page !== 0) page = page - 1
          
-    }
+    }*/
 </script>
 
 <style>
@@ -89,9 +110,44 @@
 .section-header{
     margin: 24px 0 18px;
 }
+.tx-history-h4{
+    align-items: center;
+}
+.refresh-icon{
+	margin-left: 10px;
+    width: 20px;
+    justify-content: center;
+}
+.button-more{
+    justify-content: center;
+}
+
+.spinner{
+	animation: rotation 4s infinite linear;
+}
+h4{
+    display: inline;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-720deg);
+  }
+}
 </style>
 
-<h4>Results</h4>
+<div class="flex-row tx-history-h4">
+    <h4>Transaction History</h4>			
+    <div on:click={refreshHistory} 
+		 class="flex-col refresh-icon clickable" 
+		 class:spinner={refreshing}>
+		 {@html refresh} 
+	</div>
+</div>
+<!-- No need for pagenation, just displaying from blockexplorer for now
 <div class="text-body2 flex-column">
     <div class="flex-row flex-end">
         <button class="arrow left" on:click={pageDown}>
@@ -112,15 +168,18 @@
         {`${startingIndex + 1 } - ${endNumber} /  ${transactionsList.length}`}
     </div>
 </div>
+-->
 
-
-{#each Object.keys(txByDay) as day}
-    
-    <div class="section-header text-body2">
-        {day}
-    </div>
-    
-    {#each txByDay[day] as tx}
-        <Transaction txData={tx}/>
-    {/each}
+{#each transactionsList as txData}
+    <Transaction {txData} {vk} />
 {/each}
+{#if transactionsList.length === 10}
+    <div class="flex-row button-more">
+        <Button 
+            name={"show more"}
+            classes="button__transparent button__blue"
+            margin={"0 0 1rem 0"}
+            click={openLink}
+            />
+    </div>
+{/if}

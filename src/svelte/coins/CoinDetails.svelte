@@ -45,11 +45,7 @@
     $: symbol = coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
-    $: txList = () =>  {
-        if (!$TxStore[networkKey($currentNetwork)]) return [];
-        if (!$TxStore[networkKey($currentNetwork)][coin.vk]) return [];
-        return [...$TxStore[networkKey($currentNetwork)][coin.vk]]   
-    }
+    $: transactionsList = [];
     $: pendingTxList = () => {
         let pendingList = []
         $PendingTxStore.forEach(tx => {
@@ -63,6 +59,7 @@
     $: stampsRemaining = thisNetworkApproved ? stampPreApproval - stampsUsed : 0
     $: stampRatio = 1
 
+
 	onMount(() => {
         breadcrumbs.set([
             {name: 'Holdings', page: {name: 'CoinsMain'}},
@@ -70,6 +67,8 @@
         ]);
         getBalance()
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
+        fetchTransactions();
+
     });
 
     const getBalance = async () => {
@@ -89,6 +88,18 @@
         })
     }
 
+    const fetchTransactions = () => {
+        if ($currentNetwork.blockExplorer){
+            return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=10`)
+            .then(res => res.json())
+            .then(json => {
+                console.log(json.data)
+                transactionsList = json.data
+            })
+            
+        }
+        return [];
+    }
 </script>
 
 <style>
@@ -209,7 +220,7 @@ small.flex-row{
 				name="Send Tx"
                 padding={"12px"}
                 margin={'0 15px 15px 0'}
-		 		click={() => openModal(sendPage, coin)} 
+		 		click={() => openModal(sendPage, {coin, fetchTransactions})} 
 				icon={arrowUp}/>
             <Button
                 id={'send-coin-btn'} 
@@ -248,5 +259,5 @@ small.flex-row{
     {#if thisNetworkApproved && $currentNetwork.lamden}
         <Charms dappInfo={dappInfo} />
     {/if}
-    <CoinHistory txList={txList()} pendingTxList={pendingTxList()} />
+    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions}/>
 </div>

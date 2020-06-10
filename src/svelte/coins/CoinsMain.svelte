@@ -67,7 +67,9 @@
 
 .refresh-icon{
 	margin-left: 10px;
-	width: 40px;
+    width: 40px;
+    justify-content: center;
+    height: 70px;
 }
 
 .header{
@@ -103,9 +105,6 @@
 	margin-right: 28px;  
 	width: 203px;
 }
-.buttons{
-	
-}
 .balance-words{
 	padding-left: 42px;
 	margin: 14px 0;
@@ -118,7 +117,7 @@
 }
 
 .spinner{
-	animation: rotation 2s infinite linear;
+	animation: rotation 4s infinite linear;
 }
 
 @keyframes rotation {
@@ -126,7 +125,7 @@
     transform: rotate(0deg);
   }
   to {
-    transform: rotate(359deg);
+    transform: rotate(-720deg);
   }
 }
 
@@ -137,13 +136,16 @@
 		<div class="balance-words text-body3">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
-		<div class="flex-row balance-total text-title">
-			{`${totalBalance.toLocaleString('en')}`}
-			<div on:click={handleRefresh} 
-				 class="refresh-icon clickable" 
-				 class:spinner={refreshing}>
-				 {@html refresh} 
+		<div class="balance-total">
+			<div class="flex-row  text-title">
+				{`${totalBalance.toLocaleString('en')}`}
+				<div on:click={handleRefresh} 
+					class="flex-col refresh-icon clickable" 
+					class:spinner={refreshing}>
+					{@html refresh} 
+				</div>
 			</div>
+
 		</div>
 		<div class="flex-row buttons">
 			<Button id={'add-btn'}

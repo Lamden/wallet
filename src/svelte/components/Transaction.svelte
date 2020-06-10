@@ -17,21 +17,21 @@
     
     //Props
     export let txData;
+    export let vk;
 
-    $: txInfo = txData.txInfo;
-    $: senderVk = txInfo.senderVk
-    $: coin = $CoinStore.find(f => f.vk === senderVk);
+    $: coin = $CoinStore.find(f => f.vk === txData.sender);
     $: coinNickname = typeof coin === 'undefined' ? '*deleted wallet' : coin.nickname; 
-    $: error = txData.resultInfo.type === "error";
-    $: stampsUsed = txData.resultInfo.stampsUsed
-    $: network = $allNetworks.find(f => `${f.host}:${f.port}` === txData.network)
-    $: currencySymbol = network.currencySymbol || ''
-    $: errorInfo = txData.resultInfo.errorInfo || []
-    $: errorMsg = typeof errorInfo[0] === 'undefined' ? "" : errorInfo[0]
+    $: failed = txData.status == 1;
+    $: stampsUsed = txData.stampsUsed
+    $: currencySymbol = $currentNetwork.currencySymbol || ''
 
+
+    onMount(() => {
+        console.log(vk === txData.sender)
+    })
     const openHashLink = () => {
         if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
-        else window.open(`${txData.network}/tx?hash=${txData.hash}`, '_blank');
+        else window.open(`${$currentNetwork.host}:${$currentNetwork.port}/tx?hash=${txData.hash}`, '_blank');
     }
 
     const processErrorMessage = (err) => {
@@ -122,44 +122,45 @@
 
 <div class='tx-container flex-column'>
     <div class="hash-box flex-row">
-        {#if typeof txData.hash !== 'undefined'}
-            <div class="hash-link text-subtitle2 " on:click={openHashLink}>{txData.hash}</div>
-        {:else}
-            <div class="error text-subtitle2 ">{processErrorMessage(errorMsg)}</div>
-        {/if}
+        <div class="hash-link text-subtitle2 " on:click={openHashLink}>{txData.hash}</div>
         <div class="time-icon flex-row"> 
             <div class="time text-body1"> {new Date(txData.timestamp).toLocaleTimeString()} </div>
-            <div class="icon-size">{@html error ? errorCircle : successCircle}</div>
+            <div class="icon-size">{@html failed ? errorCircle : successCircle}</div>
         </div>
-        
     </div>
     <div class="info-box starting-margin flex-row text-body1">
         <div class="details flex-row text-body1">
             <div class="flex-row">
                 <div>{`contract : `}</div>
-                <div class="text-primary-dark item-margin">{` ${txInfo.contractName}`}</div>
+                <div class="text-primary-dark item-margin">{` ${txData.contractName}`}</div>
             </div>
             <div class="flex-row">
                 <div>{`method : `}</div>
-                <div class="text-primary-dark item-margin">{` ${txInfo.methodName}`}</div>
+                <div class="text-primary-dark item-margin">{` ${txData.functionName}`}</div>
             </div>
-            {#if txInfo.contractName === 'currency' && txInfo.methodName === 'transfer'}
+            {#if txData.contractName === 'currency' && txData.functionName === 'transfer'}
                 <div class="flex-row">
                     <div>{`amount : `}</div>
-                    <div class="text-primary-dark item-margin">{`${txInfo.kwargs.amount || 0} ${currencySymbol}`}</div>
+                    <div class="item-margin" 
+                         class:text-red={vk === txData.sender} 
+                         class:text-green={vk !== txData.sender} >
+                        {`${txData.transaction.payload.kwargs.amount || 0}`}
+                    </div>
+                    <div class="text-primary-dark item-margin">
+                        {`${currencySymbol}`}
+                    </div>
                 </div>
             {/if}
         </div>
 
         <div class="flex-row name-button">
-            <div class="nickname text-subtitle3 text-primary-dark">{coinNickname}</div>
             <Button 
                 name={"tx details"}
                 classes="button__transparent button__blue"
                 padding={'5px 10px'}
                 height={'30px'}
                 margin={'0 0 0 10px'}
-                click={() => openModal('TxInfoBox', {txData, coin, closeModal})}
+                click={openHashLink}
             />
         </div>
     </div>
