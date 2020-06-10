@@ -14,6 +14,7 @@
     //Props
     export let methods;
 
+    let jsonTypes = ['dict', 'list']
     let typeToInputTypeMAP = {
         Any: 'textarea',
         str: 'text',
@@ -22,22 +23,34 @@
         bool: [
             {name:'true', value: true, selected: true}, 
             {name: 'false', value:false, selected: false}
-        ]
+        ],
+        dict: 'textarea',
+        list: 'textarea',
+        timedelta: 'text', 
+        datetime: 'text'
     }
-    // TODO: ADD ALL TYPES {'dict', 'list', 'str', 'int', 'float', 'bool', 'timedelta', 'datetime', 'Any'}
+
     let defaultValues = {
         str: '',
         float: 0.0,
         int: 0,
         bool: true,
-        Any: ''
+        dict: "{}",
+        list: "[]",
+        Any: '',
+        timedelta: '', 
+        datetime: ''
     }
     let longFormTypes = {
         str: 'text',
         float: 'decimal',
         int: 'integer',
         bool: 'true/false',
-        Any: 'any'
+        Any: 'any',
+        dict: 'JSON Object',
+        list: 'JSON List',
+        timedelta: 'timedelta', 
+        datetime: 'datetime'
     }
 
     $: argValues = {}
@@ -64,7 +77,16 @@
     const handleRun = (index) => {
         let kwargs = {};
         methods[index].arguments.forEach(arg => {
-            if (arg.value !== '') kwargs[arg.name] = arg.value;
+            if (arg.value !== ''){
+                if (jsonTypes.includes(arg.type)) {
+                    try{
+                        kwargs[arg.name] = JSON.parse(arg.value)
+                    }catch (e) {
+                        kwargs[arg.name] = `!! INVALID JSON ${longFormTypes[arg.type].toUpperCase()} !!`
+                    }
+                }
+                else kwargs[arg.name] = arg.value;
+            } 
         })
     	openModal('IdeModelMethodTx', {
 			'contractName': $activeTab.name, 
@@ -109,7 +131,7 @@
                     bind:value={methods[methodIndex].arguments[argIndex].value}
                     width="100%"
                     styles={'height: 46px; max-width: 440px; border-radius: 0 4px 4px 0; margin-bottom: 10px; flex-grow: 1;  margin-left: -1px;'}
-                    label={`${arg.name} (${arg.type})`}
+                    label={`${arg.name} (${longFormTypes[arg.type]})`}
                     inputType={typeToInputTypeMAP[arg.type]}
                     on:changed={(e) => saveArgValue(methodIndex, argIndex, e)}
                     on:keyup={(e) => clearValidation(e)}

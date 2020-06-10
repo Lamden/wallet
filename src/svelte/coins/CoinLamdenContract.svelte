@@ -36,13 +36,18 @@
     let selectedWallet;
     let contractError = false;
     let transaction;
-    let dataTypes = ['text', 'address', 'data', 'number', 'bool']
+
+    let jsonTypes = ['dict', 'list']
     let typeToInputTypeMAP = {
         Any: 'textarea',
         str: 'text',
         float: 'number',
         int: 'number',
-        bool: trueFalseList()
+        bool: trueFalseList(),
+        dict: 'textarea',
+        list: 'textarea',
+        timedelta: 'text', 
+        datetime: 'text'
     }
     // TODO: ADD ALL TYPES {'dict', 'list', 'str', 'int', 'float', 'bool', 'timedelta', 'datetime', 'Any'}
     let defaultValues = {
@@ -50,14 +55,22 @@
         float: 0.0,
         int: 0,
         bool: true,
-        Any: ''
+        dict: "{}",
+        list: "[]",
+        Any: '',
+        timedelta: '', 
+        datetime: ''
     }
     let longFormTypes = {
         str: 'text',
         float: 'decimal',
         int: 'integer',
         bool: 'true/false',
-        Any: 'any'
+        Any: 'any',
+        dict: 'Object (JSON)',
+        list: 'List (JSON)',
+        timedelta: 'timedelta', 
+        datetime: 'datetime'
     }
     let stampLimit = 150000;
     
@@ -88,16 +101,6 @@
             return {
                 value: method,
                 name: `${method.name}`,
-            }
-        })
-    }
-
-    const typesList = (arg) => {
-        return dataTypes.map(type => {
-            return {
-                value: type,
-                name: type,
-                selected: type === argValueTracker[contractName][methodName][arg].selectedType ? true : false
             }
         })
     }
@@ -176,8 +179,17 @@
         let kwargs = {}
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             const argValue = argValueTracker[contractName][methodName][arg].value
+            const argType = argValueTracker[contractName][methodName][arg].type
+
             if (argValue !== ""){
-                kwargs[arg] = argValue
+                if (jsonTypes.includes(argType)) {
+                    try{
+                        kwargs[arg] = JSON.parse(argValue)
+                    }catch (e) {
+                        kwargs[arg] = `!! INVALID JSON ${longFormTypes[argType].toUpperCase()} !!`
+                    }
+                }
+                else kwargs[arg] = argValue;
             }
         })
         return kwargs;
