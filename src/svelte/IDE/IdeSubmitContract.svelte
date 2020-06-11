@@ -48,10 +48,12 @@
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return
             }
-            try{
-                constructor_args_obj = JSON.parse(constructorArgs)
-            }catch (e) {
-                setValidation(constructorArgsField, 'Not a valid JSON string.')
+            if (constructorArgs !== ""){
+                try{
+                    constructor_args_obj = JSON.parse(constructorArgs)
+                }catch (e) {
+                    setValidation(constructorArgsField, 'Not a valid JSON string.')
+                }
             }
             if(await formObj.checkValidity()){
                 sendTx();
@@ -93,7 +95,7 @@
 }
 
 .details{
-    padding: 5px 0 40px 76px;
+    padding: 5px 0 0px 76px;
     margin-left: 50px;
     border-left: 1px solid var(--font-primary-darker)
 }
@@ -180,8 +182,10 @@
                     margin={'0 0 17px'}
                     bind:thisInput={constructorArgsField}
                     bind:value={constructorArgs}
+                    styles={'height: unset; max-width: 473px; min-width: 473px;'}
+                    rows="2"
                     label={"Constructor Args (Optional)"}
-                    inputType={"text"}
+                    inputType={"textarea"}
                 />
             </div>
             <div class="buttons flex-column">
