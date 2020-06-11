@@ -76,7 +76,7 @@
             Backing Up Your Lamden Wallet is Very Important
         </h5>
         <div class="subtext text-body2 text-primary-dark">
-            All of the information for your accounts is stored in this browser. 
+            All of the information for your Accounts is stored in this browser. 
             We highly recommend creating a KeyStore file so that you can recover 
             your accounts if anythign happens to this computer.
         </div>

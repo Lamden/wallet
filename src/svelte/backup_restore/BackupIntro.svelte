@@ -42,7 +42,7 @@ a{
     
     <div class="text-box text-body1 text-primary">
         This process will allow you to either create an encrypted keystore or decrypt and 
-        view your account keys.
+        view your all of your secret keys.
     </div>
 
     <div class="text-box2 text-body1">

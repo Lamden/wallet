@@ -35,7 +35,7 @@
                     if (count < timeoutCount) timerId = setTimeout(checkProcessing, 1000);
                     else {
                         clearTimeout(timerId);
-                        keys.error = "Unknown Error: Timed out waiting for keys to be added."
+                        keys.error = "Unknown Error: Timed out waiting for accounts to be added."
                         resolve()
                     }
                 }
@@ -68,6 +68,6 @@
 </style>
 
 <div class="restore-savewallets">
-    <Loading message={'Saving Keys to Wallet'} />
+    <Loading message={'Saving Accounts to Wallet'} />
 </div>
 

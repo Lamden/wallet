@@ -25,7 +25,7 @@
             currentStep: 1,
             stepList: [
                 {number: 1, name: 'Verify', desc:'Wallet Password'},
-                {number: 2, name: 'Decrypt', desc:'View Stored Keys'},
+                {number: 2, name: 'Decrypt', desc:'View Secret Keys'},
             ]
         });
 
@@ -139,10 +139,10 @@ p.text-red{
 
 <div class="backup-keys">
     <div class="content">
-        <h6>Decrypted Account Keys</h6>
+        <h6>Decrypted Account Addresses</h6>
     
         <div class="text-box text-body1 text-primary">
-            These are all the Account keys stored in your Lamden Wallet
+            These are all the Secret Keys stored in your Lamden Wallet
         </div>
 
         <Button classes={`button__solid button__purple`}
@@ -176,8 +176,8 @@ p.text-red{
                     </div>
                     <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
                     <div class="keys text-body2">
-                        <div>{`account address: ${coin.vk}`}</div>
-                        <div class=" text-primary-dark">{`private key: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</div>
+                        <div>{`Account Address: ${coin.vk}`}</div>
+                        <div class=" text-primary-dark">{`Private Key: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</div>
                     </div>
                 </div>
             {/each}

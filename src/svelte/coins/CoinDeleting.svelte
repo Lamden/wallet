@@ -16,8 +16,8 @@
     ]
 
     const successResult= {
-        title: 'Wallet Deleted',
-        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Wallet deleted successfully`,
+        title: 'Account Deleted',
+        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Account deleted successfully`,
         message: "Successful Deletion",
         type: 'success',
         buttons
@@ -25,8 +25,8 @@
 
     const failedResult= {
         title: 'Delete Failed',
-        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Wallet failed to delete`,
-        message: "Something went wrong while removing this wallet",
+        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Account failed to delete`,
+        message: "Something went wrong while removing this Account",
         type: 'error',
         buttons
     }
@@ -55,6 +55,6 @@
 </style>
 
 <div class="deleting-coin flex-column">
-    <h5>Deleting Coin from Wallet</h5>
+    <h5>Deleting Account from Wallet</h5>
     <Loading />
 </div>

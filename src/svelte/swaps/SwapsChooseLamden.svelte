@@ -43,7 +43,7 @@
         <h6>Choose Lamden Account</h6>
     
         <div class="text-box text-body1 text-primary">
-            {`Pick the account we should send the Lamden ${currentNetwork.currencySymbol} to.`}
+            {`Pick the Account we should send the Lamden ${currentNetwork.currencySymbol} to.`}
         </div>
 
         <div class="flex-column buttons">

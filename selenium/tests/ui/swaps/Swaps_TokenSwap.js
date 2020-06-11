@@ -66,7 +66,7 @@ describe('Complete A Lamden Wallet Token Swap', function () {
             assert.equal(disabled, 'true');
         })
         await driver.findElement(By.className('custom-select')).click()
-        await driver.findElement(By.xpath("//div[contains(text(),'My Lamden Address')]")).click()
+        await driver.findElement(By.xpath("//div[contains(text(),'My Lamden Account')]")).click()
         
         await continue_Button.getAttribute('disabled').then(disabled => assert.equal(disabled, null))
         await continue_Button.click();

@@ -214,7 +214,7 @@
         {#if copySuccessful}
             <div id={"copy-address"} class="copy-message flex-row text-caption2">
                 <div class="copy-message-icon" >{@html copyGreen}</div>
-                Wallet Address Copied
+                Account Address Copied
             </div>
         {/if}
     </div>

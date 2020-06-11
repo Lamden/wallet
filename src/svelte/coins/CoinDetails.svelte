@@ -83,7 +83,7 @@
     const copyWalletAddress = () => {
         copyToClipboard(coin.vk)
         openModal('MessageBox', {
-            text: "Wallet Address Copied",
+            text: "Account Address Copied",
             type: "success",
             buttons: buttons
         })

@@ -129,11 +129,11 @@
             <p class="flex-row">
                 {`Prevent `}
                 <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
-                {`from sending transactions through your wallet on Lamden's`}
+                {`from sending transactions through this Account on Lamden's `}
             </p>
-            <div class="text-cyan">{`${$currentNetwork.type.toUpperCase()}`}</div>
+            <div class="text-cyan">{`${$currentNetwork.type.toUpperCase()}.`}</div>
         </div>
-        <p>{`You will NOT delete the keypair from your Lamden Wallet`}</p>
+        <p>{`This action will NOT delete the Account from your Lamden Wallet.`}</p>
     </div>
 
     <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">

@@ -86,7 +86,7 @@
     }
 
     const saveKeys = () => {
-        let nickname = nicknameObj.value === '' ? `New ${selected.name} Wallet` : nicknameObj.value;
+        let nickname = nicknameObj.value === '' ? `New ${selected.name} Account` : nicknameObj.value;
         let coinInfo = {
             'network': selected.network,
             'name': selected.name,
@@ -217,8 +217,8 @@
                 id="public-key"
                 width="100%"
                 bind:thisInput={publicKeyObj}
-                label={"Enter Public Key"}
-                placeholder={`Public Key`}
+                label={"Enter Account Address"}
+                placeholder={`Account Address`}
                 styles={`height: 46px; margin-bottom: 17px;`}
                 on:changed={refreshValidity}
                 on:keyup={refreshValidityKeyup}
@@ -231,8 +231,8 @@
             id={"nickname"}
             width="100%"
             bind:thisInput={nicknameObj}
-            placeholder={`Wallet Nickname`}
-            label={"Wallet Nickname (Optional)"}
+            placeholder={`Account Nickname`}
+            label={"Account Nickname (Optional)"}
             styles={`height: 46px; margin-bottom: 17px;`}
         />
 
