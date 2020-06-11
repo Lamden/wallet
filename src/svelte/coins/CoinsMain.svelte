@@ -33,7 +33,7 @@
 	let refreshing = false;
 
 	onMount(async () => {
-		breadcrumbs.set([{name: 'Holdings', page: {name: ''}}]);
+		breadcrumbs.set([{name: 'Accounts', page: {name: ''}}]);
 		handleRefresh();
 	});
 
@@ -150,7 +150,7 @@
 		<div class="flex-row buttons">
 			<Button id={'add-btn'}
 				classes={'button__transparent button__blue'}
-				name="Add Wallet"
+				name="Add Account"
 				width={'155px'}
 				margin={'0 20px 0 0'}
 		 		click={() => openModal('CoinAdd')} 
@@ -165,7 +165,7 @@
 			<CoinEmpty />
 		{:else}
 			<div class="header header-text divider">
-				<div class="header-name header-text">Name</div>
+				<div class="header-name header-text">Account Name</div>
 				<div class="header-amount header-text">Amount</div>
 				<div class="header-percent header-text">Portfolio %</div>
 			</div>

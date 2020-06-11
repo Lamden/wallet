@@ -18,7 +18,7 @@
         {
             heading: 'Wallet',
             items:[
-                {id:"holdings", logo: holdings, name: 'Holdings', page: {name: 'CoinsMain'}},
+                {id:"holdings", logo: holdings, name: 'Accounts', page: {name: 'CoinsMain'}},
                // {id:"history", logo: history, name: 'History', page: {name: 'HistoryMain'}},
                 {id:"devtools", logo: devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
                 {id:"smart-contracts", logo: smartcontract, name: 'Smart Contracts', page: {name: 'IdeMain'}},

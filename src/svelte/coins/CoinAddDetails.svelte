@@ -170,15 +170,15 @@
 
 <form  class="coin-add-details flex-column" on:submit|preventDefault={() => handleSubmit() } 
     target="_self" bind:this={formObj}>
-    <h5 class="header">Select Wallet</h5>
+    <h5 class="header">Add Account</h5>
     <div class="text-subtitle3">
-        Select from the drop down to add a coin wallet.
+        Select a network type from the drop down.
     </div>
     <DropDown  
         items={supportedCoinsList}
         initial={"Select One"}
         id={'suppportedCoins'} 
-        label={'Select a Coin'}
+        label={'Network Type'}
         styles="margin-bottom: 19px;"
         required={true}
         on:selected={(e) => selectedInput = e.detail.selected}

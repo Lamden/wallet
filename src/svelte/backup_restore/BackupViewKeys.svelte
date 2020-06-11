@@ -77,7 +77,7 @@
     flex-direction: column;
     width: 100%;
     margin: 0 auto;
-    max-width: 820px;
+    max-width: 915px;
 }
 
 .header{
@@ -88,7 +88,7 @@
 }
 
 .header-name{
-    width: 213px;
+    width: 214px;
 }
 
 .header-address{
@@ -139,10 +139,10 @@ p.text-red{
 
 <div class="backup-keys">
     <div class="content">
-        <h6>Decrypted Wallet Keys</h6>
+        <h6>Decrypted Account Keys</h6>
     
         <div class="text-box text-body1 text-primary">
-            These are all the keys stored in your Lamden Wallet
+            These are all the Account keys stored in your Lamden Wallet
         </div>
 
         <Button classes={`button__solid button__purple`}
@@ -165,8 +165,8 @@ p.text-red{
     </div>
     <div class="key-box flex-column">
         <div class="header text-subtitle2 text-primary-light">
-            <div class="header-name">{'Nickname'}</div>
-            <div class="header-address">{'Key Pair'}</div>
+            <div class="header-name">{'Account Name'}</div>
+            <div class="header-address">{'Keys'}</div>
         </div>
         {#if coins}
             {#each coins as coin}
@@ -176,8 +176,8 @@ p.text-red{
                     </div>
                     <div class="name text-body1 text-primary">{`${coin.nickname}`}</div>
                     <div class="keys text-body2">
-                        <div>{`vk: ${coin.vk}`}</div>
-                        <div class=" text-primary-dark">{`sk: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</div>
+                        <div>{`account address: ${coin.vk}`}</div>
+                        <div class=" text-primary-dark">{`private key: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</div>
                     </div>
                 </div>
             {/each}

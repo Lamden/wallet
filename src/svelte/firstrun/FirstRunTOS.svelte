@@ -48,7 +48,7 @@
     <h6 class="text-primary">Remember</h6>
     
     <div class="text-box text-body1 text-primary">
-        Your password, private keys, and locking your wallet are important to keeping your cryptocurrency safe.
+        Storing your password and backing up your wallet is YOUR RESPONSIBILITY. This is important to keeping your cryptocurrency safe.
     </div>
 
     <Button

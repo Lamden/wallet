@@ -41,8 +41,8 @@ a{
     <h6>Backup Lamden Wallet</h6>
     
     <div class="text-box text-body1 text-primary">
-        This process will allow you to create an encrypted keystore or decrypt and 
-        view your keypairs.
+        This process will allow you to either create an encrypted keystore or decrypt and 
+        view your account keys.
     </div>
 
     <div class="text-box2 text-body1">
@@ -60,7 +60,7 @@ a{
                 classes={'button__solid'} 
                 styles={'margin-bottom: 16px;'}
                 width={'100%'}
-                name="View Stored Keys" 
+                name="View Account Keys" 
                 click={() => changeStep(2)} />
         <Button id={'back-btn'}
                 classes={'button__solid'} 

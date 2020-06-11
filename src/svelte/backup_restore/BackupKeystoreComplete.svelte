@@ -83,12 +83,13 @@ input[type="checkbox"]{
     <h6 class="text-primary">Remember</h6>
     
     <div class="text-box text-body1 text-primary">
-        This backup contains current keys in your wallet.  
-        Subsequant backups will be needed when future keys are added.   
+        This backup contains current accounts in your wallet.  
+        Subsequant backups will be needed when future accounts are added.   
     </div>
 
     <div class="text-box2 text-body2 text-primary-dark">
-        Safe storage of your keystore and password are important to keeping your cryptocurrency safe.
+        Safe storage of your keystore and password are important to keeping your cryptocurrency safe. 
+        We recommend <a class="outside-link" href="https://www.lastpass.com/"> LastPass</a> as a way to create and store complex passwords.
     </div>
     <div class="consent flex-row">
         <input id={'consent-chk'} type="checkbox" class="css-checkbox" bind:checked={consent}>

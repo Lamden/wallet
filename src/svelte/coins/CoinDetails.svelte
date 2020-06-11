@@ -20,9 +20,10 @@
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
     import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
-    import arrowDown from '../../img/menu_icons/icon_arrow-down.svg';
+    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import settings from '../../img/menu_icons/icon_settings.svg';
     import options from '../../img/menu_icons/icon_options.svg';
+    
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js'
@@ -62,7 +63,7 @@
 
 	onMount(() => {
         breadcrumbs.set([
-            {name: 'Holdings', page: {name: 'CoinsMain'}},
+            {name: 'Accounts', page: {name: 'CoinsMain'}},
             {name: `${coin.nickname}`, page: {name: ''}},
         ]);
         getBalance()
@@ -229,11 +230,11 @@ small.flex-row{
             <Button
                 id={'send-coin-btn'} 
                 classes={'button__transparent button__blue'}
-                name="Receive Coin"
+                name="Copy Address"
                 padding={"12px"}
                 margin={'0 15px 15px 0'}
 		 		click={() => copyWalletAddress()} 
-				icon={arrowDown}/>
+				icon={copyWhite}/>
 
 		    <Button 
                 id={'modify-coin-btn'} 
