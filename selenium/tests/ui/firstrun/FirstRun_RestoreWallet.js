@@ -173,7 +173,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
     it('Renders RestoreAddWallets.svelte', async function() {
         let restoreWallets_Button =  await driver.findElement(By.id('restore-btn'))
         await restoreWallets_Button.getAttribute('innerText').then(text => {
-            assert.equal(text, 'RESTORE WALLETS');
+            assert.equal(text, 'RESTORE ACCOUNTS');
         })
         driver.findElement(By.id('cancel-btn')).getAttribute('innerText').then(text => {
             assert.equal(text, 'CANCEL');
