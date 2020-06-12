@@ -44,7 +44,7 @@ export const CoinStore = createCoinStore();
 export const coinsDropDown = derived(CoinStore, ($CoinStore) => {
     let returnList = [{
         value: undefined,
-        name: `Select Wallet`,
+        name: `Select Account`,
         selected: true
     }]
     $CoinStore.map(c => {

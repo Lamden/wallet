@@ -154,7 +154,7 @@ p{
                 <p>{dappInfo[$currentNetwork.type].contractName}</p>
             </div>
             <div class="flex-row align-center">
-                <p>Public Key:</p>
+                <p>Accoumt Address:</p>
                 <div class="outside-link" on:click={copyWalletAddress}>{dappInfo.vk}</div>
                 <div class="icon copy">
                     {#if copySuccessful}

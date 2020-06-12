@@ -43,7 +43,7 @@ a{
 <div class="firstrun-intro">
     <h6 class="text-primary">Welcome!</h6>
     <div class="text-box text-body1 text-primary">
-        Creating a wallet is easy and secure. It's stored in the user’s browser, not on remote servers.
+        Creating a wallet is easy and secure. All accounts are encrypted locally in your browser, not on remote servers.
     </div>
     <Button id="create-wallet"
             classes={'button__solid button__purple'}

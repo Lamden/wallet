@@ -30,11 +30,11 @@
 </style>
 
 <div class="network-delete">
-    <h5> Delete Wallet </h5>
+    <h5> Delete Network Connection </h5>
 
 
     <div class="subtitle text-subtitle3">
-        {`This will delete the network connection information for "${$currentNetwork.name}" but will leave all wallet addresses intact.`}
+        {`This will delete the network connection information for "${$currentNetwork.name}" but will leave all wallet accounts intact.`}
     </div>
     <div class="buttons flex-row">
         <Button 

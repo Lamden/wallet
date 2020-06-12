@@ -92,7 +92,7 @@ a{
     <h6>Keystore File Confirmed</h6>
 
     <div class="text-box text-body1 text-primary">
-        Nice job! Now let's enter your original Keystore file password.
+        Nice job! Now let's enter your Keystore file password.
     </div>
 
     <div class="caption-box text-caption text-secondary">

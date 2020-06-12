@@ -86,7 +86,7 @@
     }
 
     const saveKeys = () => {
-        let nickname = nicknameObj.value === '' ? `New ${selected.name} Wallet` : nicknameObj.value;
+        let nickname = nicknameObj.value === '' ? `New ${selected.name} Account` : nicknameObj.value;
         let coinInfo = {
             'network': selected.network,
             'name': selected.name,
@@ -170,15 +170,15 @@
 
 <form  class="coin-add-details flex-column" on:submit|preventDefault={() => handleSubmit() } 
     target="_self" bind:this={formObj}>
-    <h5 class="header">Select Wallet</h5>
+    <h5 class="header">Add Account</h5>
     <div class="text-subtitle3">
-        Select from the drop down to add a coin wallet.
+        Select a network type from the drop down.
     </div>
     <DropDown  
         items={supportedCoinsList}
         initial={"Select One"}
         id={'suppportedCoins'} 
-        label={'Select a Coin'}
+        label={'Network Type'}
         styles="margin-bottom: 19px;"
         required={true}
         on:selected={(e) => selectedInput = e.detail.selected}
@@ -217,8 +217,8 @@
                 id="public-key"
                 width="100%"
                 bind:thisInput={publicKeyObj}
-                label={"Enter Public Key"}
-                placeholder={`Public Key`}
+                label={"Enter Account Address"}
+                placeholder={`Account Address`}
                 styles={`height: 46px; margin-bottom: 17px;`}
                 on:changed={refreshValidity}
                 on:keyup={refreshValidityKeyup}
@@ -231,8 +231,8 @@
             id={"nickname"}
             width="100%"
             bind:thisInput={nicknameObj}
-            placeholder={`Wallet Nickname`}
-            label={"Wallet Nickname (Optional)"}
+            placeholder={`Account Nickname`}
+            label={"Account Nickname (Optional)"}
             styles={`height: 46px; margin-bottom: 17px;`}
         />
 

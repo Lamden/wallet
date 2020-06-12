@@ -92,11 +92,11 @@
 </style>
 
 <div class="coin-delete">
-    <h5> Delete Wallet </h5>
+    <h5> Delete Account </h5>
 
 
     <div class="subtitle text-subtitle3">
-        Deleting this wallet will remove it from your Lamden Wallet.
+        Deleting this Account will remove it from your Lamden Wallet.
         If you have currency on it, remember to
         <span class="back-it-up" on:click={() => switchPage('Backup')}> back it up</span> 
     </div>
@@ -117,7 +117,7 @@
             {:else}
                 <div id={'warning-msg'} class="warning-message flex-row">
                     <div class="icon" >{@html warning}</div>
-                    <h6>Please Confirm Wallet Deletion</h6>
+                    <h6>Please Confirm Account Deletion</h6>
                 </div>
             {/if}
         </div>
@@ -127,7 +127,7 @@
                     class:button-red={passwordOkay}
                     class:button-purple={!passwordOkay}
                     type="submit" 
-                    value={passwordOkay ? "Confirm Wallet Deletion" : "Validate Wallet Password"}>
+                    value={passwordOkay ? "Confirm Account Deletion" : "Validate Wallet Password"}>
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__purple'} 

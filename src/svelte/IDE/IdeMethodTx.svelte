@@ -52,8 +52,7 @@
 }
 
 .details{
-    padding: 5px 0 40px 76px;
-    margin-left: 50px;
+    padding: 5px 0 40px 50px;
     border-left: 1px solid var(--font-primary-darker)
 }
 
@@ -89,12 +88,11 @@
 
 <div class="confirm-tx flex-column">
     <div class="flex-column">
-        <h5>{`Submit Contract`}</h5>
-        <h4 class="no-bottom-margin">{`${$currentNetwork.name} Wallet`}</h4>
+        <h5>{`Submit Transaction`}</h5>
         <DropDown  
             items={$coinsDropDown}
             id={'mycoins'} 
-            label={'Select Wallet to Send From'}
+            label={'Select Account to Send From'}
             styles="margin-bottom: 19px;"
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
@@ -112,7 +110,6 @@
             <div class="details flex-column">
                 <InputBox
                     width="100%"
-                    margin={'17px 0 0'}
                     bind:value={stampLimit}
                     label={"Stamp Limit"}
                     inputType={"number"}

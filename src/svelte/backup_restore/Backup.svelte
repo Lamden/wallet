@@ -76,9 +76,9 @@
             Backing Up Your Lamden Wallet is Very Important
         </h5>
         <div class="subtext text-body2 text-primary-dark">
-            All of the information for your keys is stored in this browser. 
+            All of the information for your Accounts is stored in this browser. 
             We highly recommend creating a KeyStore file so that you can recover 
-            your wallet if anythign happens to this computer.
+            your accounts if anythign happens to this computer.
         </div>
         <div class="buttons">
         	<Button
@@ -94,7 +94,7 @@
             <div class="flex-row backup-warning">
                 <div class="warning-icon">{@html warningIcon}</div>
                 <div class="warning-text text-body4">
-                    You have added Keys since your last backup so it is HIGHLY recommended that you create another backup.
+                    You have added Accounts since your last backup so it is HIGHLY recommended that you create another backup.
                 </div>
                 <Button
                     id={'dismiss-btn'} 

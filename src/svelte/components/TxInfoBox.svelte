@@ -116,7 +116,7 @@
     </div>
     <div>
         <div class="flex-row text-body2">
-            <div class="item-title">Wallet Nickname</div>
+            <div class="item-title">Account Nickname</div>
             <div class="text-primary-dark">{coin.nickname}</div>
         </div>
         <div class="flex-row text-body2">

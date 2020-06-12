@@ -30,7 +30,7 @@
                 stepList: [
                     {number: 1, name: 'Upload', desc:'Keystore File'},
                     {number: 2, name: 'Password', desc:'For Keystore'},
-                    {number: 3, name: 'Wallets', desc:'Select Backups'},
+                    {number: 3, name: 'Restore', desc:'Select Accounts'},
                     {number: 4, name: 'Complete!', desc:'Return to Wallet'},
                 ]
             });
@@ -115,10 +115,10 @@ span{
 </style>
 
 <div class="restore-upload">
-    <h6>Restore Wallets</h6>
+    <h6>Restore Accounts</h6>
     
     <div class="text-box text-body1 text-primary">
-        To restore your wallet, please upload the file we provided you and choose a new password.
+        To restore your accounts, please upload the keystore file created during your backup.
     </div>
     
     <div class="caption-box text-caption text-secondary">

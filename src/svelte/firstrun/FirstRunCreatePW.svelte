@@ -114,7 +114,7 @@ form{
 <div class="firstrun-create-pwd">
     <h6 class="text-primary">Create a Password</h6>
     <div class="text-box text-body1 text-primary">
-        No username required. Use a strong password that you'll remember.
+        No username required. This password never changes so use a strong one that you'll remember. We recommend <a class="outside-link" href="https://www.lastpass.com/"> LastPass</a>.
     </div>
 
     <StrongPW password={pwd} charLength={10}/>

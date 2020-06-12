@@ -45,7 +45,7 @@
 
     const sendMessage = () => {
             returnMessage.type = 'success';
-            returnMessage.text = `Wallet Nickname changed!`;
+            returnMessage.text = `Account Nickname changed!`;
         setMessage(returnMessage)
     }
 
@@ -60,7 +60,7 @@
 </style>
 
 <div class="edit-nickname">
-    <h5> Edit Wallet Nickname </h5>
+    <h5> Edit Account Nickname </h5>
 
     <InputBox
         id={"modify-edit-nickname"}

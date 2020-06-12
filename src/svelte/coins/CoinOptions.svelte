@@ -24,7 +24,7 @@
     let selectedWallet;
     let copySuccessful;
     let options = [
-        {id: 'modify-copy-btn', name: 'Copy', desc: 'Key to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
+        {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
         {id: 'modify-edit-btn', name: 'Edit', desc: 'Wallet Nickname', icon: edit, color: 'purple', click: () => showEdit() },
         {id: 'delete-tx-btn', name: 'Purge Transactions', desc: 'Clear Tx History', icon: del, color: 'grey', click: () => clearTxHistory() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
@@ -35,6 +35,7 @@
     let message = {buttons}
 
     $: coin = getModalData();
+    $: nickname = coin.nickname;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
     $: dAppList = makeDappList($dappsDropDown)
@@ -107,6 +108,7 @@
 
     const setSelectedWallet = (wallet) => {
         selectedWallet = wallet;
+        nickname = wallet.nickname;
         dAppList = makeDappList($dappsDropDown)
     }
 
@@ -166,11 +168,11 @@
 </style>
 
 <div id="coin-options" class="text-primary">
-    <h5> {`${coin.name} ${coin.symbol} Options`} </h5>
+    <h5> {`${nickname} Options`} </h5>
     <DropDown
         id={'wallets-dd'}
         items={coinList()} 
-        label={'Wallets'}
+        label={'Accounts'}
         styles="margin-bottom: 19px;"
         on:selected={(e) => setSelectedWallet(e.detail.selected.value)}
     />
@@ -212,7 +214,7 @@
         {#if copySuccessful}
             <div id={"copy-address"} class="copy-message flex-row text-caption2">
                 <div class="copy-message-icon" >{@html copyGreen}</div>
-                Wallet Address Copied
+                Account Address Copied
             </div>
         {/if}
     </div>

@@ -48,10 +48,12 @@
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return
             }
-            try{
-                constructor_args_obj = JSON.parse(constructorArgs)
-            }catch (e) {
-                setValidation(constructorArgsField, 'Not a valid JSON string.')
+            if (constructorArgs !== ""){
+                try{
+                    constructor_args_obj = JSON.parse(constructorArgs)
+                }catch (e) {
+                    setValidation(constructorArgsField, 'Not a valid JSON string.')
+                }
             }
             if(await formObj.checkValidity()){
                 sendTx();
@@ -93,8 +95,7 @@
 }
 
 .details{
-    padding: 5px 0 40px 76px;
-    margin-left: 50px;
+    padding: 5px 0 0px 50px;
     border-left: 1px solid var(--font-primary-darker)
 }
 
@@ -126,7 +127,7 @@
             items={$coinsDropDown}
             margin={'1rem 0 7px'}
             id={'mycoins'} 
-            label={'* Send Transaction From'}
+            label={'* Send Transaction From Account'}
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
         />
@@ -143,7 +144,6 @@
             <div class="details flex-column">
                 <InputBox
                     width="100%"
-                    margin={'17px 0 0'}
                     bind:value={stampLimit}
                     label={"* Stamp Limit"}
                     inputType={"number"}
@@ -180,8 +180,10 @@
                     margin={'0 0 17px'}
                     bind:thisInput={constructorArgsField}
                     bind:value={constructorArgs}
+                    styles={'height: unset; max-width: 548px; min-width: 548px;'}
+                    rows="2"
                     label={"Constructor Args (Optional)"}
-                    inputType={"text"}
+                    inputType={"textarea"}
                 />
             </div>
             <div class="buttons flex-column">

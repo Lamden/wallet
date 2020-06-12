@@ -57,7 +57,7 @@
 <div class="restore text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <h5 class="heading">
-            Restoring Your Lamden Wallet is Quick & Easy
+            Restoring Accounts to Your Lamden Wallet is Quick & Easy
         </h5>
         <div class="subtext text-body2 text-primary-dark">
             It only takes a few minutes, please have your original Keystore file ready,

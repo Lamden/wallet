@@ -224,11 +224,11 @@
 </style>
 
 <div class="send-lamden flex-column" class:hide={currentPage !== 'CoinLamdenContract'}>
-    <h5> {`Send ${coin.name}`} </h5>
+    <h5> {`Make A Lamden Transaction`} </h5>
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
-        label={'Select Wallet to Send From'}
+        label={'Select Account to Send From'}
         styles="margin-bottom: 19px;"
         required={true}
         on:selected={(e) => handleSelectedWallet(e)}
