@@ -11,6 +11,11 @@
     export let coin;
     export let id;
 
+    const formats = {
+        'number': {default: 0},
+        'string': {default: 'None'}
+    }
+
     //Context
     const { switchPage } = getContext('app_functions');
     
@@ -19,6 +24,8 @@
     $: balanceStr = balance.toLocaleString('en')
     $: percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
+    $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
+    $: dappCharms = dappNetworkInfo ? dappNetworkInfo.charms || [] : []
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
 
     afterUpdate(() => {
@@ -33,6 +40,17 @@
     }
     const getDappInfo = (dappStore) => {
         return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
+    }
+
+    const getItemValue = async (info) => {
+        console.log(info)
+        console.log(dappInfo)
+        let key = ''
+        if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
+            key = info.key.replace("<wallet vk>", coin.vk)
+        }
+        let response = await $currentNetwork.API.getVariable(dappNetworkInfo.contractName, info.variableName, key)
+        return response
     }
     
 </script>
@@ -107,6 +125,17 @@
 p > a {
     margin: 0 5px;
 }
+.charm-img{
+    height: 25px;
+    margin-right: 25px;
+}
+.charm-row{
+    align-items: center;
+    padding-left: 100px;
+}
+.charm-name{
+    margin-bottom: 0;
+}
 </style>
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
@@ -143,6 +172,15 @@ p > a {
     {/if}
 </div>
 {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
+    {#each dappCharms as charm}
+        <div class="flex-row charm-row">
+            <img class="charm-img" src={`${dappInfo.url}${charm.iconPath}`} alt={`${charm.name} logo`}>
+            <label class="text-body2" style={"margin-right: 10px;"}>{charm.name}: </label>
+            {#await getItemValue(charm) then response}
+                <label class="text-body2 text-primary-dark">{response || formats[charm.formatAs].default}</label>
+            {/await}
+        </div>
+    {/each}
     <div class="dapp-info">
         <p>{`Created for dapp at`}
             <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>

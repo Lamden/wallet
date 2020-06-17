@@ -180,16 +180,25 @@
         Object.keys(argValueTracker[contractName][methodName]).map(arg => {
             const argValue = argValueTracker[contractName][methodName][arg].value
             const argType = argValueTracker[contractName][methodName][arg].type
-
+            
             if (argValue !== ""){
+                let newValue = argValue
                 if (jsonTypes.includes(argType)) {
                     try{
-                        kwargs[arg] = JSON.parse(argValue)
+                        newValue = JSON.parse(argValue)
                     }catch (e) {
-                        kwargs[arg] = `!! INVALID JSON ${longFormTypes[argType].toUpperCase()} !!`
+                        newValue = `!! INVALID JSON ${longFormTypes[argType].toUpperCase()} !!`
                     }
                 }
-                else kwargs[arg] = argValue;
+                else {
+                    try{
+                        if (argType === 'int') newValue = parseInt(newValue)
+                        if (argType === 'float') newValue = parseFloat(newValue)
+                    }catch (e) {
+                        newValue = `!! INVALID TYPE !!`
+                    }
+                }
+                kwargs[arg] = newValue;
             }
         })
         return kwargs;
