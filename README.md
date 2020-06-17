@@ -1,6 +1,6 @@
 # Lamden Wallet
 
-version: 0.11.6
+version: 0.12.0
 
 ## Install
 
