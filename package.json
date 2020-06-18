@@ -11,6 +11,7 @@
     "test-swaps": "mocha --recursive --timeout 30000 selenium/tests/ui/swaps/*.js",
     "test-swaps-main": "mocha  --timeout 30000 selenium/tests/ui/swaps/Swaps_TokenSwap.js",
     "test-crypto": "mocha --recursive --timeout 30000 selenium/tests/crypto/*.js",
+    "test-crypto-clearinghouse": "mocha --recursive --timeout 30000 selenium/tests/crypto/clearingHouse_API.js",
     "test-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
     "test-dapps": "mocha --recursive --timeout 30000 selenium/tests/dapp/*.js",
     "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",

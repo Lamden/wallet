@@ -140,6 +140,7 @@
 			<div class="flex-row  text-title">
 				{`${totalBalance.toLocaleString('en')}`}
 				<div on:click={handleRefresh} 
+					id="refresh-icon"
 					class="flex-col refresh-icon clickable" 
 					class:spinner={refreshing}>
 					{@html refresh} 

@@ -132,7 +132,7 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('Vaidate Lamden Balance ', async function() {
         await helpers.sleep(10000)
-        await driver.findElement(By.className('refresh-icon')).click()
+        await driver.findElement(By.id('refresh-icon')).click()
         await helpers.sleep(5000)
         await driver.findElement(By.className('amount flex-column')).getAttribute('innerText').then(text => {
             assert.equal(text, `${swapInfo.swapAmount} dTAU`);

@@ -142,7 +142,7 @@ describe('Testing Clearinghouse API Handler', function () {
         assert.equal(error, "Missing paramater UUID <string>.");
     })
     it('checkSwapStatus(): Can fetch and return the status of a swap', async function() {
-        this.timeout(30000);
+        this.timeout(60000);
         let swapCompleted = await new Promise((resolve, reject) => {
             let maxTries = 20;
             let tries = 0;
@@ -152,6 +152,7 @@ describe('Testing Clearinghouse API Handler', function () {
                 try{
                     tries = tries + 1
                     response = await CH_API.checkSwapStatus(CH_Response.uuid_receipt)
+                    console.log(response)
                 }catch (e) {
                     error = e.message
                 }
