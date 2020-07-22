@@ -10,7 +10,9 @@
 	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
 	
 	setContext('confirm_functions', {
-		approveApp: (approveAmount) => sendApproveApp(approveAmount),
+		approveApp: () => sendApproveApp(),
+		setTrusted: (trusted) => trustedApp = trusted,
+		setFunding: (funding) => funding ? fundingInfo = funding : null,
 		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
 		openNewTab: (url) => openNewTab(url)
@@ -22,9 +24,12 @@
 	}
 	let confirmData;
 	let confirmed = false;
+	let trustedApp = false;
+	let fundingInfo = false;
 
 	onMount(() => {
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
+			console.log(response)
 			if (response) confirmData = response
 		})
 
@@ -35,9 +40,9 @@
 
 	const confirm = () => confirmed = true;
 
-	const sendApproveApp = (approveAmount) => {
+	const sendApproveApp = () => {
 		confirm();
-		chrome.runtime.sendMessage({type: 'approveDapp', data: approveAmount})
+		chrome.runtime.sendMessage({type: 'approveDapp', data: {trustedApp, fundingInfo}})
 		closePopup()
 	}
 
@@ -96,13 +101,13 @@
 		width: 90px;
 	}
 </style>
-<div class="flex-column container">
-	<div class="box flex-row">
-		<div class="logo" >{@html lamden_logo}</div>
-		<div class="words">{@html lamden_words}</div>
-	</div>
-	{#if confirmData}
-		<svelte:component this={componentMap[confirmData.type]} {confirmData}/>
-	{/if}
-</div>
 
+{#if confirmData}
+	<div class="flex-column container">
+		<div class="box flex-row">
+			<div class="logo" >{@html lamden_logo}</div>
+			<div class="words">{@html lamden_words}</div>
+		</div>
+		<svelte:component this={componentMap[confirmData.type]} {confirmData}/>
+	</div>
+{/if}

@@ -19,6 +19,8 @@
     export let rows = '1'
     export let readonly = false
     export let autofocus = false;
+    export let numberMin = "0.00000001"
+    export let numberStep = "any"
 
     export let thisInput;
 
@@ -39,7 +41,7 @@ label{
     left: 9px;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 16px;
     padding: 0 4px;
     color: var(--font-primary);
@@ -135,8 +137,8 @@ label{
             class="mainbox input:required:invalid input:focus:invalid"
             style={`width: 100%; height: ${height}; ${styles}`}
             type="number"
-            min="0.000000001"
-            step="0.000000001"
+            min={numberMin}
+            step={numberStep}
             placeholder={placeholder}
             required={required}
             autofocus={autofocus}  />

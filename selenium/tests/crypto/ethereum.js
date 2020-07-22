@@ -22,24 +22,25 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     after(() => driver && driver.quit());
 
     it('Setup Metamask Extention', async function() {
-        await helpers.sleep(2000)
-        await helpers.switchWindow(driver, 1) 
-        await driver.findElement(By.tagName("button")).click()
-        await driver.findElement(By.xpath("//button[contains(text(),'Import Wallet')]")).click()
-        await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
-        await helpers.sleep(1000)
-        await driver.findElement(By.tagName("textarea")).sendKeys(config.metamaskBackupPhrase)
-        await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
-        await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
-        await driver.findElement(By.xpath("//div[@role='checkbox']")).click()
-        await helpers.sleep(1000)
-        await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
-        await helpers.sleep(1000)
-        await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
-        await helpers.sleep(1000)
-        await driver.findElement(By.xpath("//div[@title='Main Ethereum Network']")).click()
-        await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
-        assert.equal(true, true);
+      await helpers.sleep(500)
+      await helpers.switchWindow(driver, 1) 
+      await driver.findElement(By.xpath("//button[contains(text(),'Get Started')]")).click()
+      await driver.findElement(By.xpath("//button[contains(text(),'Import wallet')]")).click()
+      await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
+      await helpers.sleep(1000)
+      //await driver.findElement(By.tagName("textarea")).sendKeys(config.metamaskBackupPhrase)
+      await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
+      await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
+      await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
+      await driver.findElement(By.className("first-time-flow__terms")).click()
+      await helpers.sleep(500)
+      await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
+      await helpers.sleep(500)
+      await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
+      await helpers.sleep(500)
+      await driver.findElement(By.xpath("//div[@title='Main Ethereum Network']")).click()
+      await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
+      assert.equal(true, true);
     });
 
     it('Ethereum Script is exposed for testing', async function() {
@@ -70,14 +71,14 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
       `)
     await helpers.sleep(5000, true)
     await helpers.switchWindow(driver, 2) 
-    let popupConfim_Buttom = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Cancel')]")), 10000);
+    let popupConfim_Buttom = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Cancel')]")), 2000);
     await popupConfim_Buttom.click()
     await helpers.sleep(2000) 
     await helpers.switchWindow(driver, 0) 
     let requestResult = await driver.executeScript(`
-      return await window.requestAccount1;
+      return  await window.requestAccount1;
     `)
-    assert.equal(requestResult.error.includes('User denied account authorization'), true);
+    assert.equal(requestResult.error.includes('User rejected the request.'), true);
   });
 
   it('requestAccount(): Returns correct eth Address from metamask on Confirm', async function() {
@@ -87,7 +88,8 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
       `)
     await helpers.sleep(5000, true)
     await helpers.switchWindow(driver, 2) 
-    let popupConfim_Buttom = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Connect')]")), 10000);
+    await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Next')]")), 2000).click()
+    let popupConfim_Buttom = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Connect')]")), 2000);
     await popupConfim_Buttom.click()
     await helpers.sleep(2000) 
     await helpers.switchWindow(driver, 0) 

@@ -6,10 +6,6 @@
         "networkType": "testnet",
         "logo": "/images/logo.png"
     },
-    "preApprovalInfo": {
-        "stampsToPreApprove": 1000000, 
-        "message": "Please approve this amount of stamps"
-    },
     "charmsInfo": [{
         "formatAs": "string",
         "iconPath": "/images/charm.png",

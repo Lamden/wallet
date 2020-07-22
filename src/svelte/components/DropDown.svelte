@@ -10,6 +10,7 @@
     export let defaultText = 'None';
     export let items = [];
     export let styles = '';
+    export let boxStyles = '';
     export let width = '100%';
     export let margin = 'unset'
     export let innerHeight = '46px'
@@ -26,6 +27,7 @@
     $: displayItems = [...items]
 
     onMount(()=>{
+        console.log(items)
         if (selectElm.options){
             items.forEach((item, index) => {
                 selectElm.options[index].selected = item.selected;
@@ -65,7 +67,7 @@ label{
     left: 9px;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 16px;
     background: var(--bg-color);
     padding: 0 4px;
@@ -172,6 +174,7 @@ label{
         <div class="select-items" style={`top: ${selctedBoxTop}`} class:select-hide={hideBox}>
             {#each displayItems as item, index }
                 <div class:same-as-selected={selectElm.selectedIndex === index}
+                    style={`${boxStyles}`}
                      on:click={() => handleClick(selectElm.options[index], index)}
                     >
                      {item.name}

@@ -15,6 +15,7 @@
     "test-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
     "test-dapps": "mocha --recursive --timeout 30000 selenium/tests/dapp/*.js",
     "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",
+    "test-dapps-get-info": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
     "test-dapps-send-tx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
     "dev": "node utils/webserver.js"
   },

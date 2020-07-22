@@ -58,7 +58,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
         it('Create conenction with wallet to our teset dApp website', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
+            await helpers.approvePopup(driver, 2, 1, false)
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response
             assert.equal(response.errors, null);
@@ -145,7 +145,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.kwargs.key_value = keyHash
             await helpers.sendTx(driver, transaction, false)
-            await helpers.approvePopup(driver, 2, 1)
+            await helpers.approveTxPopup(driver, 2, 1)
             let response = await helpers.getTxResult(driver)
             assert.equal(response.status, "error");
             let result = response.data
@@ -162,14 +162,14 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
         });
-        it('sends a transactions successfully after pre-approval', async function() {
+        it('sends a transactions successfully after Trusted App', async function() {
             this.timeout(30000);
             //Resend approval with a pre-approval amount
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.preApproval = dappsInfo.preApprovalInfo
             connection.reapprove = true
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1, true)
+            await helpers.approvePopup(driver, 2, 1)
             let connectionResponse = await helpers.getWalletResponse(driver)
             connectionInfo = connectionResponse
             assert.equal(connectionResponse.errors, null);

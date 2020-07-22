@@ -11,7 +11,7 @@
     import holdings from '../../img/menu_icons/icon_holdings.svg';
     import restore from '../../img/menu_icons/icon_restore.svg';
     import signout from '../../img/menu_icons/icon_signout.svg';
-    import smartcontract from '../../img/menu_icons/icon_smartcontract.svg';
+    import ide from '../../img/menu_icons/icon_ide.svg';
     import swap from '../../img/menu_icons/icon_swap.svg';
 
     let menus = [
@@ -21,7 +21,7 @@
                 {id:"holdings", logo: holdings, name: 'Accounts', page: {name: 'CoinsMain'}},
                // {id:"history", logo: history, name: 'History', page: {name: 'HistoryMain'}},
                 {id:"devtools", logo: devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
-                {id:"smart-contracts", logo: smartcontract, name: 'Smart Contracts', page: {name: 'IdeMain'}},
+                {id:"smart-contracts", logo: ide, name: 'Smart Contracts', page: {name: 'IdeMain'}},
                 {id:"token-swap", logo: swap, name: 'Token Swap', page: {name: 'Swaps'}},
             ]
         },

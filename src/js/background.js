@@ -266,6 +266,19 @@ const getWallet = (vk) => {
 	return coinStore.find(coin => coin.vk === vk)
 }
 
+const getSanatizedWallets = () => {
+    let network = new Lamden.Network(getCurrentNetwork())
+    return coinStore.map(coin => {
+        if (!validateTypes.isObjectWithKeys(balancesStore[network.url][coin.vk])) return null
+        if (balancesStore[network.url][coin.vk].watchOnly) return null
+        return {
+            vk: coin.vk,
+            nickname: coin.nickname,
+            balance: balancesStore[network.url][coin.vk].balance
+        }
+    }).filter(coin => coin)
+}
+
 const coinStoreAddNewLamdenCoin = (nickname) => {
     const keyPair = Lamden.wallet.new_wallet()
     const coinInfo = {
@@ -298,7 +311,7 @@ const coinStoreAddMany = (coins) => {
     let coinAdded = false
     coins.forEach(coin => {
         coin.result = coinStoreAddCoin(coin)
-        if (coin.result.added) coinAdded = true
+        if (coinStoreAddCoin(coin).added) coinAdded = true
     })
     try{
         return coins
@@ -356,6 +369,7 @@ const createIntialVault = () => {
 
 const setVaultStorage = () => {
     //Only save the vault if there is a current password
+    coinStore.forEach(coin => delete coin.result)
     if (validateTypes.isStringWithValue(current)){
         chrome.storage.local.set({"vault": encryptObject(current, {data: coinStore})})  
     }
@@ -421,17 +435,11 @@ const contractExists = (networkType, contractName) => {
 /***********************************************************************
  * Transaction Functions
  ***********************************************************************/
-const sendTx = (txBuilder, sk, sentFrom) => {
+const sendTx = (txBuilder, sk, sentFrom = false) => {
     lastSentDate = new Date()
     //Get current nonce from the masternode
     txBuilder.getNonce()
     .then(() => {
-        if (txBuilder.preApproved && dappIsOverApprovedAmount(txBuilder.sender, txBuilder.type)){
-            //** TO DO REACT TO ASYNC PRE-AUTH EXCEEDED - for not just ignore transaction*/
-            //promptApproveTransaction(sender, {txData, wallet, dappInfo: info})\
-            return
-        }
-
         //If no nonce exists in the cache for this vk then set what was recieved from the masternode as the baseline
         if (!nonceCache[txBuilder.sender]) {
             nonceCache[txBuilder.sender] = {current: txBuilder.nonce, modifier: 0}
@@ -447,9 +455,11 @@ const sendTx = (txBuilder, sk, sentFrom) => {
                     txBuilder.retry = txBuilder.retry + 1
                     //check if already tried to resend this
                     if (txBuilder.retry > nonceRetryTimes){
-                        sendMessageToTab(sentFrom, 'txStatus', {txData: txBuilder.getAllInfo(), errors:[
-                            'Unable to send transactions. Too many transactions pending in block.'
-                        ]})
+                        if (sentFrom){
+                            sendMessageToTab(sentFrom, 'txStatus', {txData: txBuilder.getAllInfo(), errors:[
+                                'Unable to send transactions. Too many transactions pending in block.'
+                            ]})
+                        }
                         return
                     }else{
                         //Try and send again after waiting
@@ -475,9 +485,26 @@ const sendTx = (txBuilder, sk, sentFrom) => {
         txBuilder.send(decryptString(sk), () => {
             txBuilder.sentFrom = sentFrom;
             processSendResponse(txBuilder);
-            sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
+            if (sentFrom) sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
         })
     })
+}
+
+const sendCurrencyTransaction = (senderVk, to, amount, networkInfo) => {
+    let wallet = getWallet(senderVk)
+    const txInfo = {
+        senderVk: wallet.vk,
+        contractName: "currency",
+        methodName: "transfer",
+        kwargs: {
+            "to": to,
+            "amount": parseFloat(amount)
+        },
+        stampLimit: 10000
+    }
+    
+    let txBuilder = new Lamden.TransactionBuilder(networkInfo, txInfo)
+    sendTx(txBuilder, wallet.sk)
 }
 
 const processSendResponse = (txBuilder) => {
@@ -646,22 +673,6 @@ const validateConnectionMessage = (data) => {
             errors.push("If provided, the 'charms' property must be an <array>.")
         }
     }
-    if (validateTypes.isObject(messageData.preApproval)){
-        if (!validateTypes.hasKeys(messageData.preApproval, ['stampsToPreApprove', 'message'])){
-            errors.push(`Invalid preApproval request. Must have 'stampsToPreApprove' <int> and 'message' <string> properties`)
-        }else{
-            if (!validateTypes.isStringWithValue(messageData.preApproval.message)){
-                errors.push(`'preApproval.message' must be a <string> and not empty.`)
-            }
-            if (!validateTypes.isInteger(messageData.preApproval.stampsToPreApprove)){
-                errors.push(`'preApproval.stampsToPreApprove' must be an <integer>.`)
-            }else{
-                if(messageData.preApproval.stampsToPreApprove < 1){
-                    errors.push(`'preApproval.stampsToPreApprove' must be an integer greater than 0.`)
-                }
-            }
-        }
-    }
     if (errors.length > 0) {
         return {'errors': errors}
     }
@@ -681,8 +692,7 @@ const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
         let approvals = {}
         Object.keys(dappInfo).forEach(key => {
             if(LamdenNetworkTypes.includes(key)) approvals[key] = {
-                contractName: dappInfo[key].contractName,
-                approvalHash: dappInfo[key].approvalHash || ""
+                contractName: dappInfo[key].contractName
             }
         })
         installedStatus.approvals = approvals
@@ -698,6 +708,8 @@ const promptApproveDapp = async (sender, messageData) => {
     }else{
         const keypair = Lamden.wallet.new_wallet()
         const windowId = hashStringValue(keypair.vk)
+        messageData.network = getCurrentNetwork()
+        messageData.accounts = getSanatizedWallets()
         txToConfirm[windowId] = {
             type: 'ApproveConnection',
             messageData,
@@ -723,7 +735,7 @@ const promptApproveTransaction = async (sender, messageData) => {
     });
 }
 
-const approveDapp = (sender, approveAmount) => {
+const approveDapp = (sender, approveInfo) => {
     const confirmData = txToConfirm[getSenderHash(sender)]
     if (!walletIsLocked){
         const dappInfo = getDappInfo(confirmData.url)
@@ -735,7 +747,11 @@ const approveDapp = (sender, approveAmount) => {
             newWallet = dappInfo.vk
         }
         if (newWallet){
-            DappStoreAddNew(confirmData.url, newWallet, messageData, approveAmount)
+            DappStoreAddNew(confirmData.url, newWallet, messageData, approveInfo.trustedApp)
+            let network = new Lamden.Network(confirmData.messageData.network)
+            if (approveInfo.fundingInfo){
+                sendCurrencyTransaction( approveInfo.fundingInfo.account.vk, newWallet, approveInfo.fundingInfo.amount, network)
+            }
             sendMessageToTab(confirmData.url, 'sendWalletInfo')
         }else{
             delete txToConfirm[getSenderHash(sender)]
@@ -775,23 +791,12 @@ const approveTransaction = (sender) => {
     delete txToConfirm[getSenderHash(sender)]
 }
 
-const hashApprovalRequest = (messageData) => {
-    let copy = stripRef(messageData)
-    if (validateTypes.isBoolean(copy.reapprove)) delete copy.reapprove
-    if (validateTypes.isBoolean(copy.newKeypair)) delete copy.newKeypair
-    return hashStringValue(JSON.stringify(copy))
-}
-
-const DappStoreAddNew = (appUrl, vk, messageData, approveAmount) => {
+const DappStoreAddNew = (appUrl, vk, messageData, trustedApp) => {
     //remvove trailing slash from url
     if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
     if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
     dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
-    dappsStore[appUrl][messageData.networkType].approvalHash = hashApprovalRequest(messageData)
-    if (validateTypes.isObject(messageData.preApproval)){
-        dappsStore[appUrl][messageData.networkType].stampPreApproval = approveAmount;
-        dappsStore[appUrl][messageData.networkType].stampsUsed = 0;
-    }
+    dappsStore[appUrl][messageData.networkType].trustedApp = trustedApp;
     //Remove slashes at start of icon paths
     if (validateTypes.isArrayWithValues(messageData.charms)){
         messageData.charms.forEach(charm => {
@@ -874,15 +879,6 @@ const getDappInfoByVK = (vk) => {
     let dapp = Object.keys(dappsStore).find(f => dappsStore[f].vk === vk )
     if (dapp) return dappsStore[dapp]
     return false
-}
-
-const dappIsOverApprovedAmount = (vk, networkType) => {
-    const dappInfo = getDappInfoByVK(vk)
-    if (!dappInfo) return false;
-    if (!validateTypes.isObject(dappInfo[networkType])) return false;
-    if (!validateTypes.isInteger(dappInfo[networkType].stampPreApproval)) return false;
-    if (dappInfo[networkType].stampsUsed < dappInfo[networkType].stampPreApproval) return false;
-    return true;
 }
 
 const fromConfirm = (url) => {
@@ -1112,11 +1108,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         sendResponse({status: `Transaction cancelled by user`})
                     }
                 }
-                if (message.type === 'setPreApproval'){
+                if (message.type === 'setTrusted'){
                     const data = message.data
                     try{
-                        dappsStore[data.dappUrl][data.networkType].stampPreApproval = data.preApproveAmount
-                        dappsStore[data.dappUrl][data.networkType].stampsUsed = 0
+                        delete dappsStore[data.dappUrl][data.networkType].stampPreApproval
+                        delete dappsStore[data.dappUrl][data.networkType].stampsUsed
+                        dappsStore[data.dappUrl][data.networkType].trustedApp = message.data.trusted
                         chrome.storage.local.set({"dapps": dappsStore});
                         sendResponse(true)
                     }catch (e){
@@ -1263,8 +1260,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             sendResponse("ok")
                             const info = (({ appName, url }) => ({ appName, url }))(dappInfo);
                             const txData = txBuilder.getAllInfo()
-                            if (dappInfo[txBuilder.type].stampsUsed < dappInfo[txBuilder.type].stampPreApproval){
-                                txBuilder.preApproved = true;
+                            if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
                                 sendTx(txBuilder, wallet.sk, dappInfo.url)
                             }else{
                                 promptApproveTransaction(sender, {txData, wallet, dappInfo: info})

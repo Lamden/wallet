@@ -85,16 +85,32 @@ const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 
-const approvePopup = async (driver, popupWindow, switchback, preApprove = false) => {
-    //await sleep(1000, true)
+const approvePopup = async (driver, popupWindow, switchback, trusted = true) => {
+    await sleep(2000, true)
     await switchWindow(driver, popupWindow)
-    if (preApprove){
-        let chkBox = await driver.wait(until.elementLocated(By.id("pre-approve-chk")), 5000);
-        await chkBox.click()
+    let infoNext_Button = await driver.wait(until.elementLocated(By.id("info-next-btn")), 5000);
+    await infoNext_Button.click()
+    await sleep(500, true)
+    let fundNext_Button = await driver.wait(until.elementLocated(By.id("fund-next-btn")), 5000);
+    await fundNext_Button.click()
+    await sleep(500, true)
+    if (!trusted){
+        let trusted_Radio = await driver.wait(until.elementLocated(By.id("not-trusted")), 5000);
+        await trusted_Radio.click()
     }
-    let popupApprove_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 5000);
-    await popupApprove_Button.click()
+    let trustedNext_Button = await driver.wait(until.elementLocated(By.id("trusted-next-btn")), 5000);
+    await trustedNext_Button.click()
+    await sleep(500, true)
+    await switchWindow(driver, switchback)
     //await sleep(1000, true)
+}
+
+const approveTxPopup = async (driver, popupWindow, switchback) => {
+    await sleep(2000, true)
+    await switchWindow(driver, popupWindow)
+    let approve_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 500);
+    await approve_Button.click()
+    await sleep(500, true)
     await switchWindow(driver, switchback)
     //await sleep(1000, true)
 }
@@ -113,6 +129,7 @@ const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) 
     return driver.executeScript(`
         window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
         document.addEventListener('lamdenWalletInfo', (response) => {
+            console.log(response)
             window.resolver(response.detail)
         });
         document.dispatchEvent( new CustomEvent('lamdenWalletConnect', {detail: '${JSON.stringify(connectionInfo)}'} ));
@@ -123,9 +140,11 @@ const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) 
 const sendGetInfoRequest = async (driver, awaitResponse = true) => {
     return driver.executeScript(`
         window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
-        document.addEventListener('lamdenWalletInfo', (response) => {
+        const resolveDetail = (response) => {
             window.resolver(response.detail)
-        });
+            document.removeEventListener(resolveDetail)
+        }
+        document.addEventListener('lamdenWalletInfo', resolveDetail);
         document.dispatchEvent( new CustomEvent('lamdenWalletGetInfo'));
         ${awaitResponse ? "return await window.walletInfoResponse" : ""}
     `);
@@ -174,7 +193,7 @@ module.exports = {
     hashStringValue,
     unlockWallet, lockWallet,
     sendConnectRequest, sendGetInfoRequest,
-    approvePopup, denyPopup,
+    approvePopup, approveTxPopup, denyPopup,
     getWalletResponse,
     startServer, closeTest,
     sendTx, getTxResult,

@@ -35,7 +35,7 @@ const requestAccount = async () => {
     let web3 = getWeb3();
     const getAddress = (address) => {
         if (validateTypes.isArrayWithValues(address)) return address[0]
-        else if(validateTypes.isArrayWithValues(address)) return address
+        else if(validateTypes.isStringWithValue(address)) return address
         return null
     }
     try {

@@ -189,46 +189,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors.includes("'logo' <string> required to process connect request"), true);
         });
-        it('preApproval - Rejects missing stampsToPreApprove', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.preApproval = helpers.getInstance(dappsInfo.preApprovalInfo)
-            delete connection.preApproval.stampsToPreApprove
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("Invalid preApproval request. Must have 'stampsToPreApprove' <int> and 'message' <string> properties"), true);
-        });
-        it('preApproval - Rejects stampsToPreApprove value less than one ', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.preApproval = helpers.getInstance(dappsInfo.preApprovalInfo)
-            connection.preApproval.stampsToPreApprove = -1
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'preApproval.stampsToPreApprove' must be an integer greater than 0."), true);
-        });
-        it('preApproval - Rejects non integer stampsToPreApprove value', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.preApproval = helpers.getInstance(dappsInfo.preApprovalInfo)
-            connection.preApproval.stampsToPreApprove = ""
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'preApproval.stampsToPreApprove' must be an <integer>."), true);
-        });
-        it('preApproval - Rejects missing message', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.preApproval = helpers.getInstance(dappsInfo.preApprovalInfo)
-            delete connection.preApproval.message
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("Invalid preApproval request. Must have 'stampsToPreApprove' <int> and 'message' <string> properties"), true);
-        });
-        it('preApproval - Rejects empty message', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.preApproval = helpers.getInstance(dappsInfo.preApprovalInfo)
-            connection.preApproval.message = ""
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'preApproval.message' must be a <string> and not empty."), true);
-        });
         it('Rejects empty background value', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.background = helpers.getInstance(dappsInfo.background)
@@ -360,15 +320,13 @@ describe('Content Script - Testing Dapp Connection API', function () {
         });
         it('POPUP: Can Approve a connection request and return wallet info', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            let approvalHash = helpers.hashStringValue(JSON.stringify(connection))
-            await helpers.sendConnectRequest(driver, connection, false)
+            console.log(await helpers.sendConnectRequest(driver, connection, false))
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response;
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['testnet'].approvalHash, approvalHash);
         });
         it('Send error if already authorized for a network/contract combo', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
@@ -379,31 +337,30 @@ describe('Content Script - Testing Dapp Connection API', function () {
         it('POPUP: Can Re-approve connection', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.contractName = "submission" 
-            let approvalHash = helpers.hashStringValue(JSON.stringify(connection))
             connection.reapprove = true;
+            console.log('Prompting!')
+            console.log(connection)
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
-
+            console.log(response)
             assert.equal(response.errors, null);
             assert.equal(response.wallets[0], connectionInfo.wallets[0]);
             assert.equal(response.approvals['testnet'].contractName, 'submission');
-            assert.equal(response.approvals['testnet'].approvalHash, approvalHash);
             connectionInfo = response;
         });
         it('POPUP: Can Re-approve connection and create a new keypair', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.contractName = "currency" 
-            let approvalHash = helpers.hashStringValue(JSON.stringify(connection))
             connection.reapprove = true;
             connection.newKeypair = true;
+            console.log('Prompting!')
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors, null);
             assert.equal(response.wallets[0] === connectionInfo.wallets[0], false);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['testnet'].approvalHash, approvalHash);
             connectionInfo = response;
         });
         it('Sends error if the dapp was previously approved but the wallet has no keypair for it anymore', async function() {
