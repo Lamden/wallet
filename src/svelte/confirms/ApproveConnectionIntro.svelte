@@ -71,7 +71,7 @@
 </style>
 
 <div class="flex-column detail"
-    in:fly="{{delay: 0, duration: 300, x: -500, y: 0, opacity: 0.25, easing: quintOut}}">
+    in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
     <div class="description text-subtitle2">
         {confirmData.messageData.description}

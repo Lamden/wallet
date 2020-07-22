@@ -8,6 +8,7 @@
 	//Components
 	import ApproveConnection from './confirms/ApproveConnection.svelte'
 	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
+	import CurrencyApproval from './confirms/CurrencyApproval.svelte'
 	
 	setContext('confirm_functions', {
 		approveApp: () => sendApproveApp(),
@@ -20,7 +21,8 @@
 
 	const componentMap = {
 		ApproveConnection, 
-		ApproveTransaction
+		ApproveTransaction,
+		CurrencyApproval
 	}
 	let confirmData;
 	let confirmed = false;
@@ -78,6 +80,7 @@
 		font-weight: normal;
 		font-size: 24px;
 		line-height: 28px;
+		text-align: center;
 	}
 
 	.container{

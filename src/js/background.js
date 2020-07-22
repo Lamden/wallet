@@ -734,6 +734,20 @@ const promptApproveTransaction = async (sender, messageData) => {
         url: `/confirm.html#${windowId}`, width: 500, height: 700, type: 'popup',
     });
 }
+const promptCurrencyApproval = async (sender, messageData) => {
+    console.log(messageData)
+    const keypair = Lamden.wallet.new_wallet()
+    const windowId = hashStringValue(keypair.vk)
+    txToConfirm[windowId] = {
+        type: 'CurrencyApproval',
+        messageData,
+        url: sender.origin
+    };
+
+    chrome.windows.create({
+        url: `/confirm.html#${windowId}`, width: 500, height: 700, type: 'popup',
+    });
+}
 
 const approveDapp = (sender, approveInfo) => {
     const confirmData = txToConfirm[getSenderHash(sender)]
@@ -1215,6 +1229,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }else{
                         let txInfo = {};
                         let errors = []
+                        let approvalRequest = false;
                         
                         try{
                             //Make sure the txInfo was a JSON string (for security)
@@ -1252,19 +1267,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             txInfo.uid = encryptString(wallet.vk, 'tracking-id')
                             //Set senderVk to the one assocated with this dapp
                             txInfo.senderVk = wallet.vk;
-                            //Set the contract name to the one approved by the user for the dApp
-                            txInfo.contractName = dappInfo[txInfo.networkType].contractName
+                            //Allow approval requests to be submitted without hardcoding the approved smart contract
+                            if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
+                                approvalRequest = true;
+                            }else{
+                                //Set the contract name to the one approved by the user for the dApp
+                                txInfo.contractName = dappInfo[txInfo.networkType].contractName
+                            }
                             //Create a Lamden Transaction
                             const txBuilder = new Lamden.TransactionBuilder(network, txInfo)
                             //Send dummp response so message tunnel doesn't error
                             sendResponse("ok")
                             const info = (({ appName, url }) => ({ appName, url }))(dappInfo);
                             const txData = txBuilder.getAllInfo()
-                            if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
-                                sendTx(txBuilder, wallet.sk, dappInfo.url)
-                            }else{
-                                promptApproveTransaction(sender, {txData, wallet, dappInfo: info})
+                            if (approvalRequest) {
+                                promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
+                            }else {
+                                if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
+                                    sendTx(txBuilder, wallet.sk, dappInfo.url)
+                                }else{
+                                    promptApproveTransaction(sender, {txData, wallet, dappInfo: info})
+                                }
                             }
+
                         }catch (err){
                             sendTxErrorResponse(errorStatus, ['Unable to Build Lamden Transaction', err.message], rejectedTx, sendResponse);
                         }

@@ -31,12 +31,11 @@
 
 .hero-rec{
     width: 100%;
-    height: 119px;
-    padding: 15px 0;
+    padding: 1.2rem 20px;
     justify-content: space-between;
+    align-items: center;
     background-size: cover;
     background-repeat: no-repeat;
-    align-items: center;
 }
 
 .dapp-name{

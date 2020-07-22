@@ -1,0 +1,132 @@
+<script>
+    import { getContext } from 'svelte'
+
+    //Components
+    import Button from '../components/Button.svelte'
+
+    //Images
+    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import approve from '../../img/menu_icons/icon_approve.svg';
+    import caution from '../../img/menu_icons/icon_caution.svg';
+
+    //Context
+    const { approveTx, close, openNewTab } = getContext('confirm_functions');
+
+    export let confirmData;
+
+    const txData = confirmData.messageData.txData
+    const wallet = confirmData.messageData.wallet
+    const dappInfo = confirmData.messageData.dappInfo
+    const currencySymbol = txData.networkInfo.type === 'mainnet' ? "Tau" : "dTau"
+
+    let prevent = false
+
+</script>
+
+<style>
+.details{
+    align-items: center;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 20px;
+    text-align: center;
+}
+.info{
+    align-items: center;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.hero-rec{
+    width: 100%;
+    padding: 1.2rem 0;
+    justify-content: space-between;
+    align-items: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.text-subtitle4.copy-link{
+    margin-top: 1rem;
+}
+
+.buttons{
+    padding: 1rem 0;
+}
+.icon_approve{
+    width: 100px;
+    margin-bottom: 2rem;
+}
+.icon_caution{
+    width: 22px;
+    margin-right: 9px;
+}
+.message{
+    font-size: 1.3em;
+}
+p.message {
+    margin: 0;
+}
+.caution{
+    align-items: center;
+    margin-top: 3rem;
+}
+.caution > p{
+    font-size: 1.1em;
+}
+p > strong {
+    color: var(--font-accent)
+}
+
+</style>
+
+<div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
+    <h1>{dappInfo.appName} wants to spend your {currencySymbol}</h1>
+    <div class=" appurl-link text-body2 text-primary-dark" on:click={() => openNewTab(dappInfo.url)}>{`source ${dappInfo.url}`}</div>
+</div>
+<div class="details flex-column">
+    <div class="info flex-column">
+        <div class="icon_approve">
+            {@html approve}
+        </div>
+        <p class="message">
+            Give <strong> {dappInfo.appName}</strong> access to <strong>{txData.txInfo.kwargs.amount} {currencySymbol}</strong> ?
+        </p>
+
+    </div>
+    <div class="caution flex-row">
+        <div class="icon_caution">
+            {@html caution}
+        </div>
+        <p>
+            Make sure you trust this app!
+        </p>
+    </div>
+
+    <div class="flex-column">
+        <div class="buttons flex-row">
+            <Button 
+                id={'deny-btn'}
+                classes={'button__solid'}
+                name="Deny"
+                width={'175px'}
+                height={'42px'}
+                margin={'0 20px 0 0'}
+                click={close} />
+
+            <Button 
+                id={'approve-btn'}
+                classes={'button__solid button__purple'}
+                name="Approve"
+                width={'175px'}
+                height={'42px'}
+                click={approveTx} />
+        </div>
+        <div>
+            <a class="text-subtitle4 copy-link" href="www.lamden.io">what is this?</a>
+        </div>   
+    </div>
+</div>
+
+
+

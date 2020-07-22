@@ -66,7 +66,7 @@
 
 <div class="approve-conection flex-column">
     <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-        <h1>Create Wallet Account</h1>
+        <h1>New Wallet Account For</h1>
         <div class="flex-row dapp-name">
             <img src={`${confirmData.url}/${fixLogo(confirmData.messageData.logo)}`} alt="app logo" />
             <p class="text-body3">{`${confirmData.messageData.appName}`}</p>

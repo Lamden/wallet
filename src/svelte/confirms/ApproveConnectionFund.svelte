@@ -118,15 +118,12 @@
 
 
 <div class="flex-column detail"
-    in:fly="{{delay: 0, duration: 300, x: -500, y: 0, opacity: 0.25, easing: quintOut}}">
+    in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
     <h2>Fund Accout</h2>
     <p>
-        All Lamden transactions are paid in {confirmData.messageData.network.currencySymbol}. 
-        Transfer some {confirmData.messageData.network.currencySymbol} from an existing account to your new {confirmData.messageData.appName} account to start using it right away.
+        Transfer {confirmData.messageData.network.currencySymbol} to your pixel frames account to start using it right away.
     </p>
-
-
     <div class="flex-row">
         <div class="icon" >
             {@html send_coins}

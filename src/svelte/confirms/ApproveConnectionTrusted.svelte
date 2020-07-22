@@ -77,20 +77,18 @@
         {@html verified_app}
     </div>
     <div class="flex-column padding">
-        <p class="text">If you set <strong>{confirmData.messageData.appName}</strong> as a Trusted App you will not get popups to approve transactions.  
-            <strong>This excludes TAU transfers.</strong>
+        <p class="text">If you set <strong>{confirmData.messageData.appName}</strong> as a Trusted App you will not get popups to approve transactions.
         </p>
-
+    
         <label>
             <input id="trusted" type=radio bind:group={trusted} value={true}>
-            Trusted App - auto aprrove transactions to {confirmData.messageData.contractName}
+            Trusted App - Transactions from {confirmData.messageData.appName} are approved automatically
         </label>
 
         <label >
             <input id="not-trusted" type=radio bind:group={trusted} value={false}>
-            Not Trusted - manually approve all transactions
+            Not Trusted - Manually approve all transactions
         </label>
-
 
         <p class="text-primary-dark">You can adjust this option later in the account's settings.</p>
     </div>
