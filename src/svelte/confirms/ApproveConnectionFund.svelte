@@ -43,21 +43,17 @@
         next();
     }
 
-    const next = () => dispatch('nextStep')
-    const back = () => dispatch('back')
+    const next = () => dispatch('setStep', 3)
+    const back = () => dispatch('setStep', 1)
 
     const handleSelected = (e) => e.detail.selected ? selectedAccount = e.detail.selected.value : {}
 
     const handleChanged = (e) => {
-        console.log(e)
         let percision = 0;
         try {
             percision =  e.detail.target.value.split(".")[1].length
-            console.log(e.detail.target.value.split(".")[1].length)
-            console.log(percision)
             if (percision > 8) {
                 amount = Number(e.detail.target.value.split(".")[0] + "." + e.detail.target.value.split(".")[1].substring(0, 8))
-                console.log(amount)
             }
         } catch (e){}
 
@@ -65,7 +61,7 @@
 
     const confirmMessage = (txamount) => {
         if (!txamount || txamount <= 0) {
-            return "Don't fund account."
+            return " "
         } else {
             return `Transfer ${txamount.toLocaleString('en-US', { style: 'decimal', maximumFractionDigits : 8 })} ${confirmData.messageData.network.currencySymbol} to this account?`;
         }
@@ -78,9 +74,6 @@
         flex-grow: 1;
         justify-content: space-between;
         padding-top: 2rem;
-    }
-    h2{
-        margin-top: 0;
     }
     .flex-row{
         width: 100%;
@@ -101,8 +94,8 @@
         text-align: center;
     }
     p{
-        font-size: 1.1em;
-        align-self: flex-start;
+        font-size: 1.2em;
+        text-align: center;
         margin: 0.25rem 0;
         line-height: 1.4;
     }
@@ -110,6 +103,7 @@
         padding: 1rem 0;
     }
     .confirm-message{
+        height: 25px;
         font-size: 1.5em;
         margin: 2rem 0 0;  
         align-self: center;  
@@ -120,9 +114,8 @@
 <div class="flex-column detail"
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
-    <h2>Fund Accout</h2>
     <p>
-        Transfer {confirmData.messageData.network.currencySymbol} to your pixel frames account to start using it right away.
+        Transfer {confirmData.messageData.network.currencySymbol} to your new {confirmData.messageData.appName} account and start using it right away.
     </p>
     <div class="flex-row">
         <div class="icon" >
@@ -165,7 +158,7 @@
             <Button 
                 id={'fund-next-btn'}
                 classes={'button__solid button__purple'}
-                name={amount > 0 ? "Yes" : "Don't Fund"}
+                name={amount > 0 ? "Yes" : "Not Now"}
                 width={'175px'}
                 height={'42px'}
                 click={set} />

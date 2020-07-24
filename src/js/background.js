@@ -1278,7 +1278,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                             const txBuilder = new Lamden.TransactionBuilder(network, txInfo)
                             //Send dummp response so message tunnel doesn't error
                             sendResponse("ok")
-                            const info = (({ appName, url }) => ({ appName, url }))(dappInfo);
+                            const info = (({ appName, url, logo  }) => ({ appName, url, logo }))(dappInfo);
                             const txData = txBuilder.getAllInfo()
                             if (approvalRequest) {
                                 promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
@@ -1286,7 +1286,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                                 if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
                                     sendTx(txBuilder, wallet.sk, dappInfo.url)
                                 }else{
-                                    promptApproveTransaction(sender, {txData, wallet, dappInfo: info})
+                                    promptApproveTransaction(sender, {txData, wallet, dappInfo: info, network})
                                 }
                             }
 

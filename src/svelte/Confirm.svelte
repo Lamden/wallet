@@ -16,7 +16,8 @@
 		setFunding: (funding) => funding ? fundingInfo = funding : null,
 		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
-		openNewTab: (url) => openNewTab(url)
+		openNewTab: (url) => openNewTab(url),
+		logoFormat: (logo) => fixLogo(logo) 
 	});
 
 	const componentMap = {
@@ -25,13 +26,13 @@
 		CurrencyApproval
 	}
 	let confirmData;
+	
 	let confirmed = false;
 	let trustedApp = false;
 	let fundingInfo = false;
 
-	onMount(() => {
+	onMount(() => {		
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
-			console.log(response)
 			if (response) confirmData = response
 		})
 
@@ -65,6 +66,8 @@
 	const sendRejection = () => {
 		if (!confirmed) chrome.runtime.sendMessage({type: 'denyPopup', data: confirmData.type})
 	}
+
+	const fixLogo = (logo) => logo.substring(0, 1) === '/' ? logo.substring(1, logo.length) : logo
 
 	window.addEventListener("beforeunload", sendRejection);
 </script>

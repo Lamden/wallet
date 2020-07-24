@@ -44,6 +44,7 @@
     align-items: center;
     background-size: cover;
     background-repeat: no-repeat;
+    box-sizing: border-box;
 }
 
 .text-subtitle4.copy-link{
@@ -82,7 +83,7 @@ p > strong {
 
 <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
     <h1>{dappInfo.appName} wants to spend your {currencySymbol}</h1>
-    <div class=" appurl-link text-body2 text-primary-dark" on:click={() => openNewTab(dappInfo.url)}>{`source ${dappInfo.url}`}</div>
+    <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>
 <div class="details flex-column">
     <div class="info flex-column">

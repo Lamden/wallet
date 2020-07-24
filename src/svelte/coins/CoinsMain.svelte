@@ -57,7 +57,7 @@
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	height: 430px;
+	height: 417px;
 	border-radius: 4px;
 	margin-bottom: 18px;
     padding: 40px;
