@@ -27,7 +27,7 @@ import CoinModify from './coins/CoinModify.svelte';
 import CoinOptions from './coins/CoinOptions.svelte';
 import CoinDappOptions from './coins/CoinDappOptions.svelte';
 import CoinDappSettings from './coins/CoinDappSettings.svelte';
-import CoinDappPreApproval from './coins/CoinDappPreApproval.svelte';
+import CoinDappTrusted from './coins/CoinDappTrusted.svelte';
 import CoinDappRevoke from './coins/CoinDappRevoke.svelte';
 import CoinAdd from './coins/CoinAdd.svelte';
 import CoinAddDetails from './coins/CoinAddDetails.svelte';
@@ -184,7 +184,7 @@ export const Modals = {
     CoinLamdenSend, 
     CoinLamdenContract,
     CoinModify, CoinOptions, CoinDelete, CoinEditNickname,
-    CoinDappOptions, CoinDappSettings, CoinDappPreApproval, CoinDappRevoke,
+    CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
     CoinLamdenContract,
     CoinAdd, CoinAddDetails,
     CoinConfirmTx,

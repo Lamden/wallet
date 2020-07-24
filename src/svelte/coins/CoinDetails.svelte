@@ -19,6 +19,7 @@
     
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import verified_app from '../../img/menu_icons/icon_verified_app.svg'
     import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import settings from '../../img/menu_icons/icon_settings.svg';
@@ -55,9 +56,7 @@
         return pendingList
     }
     $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
-    $: stampPreApproval = thisNetworkApproved ? parseInt(dappInfo[$currentNetwork.type].stampPreApproval) || 0 : 0
-    $: stampsUsed = thisNetworkApproved ? parseInt(dappInfo[$currentNetwork.type].stampsUsed) || 0 : 0
-    $: stampsRemaining = thisNetworkApproved ? stampPreApproval - stampsUsed : 0
+    $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
     $: stampRatio = 1
 
 
@@ -169,6 +168,15 @@ small.flex-row{
     margin: 10px 0px;
 }
 
+.dapp-name{
+    margin: 0;
+}
+
+.trusted-icon{
+    width: 22px;
+    margin-right: 5px;
+}
+
 @media only screen and (max-width: 970px) {
   .buttons {
     flex-direction: column;
@@ -186,7 +194,14 @@ small.flex-row{
             <div class="flex-column wallet-details">
                 <div class="nickname text-body3">
                     {#if thisNetworkApproved && dappInfo}
-                        {dappInfo.appName}
+                        <div class="flex-row">
+                            {#if trustedApp}
+                                <div class="trusted-icon">
+                                    {@html verified_app}
+                                </div>
+                            {/if}
+                            <p class="dapp-name">{dappInfo.appName}</p>
+                        </div>
                     {:else}
                         <div>{coin.nickname}</div>
                         {#if dappInfo}
@@ -203,13 +218,6 @@ small.flex-row{
                 </div>
                 <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
                 <div class="amount"> {balance} </div>
-                {#if thisNetworkApproved}
-                    <div class="text-body2">{`
-                        pre-approved stamps left: ${stampsRemaining.toLocaleString()} 
-                         (${parseFloat(stampsRemaining/stampRatio).toLocaleString()} ${$currentNetwork.currencySymbol})
-                        `}
-                    </div>
-                {/if}
             </div>
             {#if thisNetworkApproved && dappLogo }
                 <div>

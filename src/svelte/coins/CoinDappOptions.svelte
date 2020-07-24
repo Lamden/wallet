@@ -26,8 +26,8 @@
     let modelData = getModalData();
     let coin = modelData.coin;
     let steps = [
-        {page: 'CoinDappSettings', cancelButton: false},
-        {page: 'CoinDappPreApproval', cancelButton: true},
+        {page: 'CoinDappSettings', cancelButton: true},
+        {page: 'CoinDappTrusted', cancelButton: true},
         {page: 'CoinDappRevoke', cancelButton: true},
         {page: 'MessageBox', cancelButton: true},
         {page: 'MessageBox', cancelButton: false},

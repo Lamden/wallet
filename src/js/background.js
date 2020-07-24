@@ -681,14 +681,14 @@ const validateConnectionMessage = (data) => {
 
 const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
     let installedStatus = {
-        version: settingsStore.version,
+        walletVersion: settingsStore.version,
         installed: true,
         setup: !firstRun,
         locked: walletIsLocked,
         wallets: []
     }
     if (installedStatus.locked === false){
-        installedStatus.wallets = [dappInfo.vk]
+        
         let approvals = {}
         Object.keys(dappInfo).forEach(key => {
             if(LamdenNetworkTypes.includes(key)) approvals[key] = {
@@ -696,6 +696,7 @@ const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
             }
         })
         installedStatus.approvals = approvals
+        if (Object.keys(approvals).length > 0) installedStatus.wallets = [dappInfo.vk]
     }
     sendResponse(installedStatus)
 }

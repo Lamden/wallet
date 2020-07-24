@@ -136,7 +136,7 @@
 
     <div class="flex-column padding">
         <label>
-            <input id="trusted" type=radio bind:group={trusted} value={true} on:changed={() => console.log("changed")}>
+            <input id="trusted" type=radio bind:group={trusted} value={true}>
             <strong>Automatic</strong>Transactions from {confirmData.messageData.appName} to its smart contract are approved by the wallet automatically
         </label>
 

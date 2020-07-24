@@ -39,7 +39,7 @@
 
 .hero-rec{
     width: 100%;
-    padding: 1.2rem 0;
+    padding: 2rem 0;
     justify-content: space-between;
     align-items: center;
     background-size: cover;
