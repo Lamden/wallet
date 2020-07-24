@@ -48,6 +48,7 @@ p{
 
 .dapp-name{
     margin-bottom: 0.25rem;
+    align-items: center;
 }
 
 .approve-items{
@@ -109,9 +110,6 @@ p{
 }
 a.help{
     text-align: center;
-}
-.dapp-name{
-    align-items: center;
 }
 .dapp-name > img {
     width: 37px;

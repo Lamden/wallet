@@ -43,6 +43,7 @@
 
     .dapp-name{
         align-items: center;
+        margin-bottom: 0.25rem;
     }
 
     p{

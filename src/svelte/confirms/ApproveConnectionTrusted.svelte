@@ -61,10 +61,10 @@
         width: 100%;
     }
     .icon{
-        width: 75px;
+        width: 60px;
     }
     .icon > .checkmark{
-        width: 45px;
+        width: 50px;
         margin: 0 auto;
     }
     .icon-arrows{
