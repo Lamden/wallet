@@ -44,6 +44,7 @@ const config = {
     metamaskBackupPhrase: "slab tomorrow actual evoke cattle churn brick bus toilet intact zoo erase", //The seed phrase metamask wallet to restore
     metamaskAddress: "0x00eB12f5C96B15001bf8f32bEEd970d178719AcC", //ETH address of the seed phrase
     metamaskPassword: "Testing0!2", //Required during install
-    port: 5656
+    port: 5656,
+    testnetMasternode: "167.172.126.5:18080"
 }
 module.exports = config

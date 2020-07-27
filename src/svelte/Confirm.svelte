@@ -13,7 +13,7 @@
 	setContext('confirm_functions', {
 		approveApp: () => sendApproveApp(),
 		setTrusted: (trusted) => trustedApp = trusted,
-		setFunding: (funding) => funding ? fundingInfo = funding : null,
+		setFunding: (funding) => setFundingInfo(funding),
 		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
 		openNewTab: (url) => openNewTab(url),
@@ -42,6 +42,10 @@
 	});
 
 	const confirm = () => confirmed = true;
+
+	const setFundingInfo = (funding) => {
+		fundingInfo = funding
+	}
 
 	const sendApproveApp = () => {
 		confirm();

@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount } from 'svelte'
+    import { getContext } from 'svelte'
     import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
@@ -19,7 +19,6 @@
 
     export let confirmData;
 
-    let stampPreApprovalInput
     let selectedAccount = {};
     let amount = 0;
 
@@ -132,7 +131,8 @@
                 />
             {/if}
 
-            <InputBox 
+            <InputBox
+                id="fund-amount-input"
                 label={`Amount to transfer (${confirmData.messageData.network.currencySymbol})`}
                 inputType={"number"}
                 styles={"font-size: 1.1em; min-height: unset; height: unset; line-height: 1;" }

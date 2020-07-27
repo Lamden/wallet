@@ -2,7 +2,18 @@ const {By, until} = require('selenium-webdriver');
 const nodeCryptoJs = require("node-cryptojs-aes")
 const server = require('./server')
 const path = require('path')
+const config = require('../config/config')
+const http = require('http')
 const { CryptoJS } = nodeCryptoJs;
+const { testnetMasternode } = config;
+
+let lamdenjs = require("lamden-js")
+
+const networkInfo = {
+    host: 'http://' + testnetMasternode.split(':')[0],
+    port: testnetMasternode.split(':')[1],
+    type: 'testnet'
+}
 
 const wait_sync = (seconds) => {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, seconds);
@@ -85,12 +96,21 @@ const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 
-const approvePopup = async (driver, popupWindow, switchback, trusted = true) => {
+const approvePopup = async (driver, popupWindow, switchback, trusted = true, fund=0) => {
     await sleep(2000, true)
     await switchWindow(driver, popupWindow)
     let infoNext_Button = await driver.wait(until.elementLocated(By.id("info-next-btn")), 5000);
     await infoNext_Button.click()
     await sleep(500, true)
+    if (fund > 0){
+        let fundInput = await driver.findElement(By.id('fund-amount-input'))
+        fundInput.sendKeys(fund)
+        await sleep(500, true)
+        await driver.findElement(By.className('custom-select')).click()
+        await sleep(500, true)
+        await driver.findElement(By.xpath("//div[contains(text(),'My TAU Address')]")).click()
+        await sleep(500, true)
+    }
     let fundNext_Button = await driver.wait(until.elementLocated(By.id("fund-next-btn")), 5000);
     await fundNext_Button.click()
     await sleep(500, true)
@@ -106,6 +126,16 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true) => 
 }
 
 const approveTxPopup = async (driver, popupWindow, switchback) => {
+    await sleep(2000, true)
+    await switchWindow(driver, popupWindow)
+    let approve_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 500);
+    await approve_Button.click()
+    await sleep(500, true)
+    await switchWindow(driver, switchback)
+    //await sleep(1000, true)
+}
+
+const approveApprovalPopup = async (driver, popupWindow, switchback) => {
     await sleep(2000, true)
     await switchWindow(driver, popupWindow)
     let approve_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 500);
@@ -180,10 +210,49 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
         return await httpServer.close()
     }
     await stop().catch((err) => reject(err))
-    driver && driver.quit();
+    //driver && driver.quit();
     await sleep(1000, true)
     resolve()
 })}
+
+const makeHttpRequest = (url, callback) => {
+    http.get(url, (resp) => {
+        let data = '';
+    
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+    
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+            callback(JSON.parse(data))    
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+}
+
+const getAccountBalance = (vk) => {
+    return new Promise(resolver => {
+        const resolveRequest = (data) => {
+            if (!data.value) resolver(0)
+            else resolver(parseInt(data.value)) 
+        }
+        makeHttpRequest(`http://${testnetMasternode}/contracts/currency/balances?key=${vk}`, resolveRequest)
+    })
+}
+
+const getApprovalAmount = (sender, to) => {
+    return new Promise(resolver => {
+        const resolveRequest = (data) => {
+            if (!data.value) resolver(0)
+            else resolver(parseInt(data.value))  
+        }
+        makeHttpRequest(`http://${testnetMasternode}/contracts/currency/balances?key=${sender}:${to}`, resolveRequest)
+    })
+}
+
 
 module.exports = {
     sleep,
@@ -193,9 +262,9 @@ module.exports = {
     hashStringValue,
     unlockWallet, lockWallet,
     sendConnectRequest, sendGetInfoRequest,
-    approvePopup, approveTxPopup, denyPopup,
+    approvePopup, approveTxPopup, approveApprovalPopup, denyPopup,
     getWalletResponse,
     startServer, closeTest,
     sendTx, getTxResult,
-
+    getApprovalAmount, getAccountBalance
 }

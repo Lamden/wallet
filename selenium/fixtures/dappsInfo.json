@@ -21,6 +21,16 @@
             "key_name": "wallet_testing",
             "key_value" : ""
         },
-        "stampLimit": 1000000
+        "stampLimit": 10000
+    },
+    "approvalTransaction": {
+        "contractName": "currency",
+        "methodName": "approve",
+        "networkType": "testnet",
+        "kwargs":{
+            "to": "con_wallet_testing",
+            "amount" : 1
+        },
+        "stampLimit": 10000
     }
 }

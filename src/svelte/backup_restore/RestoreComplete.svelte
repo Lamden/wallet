@@ -178,9 +178,7 @@ label.css-label-error {
 
 .checkmark-icon{
     position: relative;
-    top: -14px;
-    width: 14px;
-    right: -2px;
+    top: -18px;
 }
 
 .error-icon{

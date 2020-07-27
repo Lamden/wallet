@@ -55,13 +55,19 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors[0].includes('You must be an authorized dApp'), true)
         });
-        it('Create conenction with wallet to our teset dApp website', async function() {
+        it('Create conenction with wallet to our teset dApp website wt', async function() {
+            let fundingAmount = 10;
+            this.timeout(30000);
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1, false)
+            await helpers.approvePopup(driver, 2, 1, false, fundingAmount)
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response
             assert.equal(response.errors, null);
+            await helpers.sleep(2000, false)
+            let balance = await helpers.getAccountBalance(connectionInfo.wallets[0])
+            assert.equal(balance, fundingAmount);
+            
         });
         it('Reject tx with missing networkType', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
@@ -147,13 +153,11 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             await helpers.sendTx(driver, transaction, false)
             await helpers.approveTxPopup(driver, 2, 1)
             let response = await helpers.getTxResult(driver)
-            assert.equal(response.status, "error");
+            assert.equal(response.status, "success");
             let result = response.data
             assert.equal(result.networkInfo[transaction.networkType], true);
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
-            assert.equal(result.nonceResult.nonce, 0);
-            assert.equal(result.resultInfo.stampsUsed, 0)
-            assert.equal(result.resultInfo.type, 'error')
+            assert.equal(result.resultInfo.type, 'success')
             assert.equal(result.signed, true)
             assert.equal(result.signature.length > 0, true)
             assert.equal(JSON.stringify(result.txInfo.kwargs), JSON.stringify(transaction.kwargs));
@@ -162,6 +166,18 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
         });
+
+        it('Sends Currency/Approval transaction after Popup', async function() {
+            this.timeout(10000);
+            let currentApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
+            let transaction = helpers.getInstance(dappsInfo.approvalTransaction)
+            await helpers.sendTx(driver, transaction, false)
+            await helpers.approveApprovalPopup(driver, 2, 1)
+            await helpers.getTxResult(driver)
+            let afterApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
+            assert.equal(afterApprovalAmount, currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount);
+        });
+
         it('sends a transactions successfully after Trusted App', async function() {
             this.timeout(30000);
             //Resend approval with a pre-approval amount
@@ -179,13 +195,11 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.kwargs.key_value = keyHash
             let txResponse = await helpers.sendTx(driver, transaction, true)
-            assert.equal(txResponse.status, "error");
+            assert.equal(txResponse.status, "success");
             let result = txResponse.data
             assert.equal(result.networkInfo[transaction.networkType], true);
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
-            assert.equal(result.nonceResult.nonce, 0);
-            assert.equal(result.resultInfo.stampsUsed, 0)
-            assert.equal(result.resultInfo.type, 'error')
+            assert.equal(result.resultInfo.type, 'success')
             assert.equal(result.signed, true)
             assert.equal(result.signature.length > 0, true)
             assert.equal(JSON.stringify(result.txInfo.kwargs), JSON.stringify(transaction.kwargs));
@@ -194,6 +208,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
         });
+
         it('Rejects tx if keypair no longer exists in the Lamden Wallet', async function() {
             await helpers.switchWindow(driver, 0)
             await driver.findElement(By.id("coin-row-1")).click()

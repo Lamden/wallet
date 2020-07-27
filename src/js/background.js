@@ -307,14 +307,16 @@ const coinStoreAddOne = (coinInfo) => {
 }
 
 const coinStoreAddMany = (coins) => {
+    let sanitizedCoins = [];
     if (!validateTypes.isArray(coins)) return {error: `Error processing keyStore. Expected Array of coins but got <${typeof coins}> instead.`}
     let coinAdded = false
     coins.forEach(coin => {
         coin.result = coinStoreAddCoin(coin)
-        if (coinStoreAddCoin(coin).added) coinAdded = true
+        if (coin.result.added) coinAdded = true
     })
     try{
-        return coins
+        sanitizedCoins = JSON.parse(JSON.stringify(coins)).map(coin => {delete coin.sk; return coin})
+        return sanitizedCoins
     }finally{
         if (coinAdded) refreshCoinStore();
     }
@@ -436,6 +438,7 @@ const contractExists = (networkType, contractName) => {
  * Transaction Functions
  ***********************************************************************/
 const sendTx = (txBuilder, sk, sentFrom = false) => {
+    console.log(txBuilder)
     lastSentDate = new Date()
     //Get current nonce from the masternode
     txBuilder.getNonce()
@@ -509,6 +512,7 @@ const sendCurrencyTransaction = (senderVk, to, amount, networkInfo) => {
 
 const processSendResponse = (txBuilder) => {
     const result = txBuilder.txSendResult;
+    console.log(result)
     if (result.hash){
         let txData = txBuilder.getAllInfo();
         txData.sentFrom = txBuilder.sentFrom;
@@ -751,6 +755,7 @@ const promptCurrencyApproval = async (sender, messageData) => {
 }
 
 const approveDapp = (sender, approveInfo) => {
+    console.log(approveInfo)
     const confirmData = txToConfirm[getSenderHash(sender)]
     if (!walletIsLocked){
         const dappInfo = getDappInfo(confirmData.url)
@@ -1185,6 +1190,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
 
             if (message.type === 'approveDapp'){
+                console.log(message.data)
                 approveDapp(sender, message.data)
             }
 
