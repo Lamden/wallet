@@ -270,8 +270,6 @@ const setBalanceStore = (newValue) => {
     else{
         updatingBalances = true;
         chrome.storage.local.set({"balances": newValue}, () =>{
-            console.log('UPDATED')
-            console.log(balancesStore)
             updatingBalances = false;
         });
     }
@@ -285,9 +283,7 @@ const balancesStoreClearNetwork = (networkInfo) => {
         network = new Lamden.Network(getCurrentNetwork())
     }
     let netKey = networkKey(network)
-    console.log({networkInfo, network})
     balancesStore[netKey] = {}
-    console.log({networkInfo, network, balancesStore})
     setBalanceStore(balancesStore);
 }
 
