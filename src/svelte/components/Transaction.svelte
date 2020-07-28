@@ -27,7 +27,7 @@
 
     const openHashLink = () => {
         if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
-        else window.open(`${$currentNetwork.host}:${$currentNetwork.port}/tx?hash=${txData.hash}`, '_blank');
+        else window.open(`${$currentNetwork.host}/tx?hash=${txData.hash}`, '_blank');
     }
 
     const processErrorMessage = (err) => {

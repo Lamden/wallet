@@ -51,6 +51,8 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.findElement(By.id('save-pwd')).click()
         await driver.findElement(By.id('i-understand')).click()
         await helpers.sleep(5000)
+        await helpers.changeToTestnet(driver)
+        await helpers.sleep(1000)
         assert.equal(true, true);
     });
     it('Renders Swaps.svelte', async function() {

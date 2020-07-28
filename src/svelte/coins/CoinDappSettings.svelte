@@ -42,7 +42,6 @@
 
     onMount(() => {
         stampRatio.then(res => ratio = res)
-        console.log($currentNetwork)
     })
 
     const showPreApprove = () => {

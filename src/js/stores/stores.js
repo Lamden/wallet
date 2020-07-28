@@ -18,7 +18,7 @@ export const steps = writable({current:0, stepList:[]});
 
 //Store Utils
 export function networkKey(networkObj){
-    return `${networkObj.host}:${networkObj.port}`
+    return `${networkObj.name}|${networkObj.type}|${networkObj.lamden ? 'lamden': 'user'}`
 }
 
 export function copyItem(item){

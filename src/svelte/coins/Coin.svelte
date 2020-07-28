@@ -43,8 +43,6 @@
     }
 
     const getItemValue = async (info) => {
-        console.log(info)
-        console.log(dappInfo)
         let key = ''
         if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
             key = info.key.replace("<wallet vk>", coin.vk)

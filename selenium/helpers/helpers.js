@@ -5,15 +5,8 @@ const path = require('path')
 const config = require('../config/config')
 const http = require('http')
 const { CryptoJS } = nodeCryptoJs;
+
 const { testnetMasternode } = config;
-
-let lamdenjs = require("lamden-js")
-
-const networkInfo = {
-    host: 'http://' + testnetMasternode.split(':')[0],
-    port: testnetMasternode.split(':')[1],
-    type: 'testnet'
-}
 
 const wait_sync = (seconds) => {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, seconds);
@@ -45,6 +38,7 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
     await driver.findElement(By.id('save-pwd')).click()
     await driver.findElement(By.id('i-understand')).click()
     await sleep(5000)
+    await changeToTestnet(driver)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -66,7 +60,8 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.findElement(By.id('restore-btn')).click()
     await sleep(1000)
     await driver.findElement(By.id('home-btn')).click()
-    await sleep(3000)
+    await sleep(10000)
+    await changeToTestnet(driver)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -87,6 +82,13 @@ const lockWallet = async (driver, switchback) => {
     await switchWindow(driver, switchback) 
     await sleep(1000, true)
 }
+const changeToTestnet = async (driver) => {
+    await driver.findElement(By.id("nav-network-info")).click()
+    await driver.findElement(By.className('custom-select')).click()
+    await driver.findElement(By.xpath("//div[contains(text(),'Lamden Testnet')]")).click()
+    await sleep(1000, true)
+    await driver.findElement(By.id("accounts")).click()
+}
 
 const getInstance = (obj) => {
     return JSON.parse(JSON.stringify(obj))
@@ -96,24 +98,27 @@ const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 
-const approvePopup = async (driver, popupWindow, switchback, trusted = true, fund=0) => {
+const approvePopup = async (driver, popupWindow, switchback, trusted = true, fund= {show: true, amount: 0}) => {
     await sleep(2000, true)
     await switchWindow(driver, popupWindow)
     let infoNext_Button = await driver.wait(until.elementLocated(By.id("info-next-btn")), 5000);
     await infoNext_Button.click()
     await sleep(500, true)
-    if (fund > 0){
-        let fundInput = await driver.findElement(By.id('fund-amount-input'))
-        fundInput.sendKeys(fund)
-        await sleep(500, true)
-        await driver.findElement(By.className('custom-select')).click()
-        await sleep(500, true)
-        await driver.findElement(By.xpath("//div[contains(text(),'My TAU Address')]")).click()
+    if (fund.show){
+        if (fund.amount > 0){
+            let fundInput = await driver.findElement(By.id('fund-amount-input'))
+            fundInput.sendKeys(fund.amount)
+            await sleep(500, true)
+            await driver.findElement(By.className('custom-select')).click()
+            await sleep(500, true)
+            await driver.findElement(By.xpath("//div[contains(text(),'My TAU Address')]")).click()
+            await sleep(500, true)
+        }
+        let fundNext_Button = await driver.wait(until.elementLocated(By.id("fund-next-btn")), 5000);
+        await fundNext_Button.click()
         await sleep(500, true)
     }
-    let fundNext_Button = await driver.wait(until.elementLocated(By.id("fund-next-btn")), 5000);
-    await fundNext_Button.click()
-    await sleep(500, true)
+
     if (!trusted){
         let trusted_Radio = await driver.wait(until.elementLocated(By.id("not-trusted")), 5000);
         await trusted_Radio.click()
@@ -159,7 +164,6 @@ const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) 
     return driver.executeScript(`
         window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
         document.addEventListener('lamdenWalletInfo', (response) => {
-            console.log(response)
             window.resolver(response.detail)
         });
         document.dispatchEvent( new CustomEvent('lamdenWalletConnect', {detail: '${JSON.stringify(connectionInfo)}'} ));
@@ -172,7 +176,7 @@ const sendGetInfoRequest = async (driver, awaitResponse = true) => {
         window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
         const resolveDetail = (response) => {
             window.resolver(response.detail)
-            document.removeEventListener(resolveDetail)
+            document.removeEventListener('lamdenWalletInfo', resolveDetail)
         }
         document.addEventListener('lamdenWalletInfo', resolveDetail);
         document.dispatchEvent( new CustomEvent('lamdenWalletGetInfo'));
@@ -205,15 +209,7 @@ const getTxResult = async (driver) => {
 
 const startServer = (port) => {return server.startServer(port)}
 
-const closeTest = (driver, httpServer) => {return new Promise(async (resolve, reject) => {
-    const stop = async () => {
-        return await httpServer.close()
-    }
-    await stop().catch((err) => reject(err))
-    //driver && driver.quit();
-    await sleep(1000, true)
-    resolve()
-})}
+
 
 const makeHttpRequest = (url, callback) => {
     http.get(url, (resp) => {
@@ -254,10 +250,20 @@ const getApprovalAmount = (sender, to) => {
 }
 
 
+const closeTest = (driver, httpServer) => {return new Promise(async (resolve, reject) => {
+    const stop = async () => {
+        return await httpServer.close()
+    }
+    await stop().catch((err) => reject(err))
+    driver && driver.quit();
+    await sleep(1000, true)
+    resolve()
+})}
+
 module.exports = {
     sleep,
     switchWindow,
-    completeFirstRunSetup, completeFirstRunSetupRestore,
+    completeFirstRunSetup, completeFirstRunSetupRestore, changeToTestnet,
     getInstance,
     hashStringValue,
     unlockWallet, lockWallet,

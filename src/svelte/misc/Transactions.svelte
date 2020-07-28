@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte'

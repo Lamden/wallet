@@ -16,7 +16,7 @@
 
     let name = ''
     let host = ''
-    let port = '8000'
+    let port = ''
     let currencySymbol = 'mTAU'
     let type = 'mockchain'
     let checking = false;
@@ -24,7 +24,7 @@
 
     $: addButtonColor = checking ? '' : 'button__purple';
     $: buttonName = checking ? 'Checking For Network' : added ? 'Added!' : 'Add Network';
-    $: network = {name, host, port, currencySymbol, type, lamden: false, selected: false}
+    $: network = {name, hosts: [`${host}:${port}`], currencySymbol, type, lamden: false, selected: false}
 
     const formValidation = async () => {
         if (formField.checkValidity()){

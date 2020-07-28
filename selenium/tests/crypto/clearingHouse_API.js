@@ -154,7 +154,6 @@ describe('Testing Clearinghouse API Handler', function () {
                 try{
                     tries = tries + 1
                     response = await CH_API.checkSwapStatus(CH_Response.uuid_receipt)
-                    console.log(response)
                 }catch (e) {
                     error = e.message
                 }

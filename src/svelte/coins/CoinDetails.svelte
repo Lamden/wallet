@@ -8,7 +8,7 @@
         SettingsStore, 
         currentNetwork, 
         breadcrumbs, 
-        TxStore, networkKey, 
+        TxStore,
         BalancesStore,
         PendingTxStore } from '../../js/stores/stores.js';
 
@@ -93,7 +93,6 @@
             return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=10`)
             .then(res => res.json())
             .then(json => {
-                console.log(json.data)
                 transactionsList = json.data
             })
             

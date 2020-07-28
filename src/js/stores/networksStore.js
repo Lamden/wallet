@@ -9,19 +9,28 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 import Lamden from 'lamden-js'
 
 const lamdenNetworks = [
-    {name: 'Lamden Testnet', 
-    host:'http://167.172.126.5', 
-    port: '18080', 
-    type:'testnet', 
-    lamden: true, 
-    currencySymbol: 'dTAU',
-    blockExplorer: 'https://explorer.lamden.io'}
+    {
+        name: 'Lamden Mainnet', 
+        hosts: ['https://masternode-01.lamden.io:443', 'https://masternode-02.lamden.io:443'],
+        type:'mainnet', 
+        lamden: true, 
+        currencySymbol: 'TAU',
+        blockExplorer: 'https://explorer.lamden.io'
+    },
+    {
+        name: 'Lamden Testnet', 
+        hosts: ['http://167.172.126.5:18080'], 
+        type:'testnet', 
+        lamden: true, 
+        currencySymbol: 'dTAU',
+        blockExplorer: 'https://testnet.lamden.io'
+    },
 ]
 
 const defualtNetworksStore = {
     lamden: [],
     user : [],
-    current: 'http://167.172.126.5:18080'
+    current: 'Lamden Mainnet|mainnet|lamden'
 }
 
 const makeList = (networkStore) => {
@@ -54,15 +63,17 @@ export const createNetworksStore = () => {
     const NetworksStore = writable(startValue);
 
     //This is called everytime the NetworksStore updated
-    NetworksStore.subscribe(current => {
+    NetworksStore.subscribe(currentStore => {
         if (!initialized) {
-            return current
+            return currentStore
         }
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
-        if (isNetworkStoreObj(current)){
-            current.lamden = lamdenNetworks;
-            chrome.storage.local.set({"networks": current});
+        if (isNetworkStoreObj(currentStore)){
+            currentStore.lamden = lamdenNetworks;
+            let found = foundNetwork(currentStore, currentStore.current)
+            if (!found) currentStore.current = defualtNetworksStore.current
+            chrome.storage.local.set({"networks": currentStore});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore();
@@ -88,6 +99,7 @@ export const createNetworksStore = () => {
             if (!isNetworkObj(networkInfo)) return;
 
             let netKey = networkKey(networkInfo);
+
             //If this is already the current network then do nothing
             if (netKey !== get(NetworksStore).current){
                 NetworksStore.update(networksStore => {
@@ -102,10 +114,13 @@ export const createNetworksStore = () => {
             //Reject undefined or missing Network info
             if (!isNetworkObj(networkInfo)) return {added: false, reason: 'badArg'};
 
+            if (networkInfo.name.includes("|")) return {added: false, reason: 'badArg'};
+
             //Set Defaults if they weren't passed
             if (!networkInfo.online) networkInfo.online = false;
 
-            //Don't add network if ip/port already exists
+
+            //Don't add network if a similar one exits
             let netKey = networkKey(networkInfo);
             if (foundNetwork(get(NetworksStore), netKey)) return {added: false, reason: 'duplicate'};
             

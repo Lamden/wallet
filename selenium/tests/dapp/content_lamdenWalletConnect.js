@@ -316,14 +316,15 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors.includes("Tried to approve app but wallet was locked"), true);
-            await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
         });
         it('POPUP: Can Approve a connection request and return wallet info', async function() {
+            await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            console.log(await helpers.sendConnectRequest(driver, connection, false))
+            await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response;
+            
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
@@ -338,12 +339,9 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.contractName = "submission" 
             connection.reapprove = true;
-            console.log('Prompting!')
-            console.log(connection)
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
-            console.log(response)
             assert.equal(response.errors, null);
             assert.equal(response.wallets[0], connectionInfo.wallets[0]);
             assert.equal(response.approvals['testnet'].contractName, 'submission');
@@ -354,7 +352,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             connection.contractName = "currency" 
             connection.reapprove = true;
             connection.newKeypair = true;
-            console.log('Prompting!')
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)

@@ -17,6 +17,7 @@
     })
 
     afterUpdate(() => {
+        let status = 'checking'
         ping()
     })
 
@@ -32,11 +33,12 @@
     align-items: flex-end;
     padding: 0 61px 0 30px;
     min-width: fit-content;
+    cursor: pointer;
 }
 </style>
 
-<div class="box text-body2 flex-column">
+<div id="nav-network-info" class="box text-body2 flex-column" on:click={() => switchPage('DevToolsMain')}>
     <div>{`Current Network`}</div>
-    <div class="text-primary-dark clickable" on:click={() => switchPage('DevToolsMain')}>{$currentNetwork.name}</div>
+    <div class="text-primary-dark">{$currentNetwork.name}</div>
     <NavStatus {status} />
 </div>

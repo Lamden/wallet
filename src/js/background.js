@@ -245,14 +245,15 @@ const balancesStoreUpdateVk = async (vk, networkInfo, watchOnly) => {
     } else {
         network = new Lamden.Network(getCurrentNetwork())
     }
-    if (!balancesStore[network.url]) balancesStore[network.url] = {}
-    if (!balancesStore[network.url][vk]) balancesStore[network.url][vk] = {}
-    if (!balancesStore[network.url][vk].balance) balancesStore[network.url][vk] = {balance: 0, watchOnly}
-    balancesStore[network.url][vk].watchOnly = watchOnly
-    const currentBalance = balancesStore[network.url][vk].balance
+    const host = network.hosts[0]
+    if (!balancesStore[host]) balancesStore[host] = {}
+    if (!balancesStore[host][vk]) balancesStore[host][vk] = {}
+    if (!balancesStore[host][vk].balance) balancesStore[host][vk] = {balance: 0, watchOnly}
+    balancesStore[host][vk].watchOnly = watchOnly
+    const currentBalance = balancesStore[host][vk].balance
     let newBalance = await network.API.getCurrencyBalance(vk)
     if (parseFloat(parseFloat(newBalance).toFixed(8)) != parseFloat(parseFloat(currentBalance).toFixed(8))){
-        balancesStore[network.url][vk].balance = newBalance
+        balancesStore[host][vk].balance = newBalance
         return true;
     }else{
         return false
@@ -268,13 +269,14 @@ const getWallet = (vk) => {
 
 const getSanatizedWallets = () => {
     let network = new Lamden.Network(getCurrentNetwork())
+    const host = network.hosts[0]
     return coinStore.map(coin => {
-        if (!validateTypes.isObjectWithKeys(balancesStore[network.url][coin.vk])) return null
-        if (balancesStore[network.url][coin.vk].watchOnly) return null
+        if (!validateTypes.isObjectWithKeys(balancesStore[host][coin.vk])) return null
+        if (balancesStore[host][coin.vk].watchOnly) return null
         return {
             vk: coin.vk,
             nickname: coin.nickname,
-            balance: balancesStore[network.url][coin.vk].balance
+            balance: balancesStore[host][coin.vk].balance
         }
     }).filter(coin => coin)
 }
@@ -407,9 +409,13 @@ const refreshCoinStore = () => {
 /***********************************************************************
  * NetworkStore / API Functions
  ***********************************************************************/
+const networkKey = (network) => {
+    return `${network.name}|${network.type}|${network.lamden ? 'lamden': 'user'}`
+}
+
 const getCurrentNetwork = () => {
     const networks = [...networksStore.lamden, ...networksStore.user]
-    const foundNetwork = networks.find(network => networksStore.current === `${network.host}:${network.port}`)
+    const foundNetwork = networks.find(network => networksStore.current === networkKey(network))
     return foundNetwork
 }
 
@@ -438,7 +444,6 @@ const contractExists = (networkType, contractName) => {
  * Transaction Functions
  ***********************************************************************/
 const sendTx = (txBuilder, sk, sentFrom = false) => {
-    console.log(txBuilder)
     lastSentDate = new Date()
     //Get current nonce from the masternode
     txBuilder.getNonce()
@@ -512,7 +517,6 @@ const sendCurrencyTransaction = (senderVk, to, amount, networkInfo) => {
 
 const processSendResponse = (txBuilder) => {
     const result = txBuilder.txSendResult;
-    console.log(result)
     if (result.hash){
         let txData = txBuilder.getAllInfo();
         txData.sentFrom = txBuilder.sentFrom;
@@ -685,7 +689,7 @@ const validateConnectionMessage = (data) => {
 
 const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
     let installedStatus = {
-        walletVersion: settingsStore.version,
+        walletVersion: chrome.runtime.getManifest().version,
         installed: true,
         setup: !firstRun,
         locked: walletIsLocked,
@@ -740,7 +744,6 @@ const promptApproveTransaction = async (sender, messageData) => {
     });
 }
 const promptCurrencyApproval = async (sender, messageData) => {
-    console.log(messageData)
     const keypair = Lamden.wallet.new_wallet()
     const windowId = hashStringValue(keypair.vk)
     txToConfirm[windowId] = {
@@ -755,7 +758,6 @@ const promptCurrencyApproval = async (sender, messageData) => {
 }
 
 const approveDapp = (sender, approveInfo) => {
-    console.log(approveInfo)
     const confirmData = txToConfirm[getSenderHash(sender)]
     if (!walletIsLocked){
         const dappInfo = getDappInfo(confirmData.url)
@@ -1190,7 +1192,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
 
             if (message.type === 'approveDapp'){
-                console.log(message.data)
                 approveDapp(sender, message.data)
             }
 

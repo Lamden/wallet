@@ -27,7 +27,6 @@
     $: displayItems = [...items]
 
     onMount(()=>{
-        console.log(items)
         if (selectElm.options){
             items.forEach((item, index) => {
                 selectElm.options[index].selected = item.selected;
