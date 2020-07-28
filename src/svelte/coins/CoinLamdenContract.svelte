@@ -74,6 +74,7 @@
     }
 
     let stampRatio = 1;
+    let hasBlockExplorer = $currentNetwork.blockExplorer !== ''
 
     $: contractName = 'currency'
     $: methodName  = ''
@@ -84,12 +85,15 @@
     
     onMount(() => {
         getMethods(contractName)
-        fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
-            .then(res => res.json())
-            .then(res => {
-                stampRatio = parseInt(res.value)
-                determineStamps()
-            })
+        if (hasBlockExplorer){
+            fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+                .then(res => res.json())
+                .then(res => {
+                    stampRatio = parseInt(res.value)
+                    determineStamps()
+                })
+        }
+
     });
 
     const determineStamps = () => {
@@ -221,7 +225,7 @@
 
     const handleSelectedWallet = (e) => {
         selectedWallet = e.detail.selected.value
-        determineStamps();
+        if (hasBlockExplorer) determineStamps();
     }
 </script>
 

@@ -31,22 +31,25 @@
     let owner = "";
     let constructorArgs = "";
     let constructor_args_obj = {};
+    let hasBlockExplorer = $currentNetwork.blockExplorer !== ''
 
     $: stampLimit = 0;
 
     onMount(() => {
-        fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
-            .then(res => res.json())
-            .then(res => {
-                stampRatio = parseInt(res.value)
-                determineStamps()
-            })
+        if (hasBlockExplorer){
+            fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+                .then(res => res.json())
+                .then(res => {
+                    stampRatio = parseInt(res.value)
+                    determineStamps()
+                })
+        }
     })
 
     const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
-        determineStamps();
+        if (hasBlockExplorer) determineStamps();
     }
 
 
