@@ -6,7 +6,8 @@
 			CoinStore,
 			balanceTotal,
 			breadcrumbs,
-			currentNetwork
+			currentNetwork,
+			networkKey
 		} from '../../js/stores/stores.js';
 
 	//Components
@@ -28,13 +29,14 @@
 	//Props
 	export let name
 
-	$: totalBalance = $balanceTotal[$currentNetwork.url] ? $balanceTotal[$currentNetwork.url] : 0;
+	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : 0;
 
 	let refreshing = false;
 
 	onMount(async () => {
 		breadcrumbs.set([{name: 'Accounts', page: {name: ''}}]);
 		handleRefresh();
+		console.log($currentNetwork)
 	});
 
 	const handleRefresh = () => {

@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { TxStore, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -31,7 +31,7 @@
 
 
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
     $: trustedApp = dappInfo.trustedApp;
     $: ratio = 0;
     $: addressLink = `${$currentNetwork.blockExplorer}/address/${coin.vk}`

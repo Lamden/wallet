@@ -2,7 +2,7 @@
     import { getContext, setContext, afterUpdate } from 'svelte';
 
     //Stores
-    import { currentNetwork, BalancesStore, balanceTotal, DappStore } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, balanceTotal, DappStore, networkKey } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
@@ -19,25 +19,25 @@
     //Context
     const { switchPage } = getContext('app_functions');
     
-    $: watching = BalancesStore.isWatchOnly($currentNetwork.url, coin.vk)
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
-    $: balanceStr = balance.toLocaleString('en')
-    $: percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
+    $: watching = BalancesStore.isWatchOnly($currentNetwork, coin.vk)
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
+    $: balanceStr = balance ? balance.toLocaleString('en') : '0'
+    $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
     $: dappCharms = dappNetworkInfo ? dappNetworkInfo.charms || [] : []
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
 
     afterUpdate(() => {
-        console.log($BalancesStore)
-        balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
-        balanceStr = balance.toLocaleString('en')
-        percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
+        balance = BalancesStore.getBalance($currentNetwork, coin.vk)
+        watching = BalancesStore.isWatchOnly($currentNetwork, coin.vk)
+        balanceStr = balance ? balance.toLocaleString('en') : '0'
+        percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "0.0 %" : toPercentString();
     })
 
     const toPercentString = () => {
-        if (isNaN((balance / $balanceTotal[$currentNetwork.url]))) return '0.0 %'
-        return ((balance / $balanceTotal[$currentNetwork.url])* 100).toFixed(2).toString() + ' %'
+        if (isNaN((balance / $balanceTotal[networkKey($currentNetwork)]))) return '0.0 %'
+        return ((balance / $balanceTotal[networkKey($currentNetwork)])* 100).toFixed(2).toString() + ' %'
     }
     const getDappInfo = (dappStore) => {
         return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
@@ -178,7 +178,7 @@ p > a {
         </div>
     {/each}
     <div class="dapp-info">
-        <p>{`Created for dapp at`}
+        <p>{`linked to `}
             <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
         </p>
     </div>

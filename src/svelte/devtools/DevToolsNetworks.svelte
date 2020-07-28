@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, networkTypesDropDownList } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, BalancesStore, networkTypesDropDownList } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte';
@@ -68,7 +68,8 @@
     }
 
     const clearCache = () => {
-        CacheStore.refreshNetwork($currentNetwork.name)
+        CacheStore.refreshAllCache($currentNetwork)
+        BalancesStore.refreshAllCache($currentNetwork)
     }
 
     const reportValidityMessage = (node, message) => {

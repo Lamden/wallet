@@ -101,7 +101,7 @@
             {#if selectedWallet}
                 {`
                     ${selectedWallet.name} - 
-                    ${BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'}
+                    ${BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'}
                     ${$currentNetwork.currencySymbol}
                 `}
             {/if}

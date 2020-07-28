@@ -8,8 +8,8 @@
         SettingsStore, 
         currentNetwork, 
         breadcrumbs, 
-        TxStore,
         BalancesStore,
+        networkKey,
         PendingTxStore } from '../../js/stores/stores.js';
 
     //Components
@@ -45,7 +45,7 @@
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
     $: background = dappInfo ? dappInfo.background ? `${dappInfo.url}${dappInfo.background}` : squares_bg : squares_bg
     $: symbol = coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
     $: pendingTxList = () => {
@@ -67,7 +67,7 @@
         ]);
         getBalance()
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
-        fetchTransactions();
+        if ($currentNetwork.blockExplorer) fetchTransactions();
 
     });
 
@@ -101,7 +101,7 @@
     }
 
     const delayedRefresh = () => {
-        setTimeout(fetchTransactions, 10000)
+        if($currentNetwork.blockExplorer) setTimeout(fetchTransactions, 10000)
     }
 </script>
 
@@ -173,7 +173,7 @@ small.flex-row{
 
 .trusted-icon{
     width: 22px;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 @media only screen and (max-width: 970px) {
@@ -271,5 +271,7 @@ small.flex-row{
     {#if thisNetworkApproved && $currentNetwork.lamden}
         <Charms dappInfo={dappInfo} />
     {/if}
+
     <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions}/>
+
 </div>

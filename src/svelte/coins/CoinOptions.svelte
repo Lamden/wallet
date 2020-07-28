@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { CoinStore, TxStore, currentNetwork, BalancesStore, dappsDropDown } from '../../js/stores/stores.js';
+    import { CoinStore, currentNetwork, BalancesStore, dappsDropDown } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -26,7 +26,6 @@
     let options = [
         {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
         {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', icon: edit, color: 'purple', click: () => showEdit() },
-        {id: 'delete-tx-btn', name: 'Purge Transactions', desc: 'Clear Tx History', icon: del, color: 'grey', click: () => clearTxHistory() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
     ]
     const buttons = [
@@ -37,7 +36,7 @@
     $: coin = getModalData();
     $: nickname = coin.nickname;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'
+    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'
     $: dAppList = makeDappList($dappsDropDown)
     $: dAppInfo = undefined;
 
@@ -110,10 +109,6 @@
         selectedWallet = wallet;
         nickname = wallet.nickname;
         dAppList = makeDappList($dappsDropDown)
-    }
-
-    const clearTxHistory = () => {
-        TxStore.clearTx($currentNetwork, selectedWallet.vk)
     }
 </script>
 

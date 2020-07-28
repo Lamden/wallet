@@ -18,7 +18,7 @@
     //Props
     export let coin;
     
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
 
     let returnMessage = {};
     
@@ -32,15 +32,11 @@
     })
 
     const saveNickName = () => {
-        CoinStore.update( current => {
-            let coinMatch = current.find( c => coin.network === c.network && coin.symbol === c.symbol && coin.vk === c.vk)
-            if (coinMatch) {
-                coinMatch.nickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
-            }
-            return current
+        let newNickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
+        chrome.runtime.sendMessage({type: 'changeCoinNickname', data: {coinInfo: coin, newNickname}}, () => {
+            sendMessage()
+            setPage(6);
         })
-        sendMessage()
-        setPage(6);
     }
 
     const sendMessage = () => {

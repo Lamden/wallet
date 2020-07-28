@@ -3,6 +3,8 @@ import { writable, get, derived } from 'svelte/store';
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
+import { networkKey } from './stores.js'
+
 export const createBalancesStore = () => {
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
@@ -35,7 +37,11 @@ export const createBalancesStore = () => {
         subscribe,
         set,
         update,
-        getBalance: (netkey, vk) => {
+        getBalance: (networkObj, vk) => {
+            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
+
+            let netkey = networkKey(networkObj)
+
             if (validateTypes.isStringWithValue(netkey) && validateTypes.isStringWithValue(vk)){
                 const balanceStore = get(BalancesStore)
                 if (!balanceStore[netkey]) return 0
@@ -46,16 +52,28 @@ export const createBalancesStore = () => {
                 return 0;
             }
         },
-        isWatchOnly: (netkey, vk) => {
+        isWatchOnly: (networkObj, vk) => {
+            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
+            
+            let netkey = networkKey(networkObj)
+
             if (validateTypes.isStringWithValue(netkey) && validateTypes.isStringWithValue(vk)){
                 const balanceStore = get(BalancesStore)
-                if (!balanceStore[netkey]) return 0
-                if (!balanceStore[netkey][vk]) return 0
-                if (!balanceStore[netkey][vk].balance) return 0
+                if (!balanceStore[netkey]) return false
+                if (!balanceStore[netkey][vk]) return false
                 return balanceStore[netkey][vk].watchOnly
             }else{
                 return false;
             }
+        },
+        refreshNetworkCache: (networkObj) => {
+            console.log('balanceStore is Network object good? ' + validateTypes.isSpecificClass(networkObj, "Network"))
+            //Reject missing or undefined arguments
+            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
+            chrome.runtime.sendMessage({type: 'balancesStoreClearNetwork', data: networkObj.getNetworkInfo()})
+        },
+        refreshAllCache: () => {
+            chrome.runtime.sendMessage({type: 'balancesStoreClearAllNetworks'})
         }
     };
 }

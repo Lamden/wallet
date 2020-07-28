@@ -60,7 +60,6 @@ import RestoreSaveWallets from './backup_restore/RestoreSaveWallets.svelte';
 import RestoreComplete from './backup_restore/RestoreComplete.svelte';
 
 //History
-import HistoryMain from './history/HistoryMain.svelte';
 import PendingTransactions from './history/PendingTransactions.svelte'
 import PendingTransaction from './history/PendingTransaction.svelte'
 
@@ -159,7 +158,6 @@ export const Pages = {
     Backup,
     Swaps,
     DevToolsMain, 
-    HistoryMain, 
     About, 
     IdeMain,
     ...FirstRun 
@@ -209,7 +207,7 @@ export {
     Restore,
     LockScreen,
     Modal,
-    HistoryMain, PendingTransactions, PendingTransaction,
+    PendingTransactions, PendingTransaction,
     Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,

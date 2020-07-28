@@ -31,12 +31,11 @@
     let owner = "";
     let constructorArgs = "";
     let constructor_args_obj = {};
-    let hasBlockExplorer = $currentNetwork.blockExplorer !== ''
 
     $: stampLimit = 0;
 
     onMount(() => {
-        if (hasBlockExplorer){
+        if ($currentNetwork.blockExplorer){
             fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
                 .then(res => res.json())
                 .then(res => {
@@ -49,14 +48,14 @@
     const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
-        if (hasBlockExplorer) determineStamps();
+        if ($currentNetwork.blockExplorer) determineStamps();
     }
 
 
     const determineStamps = () => {
         if (!selectedWallet) return
         let maxStamps = stampRatio * 50;
-        let bal = BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk)
+        let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
         if ((bal * stampRatio) < maxStamps) stampLimit = parseInt((bal * stampRatio) * .95 )
         else stampLimit = parseInt(maxStamps)
     }
@@ -159,7 +158,7 @@
             {#if selectedWallet}
                 {`
                     ${selectedWallet.name} - 
-                    ${BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'}
+                    ${BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'}
                     ${$currentNetwork.currencySymbol}
                 `}
             {/if}

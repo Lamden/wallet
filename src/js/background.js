@@ -4,6 +4,7 @@ import '../img/icon-34.png'
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue } from './utils.js';
 import Lamden from 'lamden-js'
 import Ethereum from './crypto/ethereum'
+import { networkKey } from './stores/stores';
 
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators
@@ -22,13 +23,11 @@ let dappsStore;
 let settingsStore;
 let networksStore;
 let balancesStore;
-let txStore;
 let pendingTxStore;
 
 
 //Misc Values.
 let vaultNotCreated = false;
-let txSaveList = [];
 let txToConfirm = {};
 let nonceCache = {};
 let current = '';
@@ -47,7 +46,6 @@ chrome.storage.local.get(
         "hash": "",  //depreciated for vault storage
         "vault": "", 
         "coins": [],
-        "txs": {},
         "balances":{},
         "pendingTxs": [],
         "networks":{},
@@ -60,7 +58,6 @@ chrome.storage.local.get(
         if (vault === "" && validateTypes.isStringWithValue(hash)) coinStore = getValue.coins;
         firstRun = hash === "" && vault === "" ? true : false;
         balancesStore = getValue.balances;
-        txStore = getValue.txs;
         networksStore = getValue.networks;
         settingsStore = getValue.settings;
         pendingTxStore = getValue.pendingTxs;
@@ -86,10 +83,6 @@ chrome.storage.onChanged.addListener(function(changes) {
         if (key === 'settings') settingsStore = changes[key].newValue;
         if (key === 'dapps') dappsStore = changes[key].newValue;
         if (key === 'networks') networksStore = changes[key].newValue;
-        if (key === 'txs') {
-            txStore = changes[key].newValue;
-            savingTransactions = false;
-        }
     }
 });
 
@@ -196,7 +189,7 @@ const decryptedKeys = () => {
 /***********************************************************************
  * BalancesStore Updating TAU balances
  ***********************************************************************/
-const balancesStoreUpdateOne = (vk, networkInfo) => {
+const balancesStoreUpdateOne = (vk, networkInfo = null) => {
     if (!updatingBalances){
         updatingBalances = true;
         balancesStoreUpdateVk(vk, networkInfo)
@@ -211,30 +204,30 @@ const balancesStoreUpdateOne = (vk, networkInfo) => {
 }
 
 const balancesStoreUpdateAll = (networkInfo) => {
-    if (typeof coinStore !== 'undefined'){
-        balancesStore = {};
-        const coinsToProcess = coinStore.length; 
-        if (coinsToProcess > 0){
-            let coinsProcessed = 0;
-            updatingBalances = true;
-            coinStore.forEach((coin) => {
-                const watchOnly = coin.sk === "watchOnly"
-                balancesStoreUpdateVk(coin.vk, networkInfo, watchOnly)
-                .then(() => {
-                    coinsProcessed = coinsProcessed + 1
-                    if (coinsProcessed >= coinsToProcess){
+    if (typeof coinStore === 'undefined') return
+    //balancesStore = {};
+    const coinsToProcess = coinStore.length; 
+    if (coinsToProcess > 0){
+        let coinsProcessed = 0;
+        updatingBalances = true;
+        let somethingUpdated = false;
+        coinStore.forEach((coin) => {
+            const watchOnly = coin.sk === "watchOnly"
+            balancesStoreUpdateVk(coin.vk, networkInfo, watchOnly)
+            .then((updated) => {
+                if (updated) somethingUpdated = true;
+                coinsProcessed = coinsProcessed + 1
+                if (coinsProcessed >= coinsToProcess){
+                    if (somethingUpdated){
                         chrome.storage.local.set({"balances": balancesStore}, () =>{
                             updatingBalances = false;
                         });
                     }
-                })
+                }
             })
-        }else{
-            updatingBalances = true;
-            chrome.storage.local.set({"balances": balancesStore}, () =>{
-                updatingBalances = false;
-            });
-        }
+        })
+    }else{
+        setBalanceStore(balancesStore)
     }
 }
 
@@ -245,19 +238,61 @@ const balancesStoreUpdateVk = async (vk, networkInfo, watchOnly) => {
     } else {
         network = new Lamden.Network(getCurrentNetwork())
     }
-    const host = network.hosts[0]
-    if (!balancesStore[host]) balancesStore[host] = {}
-    if (!balancesStore[host][vk]) balancesStore[host][vk] = {}
-    if (!balancesStore[host][vk].balance) balancesStore[host][vk] = {balance: 0, watchOnly}
-    balancesStore[host][vk].watchOnly = watchOnly
-    const currentBalance = balancesStore[host][vk].balance
-    let newBalance = await network.API.getCurrencyBalance(vk)
-    if (parseFloat(parseFloat(newBalance).toFixed(8)) != parseFloat(parseFloat(currentBalance).toFixed(8))){
-        balancesStore[host][vk].balance = newBalance
+    let response = await network.API.getCurrencyBalance(vk)
+    let newBalance = parseFloat(parseFloat(response).toFixed(8))
+
+    let netKey = networkKey(network)
+
+    if (!balancesStore[netKey]) balancesStore[netKey] = {}
+
+    if (!balancesStore[netKey][vk]){
+        balancesStore[netKey][vk] = {}
+        balancesStore[netKey][vk].balance = newBalance
+        balancesStore[netKey][vk].watchOnly = watchOnly
         return true;
     }else{
-        return false
+        const currentBalance = parseFloat(parseFloat(balancesStore[netKey][vk].balance).toFixed(8))
+        if (parseFloat(parseFloat(newBalance).toFixed(8)) != parseFloat(parseFloat(currentBalance).toFixed(8))){
+            balancesStore[netKey][vk].balance = newBalance
+            balancesStore[netKey][vk].watchOnly = watchOnly
+            return true;
+        }
+        if (balancesStore[netKey][vk].watchOnly !== watchOnly){
+            balancesStore[netKey][vk].watchOnly = watchOnly
+            return true;
+        }
     }
+    return false
+}
+
+const setBalanceStore = (newValue) => {
+    if (updatingBalances) setTimeout(setBalanceStore, 100)
+    else{
+        updatingBalances = true;
+        chrome.storage.local.set({"balances": newValue}, () =>{
+            console.log('UPDATED')
+            console.log(balancesStore)
+            updatingBalances = false;
+        });
+    }
+}
+
+const balancesStoreClearNetwork = (networkInfo) => {
+    let network;
+    if (networkInfo){
+        network = new Lamden.Network(networkInfo)
+    } else {
+        network = new Lamden.Network(getCurrentNetwork())
+    }
+    let netKey = networkKey(network)
+    console.log({networkInfo, network})
+    balancesStore[netKey] = {}
+    console.log({networkInfo, network, balancesStore})
+    setBalanceStore(balancesStore);
+}
+
+const balancesStoreClearAllNetworks = () => {
+    setBalanceStore({});
 }
 
 /***********************************************************************
@@ -269,14 +304,14 @@ const getWallet = (vk) => {
 
 const getSanatizedWallets = () => {
     let network = new Lamden.Network(getCurrentNetwork())
-    const host = network.hosts[0]
+    const netKey = networkKey(network)
     return coinStore.map(coin => {
-        if (!validateTypes.isObjectWithKeys(balancesStore[host][coin.vk])) return null
-        if (balancesStore[host][coin.vk].watchOnly) return null
+        if (!validateTypes.isObjectWithKeys(balancesStore[netKey][coin.vk])) return null
+        if (balancesStore[netKey][coin.vk].watchOnly) return null
         return {
             vk: coin.vk,
             nickname: coin.nickname,
-            balance: balancesStore[host][coin.vk].balance
+            balance: balancesStore[netKey][coin.vk].balance
         }
     }).filter(coin => coin)
 }
@@ -349,6 +384,21 @@ const coinStoreAddCoin = (coinInfo) => {
     }
 }
 
+const changeCoinNickname = (data) => {
+    let { coinInfo, newNickname } = data;
+    let changed = false
+    coinStore.forEach((coin) => {
+        if (coin.vk === coinInfo.vk) {
+            if (coin.nickname !== newNickname){
+                coin.nickname = newNickname
+                changed = true
+            }
+        }
+    })
+    if (changed) refreshCoinStore();
+    return true
+}
+
 const coinStoreDelete = (coinInfo) => {
     const before = coinStore.length
     coinStore.forEach((coin, index) => {
@@ -356,7 +406,6 @@ const coinStoreDelete = (coinInfo) => {
     })
     if (coinStore.length < before){
         refreshCoinStore();
-        TxStoreDeleteAll(coinInfo.vk)
         return true
     }else{
         return false
@@ -409,10 +458,6 @@ const refreshCoinStore = () => {
 /***********************************************************************
  * NetworkStore / API Functions
  ***********************************************************************/
-const networkKey = (network) => {
-    return `${network.name}|${network.type}|${network.lamden ? 'lamden': 'user'}`
-}
-
 const getCurrentNetwork = () => {
     const networks = [...networksStore.lamden, ...networksStore.user]
     const foundNetwork = networks.find(network => networksStore.current === networkKey(network))
@@ -521,50 +566,7 @@ const processSendResponse = (txBuilder) => {
         let txData = txBuilder.getAllInfo();
         txData.sentFrom = txBuilder.sentFrom;
         pendingTxStore.push(txData);
-    }else{
-        addToTxSaveList(txBuilder)
     }
-}
-
-const addToTxSaveList = (txBuilder) => {
-    txSaveList.push(txBuilder)
-}
-
-const processTxSaveList = () =>{
-    if (!savingTransactions){
-        savingTransactions = true;
-        const transactionsToSave = txSaveList.length; 
-        let transactionsSaved = 0; 
-        txSaveList.forEach(tx => {
-            saveToTxStore(tx)
-            transactionsSaved = transactionsSaved + 1
-            if (transactionsSaved >= transactionsToSave){
-                txSaveList = txSaveList.slice(transactionsToSave)
-                chrome.storage.local.set({"txs": txStore}, () => {
-                    
-                });
-            }
-        })
-    }
-}
-
-const saveToTxStore = (txBuilder) => {
-    const netKey = txBuilder.url;
-    const vk = txBuilder.sender;
-
-    //create keys if they don't exist
-    if (!txStore[netKey]) txStore[netKey] = {}
-    if (!txStore[netKey][vk]) txStore[netKey][vk] = [];
-
-    let txData = {
-        hash: txBuilder.txHash,
-        nonce: txBuilder.nonce,
-        txInfo: txBuilder.getTxInfo(),
-        resultInfo: txBuilder.getResultInfo(),
-        timestamp: txBuilder.txBlockResult.timestamp || txBuilder.txSendResult.timestamp,
-        network: txBuilder.url
-    }
-    txStore[netKey][vk].push(txData);
 }
 
 const checkPendingTransactions = () => {
@@ -581,7 +583,6 @@ const checkPendingTransactions = () => {
                     sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
                     const dappInfo = getDappInfoByVK(txBuilder.sender)
                     if (dappInfo) addStampsUsedToDapp(dappInfo.url, txBuilder)
-                    addToTxSaveList(txBuilder)
                     if (transactionsChecked >= transactionsToCheck){
                         pendingTxStore = pendingTxStore.slice(transactionsToCheck)
                         chrome.storage.local.set({"pendingTxs": pendingTxStore}, () => {
@@ -592,16 +593,6 @@ const checkPendingTransactions = () => {
             })
         });
     }
-}
-
-const TxStoreDeleteAll = (vk) => {
-    getAllNetworks().forEach(network => {
-        const networkObj = new Lamden.Network(network)
-        if (typeof txStore[networkObj.url] !== 'undefined'){
-            if (typeof txStore[networkObj.url][vk] !== 'undefined') txStore[networkObj.url][vk] = []
-        }
-    })
-    chrome.storage.local.set({"txs": txStore});
 }
 
 /***********************************************************************
@@ -1106,10 +1097,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if (message.type === "walletAddMany") sendResponse(coinStoreAddMany(message.data))
                 //Delete a coin/wallet from the coinStore
                 if (message.type === 'coinStoreDelete') sendResponse(coinStoreDelete(message.data))
+                //Change the name of a Coin
+                if (message.type === 'changeCoinNickname') sendResponse(changeCoinNickname(message.data))
                 //Call the currentNetwork API to refresh all balances in the coinStore
                 if (message.type === 'balancesStoreUpdateAll') sendResponse(balancesStoreUpdateAll(message.data))
                 //Call the currentNetwork API to refresh the balance of 1 coin/wallet in the coinStore
                 if (message.type === 'balancesStoreUpdateOne') sendResponse(balancesStoreUpdateOne(message.data))
+                //Delele all balances cache for a given network
+                if (message.type === 'balancesStoreClearNetwork') sendResponse(balancesStoreClearNetwork(message.data))
+                //Delele balances cache for all networks
+                if (message.type === 'balancesStoreClearAllNetworks') sendResponse(balancesStoreClearAllNetworks())
                 //Create and Send a transaction to the currentNetwork Masternode
                 if (message.type === 'sendLamdenTransaction'){
                     //Validate that a physical person is sending this transaction
@@ -1311,10 +1308,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Timer to check pending transacations
 let timerId = setTimeout(async function resolvePendingTxs() {
-    let nextRun = 500;
-    if (txSaveList.length === 'undefined') txSaveList = []
     if (typeof pendingTxStore.length === 'undefined'){
-        nextRun = 2000;
         pendingTxStore = []
         chrome.storage.local.set({"pendingTxs": pendingTxStore})
     } else {
@@ -1326,9 +1320,6 @@ let timerId = setTimeout(async function resolvePendingTxs() {
         if (!checkingTransactions && pendingTxStore.length > 0){
             checkPendingTransactions()
         }
-        if (!savingTransactions && txSaveList.length > 0){
-            processTxSaveList()
-        }
     } 
-    timerId = setTimeout(resolvePendingTxs, nextRun);
+    timerId = setTimeout(resolvePendingTxs, 100);
 }, 1000);

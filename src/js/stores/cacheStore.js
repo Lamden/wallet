@@ -3,6 +3,8 @@ import { writable, get } from 'svelte/store';
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
+import { networkKey } from '../stores/stores.js'
+
 const createCacheStore = () => {
     let initialized = false;
 
@@ -51,7 +53,7 @@ const createCacheStore = () => {
             if (!validateTypes.isStringWithValue(contractName)) return;
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
-            let netKey = networkObj.url
+            let netKey = networkKey(networkObj)
 
             CacheStore.update(cacheStore => {
                 //Store network / contract pair under the contracts key in the cash
@@ -68,7 +70,7 @@ const createCacheStore = () => {
             if (!validateTypes.isStringWithValue(contractName)) return;
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
-            let netKey = networkObj.url
+            let netKey = networkKey(networkObj)
 
             //Reject missing or undefined arguments
 
@@ -80,18 +82,24 @@ const createCacheStore = () => {
             return true;
         },
         //Remove all contracts under a network so that the API will cheeck them again
-        refreshNetwork: (networkObj) => {
+        refreshNetworkCache: (networkObj) => {
+            console.log('cacheStore is Network object good? ' + validateTypes.isSpecificClass(networkObj, "Network"))
             //Reject missing or undefined arguments
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
-            let netKey = networkObj.url
-            
+            let netKey = networkKey(networkObj)
+
             //Clear all contracts under the supplied network
             CacheStore.update(cacheStore => {
                 if (!cacheStore['contracts']) return;
                 cacheStore['contracts'][netKey] = {};
+                chrome.storage.local.set({"ideCache": cacheStore});
                 return cacheStore;
             })
+        },
+        refreshAllCache: () => {
+            //Reject missing or undefined arguments
+            chrome.storage.local.set({"ideCache": {}})
         }
     };
 }
