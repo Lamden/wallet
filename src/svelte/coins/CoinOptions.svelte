@@ -37,7 +37,7 @@
     $: coin = getModalData();
     $: nickname = coin.nickname;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'
     $: dAppList = makeDappList($dappsDropDown)
     $: dAppInfo = undefined;
 

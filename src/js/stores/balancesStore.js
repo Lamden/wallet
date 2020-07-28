@@ -45,6 +45,17 @@ export const createBalancesStore = () => {
             }else{
                 return 0;
             }
+        },
+        isWatchOnly: (netkey, vk) => {
+            if (validateTypes.isStringWithValue(netkey) && validateTypes.isStringWithValue(vk)){
+                const balanceStore = get(BalancesStore)
+                if (!balanceStore[netkey]) return 0
+                if (!balanceStore[netkey][vk]) return 0
+                if (!balanceStore[netkey][vk].balance) return 0
+                return balanceStore[netkey][vk].watchOnly
+            }else{
+                return false;
+            }
         }
     };
 }

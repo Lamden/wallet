@@ -26,15 +26,36 @@
     let selectedWallet;
     let contractName;
     let methodName;
-    let stampLimit = 1000000;
+    let stampRatio = 1;
     let kwargs = {}
     let owner = "";
     let constructorArgs = "";
     let constructor_args_obj = {};
 
+    $: stampLimit = 0;
+
+    onMount(() => {
+        fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+            .then(res => res.json())
+            .then(res => {
+                stampRatio = parseInt(res.value)
+                determineStamps()
+            })
+    })
+
     const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
+        determineStamps();
+    }
+
+
+    const determineStamps = () => {
+        if (!selectedWallet) return
+        let maxStamps = stampRatio * 50;
+        let bal = BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk)
+        if ((bal * stampRatio) < maxStamps) stampLimit = parseInt((bal * stampRatio) * .95 )
+        else stampLimit = parseInt(maxStamps)
     }
 
     const handleSubmit = async () => {

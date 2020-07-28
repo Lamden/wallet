@@ -72,17 +72,32 @@
         timedelta: 'timedelta', 
         datetime: 'datetime'
     }
-    let stampLimit = 150000;
-    
+
+    let stampRatio = 1;
+
     $: contractName = 'currency'
     $: methodName  = ''
     $: argValueTracker = {};
     $: methodArgs = [];
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk).toLocaleString('en') || '0'
+    $: stampLimit = 0
     
     onMount(() => {
         getMethods(contractName)
+        fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+            .then(res => res.json())
+            .then(res => {
+                stampRatio = parseInt(res.value)
+                determineStamps()
+            })
     });
+
+    const determineStamps = () => {
+        let maxStamps = stampRatio * 5;
+        let bal = BalancesStore.getBalance($currentNetwork.url, selectedWallet.vk)
+        if ((bal * stampRatio) < maxStamps) stampLimit = parseInt((bal * stampRatio) * .95 )
+        else stampLimit = parseInt(maxStamps)
+    }
 
     const coinList = () => {
         let returnList = $coinsDropDown.map(c => {
@@ -206,6 +221,7 @@
 
     const handleSelectedWallet = (e) => {
         selectedWallet = e.detail.selected.value
+        determineStamps();
     }
 </script>
 

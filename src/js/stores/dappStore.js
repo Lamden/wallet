@@ -47,7 +47,7 @@ export const dappsDropDown = derived(DappStore, ($DappStore) => {
         let value = $DappStore[d]
         returnList.push({
             value,
-            name: value.appName,
+            name: `${value.appName}: ${value.url.length > 40 ? value.url.substring(0, 40) + '...' : value.url}`,
             selected: false
         })
     })

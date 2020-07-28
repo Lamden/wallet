@@ -19,7 +19,7 @@
     //Context
     const { switchPage } = getContext('app_functions');
     
-    $: watching = coin.sk === 'watchOnly';
+    $: watching = BalancesStore.isWatchOnly($currentNetwork.url, coin.vk)
     $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
     $: balanceStr = balance.toLocaleString('en')
     $: percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
@@ -29,6 +29,7 @@
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
 
     afterUpdate(() => {
+        console.log($BalancesStore)
         balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
         balanceStr = balance.toLocaleString('en')
         percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
@@ -131,9 +132,6 @@ p > a {
     align-items: center;
     padding-left: 100px;
 }
-.charm-name{
-    margin-bottom: 0;
-}
 </style>
 
 <div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
@@ -164,7 +162,7 @@ p > a {
         <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
     </div>
     {#if watching}
-        <div class="text-body2 text-primary-dark watching-text">{"watching"}</div>
+        <div class="text-body2 text-primary-dark watching-text percent">{"watching"}</div>
     {:else}
         <div class="percent text text-body1"> {`${percent}`}</div>
     {/if}

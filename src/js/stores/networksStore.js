@@ -23,7 +23,7 @@ const lamdenNetworks = [
         type:'testnet', 
         lamden: true, 
         currencySymbol: 'dTAU',
-        blockExplorer: 'https://testnet.lamden.io'
+        blockExplorer: 'https://explorer.lamden.io'
     },
 ]
 
