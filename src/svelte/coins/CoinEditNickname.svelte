@@ -53,6 +53,10 @@
     align-items: center;
     margin: 14px 0;
 }
+p{
+    text-align: right;
+    margin: 0.5rem 0 1rem;
+}
 </style>
 
 <div class="edit-nickname">
@@ -61,16 +65,12 @@
     <InputBox
         id={"modify-edit-nickname"}
         label="nickname"
-        margin="0 0 19px 0"
         bind:thisInput={nicknameObj}
     />
 
-    <div id={'modify-edit-info'} class="coin-info text-subtitle3">
-        {coin.name}
-        <strong>
+    <p id={'modify-edit-info'} class="coin-info text-subtitle2">
             {`${balance} ${$currentNetwork.currencySymbol}`}
-        </strong> 
-    </div>
+    </p>
 
     <div class="buttons flex-column">
         <Button

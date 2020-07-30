@@ -21,14 +21,6 @@
 
 
     onMount(() => {
-        steps.set({
-            currentStep: 1,
-            stepList: [
-                {number: 1, name: 'Verify', desc:'Wallet Password'},
-                {number: 2, name: 'Decrypt', desc:'View Secret Keys'},
-            ]
-        });
-
         chrome.runtime.sendMessage({type: 'decryptStore'}, (coinStore) => {
             if (typeof coinStore === 'undefined' || chrome.runtime.lastError) {
                 throw new Error('unable to decrypt keystore')

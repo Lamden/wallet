@@ -73,6 +73,8 @@ import DevToolsDeleteNetwork from './devtools/DevToolsDeleteNetwork.svelte';
 import Button from './components/Button.svelte';
 import Switch from './components/Switch.svelte';
 import InputBox from './components/InputBox.svelte';
+import DatePicker from './components/DatePicker.svelte';
+import TimeDelta from './components/TimeDelta.svelte';
 import Steps from './components/Steps.svelte';
 import Step from './components/Step.svelte';
 import Loading from './components/Loading.svelte';
@@ -84,6 +86,8 @@ import MessageBox from './components/MessageBox.svelte';
 import ResultBox from './components/ResultBox.svelte';
 import StrongPW from './components/StrongPW.svelte';
 import Transaction from './components/Transaction.svelte';
+import Kwargs from './components/Kwargs.svelte';
+import Kwarg from './components/Kwarg.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -166,6 +170,7 @@ export const Components = {
     Button, 
     Switch, 
     InputBox, 
+    DatePicker, TimeDelta,
     Steps, 
     Step, 
     Loading, 
@@ -174,7 +179,8 @@ export const Components = {
     Modal,
     DropDown,
     StrongPW,
-    Transaction
+    Transaction,
+    Kwargs, Kwarg
 };
 
 export const Modals = {

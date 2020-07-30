@@ -86,52 +86,54 @@ body{
     font-weight: bold
 }
 
-.text-body1{
+
+.text-body1, h2{
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
-    line-height: 24px;
     letter-spacing: 0.44px;
 }
 
-.text-body2{
+.text-body2, h3{
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
-    line-height: 20px;
     letter-spacing: 0.25px;
 }
-.text-body3{
+.text-body3, h4{
     font-style: normal;
     font-weight: normal;
-    font-size: 25px;
-    line-height: 24px;
+    font-size: 12px;
     letter-spacing: 0.44px;
 }
 
-
-.text-title{
-    font-family: 'Quicksand', sans-serif;
+.text-huge{
     font-style: normal;
     font-weight: normal;
     font-size: 55px;
-    line-height: 69px;
+    letter-spacing: 0.25px;    
+}
+
+
+.text-title, h1{
+    font-family: 'Quicksand', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 45px;
     letter-spacing: 0.25px;
 }
 
-.text-subtitle1{
+.text-subtitle1, h5{
     font-style: normal;
     font-weight: normal;
     font-size: 10px;
-    line-height: 15px;
     letter-spacing: 0.25px;
 }
 
-.text-subtitle2{
+.text-subtitle2, h6{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-    line-height: 24px;
     letter-spacing: 0.1px;
 }
 
@@ -139,7 +141,6 @@ body{
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
-    line-height: 20px;
     letter-spacing: 0.44px;
 }
 
@@ -148,7 +149,6 @@ body{
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
-    line-height: 16px;
     letter-spacing: 0.4px;
 }
 
@@ -156,7 +156,6 @@ body{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-    line-height: 28px;
     letter-spacing: 0.15px;
 }
 
@@ -164,7 +163,6 @@ body{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-    line-height: 16px;
     letter-spacing: 0.75px;
     text-transform: uppercase;
 }
@@ -192,9 +190,16 @@ body{
     border-radius: 5px 0 0 5px;
 }
 
+.buttonGroup__left:focus{
+    z-index: 1
+}
+
 .buttonGroup__right{
     box-shadow: unset;
     border-radius: 0 5px 5px 0;
+}
+.buttonGroup__right:focus{
+    z-index: 1
 }
 
 .buttonGroup__center{
@@ -203,6 +208,10 @@ body{
     border-left: 1px solid var(--font-primary-darker);
     border-right: 1px solid var(--font-primary-darker);
 }
+.buttonGroup__center:focus{
+    z-index: 1
+}
+
 
 
 .button__hover_blue:hover{
@@ -289,10 +298,6 @@ button {
     text-align: center;
     letter-spacing: 0.75px;
     text-transform: uppercase;
-}
-
-.coin-info{
-    height: 40px;
 }
 
 .error {
@@ -398,4 +403,74 @@ input[type="checkbox"]{
     width: 18px;
     height: 18px;
     background: #DADADA;
+}
+
+.inputbox-label{
+    position: relative;
+    top: 8px;
+    left: 9px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 11px;
+    line-height: 16px;
+    padding: 0 4px;
+    color: var(--font-primary);
+    background: transparent;
+}
+
+.mainbox{
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    background: none;
+    border: 1px solid #e0e0e03d;
+    box-sizing: border-box;
+    transition: border 0.5s;
+    border-radius: 4px;
+    padding: 10px 12px;
+
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.1em;
+    line-height: 1;
+    color: var(--font-primary);
+    letter-spacing: 0.44px;
+}
+
+.mainbox:focus{
+    outline: none; 
+    border: 1px solid var(--primary-color);
+}
+
+.mainbox::-webkit-input-placeholder { 
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.1em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.44px;
+    color: var(--font-primary-dark);
+}
+
+/* Chrome, Safari, Edge, Opera */
+.mainbox::-webkit-outer-spin-button,
+.mainbox::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.mainbox[type=number] {
+  -moz-appearance:textfield;
+}
+
+.mainbox:-webkit-autofill,
+.mainbox:-webkit-autofill:hover, 
+.mainbox:-webkit-autofill:focus
+ {
+  border: 1px solid #e0e0e03d;
+  -webkit-text-fill-color: var(--font-primary);
+  box-shadow: 0 0 0px 1000px var(--bg-color) inset;
 }

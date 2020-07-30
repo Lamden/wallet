@@ -16,6 +16,7 @@
     const addTab = () => {
         openModal('IdeModelNewTab');
     }
+    
 
 </script>
 
@@ -28,9 +29,13 @@
     width: 20px;
     margin: 0 5px;
 }
+.tab-row{
+    padding: 0px 10px 10px;
+    flex-wrap: wrap;
+}
 </style>
 
-<div class="flex-row">
+<div class="flex-row tab-row">
 <div class="new-button" on:click={addTab}>
     <div class="plus-icon" >{@html plus}</div>
 </div>

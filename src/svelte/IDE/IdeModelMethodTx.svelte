@@ -48,7 +48,7 @@
         ]
         Object.keys(txData.txInfo.kwargs).map(arg => {
             let argValue = txData.txInfo.kwargs[arg]
-            txDetails.push({name: `${arg}`, value: argValue})
+            txDetails.push({name: `${arg}`, value: JSON.stringify(argValue)})
             return arg;
         })
         return txDetails

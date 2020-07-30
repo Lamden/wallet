@@ -51,7 +51,6 @@
     position: relative;
     left: calc(100% - 6px);
     width: 18px;
-    top: 2px;
     margin-bottom: -22px;
 }
 

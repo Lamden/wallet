@@ -7,13 +7,13 @@
     //Props
     export let id;
     export let label;
+    export let backgroundColor = label === '' ? 'transparent' : '';
     export let defaultText = 'None';
     export let items = [];
     export let styles = '';
-    export let boxStyles = '';
     export let width = '100%';
     export let margin = 'unset'
-    export let innerHeight = '46px'
+    export let innerHeight = 'unset'
     export let classes = '';
     export let required = false;
     export let sideBox = false;
@@ -23,7 +23,6 @@
 
     let hideBox = true;
 
-    $: selctedBoxTop = `${parseInt(innerHeight.split('px')[0]) + 15}px`;
     $: displayItems = [...items]
 
     onMount(()=>{
@@ -68,7 +67,6 @@ label{
     font-weight: normal;
     font-size: 11px;
     line-height: 16px;
-    background: var(--bg-color);
     padding: 0 4px;
     color: var(--font-primary);
 }
@@ -83,12 +81,11 @@ label{
 }
 
 .select-selected {
-    background-color: rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e03d;
+    border-radius: 4px;
 }
 
 .select-selected.open {
-    background-color: rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e03d;
     border-radius: 4px 4px 0 0;
     overflow-x: hidden;
@@ -100,8 +97,8 @@ label{
     border: 6px solid transparent;
     border-color: var(--font-primary-dark) transparent transparent transparent;
     position: absolute;
-    top: 45%;
-    right: 20px;
+    top: 53%;
+    right: 15px;
 }
 
 .select-selected.select-arrow-active:after {
@@ -111,7 +108,6 @@ label{
 
 .select-items div,.select-selected {
     max-width: 100%;
-    min-height: 42px;
 
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -119,13 +115,11 @@ label{
 
     box-sizing: border-box;
     transition: border 0.5s;
-    border-radius: 4px;
-    padding: 10px 32px 10px 12px;
-
+    padding: 12px 32px 12px 13px;
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1.1em; 
+    line-height: 1; 
     color: var(--font-primary);
     letter-spacing: 0.44px;
 
@@ -136,10 +130,11 @@ label{
 .select-items {
     position: absolute;
     border: 1px solid #e0e0e03d;
+    background-color: #262626;
     border-radius: 0 0 4px 4px;
-    background-color: var(--bg-color);
     left: 0;
     right: 0;
+    margin-top: -1px;
     z-index: 99;
 }
 
@@ -147,14 +142,20 @@ label{
     display: none;
 }
 
-.select-items div:hover, .same-as-selected {
-    background-color: #ffffff08;
+.select-items div:hover {
+    background-color: #ffffff38;
+    border-radius: 0px;
+}
+
+.same-as-selected {
+    background-color: #ffffff18;
+    border-radius: 0px;
 }
 
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
 <div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; margin:${margin}`}>
-    <label>{label}</label>
+    <label style={`background: ${backgroundColor || 'var(--bg-color)'};`}>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}
             <option id={`coin-${index}`} value={index}>{item.name}</option>
@@ -170,12 +171,10 @@ label{
              >
             {selectElm.options.length > 0 ? displayItems[selectElm.selectedIndex].name : defaultText}
         </div>
-        <div class="select-items" style={`top: ${selctedBoxTop}`} class:select-hide={hideBox}>
+        <div class="select-items" class:select-hide={hideBox}>
             {#each displayItems as item, index }
                 <div class:same-as-selected={selectElm.selectedIndex === index}
-                    style={`${boxStyles}`}
-                     on:click={() => handleClick(selectElm.options[index], index)}
-                    >
+                     on:click={() => handleClick(selectElm.options[index], index)}>
                      {item.name}
                 </div>
             {/each}  

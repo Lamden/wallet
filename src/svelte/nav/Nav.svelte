@@ -25,6 +25,7 @@
 
 .breadcrumbs{
     display: flex;
+    align-items: center;
     flex-grow: 1;
 }
 </style>

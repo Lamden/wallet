@@ -144,8 +144,7 @@
 </script>
 <style>
 .coin-add-details{
-    width: 100%;
-    height: 570px;
+    width: 500px;
 }
 
 .header{
@@ -153,7 +152,7 @@
 }
 
 .button-group{
-    margin-bottom: 31px;
+    margin-bottom: 1rem;
 }
 .submit-button-box{
     flex-grow: 1;
@@ -172,14 +171,14 @@
     target="_self" bind:this={formObj}>
     <h5 class="header">Add Account</h5>
     <div class="text-subtitle3">
-        Select a network type from the drop down.
+        Select a account type from the drop down.
     </div>
     <DropDown  
         items={supportedCoinsList}
         initial={"Select One"}
         id={'suppportedCoins'} 
-        label={'Network Type'}
-        styles="margin-bottom: 19px;"
+        label={'Account Type'}
+        margin="0 0 1rem 0"
         required={true}
         on:selected={(e) => selectedInput = e.detail.selected}
     />
@@ -200,11 +199,10 @@
         {#if addType === 2}
             <InputBox
                 id="private-key"
-                width="100%"
+                margin="0 0 1rem 0"
                 bind:thisInput={privateKeyObj}
                 label={"Enter Private Key"}
                 placeholder={`Private Key`}
-                styles={`height: 46px; margin-bottom: 17px;`}
                 on:changed={refreshValidity}
                 on:keyup={refreshValidityKeyup}
                 spellcheck={false}
@@ -215,11 +213,10 @@
         {#if addType === 3}
             <InputBox
                 id="public-key"
-                width="100%"
+                margin="0 0 1rem 0"
                 bind:thisInput={publicKeyObj}
                 label={"Enter Account Address"}
                 placeholder={`Account Address`}
-                styles={`height: 46px; margin-bottom: 17px;`}
                 on:changed={refreshValidity}
                 on:keyup={refreshValidityKeyup}
                 spellcheck={false}
@@ -229,11 +226,10 @@
 
         <InputBox
             id={"nickname"}
-            width="100%"
+            margin="0 0 2rem 0"
             bind:thisInput={nicknameObj}
             placeholder={`Account Nickname`}
             label={"Account Nickname (Optional)"}
-            styles={`height: 46px; margin-bottom: 17px;`}
         />
 
         <div class={"submit-button-box flex-column"}>

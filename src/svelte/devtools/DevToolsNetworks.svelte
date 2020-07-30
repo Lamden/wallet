@@ -146,7 +146,7 @@
             bind:value={name}
             bind:thisInput={nameField}
             width="250px"
-            styles={'margin-bottom: 20px'}
+            margin="0 0 1rem 0"
             required={true}
             spellcheck={false}
         />
@@ -154,7 +154,7 @@
             items={networkTypesDropDownList()}
             width={"250px"}
             height={"42px"}
-            styles={'margin-bottom: 3px'}
+            margin="0 0 3px 0"
             label="Network Type"
             on:selected={(e) => handleTypeSelected(e)} />  
         <InputBox 
@@ -183,7 +183,7 @@
                 bind:value={currencySymbol}
                 on:keyup={() => clearIPValidation()}
                 width="115px"
-                styles={'margin: 0 0 20px 10px'}
+                margin="0 0 1rem 10px"
                 spellcheck={false}
             />
         </div>

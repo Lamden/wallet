@@ -58,7 +58,7 @@
 					code: $activeTab.code
 				})
 			})
-			.catch(err => console.log(err))
+			.catch(err => console.log({err}))
 			.then(res => res.json())
 			.then(json =>{
 				sendCallback(json)

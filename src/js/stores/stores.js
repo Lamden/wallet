@@ -14,6 +14,7 @@ export { CacheStore }  from './cacheStore.js';
 export const CURRENT_KS_VERSION = writable("1.0");
 export const breadcrumbs = writable([]);
 export const steps = writable({current:0, stepList:[]});
+export const clicked = writable({id:''});
 
 //Store Utils
 export function networkKey(networkObj){

@@ -45,14 +45,14 @@
 
 <style>
 .menus{
+    position: fixed;
     padding: 21px 0px 0px 40px;
     width: 46px;
-    
 }
 
 @media (min-width: 900px) {
     .menus{
-        width: unset;
+        width: 240px;
     }
 }
 

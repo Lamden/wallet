@@ -85,7 +85,7 @@ a{
             bind:thisInput={pwdObj}
             label={"Wallet Password"}
             placeholder={`Enter Wallet Password`}
-            styles={`margin-bottom: 17px;`}
+            margin="0 0 1rem 0"
             on:changed={refreshValidity}
             on:keyup={refreshValidityKeyup}
             inputType={"password"}

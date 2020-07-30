@@ -135,16 +135,6 @@ small.flex-row{
     align-items: center;
 }
 
-.amount{
-    font-style: normal;
-    font-weight: normal;
-    font-size: 55px;
-    line-height: 69px;
-    display: flex;
-    align-items: center;
-    letter-spacing: 0.25px;
-}
-
 .buttons{
     display: flex;
     flex-direction: row;
@@ -175,6 +165,9 @@ small.flex-row{
     width: 22px;
     margin-right: 10px;
 }
+p{
+    margin: 0;
+}
 
 @media only screen and (max-width: 970px) {
   .buttons {
@@ -191,7 +184,7 @@ small.flex-row{
 	<div class="hero-rec flex-column" style="background-image: url({background});">
         <div class="flex-row">
             <div class="flex-column wallet-details">
-                <div class="nickname text-body3">
+                <div class="nickname text-body1">
                     {#if thisNetworkApproved && dappInfo}
                         <div class="flex-row">
                             {#if trustedApp}
@@ -202,7 +195,7 @@ small.flex-row{
                             <p class="dapp-name">{dappInfo.appName}</p>
                         </div>
                     {:else}
-                        <div>{coin.nickname}</div>
+                        <p>{coin.nickname}</p>
                         {#if dappInfo}
                             <small class="text-subtitle2">
                                 {`${dappInfo.appName} has not requested access to Lamden's ${$currentNetwork.type.toUpperCase()}`}
@@ -216,7 +209,7 @@ small.flex-row{
                     {/if}
                 </div>
                 <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
-                <div class="amount"> {balance} </div>
+                <div class="text-huge"> {balance} </div>
             </div>
             {#if thisNetworkApproved && dappLogo }
                 <div>

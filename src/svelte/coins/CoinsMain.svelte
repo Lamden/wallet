@@ -36,7 +36,6 @@
 	onMount(async () => {
 		breadcrumbs.set([{name: 'Accounts', page: {name: ''}}]);
 		handleRefresh();
-		console.log($currentNetwork)
 	});
 
 	const handleRefresh = () => {
@@ -59,7 +58,7 @@
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	height: 417px;
+	height: 346px;
 	border-radius: 4px;
 	margin-bottom: 18px;
     padding: 40px;
@@ -107,13 +106,7 @@
 	margin-right: 28px;  
 	width: 203px;
 }
-.balance-words{
-	padding-left: 42px;
-	margin: 14px 0;
-	
-}
 .balance-total{
-	padding-left: 42px;
 	align-items: flex-start;
 	flex-grow: 1;
 }
@@ -135,11 +128,11 @@
 
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-		<div class="balance-words text-body3">
+		<div class="balance-words text-body1">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
 		<div class="balance-total">
-			<div class="flex-row  text-title">
+			<div class="flex-row  text-huge">
 				{`${totalBalance.toLocaleString('en')}`}
 				<div on:click={handleRefresh} 
 					id="refresh-icon"
@@ -148,7 +141,6 @@
 					{@html refresh} 
 				</div>
 			</div>
-
 		</div>
 		<div class="flex-row buttons">
 			<Button id={'add-btn'}

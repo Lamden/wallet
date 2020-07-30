@@ -1,6 +1,6 @@
 <script>
 	//Stores
-    import { FilesStore, currentNetwork } from '../../js/stores/stores.js';
+    import { FilesStore, currentNetwork, clicked } from '../../js/stores/stores.js';
 
     //Images
     import del from '../../img/menu_icons/icon_delete.svg';
@@ -10,6 +10,8 @@
     export let file;
     export let index;
 
+
+    let tabName = file.name;
     let rename = false;
 
     const selectTab = () => {
@@ -24,11 +26,19 @@
         if (file.type === 'local') rename = true;
     }
 
-    const saveName = (e) => {
+    const saveName = () => {
+        FilesStore.changeName(tabName, index);
+        rename = false;
+    }
+
+    clicked.subscribe(event => {
+        if (rename && event.id !== `tab-${index}`) saveName();
+    })
+
+    const handleKeyUp = (e) => {
         if (e.keyCode === 13) {
-            FilesStore.changeName(e.target.value, index);
-            rename = false;
-        }
+            saveName();
+        }    
     }
 
 </script>
@@ -36,10 +46,16 @@
 <style>
 .tab-box{
     padding: 10px;
-    margin: 0 2px;
-    border-radius: 5px 5px 0 0;
+    margin: 2px;
+    border-radius: 10px;
     background-color: var(--bg-color-grey);
     align-items: center;
+    border: 1px solid transparent;
+}
+.tab-box:hover{
+    border: 1px dashed var(--font-accent);
+    position: relative;
+    top: -1px;
 }
 .selected{
     background-color: var(--primary-color)
@@ -57,15 +73,16 @@
 }
 .rename{
     background-color: #00000000;
-    border: none;
+    border: 1px solid var(--font-accent);
+    color: var(--font-primary);
 }
 </style>
 
 <div class="tab-box flex-row" 
-     class:selected={file.selected} 
-     on:click={selectTab}
-     title={file.type === 'online' ? `Contract is on ${$currentNetwork.name}` : ""}
-     >
+    class:selected={file.selected} 
+    on:click={selectTab}
+    title={file.type === 'online' ? `Contract is on ${$currentNetwork.name}` : ""}
+    >
 
     {#if file.type === 'online'}
         <div class="icons connected-icon">{@html connected}</div>
@@ -73,7 +90,7 @@
     {#if !rename}
         <div on:dblclick={() => rename = true}>{`${file.name}`}</div>
     {:else}
-        <input value={file.name} class="rename" type="text" on:keyup={saveName}/>
+        <input id={`tab-${index}`} bind:value={tabName} class="rename" type="text" on:keyup={handleKeyUp}/>
     {/if}
     {#if file.selected}
         <div class="icons" on:click={closeTab} title="Close Tab">{@html del}</div>

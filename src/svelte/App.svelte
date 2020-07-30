@@ -5,7 +5,7 @@
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import { SettingsStore, currentPage } from '../js/stores/stores.js';
+	import { SettingsStore, currentPage, clicked } from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
@@ -130,6 +130,7 @@
 		<Loading message="Loading Lamden Wallet" />
 	{/if}
 </div>
+<svelte:window on:click={(e) => clicked.set(e.target)} />
 
 
 <style>
@@ -198,13 +199,14 @@
 	}
 
 	.menu-pane{
+		width: 83px;
 		min-width: 83px;
 	}
 
 	.content-pane{
 		padding: 21px 61px 0;
 		flex-grow: 1;
-		min-width: fit-content;
+		box-sizing: border-box;
 	}
 	.components{
 		flex-grow: 1;
@@ -228,6 +230,7 @@
 
 	@media (min-width: 900px) {
 		.menu-pane{
+			width: 280px;
 			min-width: 280px;
 		}
 	}

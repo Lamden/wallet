@@ -74,7 +74,7 @@
             items={$coinsDropDown} 
             id={'mycoins'} 
             label={'Lamden Account'}
-            styles="margin-bottom: 19px;"
+            margin="0 0 1rem 0"
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
         />

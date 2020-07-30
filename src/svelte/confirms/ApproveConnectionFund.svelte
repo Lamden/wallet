@@ -126,8 +126,6 @@
                     label="Fund from this account"
                     items={accounts}
                     on:selected={handleSelected}
-                    styles={"font-size: 1.1em; min-height: unset; height: unset; line-height: 1; padding: 11px 32px 11px 12px;" }
-                    boxStyles={"font-size: 1.1em; min-height: unset; height: unset; line-height: 1; padding: 11px 32px 11px 12px;" }
                 />
             {/if}
 
@@ -135,7 +133,6 @@
                 id="fund-amount-input"
                 label={`Amount to transfer (${confirmData.messageData.network.currencySymbol})`}
                 inputType={"number"}
-                styles={"font-size: 1.1em; min-height: unset; height: unset; line-height: 1;" }
                 bind:value={amount}
                 on:changed={handleChanged}
             />

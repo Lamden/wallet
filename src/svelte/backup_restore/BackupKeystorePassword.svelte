@@ -122,7 +122,7 @@ a{
                 label={"Confirm Password"}
                 placeholder={"At least 15 symbols"}
                 width="100%"
-                styles={'margin-bottom: 16px;'}
+                margin="0 0 1rem 0"
                 bind:thisInput={pwdInput2}
                 on:changed={() => pwd2Validity()}
                 inputType={"password"}
@@ -132,7 +132,7 @@ a{
                 id={'hint-input'}
                 bind:thisInput={hintObj}
                 label={"Password Hint (Optional)"}
-                styles={'margin-bottom: 16px;'}
+                margin="0 0 1rem 0"
                 placeholder={"Create a Password Hint"}
                 width="100%"
             />

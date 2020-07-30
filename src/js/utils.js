@@ -4,6 +4,9 @@ const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators;
 
+const Lamden = require('lamden-js')
+const { Encoder } = Lamden;
+
 /*
     Creates a dummy DOM node to mount a string to and then copies to the clipboard
     Return: Nothing
@@ -92,8 +95,93 @@ const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 
+const longFormTypes = {
+    str: 'Text',
+    float: 'Decimal',
+    int: 'Integer',
+    bool: 'True/False',
+    Any: 'Any Value',
+    dict: 'Object (JSON)',
+    list: 'List (JSON)',
+    "datetime.timedelta": 'Time Delta', 
+    "datetime.datetime": 'Date / Time',
+    timedelta: 'Time Delta',  
+    datetime: 'Date / Time'
+}
+
+const typeToInputTypeMAP = {
+    Any: 'textarea',
+    str: 'text',
+    float: 'number',
+    int: 'number',
+    bool: ['true', 'false'],
+    dict: 'textarea',
+    list: 'textarea',
+    "datetime.timedelta": 'text', 
+    "datetime.datetime": 'text',
+    timedelta: 'text', 
+    datetime: 'text'
+}
+
+const defaultTypeValues = {
+    str: 'text value',
+    float: 0.0,
+    int: 0,
+    bool: [
+        {name:'true', value: true, selected: true}, 
+        {name: 'false', value: false, selected: false}
+    ],
+    dict: '{"key": "value"}',
+    list: '["item1", "item2"]',
+    Any: '',
+    timedelta: 'text', 
+    datetime: 'text',
+    "datetime.timedelta": '', 
+    "datetime.datetime": ''
+}
+
+const formatKwargs = (kwargsList) => {
+    kwargs = {}
+    kwargsList.forEach(item => {
+        console.log(item)
+        if (item.value !== "" && typeof item.value !== 'undefined') {
+            kwargs[item.name] = Encoder(item.type, item.value)
+        }
+    })
+    return kwargs;
+}
+
+const encodeLocaleDateTime = (value) => {
+    const isDate = () => {
+        return value instanceof Date; 
+    }
+    value = !isDate() ? new Date(value) : value
+    if (!isDate()) throwError()
+    return [
+        value.getFullYear(), 
+        value.getMonth(), 
+        value.getDate(), 
+        value.getHours(), 
+        value.getMinutes(), 
+        value.getSeconds(), 
+        value.getMilliseconds()
+    ]
+}
+
+const encodeLocaleTimeDelta = (value) => {
+    const isDate = () => {
+        return value instanceof Date; 
+    }
+    const time = isDate() ? value.getTime() : new Date(value).getTime()
+    const days = parseInt(time  / 1000 / 60 / 60 / 24)
+    const seconds = (time - (days * 24 * 60 * 60 * 1000)) / 1000
+    return [days, seconds]
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
-    encryptObject, decryptObject, hashStringValue
+    encryptObject, decryptObject, hashStringValue,
+    formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
+    Encoder, encodeLocaleDateTime, encodeLocaleTimeDelta
   }

@@ -21,11 +21,33 @@
     let formObj;
 
     let selectedWallet;
-    let stampLimit = 50000;
+
+    let stampRatio = 1;
+    $: stampLimit = 0;
+
+    onMount(() => {
+        if ($currentNetwork.blockExplorer){
+            fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+                .then(res => res.json())
+                .then(res => {
+                    stampRatio = parseInt(res.value)
+                    determineStamps()
+                })
+        }
+    })
+
+    const determineStamps = () => {
+        if (!selectedWallet) return
+        let maxStamps = stampRatio * 5;
+        let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
+        if ((bal * stampRatio) < maxStamps) stampLimit = parseInt((bal * stampRatio) * .95 )
+        else stampLimit = parseInt(maxStamps)
+    }
 
     const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
         selectedWallet = e.detail.selected.value;
+        if ($currentNetwork.blockExplorer) determineStamps();
     }
 
     const handleSubmit = () => {
@@ -44,11 +66,10 @@
 
 <style>
 .coin-info{
-    display: flex;
-    justify-content: flex-end;
+    text-align: right;
 }
 .confirm-tx{
-    width: 600px;
+    width: 500px;
 }
 
 .details{
@@ -93,19 +114,18 @@
             items={$coinsDropDown}
             id={'mycoins'} 
             label={'Select Account to Send From'}
-            styles="margin-bottom: 19px;"
+            margin="0 0 1rem 0"
             required={true}
             on:selected={(e) => handleSelectedWallet(e)}
         />
-        <div class="coin-info text-subtitle3">
-            {#if selectedWallet}
+        {#if selectedWallet}
+            <div class="coin-info text-subtitle2">
                 {`
-                    ${selectedWallet.name} - 
                     ${BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'}
                     ${$currentNetwork.currencySymbol}
                 `}
-            {/if}
-        </div>
+            </div>
+        {/if}
         <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
             <div class="details flex-column">
                 <InputBox

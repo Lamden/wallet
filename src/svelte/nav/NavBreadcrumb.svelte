@@ -17,12 +17,16 @@
     display: flex;
     align-items: center;
     text-align: center;
-    width: 180px;
+    width: fit-content;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .words {
     width: 100%;
     margin-bottom: -4px;
+    word-break: break-all;
     
 }
 
@@ -36,8 +40,7 @@
 
 .chevron {
     width: 12px;
-    margin-left: 18px;
-    margin-top: 5px;
+    margin: 3px 5px 0;
 }
 
 .last{
@@ -46,10 +49,10 @@
 }
 </style>
 
+{#if index !== 0}
+    <div class="chevron">{@html chevronRight}</div>
+{/if}
 <div class="box" class:last={last} class:pointer={!last}>
-    {#if index !== 0}
-        <div class="chevron">{@html chevronRight}</div>
-    {/if}
     {#if crumb.page.name !== ''}
         <span class="words link text-body1" on:click={() => switchPage(crumb.page.name, crumb.page.data)}> {crumb.name} </span>
     {:else}

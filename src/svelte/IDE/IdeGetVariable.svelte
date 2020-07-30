@@ -41,40 +41,34 @@
             name={'run'} 
             height={'22px'} 
             margin={'0 0 0 10px'}
-            padding={'0 5px'}
+            padding={'0 8px'}
             classes={'button__solid button__purple'}
             click={() => handleRun()}
         />
     </div>
-    <div class="flex-row">
-        <InputBox
-            on:changed={(e) => {variableName = e.detail.target.value}}
-            value = {variableName}
-            label={'Variable Name'}
-            placeholder={'Enter Variable Name'}
-            width={'300px'}
-            height={'42px'}
-            margin={'0 20px 0 0'}
-            styles={'min-width: 200px;'}
-        />
-        <InputBox 
-            on:changed={(e) => {key = e.detail.target.value}}
-            label={'keys (comma separated)'}
-            placeholder={'key1,key2.. etc'}
-            width={'300px'}
-            height={'42px'}
-            styles={'min-width: 200px;'}
-        />
-    </div>
+    <InputBox
+        on:changed={(e) => {variableName = e.detail.target.value}}
+        value = {variableName}
+        label={'Variable Name'}
+        placeholder={'Enter Variable Name'}
+        width={'100%'}
+        styles={'max-width: 600px; min-width: 200px;'}
+    />
+    <InputBox 
+        on:changed={(e) => {key = e.detail.target.value}}
+        label={'keys (comma separated)'}
+        placeholder={'key1,key2.. etc'}
+        width={'100%'}
+        styles={'max-width: 600px; min-width: 200px;'}
+    />
     <div>
         <InputBox
             value={result}
             label={`${contractName} - Current State`}
             inputType={'textarea'}
-            width={'620px'}
+            width={'100%'}
             height={'92px'}
             margin={'1rem 0 0 0'}
-            styles={'min-width: 200px;'}
         />
     </div>
 </div>

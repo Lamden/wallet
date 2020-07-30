@@ -114,7 +114,7 @@
 
 <style>
 .options-box{
-    justify-content: space-between;
+    justify-content: space-evenly;
     margin-top: 13px;
 }
 .options{
@@ -122,10 +122,16 @@
     box-sizing: border-box;
     align-items: center;
     justify-content: space-between;
-    width: 175px;
-    height: 100px;
+    width: 150px;
+    height: 95px;
     border-radius: 8px;
     padding: 16px 0;
+}
+p{
+    margin: 0.5rem 0;
+}
+.coin-info{
+    text-align: right;
 }
 .results{
     margin-top: 7px;
@@ -168,17 +174,13 @@
         id={'wallets-dd'}
         items={coinList()} 
         label={'Accounts'}
-        styles="margin-bottom: 19px;"
         on:selected={(e) => setSelectedWallet(e.detail.selected.value)}
     />
-    <div class="coin-info text-subtitle3">
-        {#if selectedWallet}
-            {selectedWallet.name}
-            <strong>
-                {`${selectedWallet.symbol} - ${balance} ${$currentNetwork.currencySymbol}`}
-            </strong> 
-        {/if}
-    </div>
+    {#if selectedWallet}
+        <p class="coin-info text-subtitle2">
+            {`${balance} ${$currentNetwork.currencySymbol}`}
+        </p>
+    {/if}
     {#if dAppInfo}
         <p class="text-body1 relationship">{`dApp Relationship: ${dAppInfo.appName}`}</p>
     {/if}
@@ -188,7 +190,7 @@
             id={'dapps-dd'}
             items={dAppList} 
             label={'Create dApp relationship'}
-            styles="margin-bottom: 19px;"
+            margin="2rem 0"
             on:selected={(e) => associateDapp(e.detail.selected.value)}
         />
     {/if}

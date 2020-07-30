@@ -9,7 +9,7 @@
 
     //Components
 	import { Components }  from '../Router.svelte'
-    const { Button, DropDown } = Components;
+    const { Button } = Components;
     
     //Images
     import verified_app from '../../img/menu_icons/icon_verified_app.svg'

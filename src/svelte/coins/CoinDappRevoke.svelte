@@ -144,7 +144,7 @@
                     bind:thisInput={passwordObj}
                     label={"Password"}
                     placeholder={`Enter Lamden Wallet Password`}
-                    styles={`margin-bottom: 17px;`}
+                    margin="0 0 1rem 0"
                     on:changed={() => setValidity(passwordObj, '')}
                     on:keyup={refreshValidityKeyup}
                     inputType={"password"}

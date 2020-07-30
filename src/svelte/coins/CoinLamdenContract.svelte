@@ -1,18 +1,20 @@
 <script>
     import { onMount} from 'svelte';
     import { writable } from 'svelte/store';
+    import { Encoder } from 'lamden-js'
+
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
-
 
 	//Stores
     import { coinsDropDown, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
     import { Components }  from '../Router.svelte'
-    const { DropDown, InputBox, Button } = Components;
+    const { DropDown, InputBox, Button, Kwargs } = Components;
 
     //Utils
+    import { formatKwargs } from '../../js/utils.js'
     import * as validators from 'types-validate-assert'
     const { validateTypes } = validators;
 
@@ -24,64 +26,19 @@
     export let currentPage;
 
     const MethodStore = writable([])
-    const trueFalseList = (arg = undefined) => {
-        if (arg == null) return [{name:'true', value: true}, {name: 'false', value:false}]
-        let selectedValue = argValueTracker[contractName][methodName][arg]['bool'].value
-        return [
-            {name:'true', value: true, selected: selectedValue === true}, 
-            {name: 'false', value:false, selected: selectedValue === false}
-        ]
-    }
-
+    const MethodArgsStore = writable([])
     let selectedWallet;
     let contractError = false;
     let transaction;
-
-    let jsonTypes = ['dict', 'list']
-    let typeToInputTypeMAP = {
-        Any: 'textarea',
-        str: 'text',
-        float: 'number',
-        int: 'number',
-        bool: trueFalseList(),
-        dict: 'textarea',
-        list: 'textarea',
-        timedelta: 'text', 
-        datetime: 'text'
-    }
-    // TODO: ADD ALL TYPES {'dict', 'list', 'str', 'int', 'float', 'bool', 'timedelta', 'datetime', 'Any'}
-    let defaultValues = {
-        str: '',
-        float: 0.0,
-        int: 0,
-        bool: true,
-        dict: "{}",
-        list: "[]",
-        Any: '',
-        timedelta: '', 
-        datetime: ''
-    }
-    let longFormTypes = {
-        str: 'text',
-        float: 'decimal',
-        int: 'integer',
-        bool: 'true/false',
-        Any: 'any',
-        dict: 'Object (JSON)',
-        list: 'List (JSON)',
-        timedelta: 'timedelta', 
-        datetime: 'datetime'
-    }
-
     let stampRatio = 1;
+    let kwargs  = []
 
     $: contractName = 'currency'
     $: methodName  = ''
     $: argValueTracker = {};
-    $: methodArgs = [];
     $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'
     $: stampLimit = 0
-    
+
     onMount(() => {
         getMethods(contractName)
         if ($currentNetwork.blockExplorer){
@@ -123,31 +80,9 @@
         })
     }
 
-    const setArgs = (method, contract) => {
-        if (!method) return;
-        methodName = method.name;
-        if (!argValueTracker[contract]) argValueTracker[contract] = {};
-        if (!argValueTracker[contract][methodName]) argValueTracker[contract][methodName] = {};
-        
-        method.arguments.map(arg => {
-            if (!argValueTracker[contract][methodName][arg.name]) {
-                argValueTracker[contract][methodName][arg.name] = {
-                    type: arg.type,
-                    value: defaultValues[arg.type]}
-            }
-        })
-        methodArgs = [...method.arguments];
-        contractName = contract;
-    }
-
-    const getStartingType = (arg) => {
-        let type = 'text';
-        let numberArgs = ['number', 'value', 'amount', 'stamps', 'tau', 'decimal']
-        numberArgs.map(str => arg.includes(str) ? type = 'number' : null)
-        if (type === 'number') return type;
-        let addressArgs = ['to', 'from', 'wallet', 'address', 'sender', 'receiver', 'owner', 'public', 'private', 'key']
-        addressArgs.map(str => arg.includes(str) ? type = 'address' : null)
-        return type;
+    const setArgs = (method) => {
+        MethodArgsStore.set(method.arguments);
+        kwargs = [];
     }
 
     const saveArgValue = (arg, e) => {
@@ -172,7 +107,7 @@
                     stampLimit,
                     'contractName': contractNameField.value, 
                     methodName, 
-                    kwargs: getKwargs()
+                    'kwargs': formatKwargs(kwargs)
                 }
             })
         }
@@ -193,49 +128,27 @@
         e.detail.target.reportValidity();
     }
 
-    const getKwargs = () => {
-        let kwargs = {}
-        Object.keys(argValueTracker[contractName][methodName]).map(arg => {
-            const argValue = argValueTracker[contractName][methodName][arg].value
-            const argType = argValueTracker[contractName][methodName][arg].type
-            
-            if (argValue !== ""){
-                let newValue = argValue
-                if (jsonTypes.includes(argType)) {
-                    try{
-                        newValue = JSON.parse(argValue)
-                    }catch (e) {
-                        newValue = `!! INVALID JSON ${longFormTypes[argType].toUpperCase()} !!`
-                    }
-                }
-                else {
-                    try{
-                        if (argType === 'int') newValue = parseInt(newValue)
-                        if (argType === 'float') newValue = parseFloat(newValue)
-                    }catch (e) {
-                        newValue = `!! INVALID TYPE !!`
-                    }
-                }
-                kwargs[arg] = newValue;
-            }
-        })
-        return kwargs;
-    }
-
     const handleSelectedWallet = (e) => {
         selectedWallet = e.detail.selected.value
         if ($currentNetwork.blockExplorer) determineStamps();
+    }
+
+    const handleNewArgValues = (e) => {
+        kwargs = e.detail.argumentList        
     }
 </script>
 
 <style>
     .send-lamden{
-        width: 668px;
+        width: 500px;
+    }
+    .coin-info{
+        align-self: flex-end;
     }
     
     .contract-details{
-        padding: 28px 103px 0 0;
-        margin-right: 25px;
+        padding: 0 4rem 0 0;
+        margin-right: 1rem;
         border-right: 1px solid var(--font-primary-darker)
     }
 
@@ -249,6 +162,9 @@
     .hide{
         display: none;
     }
+    p{
+        margin: 0.5rem 0 1rem;
+    }
 </style>
 
 <div class="send-lamden flex-column" class:hide={currentPage !== 'CoinLamdenContract'}>
@@ -257,16 +173,15 @@
         items={coinList()} 
         id={'mycoins'} 
         label={'Select Account to Send From'}
-        styles="margin-bottom: 19px;"
         required={true}
         on:selected={(e) => handleSelectedWallet(e)}
     />
 
-    <div class="coin-info text-subtitle3">
+    <p class="coin-info text-subtitle2">
         {#if selectedWallet}
-            {`${selectedWallet.name} - ${balance} ${$currentNetwork.currencySymbol}`}
+            {`${balance} ${$currentNetwork.currencySymbol}`}
         {/if}
-    </div>
+    </p>
 
     <div class="contract-details">
         <InputBox
@@ -275,7 +190,7 @@
             bind:value={stampLimit}
             bind:thisInput={stampsField}
             label={"Stamp Limit"}
-            styles={`margin-bottom: 17px;`}
+            margin="0 0 1rem 0"
             inputType={"number"}
             required={true}
         />
@@ -285,7 +200,7 @@
             value={contractName}
             bind:thisInput={contractNameField}
             label={"Enter Contract Name"}
-            styles={`margin-bottom: 17px;`}
+            margin="0 0 1rem 0"
             on:changed={(e) => getMethods(e.detail.target.value)}
             on:keyup={(e) => clearValidation(e)}
             required={true}
@@ -296,25 +211,18 @@
             <DropDown
                 items={methodList($MethodStore)} 
                 id={'methods'}
-                label={'Function Name'} 
-                styles={`margin-bottom: 40px;`}
+                label={'Choose Function to Run'} 
+                margin="0 0 2rem 0"
                 required={true}
                 on:selected={(e) => setArgs(e.detail.selected.value, contractNameField.value)} />
 
-            {#if methodArgs.length > 0}
-                <h3>Transaction Arguments</h3>
+            <h2>Transaction Arguments</h2>
+            {#if $MethodArgsStore.length > 0}
+                <Kwargs argumentList={$MethodArgsStore} on:newArgValues={handleNewArgValues}/>
+            {:else}
+                <p>This function takes no arguments</p>
             {/if}
-
-            {#each methodArgs as arg, index}
-                <InputBox
-                    id={`input-${arg}`}
-                    bind:value={argValueTracker[contractName][methodName][arg.name].value}
-                    styles={'height: 46px; border-radius: 0 4px 4px 0; margin-bottom: 20px; flex-grow: 1; margin-left: -1px;'}
-                    label={`${arg.name.toUpperCase()} (${longFormTypes[arg.type]})`}
-                    inputType={typeToInputTypeMAP[argValueTracker[contractName][methodName][arg.name].type]}
-                    on:changed={(e) => saveArgValue(arg, e)}
-                    required={true} /> 
-            {/each}
+            
         {/if}
     </div>
     <div class="buttons">
