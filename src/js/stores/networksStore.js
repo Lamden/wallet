@@ -180,6 +180,9 @@ export const allNetworks = derived(
         return makeList($NetworksStore)
 })
 
+//A Derrived Store of both user and lamden networks
+export const mainnetNetwork = new Lamden.Network(lamdenNetworks[0]);
+
 //A Derrived Store that contains values formatted for a DropDown Box
 export const networksDropDownList = derived(
 	NetworksStore,

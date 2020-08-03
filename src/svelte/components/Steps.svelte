@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext } from 'svelte';
+    import { getContext } from 'svelte';
 
 	//Components
     import { Components }  from '../Router.svelte'

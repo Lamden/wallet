@@ -55,7 +55,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors[0].includes('You must be an authorized dApp'), true)
         });
-        it('Create conenction with wallet to our teset dApp website wt', async function() {
+        it('Create conenction with wallet to our teset dApp website ', async function() {
             let funding = {show: true, amount: 10};
             this.timeout(30000);
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
@@ -166,7 +166,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
         });
-
         it('Sends Currency/Approval transaction after Popup', async function() {
             this.timeout(10000);
             let currentApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
@@ -177,23 +176,14 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let afterApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
             assert.equal(afterApprovalAmount, currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount);
         });
-
         it('sends a transactions successfully after Trusted App', async function() {
             this.timeout(30000);
-            //Resend approval with a pre-approval amount
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.preApproval = dappsInfo.preApprovalInfo
-            connection.reapprove = true
-            await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
-            let connectionResponse = await helpers.getWalletResponse(driver)
-            connectionInfo = connectionResponse
-            assert.equal(connectionResponse.errors, null);
+            await helpers.switchWindow(driver, 0)
+            await helpers.setAsTrustedDapp(driver)
+            await helpers.switchWindow(driver, 1)
 
             //Send a transaction with pre-approval
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
-            transaction.kwargs.key_value = keyHash
             let txResponse = await helpers.sendTx(driver, transaction, true)
             assert.equal(txResponse.status, "success");
             let result = txResponse.data
@@ -207,24 +197,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.contractName, connectionInfo.approvals[transaction.networkType].contractName);
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
-        });
-
-        it('Rejects tx if keypair no longer exists in the Lamden Wallet', async function() {
-            await helpers.switchWindow(driver, 0)
-            await driver.findElement(By.id("coin-row-1")).click()
-            await driver.findElement(By.id("modify-coin-btn")).click()
-            await driver.findElement(By.id("modify-delete-btn")).click()
-            await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
-            await driver.findElement(By.id("validate-btn")).click()
-            await driver.findElement(By.id("validate-btn")).click()
-            await helpers.switchWindow(driver, 1)
-            let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
-            transaction.kwargs.key_value = keyHash
-            let response = await helpers.sendTx(driver, transaction, true)
-            assert.equal(response.status, "error");
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors[0].includes(`Prompt the user to restore their keypair for vk '${connectionInfo.wallets[0]}'`), true);
         });
     })
 })

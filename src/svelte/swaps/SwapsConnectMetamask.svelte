@@ -1,5 +1,6 @@
 <script>
     import { getContext, onMount, onDestroy, afterUpdate } from 'svelte';
+    import { fade } from 'svelte/transition';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -106,7 +107,6 @@
 <style>
 .text-box2{
     color: cyan;
-    margin-bottom: 60px;
 }
 a{
     text-decoration: unset;
@@ -131,7 +131,7 @@ p.error-box{
 
 </style>
 
-<div class="flex-row swaps-intro">
+<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column content-left">
         <h6>Connect To Metamask</h6>
     
@@ -179,7 +179,7 @@ p.error-box{
 
 
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column content-right" in:fade="{{delay: 0, duration: 200}}">
         <div class="metamask-logo">
             {@html MetaMask}
         </div>

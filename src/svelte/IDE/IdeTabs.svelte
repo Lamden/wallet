@@ -24,6 +24,11 @@
 .new-button{
     display: flex;
     align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+.new-button:hover{
+    top: -1px;
 }
 .plus-icon{
     width: 20px;

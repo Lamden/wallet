@@ -58,9 +58,9 @@
     border: 1px solid #e0e0e017;
     border-radius: 4px;
     padding: 1rem;
-    margin: 1rem;
-    max-width: 500px;
-    min-width: fit-content;
+    margin: 1rem 1rem 0 0;
+    max-width: calc(100% / 2.18);
+    min-width: 435px;
     width: 100%;
     background: #262626;
     box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
@@ -69,19 +69,14 @@
     margin: 2em 0 0;
 }
 
-@media (min-width: 1670px) {
-    .method{
-        max-width: 430px;
-    }
-}
 </style>
 
-<h5 class="heading">Contract Methods</h5>
+<h2 class="heading">Contract Methods</h2>
 <div class="methods flex-row">
     {#each newMethods as method, methodIndex}
         <div class="method" >
             <div class="flex-row name-row">
-                <h2>{method.name}</h2>
+                <h3>{method.name}</h3>
                 <Button 
                     name={'run'} 
                     height={'22px'} 

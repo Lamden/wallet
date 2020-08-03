@@ -109,7 +109,7 @@
 
 <div class="confirm-tx flex-column">
     <div class="flex-column">
-        <h5>{`Submit Transaction`}</h5>
+        <h2>{`Submit Transaction`}</h2>
         <DropDown  
             items={$coinsDropDown}
             id={'mycoins'} 

@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext, setContext } from 'svelte';
+    import { getContext, setContext } from 'svelte';
 
 	//Stores
     import { DappStore, currentNetwork } from '../../js/stores/stores.js';
@@ -53,7 +53,8 @@
     <svelte:component this={Modals[steps[currentStep - 1].page]} {coin} {dappInfo} {stampRatio} result={resultInfo} {message} />
     {#if steps[currentStep - 1].cancelButton}
         <div class="cancel-button">
-            <Button classes={'button__text text-caption'} 
+            <Button id="cancel-modal-btn"
+                    classes={'button__text text-caption'} 
                     width={'125px'}
                     height={'24px'}
                     padding={0}

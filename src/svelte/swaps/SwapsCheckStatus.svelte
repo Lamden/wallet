@@ -1,5 +1,6 @@
 <script>
     import { onDestroy, onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -126,7 +127,7 @@
 }
 </style>
 
-<div class="flex-row swaps-intro">
+<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column content-left">
         <h6>Checking For Tx Success</h6>
     
@@ -135,18 +136,20 @@
         </div>
 
         <div class="flex-column buttons">
-            <Button id={'checking-btn'}
-                    classes={`button__solid ${success ? 'button__green' : 'button__purple'}`}
-                    styles={'margin-bottom: 16px;'}
-                    width={'100%'}
-                    name={success ? "Success" : "Check again"}
-                    icon={success ? checkmarkWhite : ''}
-                    iconPosition={'after'}
-                    iconWidth={'19px'}
-                    disabled={!success && attempts < maxAttempts}
-                    click={startChecking} />
+            {#if !success}
+                <Button id={'checking-btn'}
+                        classes={'button__solid button__purple'}
+                        styles={'margin-bottom: 16px;'}
+                        width={'100%'}
+                        name={success ? "Success" : "Check again"}
+                        icon={success ? checkmarkWhite : ''}
+                        iconPosition={'after'}
+                        iconWidth={'19px'}
+                        disabled={!success && attempts < maxAttempts}
+                        click={startChecking} />
+            {/if}
             <Button id={'initiate-btn'}
-                    classes={'button__solid button__purple'}
+                    classes={`button__solid ${success ? 'button__green' : ''}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Initate Swap" 
@@ -176,7 +179,7 @@
 
         {#if success}
             <div class="swap-details">
-                <div class="flex-column">
+                <div class="flex-column" in:fade="{{delay: 0, duration: 250}}">
                     <div class="logo">{@html lamdenLogoOld}</div>
                     <a href={`${getChainInfo().blockExplorer}/address/${getEthAddress()}`} 
                        class="outside-link text-subtitle2"
@@ -185,11 +188,11 @@
                         {`${getEthAddress().slice(0, 25)}...`}
                     </a>
                 </div>
-                <div class="arrow-column flex-column">
+                <div class="arrow-column flex-column" in:fade="{{delay: 200, duration: 250}}">
                     <div class="arrow">{@html arrowRight2Color}</div>
                     <p class="text-subtitle2">{`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}</p>
                 </div>
-                <div class="flex-column">
+                <div class="flex-column" in:fade="{{delay: 400, duration: 250}}">
                     <div class="logo">{@html lamdenLogoNew}</div>
                     <a href={`https://explorer.lamden.io/address/${getLamdenAddress()}`} 
                        class="outside-link text-subtitle2"

@@ -82,7 +82,7 @@ p > strong {
 </style>
 
 <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-    <h1>{dappInfo.appName} wants to spend your {currencySymbol}</h1>
+    <h2>{dappInfo.appName} wants to spend your {currencySymbol}</h2>
     <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>
 <div class="details flex-column">

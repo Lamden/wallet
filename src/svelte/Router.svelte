@@ -2,7 +2,6 @@
 //Layout
 import Nav from './nav/Nav.svelte';
 import NavLogo from './nav/NavLogo.svelte';
-import NavBreadcrumb from './nav/NavBreadcrumb.svelte';
 import NavControls from './nav/NavControls.svelte';
 import NavStatus from './nav/NavStatus.svelte';
 import Menu from './menu/Menu.svelte';
@@ -202,7 +201,7 @@ export const Modals = {
 }
 
 export {
-    Nav, NavLogo, NavBreadcrumb, NavControls, NavStatus,
+    Nav, NavLogo, NavControls, NavStatus,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
     Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory,

@@ -134,57 +134,6 @@
 
 
 <style>
-	:global(h1){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 24px;
-		line-height: 28px;
-	}
-
-	:global(h2){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 16px;
-		line-height: 24px;
-	}
-
-	:global(h3){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 13px;
-		line-height: 10px;
-	}
-
-	:global(h4){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 20px;
-		line-height: 20px;
-		letter-spacing: 0.44px;
-	}
-
-	:global(h5){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 24px;
-		line-height: 28px;
-		margin: 10px 0;
-	}
-
-	:global(h6){
-		font-style: normal;
-		font-weight: 500;
-		font-size: 20px;
-		line-height: 28px;
-		letter-spacing: 0.15px;
-		margin: 16px 0;
-	}
-
-	:global(body){
-		color: var(--font-primary);
-		background-color: var(--bg-color);
-	}
-
 	.container {
 		display:flex;
 		padding-top: 97px;

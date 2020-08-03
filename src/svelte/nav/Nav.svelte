@@ -1,9 +1,6 @@
 <script>
-    //Stores
-    import { breadcrumbs } from '../../js/stores/stores.js';
-
 	//Components
-    import { NavLogo, NavBreadcrumb, NavControls }  from '../Router.svelte'
+    import { NavLogo, NavControls }  from '../Router.svelte'
 
 </script>
 
@@ -22,20 +19,13 @@
     z-index: 50;
     border-bottom: 1px solid #3D3D3D;
 }
-
-.breadcrumbs{
-    display: flex;
-    align-items: center;
+.spacer{
     flex-grow: 1;
 }
 </style>
 
 <div class="nav text-primary">
     <NavLogo />
-    <div class="breadcrumbs">
-        {#each $breadcrumbs as crumb, index}
-            <NavBreadcrumb crumb={crumb} {index} last={($breadcrumbs.length -1) === index}/>
-        {/each}
-    </div>
+    <div class="spacer" />
     <NavControls />
 </div>

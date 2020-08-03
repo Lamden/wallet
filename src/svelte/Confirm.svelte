@@ -77,17 +77,19 @@
 </script>
 
 <style>
-	:global(body){
-		color: var(--font-primary);
-		background-color: var(--bg-color);
+	:global(h2){
+		margin-bottom: 1rem;
+		text-align: center;
 	}
 
-	:global(h1){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 24px;
-		line-height: 28px;
-		text-align: center;
+	:global(.dapp-name){
+    	margin-bottom: 0.25rem;
+		align-items: center;
+		
+	}
+
+	:global(.dapp-name-text){
+		font-size: 23px;
 	}
 
 	.container{

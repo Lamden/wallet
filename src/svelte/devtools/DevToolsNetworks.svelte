@@ -106,7 +106,7 @@
 <div class="edit-networks flex-row">
     <div class="current-network flex-column">
         <div>
-            <h5>Current Network</h5>
+            <h2>Current Network</h2>
             <DropDown 
                 items={$networksDropDownList}
                 width={"250px"}
@@ -139,7 +139,7 @@
 
     </div>
     <form class="add-network" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
-        <h5>Add Network</h5>
+        <h2>Add Network</h2>
         <InputBox 
             label="Name"
             placeholder={"Network Name"}

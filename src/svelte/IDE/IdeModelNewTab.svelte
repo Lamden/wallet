@@ -90,12 +90,12 @@
 
 <div class="container flex-column">
     <div class="flex-column">
-        <h5>Open Contract</h5>
+        <h2>Open Contract</h2>
         <div class="text-subtitle3">
             Start a new contract or Open and existing contract from the blockchain
         </div>
     </div>
-    <h4>New</h4>
+    <h3>New</h3>
     <div class="flex-row new-row">
         <Button 
             id={'newTab-btn'} 
@@ -113,7 +113,7 @@
         />
     </div>
 
-    <h4>From Blockchain</h4>
+    <h3>From Blockchain</h3>
     <div class="flex-row existing-row">
         <InputBox
             id={'contract-input'}

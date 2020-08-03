@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     //Stores
     import { steps, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
@@ -38,7 +39,13 @@
     
 </script>
 
-<div class="flex-row swaps-intro">
+<style>
+.content-right{
+    max-width: 80%;
+}
+</style>
+
+<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column content-left">
         <h6>Choose Lamden Account</h6>
     
@@ -69,14 +76,14 @@
             </a>
          </div>
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column content-right" in:fade="{{delay: 0, duration: 200}}">
         <DropDown  
             items={$coinsDropDown} 
             id={'mycoins'} 
             label={'Lamden Account'}
             margin="0 0 1rem 0"
             required={true}
-            on:selected={(e) => handleSelectedWallet(e)}
+            on:selected={handleSelectedWallet}
         />
     </div>
 </div>

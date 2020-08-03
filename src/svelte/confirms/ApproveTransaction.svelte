@@ -46,11 +46,6 @@ p{
     box-sizing: border-box;
 }
 
-.dapp-name{
-    margin-bottom: 0.25rem;
-    align-items: center;
-}
-
 .approve-items{
     width: 100%;
     justify-content: space-between;
@@ -91,8 +86,10 @@ p{
 
 .kwargs {
     align-items: flex-start;
+    width: 100%;
+    padding: 0 5px;
     flex-grow: 1;
-    max-height: 250px;
+    max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -128,10 +125,10 @@ a.help{
 </style>
 
 <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-    <h1>{`Confirm Transaction From`}</h1>
+    <h2>{`Confirm Transaction From`}</h2>
     <div class="flex-row dapp-name">
         <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />
-        <p class="text-body3">{`${dappInfo.appName}`}</p>
+        <p class="dapp-name-text">{`${dappInfo.appName}`}</p>
     </div>
     <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>

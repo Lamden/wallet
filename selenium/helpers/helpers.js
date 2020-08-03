@@ -90,6 +90,19 @@ const changeToTestnet = async (driver) => {
     await driver.findElement(By.id("accounts")).click()
 }
 
+const setAsTrustedDapp = async (driver) => {
+    await driver.findElement(By.id("coin-row-1")).click()
+    await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]")).click()
+    await driver.findElement(By.id("preapproval-btn")).click()
+    let trusted_Radio = await driver.wait(until.elementLocated(By.id("trusted")), 5000);
+    await trusted_Radio.click()
+    await driver.findElement(By.id("back-btn")).click() 
+    await driver.findElement(By.id("cancel-modal-btn")).click()
+    await driver.findElement(By.id("accounts")).click()
+    await sleep(1000, true)
+
+}
+
 const getInstance = (obj) => {
     return JSON.parse(JSON.stringify(obj))
 }
@@ -170,6 +183,7 @@ const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) 
         ${awaitResponse ? "return await window.walletInfoResponse" : ""}
     `);
 }
+
 
 const sendGetInfoRequest = async (driver, awaitResponse = true) => {
     return driver.executeScript(`
@@ -263,7 +277,7 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
 module.exports = {
     sleep,
     switchWindow,
-    completeFirstRunSetup, completeFirstRunSetupRestore, changeToTestnet,
+    completeFirstRunSetup, completeFirstRunSetupRestore, changeToTestnet, setAsTrustedDapp,
     getInstance,
     hashStringValue,
     unlockWallet, lockWallet,

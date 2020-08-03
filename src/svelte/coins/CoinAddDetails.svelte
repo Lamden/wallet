@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount } from 'svelte';
+    import { getContext} from 'svelte';
     
 	//Stores
     import { SettingsStore, CoinStore,  supportedCoins, currentNetwork } from '../../js/stores/stores.js';
@@ -169,7 +169,7 @@
 
 <form  class="coin-add-details flex-column" on:submit|preventDefault={() => handleSubmit() } 
     target="_self" bind:this={formObj}>
-    <h5 class="header">Add Account</h5>
+    <h2 class="header">Add Account</h2>
     <div class="text-subtitle3">
         Select a account type from the drop down.
     </div>
@@ -183,7 +183,7 @@
         on:selected={(e) => selectedInput = e.detail.selected}
     />
     {#if selected}
-        <h5 class="header">Choose Action</h5>
+        <h3 class="header">Choose Action</h3>
         <div class="button-group flex-row">
             {#each buttonGroup as button, index}
                 <Button

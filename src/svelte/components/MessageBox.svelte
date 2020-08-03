@@ -52,7 +52,7 @@
         {#if type === 'error'}<div id={"error"} class="icon">{@html errorCircle}</div>{/if}  
         {#if type === 'warning'}<div id={"warning"} class="icon">{@html warning}</div>{/if}
         {#if type === 'success'}<div id={"success"} class="icon checkmark">{@html successCircle}</div>{/if}
-        <h5 id={'message-text'}>{text}</h5>
+        <h2 id={'message-text'}>{text}</h2>
     </div>
     <div class="buttons flex-row">
         {#each buttons as button, index}

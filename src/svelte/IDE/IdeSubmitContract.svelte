@@ -153,7 +153,7 @@ p{
 
 <div class="confirm-tx flex-column">
     <div class="flex-column">
-        <h5>{`Submit Contract to ${$currentNetwork.name}`}</h5>
+        <h2>{`Submit Contract to ${$currentNetwork.name}`}</h2>
         <div>* signifies manditory field</div>
         <DropDown  
             items={$coinsDropDown}

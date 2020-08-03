@@ -1,4 +1,7 @@
 <script>
+	import { scale } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
+    
 	//Stores
     import { FilesStore, currentNetwork, clicked } from '../../js/stores/stores.js';
 
@@ -51,6 +54,7 @@
     background-color: var(--bg-color-grey);
     align-items: center;
     border: 1px solid transparent;
+    cursor: pointer;
 }
 .tab-box:hover{
     border: 1px dashed var(--font-accent);
@@ -82,6 +86,7 @@
     class:selected={file.selected} 
     on:click={selectTab}
     title={file.type === 'online' ? `Contract is on ${$currentNetwork.name}` : ""}
+    in:scale="{{duration: 1000, delay: 0, opacity: 0.0, start: 0.25, easing: quintOut}}"
     >
 
     {#if file.type === 'online'}

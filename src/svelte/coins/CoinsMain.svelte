@@ -5,7 +5,6 @@
 	import { 
 			CoinStore,
 			balanceTotal,
-			breadcrumbs,
 			currentNetwork,
 			networkKey
 		} from '../../js/stores/stores.js';
@@ -33,8 +32,7 @@
 
 	let refreshing = false;
 
-	onMount(async () => {
-		breadcrumbs.set([{name: 'Accounts', page: {name: ''}}]);
+	onMount(() => {
 		handleRefresh();
 	});
 
@@ -43,7 +41,7 @@
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false
-		}, 1000);
+		}, 2000);
 	}
 
 </script>
@@ -67,12 +65,11 @@
 }
 
 .refresh-icon{
-	margin-left: 10px;
     width: 40px;
-    justify-content: center;
-    height: 70px;
 }
-
+.text-huge:first-child{
+    margin-right: 10px;
+}
 .header{
 	display: flex;
 	flex-direction: row;
@@ -107,23 +104,15 @@
 	width: 203px;
 }
 .balance-total{
-	align-items: flex-start;
+	align-items: center;
+}
+p{
+    margin: 0;
+}
+.buttons{
+	align-items: flex-end;
 	flex-grow: 1;
 }
-
-.spinner{
-	animation: rotation 4s infinite linear;
-}
-
-@keyframes rotation {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-720deg);
-  }
-}
-
 </style>
 
 <div class="coinsmain text-primary">
@@ -131,15 +120,13 @@
 		<div class="balance-words text-body1">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
-		<div class="balance-total">
-			<div class="flex-row  text-huge">
-				{`${totalBalance.toLocaleString('en')}`}
-				<div on:click={handleRefresh} 
-					id="refresh-icon"
-					class="flex-col refresh-icon clickable" 
-					class:spinner={refreshing}>
-					{@html refresh} 
-				</div>
+		<div class="flex-row balance-total">
+			<p class="text-huge">{`${totalBalance.toLocaleString('en')}`}</p>
+			<div on:click={handleRefresh} 
+				id="refresh-icon"
+				class="flex-col refresh-icon" 
+				class:spinner={refreshing}>
+				{@html refresh} 
 			</div>
 		</div>
 		<div class="flex-row buttons">

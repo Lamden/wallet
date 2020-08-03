@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,600,700,800&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
   
 
@@ -34,7 +34,7 @@ body{
     margin: 0;
     min-height: unset;
     display: flex; 
-    color: var(--font-primary-dark)
+    color: var(--font-primary)
 }
 
 .flex-column{
@@ -87,20 +87,43 @@ body{
 }
 
 
-.text-body1, h2{
+.text-title, h1{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 45px;
+    letter-spacing: 0.25px;
+}
+
+h2{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 30px;
+    letter-spacing: 0.25px;
+    margin: 1rem 0 2rem;
+}
+
+h3{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.44px;
+}
+
+
+.text-body1{
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
     letter-spacing: 0.44px;
 }
 
-.text-body2, h3{
+.text-body2, h4{
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
     letter-spacing: 0.25px;
 }
-.text-body3, h4{
+.text-body3, h5{
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -114,23 +137,22 @@ body{
     letter-spacing: 0.25px;    
 }
 
-
-.text-title, h1{
-    font-family: 'Quicksand', sans-serif;
+h6{
     font-style: normal;
     font-weight: normal;
-    font-size: 45px;
+    font-size: 22px;
     letter-spacing: 0.25px;
+    margin: 1rem 0 2rem;
 }
 
-.text-subtitle1, h5{
+.text-subtitle1{
     font-style: normal;
     font-weight: normal;
     font-size: 10px;
     letter-spacing: 0.25px;
 }
 
-.text-subtitle2, h6{
+.text-subtitle2{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
@@ -473,4 +495,18 @@ input[type="checkbox"]{
   border: 1px solid #e0e0e03d;
   -webkit-text-fill-color: var(--font-primary);
   box-shadow: 0 0 0px 1000px var(--bg-color) inset;
+}
+
+
+.spinner{
+	animation: rotation 4s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-720deg);
+  }
 }

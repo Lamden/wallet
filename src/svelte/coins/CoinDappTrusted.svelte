@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext } from 'svelte';
+    import { getContext } from 'svelte';
 
 	//Stores
     import { currentNetwork } from '../../js/stores/stores.js';
@@ -86,7 +86,7 @@
 </style>
 
 <div id="coin-dapp-trusted" class="flex-column">
-    <h1>Automatic Transactions</h1>
+    <h2>Automatic Transactions</h2>
     <p class="text-body2">
         Automatic transactions make for a better user experience as some Apps can send frequent transactions.
         Once automatic transactions are enabled you will no longer receive popups when <strong>{dappInfo.appName}</strong> sends transations

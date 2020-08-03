@@ -36,7 +36,7 @@
 
 <div class="get-variable flex-column">
     <div class="flex-row heading">
-        <h5>Get Current State</h5>
+        <h2>Get Current State</h2>
         <Button 
             name={'run'} 
             height={'22px'} 

@@ -1,8 +1,8 @@
 <script>
-    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
+    import { beforeUpdate, afterUpdate } from 'svelte';
     
     //Stores
-    import { breadcrumbs, currentNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
     import { Transactions, PendingTransactions }  from '../Router.svelte'
@@ -16,10 +16,6 @@
     export let pendingTxList;
     export let transactionsList;
     export let fetchTransactions;
-
-	onMount(() => {
-        if (all) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
-    });
 
 </script>
 

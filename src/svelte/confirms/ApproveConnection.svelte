@@ -58,10 +58,10 @@
 
 <div class="approve-conection flex-column">
     <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-        <h1>Connection Request From</h1>
+        <h2>Connection Request From</h2>
         <div class="flex-row dapp-name">
             <img src={`${confirmData.url}/${logoFormat(confirmData.messageData.logo)}`} alt="app logo" />
-            <p class="text-body3">{`${confirmData.messageData.appName}`}</p>
+            <p class="dapp-name-text">{`${confirmData.messageData.appName}`}</p>
         </div>
         <a class="outside-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{`source ${confirmData.url}`}</a>
     </div>

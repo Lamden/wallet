@@ -1,5 +1,7 @@
 <script>
     import { getContext, setContext, afterUpdate } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
     //Stores
     import { currentNetwork, BalancesStore, balanceTotal, DappStore, networkKey } from '../../js/stores/stores.js';
@@ -132,9 +134,17 @@ p > a {
     align-items: center;
     padding-left: 100px;
 }
+.name-box{
+    line-height: 1.5;
+}
 </style>
 
-<div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
+<div 
+    id={`coin-row-${id}`} 
+    class="coin-box" 
+    on:click={ () => switchPage('CoinDetails', coin)}
+    in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
+    >
     <div class="logo flex-column">
         {#if dappLogo}
             <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo">

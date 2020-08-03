@@ -1,5 +1,6 @@
 <script>
     import { getContext, onMount, onDestroy } from 'svelte';
+    import { fade } from 'svelte/transition';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -75,28 +76,38 @@
     width: 100px;
     margin-bottom: 1rem;
 }
+p.text-body2{
+    font-weight: 300;
+    line-height: 1.3;
+}
+strong{
+    color: cyan;
+}
 </style>
 
-<div class="flex-row swaps-intro">
+<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column content-left">
         <h6>Send Token Approval</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <p class="text-box text-body1">
             {`Lamden requires access to your tokens to complete the swap process.`}
-        </div>
+        </p>
 
-        <div>
-            {`Current ${getChainInfo().tauSymbol} Balance: ${getTokenBalance()}`}
-        </div>
+        <p class="text-body2 ">
+            <strong>Ethereum Balance:</strong><br>
+            {`${getTokenBalance()} ${getChainInfo().tauSymbol}`}
+        </p>
 
-        <InputBox 
-            bind:thisInput={inputNode}
-            label={`Approve ${getChainInfo().tauSymbol}`}
-            inputType={'number'}
-            value={`${getTokenBalance()}`}
-            placeholder={`${getChainInfo().tauSymbol} Amount`}
-            margin={'1rem 0'}
-        />
+        {#if !sent}
+            <InputBox 
+                bind:thisInput={inputNode}
+                label={`Approve Amount`}
+                inputType={'number'}
+                value={`${getTokenBalance()}`}
+                placeholder={`${getChainInfo().tauSymbol} Amount`}
+                disabled={sending}
+            />
+        {/if}
 
         <div class="flex-column buttons">
             {#if sent}
@@ -140,14 +151,14 @@
             />
         {/if}
         {#if sent}
-            <div class="flex-column result">
-                <div class="circle-checkmark">{@html circleCheck}</div>
-                <h2>{'Approved!'}</h2>
+            <div class="flex-column result" >
+                <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
+                <h3>{'Approved!'}</h3>
             </div>
         {/if}
         {#if errorMsg !== ''}
             <div class="flex-column result">
-                <div class="circle-error">{@html iconErrorCircle}</div>
+                <div class="circle-error" in:fade="{{delay: 0, duration: 500}}">{@html iconErrorCircle}</div>
                 <p class="text-red text_body2">{errorMsg}</p>
             </div>
         {/if}

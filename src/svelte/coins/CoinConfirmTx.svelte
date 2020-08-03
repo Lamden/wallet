@@ -17,31 +17,34 @@
     export let txData;
     export let txDetails;
 
-    $: yourKey = `${txData.sender.nickname} - ${txData.sender.vk.substring(0, 45 - txData.sender.nickname.length)}...`
+    $: yourKey = txData.sender.vk
 
 
 </script>
 
 <style>
 .confirm-tx{
-    width: 572px;
-    
+    width: 500px;
 }
 
 .details{
-    padding: 5px 0 57px 76px;
+    padding: 1rem 0 1rem 4rem;
     margin-top: 17px;
-    margin-left: 50px;
+    margin-left: 2rem;
     border-left: 1px solid var(--font-primary-darker)
 }
-
+.sender-key {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .values{
     align-items: center;
     overflow-wrap: break-word;
     max-height: 100px;
     overflow-y: auto;
+    line-height: 1.5;
 }
-
 
 .buttons{
     flex-grow: 1;
@@ -56,20 +59,26 @@
 }
 
 .warning-icon{
+    width: 15px;
     margin-right: 8px;
-    position: relative;
-    top: -1px;
+}
+
+p{
+    margin: 0;
+}
+h3{
+
 }
 </style>
 
 <div class="confirm-tx flex-column">
     <div class="flex-column">
-        <h5>Confirm Transaction</h5>
-        <h4 class="no-bottom-margin">Your Public Key</h4>
-        <div id="sender-key" class="values text-body1 values">{yourKey}</div>
+        <h2>Confirm Transaction</h2>
+        <h3 class="no-bottom-margin">{txData.sender.nickname}</h3>
+        <p class="sender-key text-body1 values">{yourKey}</p>
         <div class="details flex-column">
             {#each txDetails as detail}
-                <h4 class="detail-name no-bottom-margin">{detail.name}</h4>
+                <h3 class="detail-name no-bottom-margin">{detail.name}</h3>
                 {#if detail.value === ''}
                     <div class="values text-body1 warning flex-row">
                         <div class="warning-icon text-body1" >{@html warning}</div>

@@ -329,12 +329,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.wallets.length, 1);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
         });
-        it('Send error if already authorized for a network/contract combo', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            let response = await helpers.sendConnectRequest(driver, connection, true)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes(`App is already authorized to use ${connection.contractName} on ${connection.networkType}`), true);
-        });
         it('POPUP: Can Re-approve connection', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             connection.contractName = "submission" 
@@ -359,19 +353,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.wallets[0] === connectionInfo.wallets[0], false);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
             connectionInfo = response;
-        });
-        it('Sends error if the dapp was previously approved but the wallet has no keypair for it anymore', async function() {
-            await helpers.switchWindow(driver, 0)
-            await driver.executeScript(`
-                backpage = chrome.extension.getBackgroundPage();
-                backpage.deleteCoin({vk: "${connectionInfo.wallets[0]}"})
-            `);
-            await helpers.switchWindow(driver, 1)
-            await helpers.sleep(2000, true)
-            let connection = await helpers.getInstance(dappsInfo.basicConnectionInfo)
-            let response = await helpers.sendConnectRequest(driver, connection, true)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors[0].includes(`Prompt the user to restore their keypair for vk '${connectionInfo.wallets[0]}'`), true);
         });
     })
 })

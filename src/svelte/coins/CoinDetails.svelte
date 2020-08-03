@@ -7,7 +7,6 @@
         DappStore, 
         SettingsStore, 
         currentNetwork, 
-        breadcrumbs, 
         BalancesStore,
         networkKey,
         PendingTxStore } from '../../js/stores/stores.js';
@@ -24,13 +23,15 @@
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import settings from '../../img/menu_icons/icon_settings.svg';
     import options from '../../img/menu_icons/icon_options.svg';
+    import refresh from '../../img/menu_icons/icon_refresh.svg';
     
-
     //Utils
     import { copyToClipboard } from '../../js/utils.js'
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
+
+    let refreshing = false;
 
     let sendPages = {
         lamden: 'CoinLamdenSend'
@@ -61,10 +62,6 @@
 
 
 	onMount(() => {
-        breadcrumbs.set([
-            {name: 'Accounts', page: {name: 'CoinsMain'}},
-            {name: `${coin.nickname}`, page: {name: ''}},
-        ]);
         getBalance()
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
@@ -103,9 +100,23 @@
     const delayedRefresh = () => {
         if($currentNetwork.blockExplorer) setTimeout(fetchTransactions, 10000)
     }
+
+    const handleRefresh = () => {
+		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
+		refreshing = true
+		setTimeout(() => {
+			refreshing = false
+		}, 2000);
+	}
 </script>
 
 <style>
+h2{
+    margin: 0;
+}
+p{
+    margin: 0;
+}
 .hero-rec{
 	box-sizing: border-box;
 	min-height: 247px;
@@ -114,6 +125,9 @@
     padding: 40px 40px 26px;
     background-size: cover;
     background-repeat: no-repeat;
+}
+.balance-total{
+    align-items: center;
 }
 
 .wallet-details{
@@ -126,13 +140,6 @@
 
 .nickname{
     margin-bottom: 20px;
-}
-
-small > a {
-    margin: 0 5px;
-}
-small.flex-row{
-    align-items: center;
 }
 
 .buttons{
@@ -164,9 +171,15 @@ small.flex-row{
 .trusted-icon{
     width: 22px;
     margin-right: 10px;
+    align-self: center;
 }
-p{
-    margin: 0;
+
+.refresh-icon{
+    width: 40px;
+}
+
+.text-huge:first-child{
+    margin-right: 10px;
 }
 
 @media only screen and (max-width: 970px) {
@@ -192,24 +205,23 @@ p{
                                     {@html verified_app}
                                 </div>
                             {/if}
-                            <p class="dapp-name">{dappInfo.appName}</p>
+                            <h2 class="dapp-name">{dappInfo.appName}</h2>
                         </div>
                     {:else}
-                        <p>{coin.nickname}</p>
-                        {#if dappInfo}
-                            <small class="text-subtitle2">
-                                {`${dappInfo.appName} has not requested access to Lamden's ${$currentNetwork.type.toUpperCase()}`}
-                            </small>
-                            <small class="flex-row text-subtitle2">
-                                {`See`}
-                                <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
-                                {`for details`}
-                            </small>
-                        {/if}
+                        <h2>{coin.nickname}</h2>
                     {/if}
                 </div>
                 <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
-                <div class="text-huge"> {balance} </div>
+                <div class="flex-row balance-total">
+                    <p class="text-huge">{balance}</p>
+                    <div on:click={handleRefresh} 
+                        id="refresh-icon"
+                        class="flex-col refresh-icon" 
+                        class:spinner={refreshing}>
+                        {@html refresh} 
+                    </div>
+                </div>
+                
             </div>
             {#if thisNetworkApproved && dappLogo }
                 <div>

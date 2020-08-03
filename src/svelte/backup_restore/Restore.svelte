@@ -1,8 +1,5 @@
 <script> 
-    import { onMount, getContext } from 'svelte';
-
-    //Stores
-    import { breadcrumbs } from '../../js/stores/stores.js';
+    import { getContext } from 'svelte';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -14,10 +11,6 @@
 
 	//Context
     const { switchPage } = getContext('app_functions');
-
-	onMount(() => {
-        breadcrumbs.set([{name: 'Restore Wallet', page: {name: ''}}]);
-    });
 
 </script>
 
@@ -56,9 +49,9 @@
 
 <div class="restore text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-        <h5 class="heading">
+        <h2 class="heading">
             Restoring Accounts to Your Lamden Wallet is Quick & Easy
-        </h5>
+        </h2>
         <div class="subtext text-body2 text-primary-dark">
             It only takes a few minutes, please have your original Keystore file ready,
             and be prepared to provide the password for it.

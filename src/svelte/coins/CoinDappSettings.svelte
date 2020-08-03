@@ -32,7 +32,7 @@
 
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
-    $: trustedApp = dappInfo.trustedApp;
+    $: trustedApp = dappInfo[$currentNetwork.type].trustedApp;
     $: ratio = 0;
     $: addressLink = `${$currentNetwork.blockExplorer}/address/${coin.vk}`
     $: options = [
@@ -119,21 +119,23 @@ p{
     font-size: 0.9em;
     word-break: break-word;
 }
-.dapp-name{
-    align-items: center;
-}
+
 .trusted-icon{
     width: 25px;
-    margin-left: 5px;
+    margin: 1rem 15px 0 0;
+    position: relative;
+    top: 5px;
 }
 </style>
 
 <div id="coin-dapp-settings" class="text-primary">
-    <div class="dapp-name flex-row">
-        <h1>{`${dappInfo.appName} Settings`}</h1>
-        <div class="trusted-icon" title="automatic transactions ON">
-            {@html verified_app}
-        </div>
+    <div class="flex-row dapp-name">
+        {#if trustedApp}
+            <div class="trusted-icon" title="automatic transactions ON">
+                {@html verified_app}
+            </div>
+        {/if}
+        <h2>{`${dappInfo.appName} Settings`}</h2>
     </div>
     
     <div class="dapp-info text-subtitle3">

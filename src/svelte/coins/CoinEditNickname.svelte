@@ -60,7 +60,7 @@ p{
 </style>
 
 <div class="edit-nickname">
-    <h5> Edit Account Nickname </h5>
+    <h2> Edit Account Nickname </h2>
 
     <InputBox
         id={"modify-edit-nickname"}

@@ -401,6 +401,7 @@ const coinStoreDelete = (coinInfo) => {
         if (coin.vk === coinInfo.vk) coinStore.splice(index, 1);
     })
     if (coinStore.length < before){
+        DappStoreDelete(coinInfo.vk);
         refreshCoinStore();
         return true
     }else{
@@ -674,7 +675,7 @@ const validateConnectionMessage = (data) => {
     return messageData
 }
 
-const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
+const sendResponse_WalletInfo = (dappInfo = undefined, sendResponse) => {
     let installedStatus = {
         walletVersion: chrome.runtime.getManifest().version,
         installed: true,
@@ -687,7 +688,8 @@ const sendResponse_WalletInfo = (dappInfo, sendResponse) => {
         let approvals = {}
         Object.keys(dappInfo).forEach(key => {
             if(LamdenNetworkTypes.includes(key)) approvals[key] = {
-                contractName: dappInfo[key].contractName
+                contractName: dappInfo[key].contractName,
+                trustedApp: dappInfo[key].trustedApp
             }
         })
         installedStatus.approvals = approvals
@@ -959,28 +961,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const isFromApp = fromApp(sender.url);
     const isFromConfirm = fromConfirm(sender.url);
 
-
-    //Error on Stale dApp Approval (dApp was approved by the vk no longer exists in the uesr's wallet for whatever reason)
-    if (isFromAuthorizedDapp && !dappVkInWallet(dappInfo.vk) && !walletIsLocked){
-        let staleWallet = false;
-        //Don't error if this is a reconnect attempt to rectify this issue
-        try{
-            if (message.type !== 'lamdenWalletConnect') throw new Error('Stale Wallet')
-            let messageData = JSON.parse(message.data)
-            if (!messageData.reapprove || !messageData.newKeypair) throw new Error('Stale Wallet')
-        }catch (e){
-            staleWallet = true;
-        }
-        if (staleWallet) {
-            sendResponse({errors:[
-                "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
-                 `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
-                 "or add 'reapprove = true, newKeypair = true' to your approve request to have a new keypair generated."
-            ]})
-            return
-        }
-    }
-
    /*************************************************
     ** AUTHORIZATION MESSAGES
     **************************************************/
@@ -998,18 +978,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return
         }else{
             try{
-                //If this dApp is already approved then let it know that so we don't bother the user again
+                //If this dApp is already approved get send the wallet info
                 if (dappInfo[connectionMessage.networkType].contractName === connectionMessage.contractName){
-                    //Ignore if this is a reapprove request
-                    if (!connectionMessage.reapprove) {
-                        sendResponse({errors:[
-                            `App is already authorized to use ${connectionMessage.contractName} on ${connectionMessage.networkType}`
-                        ]})
-                        return
-                    }
+                    sendResponse_WalletInfo(dappInfo, sendResponse);
+                    return
                 }
             }catch (e){}
-
+            console.log("here?")
             promptApproveDapp(sender, connectionMessage)
             return
         }
@@ -1202,98 +1177,84 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
          ** MESSAGES FROM AUTHORIZED DAPPs
         **************************************************/
         if (isFromAuthorizedDapp){
-            if (!dappVkInWallet(dappInfo.vk) && !walletIsLocked){
-                let errorMsg = [
-                    "Your dApp was previously approved but no matching vk is currently found in the wallet. " +  
-                     `Prompt the user to restore their keypair for vk '${dappInfo.vk}', ` +
-                     "or add 'reapprove = true, newKeypair = true' to your approve request to have a new keypair generated."
-                ]
-                if (message.type === 'dAppSendLamdenTransaction'){
-                    sendTxErrorResponse('Unable to process transaction', errorMsg, message.data, sendResponse)
+            //Send specifics about the wallet that the dApp may need to handle
+            if (message.type === 'getWalletInfo') sendResponse_WalletInfo(dappInfo, sendResponse);
+
+            //Process a transaction request sent from the dApp; same as from the Lamden Wallet App with two differences
+            // 1) For security the txInfo contractName is populated/overwritten by the LamdenWallet as the one that was approved by the user
+            // 2) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
+            // This means that a dApp can only send transactions that were approved by the user in the original connection request
+            if (message.type === 'dAppSendLamdenTransaction'){
+                const errorStatus = `Unable to process transaction`
+                const rejectedTx = message.data
+                if (walletIsLocked){
+                    sendTxErrorResponse(errorStatus, ['Wallet is Locked'], rejectedTx, sendResponse)
                 }else{
-                    sendResponse({errors: errorMsg})
-                }
+                    let txInfo = {};
+                    let errors = []
+                    let approvalRequest = false;
+                    
+                    try{
+                        //Make sure the txInfo was a JSON string (for security)
+                        txInfo = JSON.parse(message.data)
+                    } catch (err) {
+                        sendTxErrorResponse(errorStatus, ['Failed to Parse JSON object', err.message], rejectedTx, sendResponse)
+                        return
+                    }
 
-            }else{
-                //Send specifics about the wallet that the dApp may need to handle
-                if (message.type === 'getWalletInfo') sendResponse_WalletInfo(dappInfo, sendResponse);
+                    //Validate networkType was provided
+                    if (!validateTypes.isStringWithValue(txInfo.networkType)) {
+                        sendTxErrorResponse(errorStatus, ['networkType <string> required but not provided'], rejectedTx, sendResponse);
+                        return
+                    }
+                    
+                    //Get the Lamden Network Object for the network types specified in the txInfo request 
+                    const network = getLamdenNetwork(txInfo.networkType.toLowerCase())
+                    if (!network) {
+                        errors = [`'networkType' <string> '${txInfo.networkType}' is not a valid network type. Valid types are ${LamdenNetworkTypes}.`]
+                        sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse);
+                        return
+                    }
 
-                //Process a transaction request sent from the dApp; same as from the Lamden Wallet App with two differences
-                // 1) For security the txInfo contractName is populated/overwritten by the LamdenWallet as the one that was approved by the user
-                // 2) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
-                // This means that a dApp can only send transactions that were approved by the user in the original connection request
-                if (message.type === 'dAppSendLamdenTransaction'){
-                    const errorStatus = `Unable to process transaction`
-                    const rejectedTx = message.data
-                    if (walletIsLocked){
-                        sendTxErrorResponse(errorStatus, ['Wallet is Locked'], rejectedTx, sendResponse)
-                    }else{
-                        let txInfo = {};
-                        let errors = []
-                        let approvalRequest = false;
-                        
-                        try{
-                            //Make sure the txInfo was a JSON string (for security)
-                            txInfo = JSON.parse(message.data)
-                        } catch (err) {
-                            sendTxErrorResponse(errorStatus, ['Failed to Parse JSON object', err.message], rejectedTx, sendResponse)
-                            return
+                    //Reject transaction attempt if network type has not been approved
+                    if (!dappInfo[txInfo.networkType.toLowerCase()]) {
+                        errors = [`Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`]
+                        sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse)
+                        return
+                    }
+                    
+                    try{
+                        //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
+                        const wallet = getWallet(dappInfo.vk);
+                        //Create a unique ID for this transaction for reference later if needed
+                        txInfo.uid = encryptString(wallet.vk, 'tracking-id')
+                        //Set senderVk to the one assocated with this dapp
+                        txInfo.senderVk = wallet.vk;
+                        //Allow approval requests to be submitted without hardcoding the approved smart contract
+                        if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
+                            approvalRequest = true;
+                        }else{
+                            //Set the contract name to the one approved by the user for the dApp
+                            txInfo.contractName = dappInfo[txInfo.networkType].contractName
                         }
-
-                        //Validate networkType was provided
-                        if (!validateTypes.isStringWithValue(txInfo.networkType)) {
-                            sendTxErrorResponse(errorStatus, ['networkType <string> required but not provided'], rejectedTx, sendResponse);
-                            return
-                        }
-                        
-                        //Get the Lamden Network Object for the network types specified in the txInfo request 
-                        const network = getLamdenNetwork(txInfo.networkType.toLowerCase())
-                        if (!network) {
-                            errors = [`'networkType' <string> '${txInfo.networkType}' is not a valid network type. Valid types are ${LamdenNetworkTypes}.`]
-                            sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse);
-                            return
-                        }
-
-                        //Reject transaction attempt if network type has not been approved
-                        if (!dappInfo[txInfo.networkType.toLowerCase()]) {
-                            errors = [`Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`]
-                            sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse)
-                            return
-                        }
-                        
-                        try{
-                            //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
-                            const wallet = getWallet(dappInfo.vk);
-                            //Create a unique ID for this transaction for reference later if needed
-                            txInfo.uid = encryptString(wallet.vk, 'tracking-id')
-                            //Set senderVk to the one assocated with this dapp
-                            txInfo.senderVk = wallet.vk;
-                            //Allow approval requests to be submitted without hardcoding the approved smart contract
-                            if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
-                                approvalRequest = true;
+                        //Create a Lamden Transaction
+                        const txBuilder = new Lamden.TransactionBuilder(network, txInfo)
+                        //Send dummp response so message tunnel doesn't error
+                        sendResponse("ok")
+                        const info = (({ appName, url, logo  }) => ({ appName, url, logo }))(dappInfo);
+                        const txData = txBuilder.getAllInfo()
+                        if (approvalRequest) {
+                            promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
+                        }else {
+                            if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
+                                sendTx(txBuilder, wallet.sk, dappInfo.url)
                             }else{
-                                //Set the contract name to the one approved by the user for the dApp
-                                txInfo.contractName = dappInfo[txInfo.networkType].contractName
+                                promptApproveTransaction(sender, {txData, wallet, dappInfo: info, network})
                             }
-                            //Create a Lamden Transaction
-                            const txBuilder = new Lamden.TransactionBuilder(network, txInfo)
-                            //Send dummp response so message tunnel doesn't error
-                            sendResponse("ok")
-                            const info = (({ appName, url, logo  }) => ({ appName, url, logo }))(dappInfo);
-                            const txData = txBuilder.getAllInfo()
-                            if (approvalRequest) {
-                                promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
-                            }else {
-                                if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
-                                    sendTx(txBuilder, wallet.sk, dappInfo.url)
-                                }else{
-                                    promptApproveTransaction(sender, {txData, wallet, dappInfo: info, network})
-                                }
-                            }
-
-                        }catch (err){
-                            sendTxErrorResponse(errorStatus, ['Unable to Build Lamden Transaction', err.message], rejectedTx, sendResponse);
                         }
+
+                    }catch (err){
+                        sendTxErrorResponse(errorStatus, ['Unable to Build Lamden Transaction', err.message], rejectedTx, sendResponse);
                     }
                 }
             }

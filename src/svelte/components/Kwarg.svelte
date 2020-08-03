@@ -1,5 +1,5 @@
 <script>
-    import { onMount, afterUpdate } from 'svelte'
+    import { afterUpdate } from 'svelte'
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 

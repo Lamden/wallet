@@ -21,6 +21,7 @@
     export let autofocus = false;
     export let numberMin = "0.00000001"
     export let numberStep = "any"
+    export let disabled = false;
 
     export let thisInput;
 
@@ -52,6 +53,7 @@
             placeholder={placeholder}
             required={required}
             spellcheck={spellcheck}
+            {disabled}
             autofocus={autofocus}  />
     {/if}
     {#if inputType === "number"}
@@ -69,6 +71,7 @@
             step={numberStep}
             placeholder={placeholder}
             required={required}
+            {disabled}
             autofocus={autofocus}  />
     {/if}
     {#if inputType === "textarea"}
@@ -87,6 +90,7 @@
             readonly={readonly}
             required={required}
             spellcheck={spellcheck}
+            {disabled}
             autofocus={autofocus}  />
     {/if}
     {#if inputType === 'text'}
@@ -103,6 +107,7 @@
             placeholder={placeholder}
             required={required}
             spellcheck={spellcheck}
+            {disabled}
             autofocus={autofocus}  />
     {/if}
 </div>

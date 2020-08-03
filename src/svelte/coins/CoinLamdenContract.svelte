@@ -82,6 +82,7 @@
 
     const setArgs = (method) => {
         MethodArgsStore.set(method.arguments);
+        methodName = method.name
         kwargs = [];
     }
 
@@ -168,7 +169,7 @@
 </style>
 
 <div class="send-lamden flex-column" class:hide={currentPage !== 'CoinLamdenContract'}>
-    <h5> {`Make A Lamden Transaction`} </h5>
+    <h2> Make A Lamden Transaction</h2>
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
@@ -216,7 +217,7 @@
                 required={true}
                 on:selected={(e) => setArgs(e.detail.selected.value, contractNameField.value)} />
 
-            <h2>Transaction Arguments</h2>
+            <h3>Transaction Arguments</h3>
             {#if $MethodArgsStore.length > 0}
                 <Kwargs argumentList={$MethodArgsStore} on:newArgValues={handleNewArgValues}/>
             {:else}

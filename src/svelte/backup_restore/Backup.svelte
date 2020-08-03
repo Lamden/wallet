@@ -1,8 +1,8 @@
 <script> 
-    import { onMount, getContext } from 'svelte';
+    import { getContext } from 'svelte';
 
     //Stores
-    import { breadcrumbs, needsBackup, SettingsStore } from '../../js/stores/stores.js';
+    import { needsBackup, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -18,9 +18,6 @@
 	//Context
     const { switchPage } = getContext('app_functions');
 
-	onMount(() => {
-        breadcrumbs.set([{name: 'Backup Wallet', page: {name: ''}}]);
-    });
 
     const dismissWarning = () => {SettingsStore.dismissWarning()}
 
@@ -72,9 +69,9 @@
 
 <div class="backup text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-        <h5 class="heading">
+        <h2 class="heading">
             Backing Up Your Lamden Wallet is Very Important
-        </h5>
+        </h2>
         <div class="subtext text-body2 text-primary-dark">
             All of the information for your Accounts is stored in this browser. 
             We highly recommend creating a KeyStore file so that you can recover 

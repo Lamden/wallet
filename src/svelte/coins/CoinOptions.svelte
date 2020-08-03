@@ -19,7 +19,7 @@
 
 	//Context
     const { getModalData } = getContext('app_functions');
-    const { close, setPage, setSelectedCoin, setMessage } = getContext('coinmodify_functions');
+    const { close, setPage, setSelectedCoin, setMessage, setDappInfo } = getContext('coinmodify_functions');
 
     let selectedWallet;
     let copySuccessful;
@@ -73,12 +73,15 @@
             if (dapp.value.vk === selectedWallet.vk) dAppInfo = {...dapp.value};
         });
         if (!dAppInfo) {
+            setDappInfo(undefined)
             list.unshift({
                 value: undefined,
                 name: "Select from approved dApps",
                 selected: true,
             });
             return list
+        }else{
+            setDappInfo(dAppInfo)
         }
         return []
     }
@@ -169,7 +172,7 @@ p{
 </style>
 
 <div id="coin-options" class="text-primary">
-    <h5> {`${nickname} Options`} </h5>
+    <h2> {`${nickname} Options`} </h2>
     <DropDown
         id={'wallets-dd'}
         items={coinList()} 
