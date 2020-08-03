@@ -5,6 +5,7 @@ import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStrin
 import Lamden from 'lamden-js'
 import Ethereum from './crypto/ethereum'
 import { networkKey } from './stores/stores';
+import { networkController } from './backgroundControllers/back-network.js'
 
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators
@@ -21,7 +22,7 @@ let vault
 let coinStore = [];
 let dappsStore;
 let settingsStore;
-let networksStore;
+let networks = Object.freeze(networkController(Lamden));
 let balancesStore;
 let pendingTxStore;
 
@@ -35,8 +36,6 @@ let lastSentDate = new Date()
 let walletIsLocked = true;
 let updatingBalances = false;
 let checkingTransactions = false;
-let savingTransactions = false;
-const LamdenNetworkTypes = ['mainnet','testnet','mockchain']
 
 /********************************************************************
  *  Storage handlers to persist the Lamden Wallet in chrome.storage.local
@@ -48,7 +47,6 @@ chrome.storage.local.get(
         "coins": [],
         "balances":{},
         "pendingTxs": [],
-        "networks":{},
         "dapps":{},
         "settings": {}
     },
@@ -58,7 +56,6 @@ chrome.storage.local.get(
         if (vault === "" && validateTypes.isStringWithValue(hash)) coinStore = getValue.coins;
         firstRun = hash === "" && vault === "" ? true : false;
         balancesStore = getValue.balances;
-        networksStore = getValue.networks;
         settingsStore = getValue.settings;
         pendingTxStore = getValue.pendingTxs;
         dappsStore = getValue.dapps;
@@ -82,7 +79,6 @@ chrome.storage.onChanged.addListener(function(changes) {
         if (key === 'vault') vault = changes[key].newValue;
         if (key === 'settings') settingsStore = changes[key].newValue;
         if (key === 'dapps') dappsStore = changes[key].newValue;
-        if (key === 'networks') networksStore = changes[key].newValue;
     }
 });
 
@@ -125,14 +121,6 @@ const validatePasswordFromVault = (testPassword) => {
         return  validateTypes.isObject(decryptObject(testPassword, vault))
     } catch (e) {}
     return false
-}
-
-/***********************************************************************
- * Settings Store Functions
- ***********************************************************************/
-const setDissmissFlag = (value) => {
-    settingsStore.dismissWarning = value
-    chrome.storage.local.set({"settings": settingsStore});
 }
 
 /***********************************************************************
@@ -234,9 +222,9 @@ const balancesStoreUpdateAll = (networkInfo) => {
 const balancesStoreUpdateVk = async (vk, networkInfo, watchOnly) => {
     let network;
     if (networkInfo){
-        network = new Lamden.Network(networkInfo)
+        network = networks.getNetwork(networkInfo)
     } else {
-        network = new Lamden.Network(getCurrentNetwork())
+        network = networks.getCurrentNetwork()
     }
     let response = await network.API.getCurrencyBalance(vk)
     let newBalance = parseFloat(parseFloat(response).toFixed(8))
@@ -278,9 +266,9 @@ const setBalanceStore = (newValue) => {
 const balancesStoreClearNetwork = (networkInfo) => {
     let network;
     if (networkInfo){
-        network = new Lamden.Network(networkInfo)
+        network = networks.getNetwork(networkInfo)
     } else {
-        network = new Lamden.Network(getCurrentNetwork())
+        network = networks.getCurrentNetwork()
     }
     let netKey = networkKey(network)
     balancesStore[netKey] = {}
@@ -299,7 +287,7 @@ const getWallet = (vk) => {
 }
 
 const getSanatizedWallets = () => {
-    let network = new Lamden.Network(getCurrentNetwork())
+    let network = networks.getCurrentNetwork()
     const netKey = networkKey(network)
     return coinStore.map(coin => {
         if (!validateTypes.isObjectWithKeys(balancesStore[netKey][coin.vk])) return null
@@ -448,38 +436,6 @@ const wipeCoinsStorage = () => {
 const refreshCoinStore = () => {
     setVaultStorage();
     setCoinsStorage();
-}
-
-
-
-/***********************************************************************
- * NetworkStore / API Functions
- ***********************************************************************/
-const getCurrentNetwork = () => {
-    const networks = [...networksStore.lamden, ...networksStore.user]
-    const foundNetwork = networks.find(network => networksStore.current === networkKey(network))
-    return foundNetwork
-}
-
-const getLamdenNetwork = (networkType) => {
-    const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase())
-    if (!foundNetwork) return false;
-    return foundNetwork;
-}
-
-const getAllNetworks = () => {
-    return [...networksStore.user, ...networksStore.lamden]
-}
-
-const isAcceptedNetwork = (networkType) => {
-    return LamdenNetworkTypes.includes(networkType)
-}
-
-const contractExists = (networkType, contractName) => {
-    const networkInfo = getLamdenNetwork(networkType)
-    if (!networkInfo) return false;
-    const network = new Lamden.Network(networkInfo)
-    return network.API.contractExists(contractName)
 }
 
 /***********************************************************************
@@ -634,8 +590,8 @@ const validateConnectionMessage = (data) => {
     }
 
     if (validateTypes.isStringWithValue(messageData.networkType)){
-        if (!isAcceptedNetwork(messageData.networkType)){
-            errors.push(`'networkType' <string> '${messageData.networkType}' is not a valid network type. Valid Types are ${LamdenNetworkTypes}.`)
+        if (!networks.isAcceptedNetwork(messageData.networkType)){
+            errors.push(`'networkType' <string> '${messageData.networkType}' is not a valid network type. Valid Types are ${networks.LamdenNetworkTypes}.`)
         }
     }else{
         errors.push("'networkType' <string> required to process connect request")
@@ -687,7 +643,7 @@ const sendResponse_WalletInfo = (dappInfo = undefined, sendResponse) => {
         
         let approvals = {}
         Object.keys(dappInfo).forEach(key => {
-            if(LamdenNetworkTypes.includes(key)) approvals[key] = {
+            if(networks.LamdenNetworkTypes.includes(key)) approvals[key] = {
                 contractName: dappInfo[key].contractName,
                 trustedApp: dappInfo[key].trustedApp
             }
@@ -699,14 +655,14 @@ const sendResponse_WalletInfo = (dappInfo = undefined, sendResponse) => {
 }
 
 const promptApproveDapp = async (sender, messageData) => {
-    let exists = await contractExists(messageData.networkType, messageData.contractName)
+    let exists = await networks.contractExists(messageData.networkType, messageData.contractName)
     if (!exists) {
         const errors = [`contractName: '${messageData.contractName}' does not exists on '${messageData.networkType}' network.`]
         sendMessageToTab(sender.origin, 'sendErrorsToTab', {errors})
     }else{
         const keypair = Lamden.wallet.new_wallet()
         const windowId = hashStringValue(keypair.vk)
-        messageData.network = getCurrentNetwork()
+        messageData.network = networks.getCurrentNetwork()
         messageData.accounts = getSanatizedWallets()
         txToConfirm[windowId] = {
             type: 'ApproveConnection',
@@ -759,7 +715,7 @@ const approveDapp = (sender, approveInfo) => {
         }
         if (newWallet){
             DappStoreAddNew(confirmData.url, newWallet, messageData, approveInfo.trustedApp)
-            let network = new Lamden.Network(confirmData.messageData.network)
+            let network = networks.getNetwork(confirmData.messageData.network)
             if (approveInfo.fundingInfo){
                 sendCurrencyTransaction( approveInfo.fundingInfo.account.vk, newWallet, approveInfo.fundingInfo.amount, network)
             }
@@ -1088,10 +1044,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         if (!wallet) sendResponse({status: `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`});
                         try{
                             txInfo.uid = encryptString(wallet.vk, 'tracking-id')
-                            let txBuilder = new Lamden.TransactionBuilder(getCurrentNetwork(), txInfo)
+                            let txBuilder = new Lamden.TransactionBuilder(networks.getCurrentNetwork(), txInfo)
+                            console.log(txBuilder)
                             sendResponse({status: "Transaction Sent, Awaiting Response"})
                             sendTx(txBuilder, wallet.sk, sender.origin)
                         }catch (err){
+                            console.log(err)
                             sendResponse({status: `Error: Failed to create Tx - ${err}`})
                         }
                     }else{
@@ -1209,9 +1167,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
                     
                     //Get the Lamden Network Object for the network types specified in the txInfo request 
-                    const network = getLamdenNetwork(txInfo.networkType.toLowerCase())
+                    const network = networks.getLamdenNetwork(txInfo.networkType.toLowerCase())
                     if (!network) {
-                        errors = [`'networkType' <string> '${txInfo.networkType}' is not a valid network type. Valid types are ${LamdenNetworkTypes}.`]
+                        errors = [`'networkType' <string> '${txInfo.networkType}' is not a valid network type. Valid types are ${networks.LamdenNetworkTypes}.`]
                         sendTxErrorResponse(errorStatus, errors, rejectedTx, sendResponse);
                         return
                     }

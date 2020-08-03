@@ -166,7 +166,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             connection.networkType = 'wrongNet'
             let response = await helpers.sendConnectRequest(driver, connection)
             assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'networkType' <string> 'wrongNet' is not a valid network type. Valid Types are mainnet,testnet,mockchain."), true);
+            assert.equal(response.errors.includes("'networkType' <string> 'wrongNet' is not a valid network type."), true);
         });
         it('Rejects missing logo', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)

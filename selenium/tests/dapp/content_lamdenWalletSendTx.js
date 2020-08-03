@@ -62,6 +62,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1, false, funding)
             let response = await helpers.getWalletResponse(driver)
+            console.log(response)
             connectionInfo = response
             assert.equal(response.errors, null);
             await helpers.sleep(2000, false)
