@@ -55,7 +55,7 @@
 }
 
 .warning{
-    color: orange
+    color: var(--font-warning);
 }
 
 .warning-icon{

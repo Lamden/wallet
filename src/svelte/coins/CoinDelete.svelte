@@ -86,7 +86,7 @@ form{
     width: 260px;
 }
 .warning{
-    color: orange
+    color: var(--font-warning);
 }
 
 .dapp-warning{

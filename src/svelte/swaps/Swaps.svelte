@@ -45,6 +45,7 @@
 
 .subtext{
     max-width: 601px;
+    line-height: 1.4;
 }
 </style>
 
@@ -53,7 +54,7 @@
         <h2 class="heading">
             {`Swap your Ethereum ${$currentNetwork.currencySymbol} Tokens for Lamden ${$currentNetwork.currencySymbol}`}
         </h2>
-        <div class="subtext text-body2 text-primary-dark">
+        <div class="subtext text-body1 text-primary-dark">
             {`
                 During this process you will give Lamden access to spend your Ethereum tokens.  
                 Lamden will burn them and send you the equivalent number of Lamden Tokens.

@@ -29,7 +29,7 @@
 
 <div class="history text-primary">
     <div class="flex-row">
-        <div><h4>Pending</h4></div>
+        <h3>Pending</h3>
         <div>{@html refresh}</div>
     </div>
     

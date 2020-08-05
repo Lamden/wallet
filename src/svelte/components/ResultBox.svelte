@@ -24,20 +24,20 @@
 </script>
 
 <style>
+h2{
+    margin: 1rem 0 0rem;
+}
 .results-box{
     align-items: center;   
     max-width: 800px; 
     min-width: 600px;
 }
 
-.error-box{
-    align-items: center;
-}
-
 .icon{
     margin-right: 10px;
     width: 20px;
-    height: 20px;
+    position: relative;
+    top: 5px;
 }
 
 .buttons{
@@ -45,11 +45,14 @@
 }
 
 .message{
-    align-items: center;
     margin: 2rem 0 1rem;
 }
 p{
     margin: 0;
+}
+p#results-message{
+    font-size: 24px;
+    font-weight: 300;
 }
 
 </style>
@@ -57,7 +60,7 @@ p{
 <div class="results-box flex-column">
     <h2 id={'results-title'}>{result.title}</h2> 
 
-    <div id={'results-subtitle'} class="text-body1">{result.subtitle}</div>
+    <h3 id={'results-subtitle'} >{result.subtitle}</h3>
 
     <div class="message flex-row">
         <div class="icon">{@html icon}</div>
@@ -67,7 +70,7 @@ p{
         <div class="error-info text-body1 flex-column">
             <div class="flex-column">
                 {#each errorInfo as error}
-                    <div class="error">{error}</div>  
+                    <p class="error">{error}</p>  
                 {/each}
             </div>
         </div>

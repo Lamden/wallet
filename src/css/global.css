@@ -20,6 +20,7 @@ body{
     --font-primary-light: #ffffff99; 
     --font-secondary: #D1D1D1;
     --font-accent: #4FB8FF;
+    --font-warning: orange;
     --bg-color: #151515; 
     --bg-color-grey: #303030;
     --bg-menu-grey: #262626a3;

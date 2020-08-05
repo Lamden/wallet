@@ -92,16 +92,6 @@
     justify-content: center;
     align-items: center;
 }
-
-.warning{
-    color: orange
-}
-
-.warning-icon{
-    margin-right: 8px;
-    position: relative;
-    top: -1px;
-}
 .disabled{
     background: var(--bg-color-grey);
 }

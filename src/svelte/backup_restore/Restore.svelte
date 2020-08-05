@@ -42,6 +42,7 @@
 
 .subtext{
     max-width: 601px;
+    line-height: 1.4;
 }
 
 
@@ -52,7 +53,7 @@
         <h2 class="heading">
             Restoring Accounts to Your Lamden Wallet is Quick & Easy
         </h2>
-        <div class="subtext text-body2 text-primary-dark">
+        <div class="subtext text-body1 text-primary-dark">
             It only takes a few minutes, please have your original Keystore file ready,
             and be prepared to provide the password for it.
         </div>
