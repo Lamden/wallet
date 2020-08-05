@@ -14,7 +14,6 @@ chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 describe('Content Script - Testing Dapp SendTx API', function () {
     var driver;
     var httpServer
-    var keyHash;
     var connectionInfo;
 
     before(async function() {
@@ -62,7 +61,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1, false, funding)
             let response = await helpers.getWalletResponse(driver)
-            console.log(response)
             connectionInfo = response
             assert.equal(response.errors, null);
             await helpers.sleep(2000, false)
@@ -72,55 +70,43 @@ describe('Content Script - Testing Dapp SendTx API', function () {
         });
         it('Reject tx with missing networkType', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.networkType = null 
-            transaction.kwargs.key_value = keyHash
             let response = await helpers.sendTx(driver, transaction, true)
+            console.log(response)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0], "networkType <string> required but not provided");
-            assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
         });
         it('Reject tx with invalid Lamden networkType', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.networkType = "badNetworkType"
-            transaction.kwargs.key_value = keyHash
             let response = await helpers.sendTx(driver, transaction, true)
+            console.log(response)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0].includes("'badNetworkType' is not a valid network type"), true);
-            assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
         });
         it('Reject tx attempt on unapproved Lamden Network', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.networkType = "mockchain"
-            transaction.kwargs.key_value = keyHash
-
             let response = await helpers.sendTx(driver, transaction, true)
+            console.log(response)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0].includes("'networkType' <string> 'mockchain' is not a valid network type."), true);
-            assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
         });
         it('Forwards error from lamden.js if issues occur building transaction', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
             transaction.methodName = 1000
-            transaction.kwargs.key_value = keyHash
             let response = await helpers.sendTx(driver, transaction, true)
 
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 2);
             assert.equal(response.data.errors[0].includes("Unable to Build Lamden Transaction"), true);
             assert.equal(response.data.errors[1].includes("Method Required (Type: String)"), true);
-            assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
         });
         it('POPUP: Reports the user denying the transaction', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
-            transaction.kwargs.key_value = keyHash
             await helpers.sendTx(driver, transaction, false)
             await helpers.sleep(2000, true)
             await helpers.switchWindow(driver, 2)
@@ -132,25 +118,19 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.status, "Transaction Cancelled");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0], "User closed Popup window");
-            assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
         });
         it('Rejects tx if wallet is locked', async function() {
             await helpers.lockWallet(driver, 1)
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
-            transaction.kwargs.key_value = keyHash
             let response = await helpers.sendTx(driver, transaction, true)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0], "Wallet is Locked");
-            assert.equal(JSON.parse(response.data.rejected).kwargs.key_value, keyHash);
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)         
         });
         it('sends a transactions successfully after popup approval', async function() {
             this.timeout(10000);
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
-            keyHash = helpers.hashStringValue(new Date().toDateString())
-            transaction.kwargs.key_value = keyHash
             await helpers.sendTx(driver, transaction, false)
             await helpers.approveTxPopup(driver, 2, 1)
             let response = await helpers.getTxResult(driver)

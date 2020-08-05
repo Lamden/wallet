@@ -269,7 +269,7 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
         return await httpServer.close()
     }
     await stop().catch((err) => reject(err))
-    driver && driver.quit();
+    //driver && driver.quit();
     await sleep(1000, true)
     resolve()
 })}

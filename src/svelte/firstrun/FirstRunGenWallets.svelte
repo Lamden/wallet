@@ -42,7 +42,8 @@
     }
 
     const createStartingWallet = (resolve) => {
-        chrome.runtime.sendMessage({type: 'coinStoreAddNewLamden', data: 'My Lamden Account'}, (result) => {
+        chrome.runtime.sendMessage({type: 'accountsAddNewLamden', data: 'My Lamden Account'}, (result) => {
+            console.log(result)
             if (result.error){
                 message = result.error
             }else{

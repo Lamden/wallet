@@ -329,30 +329,5 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.wallets.length, 1);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
         });
-        it('POPUP: Can Re-approve connection', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.contractName = "submission" 
-            connection.reapprove = true;
-            await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
-            let response = await helpers.getWalletResponse(driver)
-            assert.equal(response.errors, null);
-            assert.equal(response.wallets[0], connectionInfo.wallets[0]);
-            assert.equal(response.approvals['testnet'].contractName, 'submission');
-            connectionInfo = response;
-        });
-        it('POPUP: Can Re-approve connection and create a new keypair', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.contractName = "currency" 
-            connection.reapprove = true;
-            connection.newKeypair = true;
-            await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
-            let response = await helpers.getWalletResponse(driver)
-            assert.equal(response.errors, null);
-            assert.equal(response.wallets[0] === connectionInfo.wallets[0], false);
-            assert.equal(response.approvals['testnet'].contractName, connection.contractName);
-            connectionInfo = response;
-        });
     })
 })

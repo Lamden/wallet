@@ -22,10 +22,11 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'decryptStore'}, (coinStore) => {
+            console.log(coinStore)
             if (typeof coinStore === 'undefined' || chrome.runtime.lastError) {
                 throw new Error('unable to decrypt keystore')
             } else {
-                if (typeof coinStore.error !== 'undefined') errorMsg = coinStore.error
+                if (coinStore === false) errorMsg = "Incorrect Password"
                 else {
                     coins = [...coinStore];
                     steps.update(current => {

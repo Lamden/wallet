@@ -62,15 +62,12 @@
 
 
 	onMount(() => {
-        getBalance()
+        handleRefresh()
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
 
     });
 
-    const getBalance = async () => {
-        chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin.vk})
-    }
 
     const getDappInfo = (dappStore) => {
         return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
@@ -102,10 +99,12 @@
     }
 
     const handleRefresh = () => {
-		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
+        if (refreshing) return
+		chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin})
 		refreshing = true
 		setTimeout(() => {
-			refreshing = false
+            refreshing = false
+            balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
 		}, 2000);
 	}
 </script>

@@ -29,7 +29,7 @@
                 name: `${account.nickname} - ${account.balance.toLocaleString()} ${confirmData.messageData.network.currencySymbol}`,
                 selected: false
             }
-        }).filter(account => account.value.balance > 0)]
+        }).filter(account => account.value.balance > 0 || account.sk !== 'watchOnly')]
         if (filteredAccounts.length > 0) filteredAccounts[0].selected = true;
         return [...filteredAccounts]
     }

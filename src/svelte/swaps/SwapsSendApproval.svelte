@@ -38,30 +38,20 @@
         })
     })
 
-    onDestroy(() =>{
-        chrome.runtime.onMessage.removeListener(tokenApprovalSent)
-    })
-
     const sendTokenApproval = () => {
         if (!sent){
-            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, () => {
-                sending = true
-                errorMsg = ''
+            sending = true
+            errorMsg = ''
+            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, (response) => {
+                sending = false
+                if (typeof response.error === 'undefined') {
+                    metamaskTxResponse = response
+                } else {
+                    errorMsg = response.error
+                }
             })
         }
     }
-
-    const tokenApprovalSent = (message, sender, sendResponse) => {
-		if (message.type === 'tokenApprovalSent') {
-            sending = false
-            if (typeof message.data.error === 'undefined') {
-                metamaskTxResponse = message.data
-            } else {
-                errorMsg = message.data.error
-            }
-        }
-    }
-    chrome.runtime.onMessage.addListener(tokenApprovalSent)
 
 </script>
 

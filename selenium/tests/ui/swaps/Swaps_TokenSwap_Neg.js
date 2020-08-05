@@ -19,7 +19,7 @@ describe('Token Swap Negative Tests', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    after(() => driver && driver.quit());
+    //after(() => driver && driver.quit());
 
     it('Setup Metamask', async function() {
         await helpers.sleep(500)

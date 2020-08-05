@@ -1,30 +1,42 @@
-export const networkController = (LamdenJs) => {
-    const Lamden = LamdenJs;
+export const networkController = (utils) => {
     let networksStore = {};
     const LamdenNetworkTypes = ['mainnet','testnet']
+
+    chrome.storage.local.get({"networks":{}},function(getValue) {networksStore = getValue.networks;})
+    chrome.storage.onChanged.addListener(function(changes) {
+        for (let key in changes) {
+            if (key === 'networks') networksStore = changes[key].newValue;
+        }
+    });
 
     const networkKey = (networkObj) => {
         return `${networkObj.name}|${networkObj.type}|${networkObj.lamden ? 'lamden': 'user'}`
     }
 
-    const getAllNetworks = () => {
+    const addNetworkKey = (networkObj) => {
+        networkObj.networkKey = networkKey(networkObj)
+        return networkObj
+    }
+
+    const getAll = () => {
         return [...networksStore.user, ...networksStore.lamden]
     }
 
-    const getCurrentNetwork = () => {
+    const getCurrent = () => {
         const networks = [...networksStore.lamden, ...networksStore.user]
         const foundNetwork = networks.find(network => networksStore.current === networkKey(network))
-        return new Lamden.Network(foundNetwork) 
+        return addNetworkKey(new utils.Lamden.Network(foundNetwork))
     }
 
     const getNetwork = (networkInfo) => {
-        return new Lamden.Network(networkInfo) 
+        let network = new utils.Lamden.Network(networkInfo)
+        return addNetworkKey(network)
     }
 
     const getLamdenNetwork = (networkType) => {
         const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase())
         if (!foundNetwork) return false;
-        return foundNetwork;
+        return addNetworkKey(foundNetwork)
     }
 
     const isAcceptedNetwork = (networkType) => {
@@ -34,22 +46,15 @@ export const networkController = (LamdenJs) => {
     const contractExists = (networkType, contractName) => {
         const networkInfo = getLamdenNetwork(networkType)
         if (!networkInfo) return false;
-        const network = new Lamden.Network(networkInfo)
+        const network = new utils.Lamden.Network(networkInfo)
         return network.API.contractExists(contractName)
     }
-
-    chrome.storage.local.get({"networks":{}},function(getValue) {networksStore = getValue.networks;})
-    chrome.storage.onChanged.addListener(function(changes) {
-        for (let key in changes) {
-            if (key === 'networks') networksStore = changes[key].newValue;
-        }
-    });
     return {
-        getAllNetworks,
-        getCurrentNetwork,
-        getNetwork: (networkInfo) => getNetwork(networkInfo),
-        getLamdenNetwork: (networkType) => getLamdenNetwork(networkType),
-        isAcceptedNetwork: (networkType) => isAcceptedNetwork(networkType),
+        getAll,
+        getCurrent,
+        getNetwork,
+        getLamdenNetwork,
+        isAcceptedNetwork,
         contractExists: (networkType, contractName) => contractExists(networkType, contractName),
         LamdenNetworkTypes
     }

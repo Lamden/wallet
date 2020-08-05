@@ -39,38 +39,28 @@
         })
     })
 
-    onDestroy(() =>{
-        chrome.runtime.onMessage.removeListener(metamaskConnected)
-    })
-
     const nextPage = () => {
         setSwapInfo(metamaskInfo)
         changeStep(2)
     }
 
     const connectMetaMask = () => {
-        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, () => {
-            errorMsg = ''
-            checking = true
-            checkForResponses.clear();
-            checkForResponses.start();
-        })
-    }
-
-    const metamaskConnected = (message, sender, sendResponse) => {
-		if (message.type === 'metamaskConnected') {
-            let address = message.data.address
+        errorMsg = ''
+        checking = true
+        checkForResponses.clear();
+        checkForResponses.start();
+        chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, (response) => {
+            console.log(response)
+            let address = response.address
             if (typeof address.error === 'undefined'){
-                metamaskInfo = message.data
+                metamaskInfo = response
                 errorMsg = ''
             } else {
                 errorMsg = address.error
             }
             checking = false
-        }
+        })
     }
-
-    chrome.runtime.onMessage.addListener(metamaskConnected)
 
     const responseChecker = () => {
         let timerId

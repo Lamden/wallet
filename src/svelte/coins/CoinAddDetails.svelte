@@ -96,7 +96,7 @@
             'sk': keyPair.sk
         }
         if (addType === 3) coinInfo.sk = 'watchOnly'
-        chrome.runtime.sendMessage({type: 'walletAddOne', data: coinInfo}, (result) => {
+        chrome.runtime.sendMessage({type: 'accountsAddOne', data: coinInfo}, (result) => {
             if (result.added){
                 returnMessage = {type:'success', text: result.reason}
                 //mintTestCoins(coinInfo)

@@ -33,29 +33,20 @@
         })
         startChecking();
     })
-    
-    onDestroy(() =>{
-        chrome.runtime.onMessage.removeListener(ethTxStatus)
-    })
 
     const checkEthTxStatus = () => {
         if (!success){
             checking = true
-            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash() }})
-        }
-    }
-
-    const ethTxStatus = (message, sender, sendResponse) => {
-		if (message.type === 'ethTxStatus') {
-            if (typeof message.data.status !== 'undefined'){
-                if (message.data.status){
-                    success = true;
+            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash() }}, (response) => {
+                if (typeof response.status !== 'undefined'){
+                    if (response.status){
+                        success = true;
+                    }
                 }
-            }
-            checking = false
+                checking = false
+            })
         }
     }
-    chrome.runtime.onMessage.addListener(ethTxStatus)
 
     const nextPage = () => {
         changeStep(4)

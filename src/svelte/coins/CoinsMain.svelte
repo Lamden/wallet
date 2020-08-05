@@ -37,6 +37,7 @@
 	});
 
 	const handleRefresh = () => {
+		if (refreshing) return
 		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
 		refreshing = true
 		setTimeout(() => {

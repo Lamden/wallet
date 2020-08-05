@@ -139,8 +139,8 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await helpers.sleep(10000)
         await driver.findElement(By.id('refresh-icon')).click()
         await helpers.sleep(5000)
-        await driver.findElement(By.className('amount flex-column')).getAttribute('innerText').then(text => {
-            assert.equal(text, `${swapInfo.swapAmount} dTAU`);
+        await driver.findElement(By.className('text-huge')).getAttribute('innerText').then(text => {
+            assert.equal(text, `${swapInfo.swapAmount}`);
         })
     });
 })

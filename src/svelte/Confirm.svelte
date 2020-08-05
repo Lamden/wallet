@@ -33,6 +33,7 @@
 
 	onMount(() => {		
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
+			console.log(response)
 			if (response) confirmData = response
 		})
 

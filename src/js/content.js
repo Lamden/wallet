@@ -8,6 +8,7 @@ const isJSON = (json) => {
 
 const getWalletInfo = () => {  
     chrome.runtime.sendMessage({type: 'getWalletInfo'}, (response) => {
+        console.log(response)
         if(!chrome.runtime.lastError || response !== 'ok'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
         }
@@ -17,6 +18,7 @@ document.addEventListener('lamdenWalletGetInfo', () => getWalletInfo());
 
 const lamdenWalletConnect = (detail) => {  
     chrome.runtime.sendMessage({type: 'lamdenWalletConnect', data: detail}, (response) => {
+        console.log(response)
         if(!chrome.runtime.lastError && response !== 'ok'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
         }
@@ -47,6 +49,7 @@ document.addEventListener('lamdenWalletSendTx', (event) => {
 
 const lamdenWalletSendTx = (detail) => {  
     chrome.runtime.sendMessage({type: 'dAppSendLamdenTransaction', data: detail}, (response) => {
+        console.log(response)
         if (chrome.runtime.lastError) return
         if(response !== 'ok'){
             returnTxStatusToPage(response)
@@ -65,6 +68,7 @@ const returnTxStatusToPage = (txResult) => {
             txResult.status = txResult.data.status
         }
     }
+    console.log(txResult)
     document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: txResult}));
 }
 

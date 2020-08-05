@@ -49,7 +49,8 @@
 
     const addKeys = (resolve) => {
         let checkedKeys = keys.keyList.filter(key => key.checked)
-        chrome.runtime.sendMessage({type: 'walletAddMany', data: checkedKeys}, (result) => {
+        chrome.runtime.sendMessage({type: 'accountsAddMany', data: checkedKeys}, (result) => {
+            console.log(result)
             if (!result.error)keys.keyList = result
             else keys.error = result.error
             done = true;

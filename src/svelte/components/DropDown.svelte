@@ -12,11 +12,13 @@
     export let items = [];
     export let styles = '';
     export let width = '100%';
+    export let maxWidth = 'uset';
     export let margin = 'unset'
     export let innerHeight = 'unset'
     export let classes = '';
     export let required = false;
     export let sideBox = false;
+    export let boxHeight = 242;
 
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
@@ -136,6 +138,7 @@ label{
     right: 0;
     margin-top: -1px;
     z-index: 99;
+    overflow-y: auto;
 }
 
 .select-hide {
@@ -154,7 +157,7 @@ label{
 
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
-<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; margin:${margin}`}>
+<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; margin:${margin}; max-width: ${maxWidth}px;`}>
     <label style={`background: ${backgroundColor || 'var(--bg-color)'};`}>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}
@@ -171,7 +174,7 @@ label{
              >
             {selectElm.options.length > 0 ? displayItems[selectElm.selectedIndex].name : defaultText}
         </div>
-        <div class="select-items" class:select-hide={hideBox}>
+        <div class="select-items" class:select-hide={hideBox} style={`height: ${boxHeight}px`}>
             {#each displayItems as item, index }
                 <div class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>

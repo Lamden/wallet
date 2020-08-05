@@ -33,7 +33,7 @@
 
     const saveNickName = () => {
         let newNickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
-        chrome.runtime.sendMessage({type: 'changeCoinNickname', data: {coinInfo: coin, newNickname}}, () => {
+        chrome.runtime.sendMessage({type: 'changeCoinNickname', data: {accountInfo: coin, newNickname}}, () => {
             sendMessage()
             setPage(6);
         })
