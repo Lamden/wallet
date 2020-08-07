@@ -7,7 +7,7 @@
 
     //Image
     import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
-    import lamdenLogoNew from '../../img/coin_logos/lamden_logo_new.svg'
+    import lamdenLogoNew from '../../img/coin_logos/lamden_logo_white.svg'
     import errorCircle from '../../img/menu_icons/icon_error-circle.svg'
     import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
 

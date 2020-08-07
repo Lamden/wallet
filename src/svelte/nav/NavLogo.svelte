@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     //Images
-    import lamden_logo from '../../img/nav/lamden_logo_new.svg';
+    import lamden_logo from '../../img/coin_logos/lamden_logo_white.svg';
     import lamden_words from '../../img/nav/lamden_words.svg';
 
 	//Context

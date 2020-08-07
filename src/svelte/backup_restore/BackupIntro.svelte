@@ -54,7 +54,7 @@ a{
                     classes={'button__solid'} 
                     margin="0 0 1rem"
                     name="Back" 
-                    click={() => appHome()} />  
+                    click={() => changeStep(0)} />  
             <a  class="text-caption text-secondary" 
                 href="https://www.lamden.io" 
                 target="_blank" 

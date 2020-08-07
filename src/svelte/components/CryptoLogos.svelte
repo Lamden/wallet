@@ -1,6 +1,6 @@
 <script>
     //Images
-    import TAU from '../../img/coin_logos/lamden_logo_new.svg';
+    import TAU from '../../img/coin_logos/lamden_logo_white.svg';
     import ETH from '../../img/coin_logos/ethereum.svg';
 
     //Props

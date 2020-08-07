@@ -1,4 +1,7 @@
 <script>
+	import { fly } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
+    
     //Components
     import { MenuBox }  from '../Router.svelte'
     
@@ -58,7 +61,7 @@
 
 </style>
 
-<div class="menus flex-column text-primary">
+<div class="menus flex-column text-primary" in:fly="{{delay: 0, duration: 500, x: -50, y: 0, opacity: 0.0, easing: quintOut}}">
     {#each menus as menu}
         <MenuBox heading={menu.heading} menuItems={menu.items} />
     {/each}

@@ -13,7 +13,7 @@
     import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
     import arrowRight2Color from '../../img/menu_icons/icon_arrow-right-2color.svg'
     import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
-    import lamdenLogoNew from '../../img/coin_logos/lamden_logo_new.svg'
+    import lamdenLogoNew from '../../img/coin_logos/lamden_logo_white.svg'
     
 
     //Context
