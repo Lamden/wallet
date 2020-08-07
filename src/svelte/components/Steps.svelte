@@ -16,11 +16,12 @@
 
     //Props
     export let back;
+    export let hideBack;
 
     $: noSteps = $steps.stepList.length === 0;
     
     const goBack = () => {
-        changeStep(-1)
+        changeStep(back)
     }
 
 </script>
@@ -59,11 +60,14 @@
     display: none;
 }
 </style>
+
 <div class="flex-row steps" class:hide={noSteps}>
-    <div class="flex-row back-box" class:hide={$steps.currentStep >= $steps.stepList.length } on:click={() => goBack()}>
-        <div class="back-arrow">{@html chevronRight}</div>
-        <div class="back-button text-button">{'BACK'}</div>
-    </div>
+    {#if hideBack}
+        <div class="flex-row back-box" class:hide={$steps.currentStep >= $steps.stepList.length } on:click={() => goBack()}>
+            <div class="back-arrow">{@html chevronRight}</div>
+            <div class="back-button text-button">{'BACK'}</div>
+        </div>
+    {/if}
     {#each $steps.stepList as stepInfo, index}
         <Step {stepInfo} first={index === 0} last={(index + 1) === $steps.stepList.length } />
     {/each}

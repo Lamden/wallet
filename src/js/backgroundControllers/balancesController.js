@@ -39,6 +39,7 @@ export const balancesController = (utils) => {
             accountsList.forEach((account) => {
                 getUpdate(account, network)
                 .then((updated) => {
+                    console.log(updated)
                     if (updated) somethingUpdated = true;
                     accountsProcessed = accountsProcessed + 1
                     if (accountsProcessed >= accountsToProcess){

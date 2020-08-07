@@ -56,7 +56,7 @@
 <style>
 form{
     width: 260px;
-    margin: 0 auto;
+    margin: 1rem auto;
 }
 .buttons{
     align-items: center;

@@ -106,7 +106,7 @@ form{
     <div class="content text-primary">
         <div class="lockscreen">
             <h6 class="heading">Sign In</h6>
-            <div class="text-box text-body1">  
+            <div class="flow-text-box text-body1">  
                 Access your Lamden Wallet.
             </div>
         

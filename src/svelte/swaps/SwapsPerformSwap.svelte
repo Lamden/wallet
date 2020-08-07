@@ -142,7 +142,7 @@
 </script>
 
 <style>
-.content-right{
+.flow-content-right{
     justify-content: flex-start;
 }
 .loading-column{
@@ -170,7 +170,7 @@
 }
 .flag{
     width: 150px;
-    margin: 2rem auto;
+    margin: 0 auto;
 }
 .swap-deatils > div {
     align-items: center;
@@ -203,6 +203,9 @@ span.info-title{
 .outside-link{
     font-weight: 300;
 }
+h3{
+    color: var(--font-warning);
+}
 @media (min-width: 1024px) {
     .swap-details{
         flex-direction: row;
@@ -218,15 +221,15 @@ span.info-title{
 }
 </style>
 
-<div class="flex-row swaps-intro">
-    <div class="flex-column content-left">
+<div class="flex-row flow-page">
+    <div class="flex-column flow-content-left">
         <h6>Swapping</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <div class="flow-text-box text-body1 text-primary">
             {`Swapping Ethereum ${$currentNetwork.currencySymbol} for Lamden ${$currentNetwork.currencySymbol}`}
         </div>
         {#if !success && errorMsg === ''}
-            <div class="text-box text-body1 text-red">
+            <div class="flow-text-box text-body1 text-red">
                 {`DO NOT CLOSE THIS PAGE`}
             </div>
         {/if}
@@ -243,7 +246,7 @@ span.info-title{
                     click={() => switchPage('CoinsMain')} />  
         </div>
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column flow-content-right">
         {#if success}
             <h2 class="text-green" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
         {/if}

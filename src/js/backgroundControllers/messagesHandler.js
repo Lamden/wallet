@@ -79,7 +79,7 @@ export const messagesHandler = (masterController) => {
                     //Create a keystore file that is encrypted with a new password, decrypting all sk's first
                     if (message.type === 'backupCoinstore') sendResponse(masterController.accounts.createKeystore(message.data))
                     //Decrypt all keys, for use when user wants to view their secret keys in the UI
-                    if (message.type === 'decryptStore') sendResponse(masterController.accounts.decryptKeys())
+                    if (message.type === 'decryptStore') sendResponse(masterController.accounts.decryptKeys(message.data))
                     //Add a Lamnden Coin to the coinStore
                     if (message.type === 'accountsAddNewLamden') sendResponse(masterController.accounts.addNewLamdenAccount(message.data))
                     //Add a coin just for watching

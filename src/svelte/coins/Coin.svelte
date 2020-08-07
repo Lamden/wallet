@@ -21,7 +21,7 @@
     //Context
     const { switchPage } = getContext('app_functions');
     
-    $: watching = BalancesStore.isWatchOnly($currentNetwork, coin.vk)
+    $: watching = coin.sk === "watchOnly"
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
     $: balanceStr = balance ? balance.toLocaleString('en') : '0'
     $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
@@ -32,9 +32,9 @@
 
     afterUpdate(() => {
         balance = BalancesStore.getBalance($currentNetwork, coin.vk)
-        watching = BalancesStore.isWatchOnly($currentNetwork, coin.vk)
         balanceStr = balance ? balance.toLocaleString('en') : '0'
         percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "0.0 %" : toPercentString();
+        console.log({coin, watching})
     })
 
     const toPercentString = () => {

@@ -42,7 +42,7 @@
     .padding{
         padding: 0.5rem 60px;
     }
-    .flow{
+    .flow1{
         width: 50%;
         justify-content: space-around;
         align-items: center;
@@ -99,7 +99,7 @@
         it is advised that you only transfer over as much <strong>{$currentNetwork.currencySymbol}</strong> to this account as the Apps needs to operate.
     </p>
     <a class="outside-link" href="www.lamden.io">learn more about automatic transactions</a>
-    <div class="flex-row flow">
+    <div class="flex-row flow1">
         <div class="icon" >
             <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />
         </div>

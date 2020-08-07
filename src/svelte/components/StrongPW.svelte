@@ -19,35 +19,34 @@
 
 <style>
 .strong-pw{
-    margin-bottom: 1rem;
-}
-.filler{
-    margin-left: 21px;
+    line-height: 1.4;
 }
 .icon{
-    width: 11px;
+    width: 14px;
     margin-right: 6px;
+    position: relative;
+    top: 2px;
 }
 </style>
 
 <div class="strong-pw text-body2">
-    <div class={`${!length ? 'text-primary-dark filler' : 'flex-row'}`}>
+    <div class={`${!length ? 'text-primary-dark' : 'flex-row'}`}>
         {#if length}<div class="icon">{@html successCircle}</div>{/if}
         {`${charLength} or more characters`}
     </div>
-    <div class={`${!lower ? 'text-primary-dark filler' : 'flex-row'}`}>
+    <div class={`${!lower ? 'text-primary-dark' : 'flex-row'}`}>
         {#if lower}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Lowercase Letter'}
     </div>
-    <div class={`${!capital ? 'text-primary-dark filler' : 'flex-row'}`}>
+    <div class={`${!capital ? 'text-primary-dark' : 'flex-row'}`}>
         {#if capital}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Capital Letter'}
     </div>
-    <div class={`${!number ? 'text-primary-dark filler' : 'flex-row'}`}>
+    <div class={`${!number ? 'text-primary-dark' : 'flex-row'}`}>
         {#if number}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Number'}
     </div>
-    <div class={`${!symbol ? 'text-primary-dark filler' : 'flex-row'}`}>
+    <div class={`${!symbol ? 'text-primary-dark' : 'flex-row'}`}>
         {#if symbol}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Special Character'}
     </div> 

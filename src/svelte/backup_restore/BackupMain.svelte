@@ -1,6 +1,6 @@
 <script>
-    import { setContext, getContext } from 'svelte';
-
+    import { setContext, getContext, onDestroy } from 'svelte';
+    import { fade } from 'svelte/transition';
 	//Components
     import { Components, BackupPages }  from '../Router.svelte'
     const { Steps, Step } = Components;
@@ -11,10 +11,12 @@
 
     setContext('functions', {
         changeStep: (step) => {
-            if (step === -1 && currentStep === 0) switchPage('Backup');
-            else if (step === -1) currentStep = back;
+            if (step === 0 && currentStep === 0) switchPage('Backup');
+            else if (step === 0) currentStep = back;
             else currentStep = step;
         },
+        setPassword: (string) => password = string,
+        getPassword: () => password,
         setKeystorePW: (info) => ksPwdInfo = info,
         //getKeystorePW: () => {return ksPwdInfo},
         setKeystoreFile: (file) => keystoreFile = file
@@ -23,8 +25,11 @@
     let currentStep = 0;
     let ksPwdInfo;
     let keystoreFile;
+    let password;
 
-    let RestoreSteps = [
+    onDestroy(()=> password = "")
+
+    let steps = [
         {page: 'BackupIntro', hideSteps: true, back: 0},
         {page: 'BackupEnterPassword', hideSteps: false, back: 0},
         {page: 'BackupViewKeys', hideSteps: false, back: 0},
@@ -33,9 +38,10 @@
         {page: 'BackupKeystoreComplete', hideSteps: false, back: 0},
     ]
 
-    $: currentPage = RestoreSteps[currentStep].page;
-    $: hideSteps = RestoreSteps[currentStep].hideSteps;
-    $: back = RestoreSteps[currentStep].back;
+    $: currentPage = steps[currentStep].page;
+    $: hideSteps = steps[currentStep].hideSteps;
+    $: back = steps[currentStep].back;
+    $: hideBack = steps[currentStep].hideBack ? false : true;
     
 </script>
 
@@ -83,7 +89,7 @@
         <svelte:component this={BackupPages[currentPage]} {keystoreFile} {ksPwdInfo} />
     </div>
     <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back}/>
+        <Steps {back} {hideBack}/>
     </div>
 </div>
 

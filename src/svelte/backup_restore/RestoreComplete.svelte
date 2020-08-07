@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
     
     //Stores
     import { steps } from '../../js/stores/stores.js';
@@ -26,7 +27,7 @@
 
 	onMount(() => {
         steps.update(current => {
-            current.currentStep = 5;
+            current.currentStep = 4;
             return current
         });   
     });
@@ -39,21 +40,8 @@
 </script>
 
 <style>
-.restore-complete{
-    flex-grow:1;
-    padding-top: 156px;
-}
-
-.content{
-    box-sizing: border-box;
-    padding: 0px 24px 0 242px;
-    min-width: 498px;
-    width: 498px;
-    justify-content: center;
-}
 
 .key-box{
-    width: 100%;
     margin: 0 auto;
     max-width: 820px;
 }
@@ -61,6 +49,7 @@
 .header{
     margin-left: 53px;
     border-bottom: 2px solid var(--font-primary-darker);
+    width: calc(100% - 53px);
 }
 
 .header-name{
@@ -71,21 +60,20 @@
     flex-grow: 1;
 }
 
-.name{
-    display: flex;
-    width: 141px;
-    height: 88px;
-    margin-right: 16px;
-    border-bottom: 1px dashed var(--font-primary-darker);
-    align-items: center;
-}
-
 .result-box{
     height: 88px;
     border-bottom: 1px dashed var(--font-primary-darker);
     flex-grow: 1;
     padding-right: 20px;
     justify-content: center;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.result-box > p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .error{
@@ -101,119 +89,77 @@
     align-items: center;
 }
 
-.checkbox-box{
-    margin-right: 35px;
-    height: 18px;
+.key-info{
+    display: flex;
+    width: 141px;
+    height: 88px;
+    margin-right: 16px;
+    border-bottom: 1px dashed var(--font-primary-darker);
+    align-items: center;
+    word-break: break-all;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 143px;
+    line-height: 1.4;
 }
 
-.text-box{
-    margin-bottom: 158px;
+.checkbox-box{
+    margin-right: 53px;
 }
+
+.chk-container{
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.chk-checkmark{
+    top: -13px;
+}
+
 
 a{
     text-decoration: unset;
     color: #ffffff99;
 }
 
-input[type=checkbox].css-checkbox {
-    position:absolute; 
-    z-index:-1000; 
-    left:-1000px; 
-    overflow: hidden; 
-    clip: rect(0 0 0 0); 
-    height:1px; 
-    width:1px; 
-    margin:-1px; 
-    padding:0; 
-    border:0;
-}
-
-input[type=checkbox].css-checkbox + label.css-label {
-    display: block;
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 18px;
-    height: 18px;
-    box-sizing: border-box;
-    background-size: 16px;
-    border-radius: 3px;
-    background-position: center;
-    
-}
-
-label.css-label {
-    background-image:url('./icon_checkmark-white.svg');
-    background-color: var(--primary-color);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-input[type=checkbox].css-checkbox + label.css-label-error {
-    display: block;
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 18px;
-    height: 18px;
-    box-sizing: border-box;
-    background-size: 16px;
-    border-radius: 3px;
-    background-position: center;
-    
-}
-
-label.css-label-error {
-    background-image:url('./icon_error.svg');
-    background-color: var(--bg-color);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.checkmark-icon{
-    position: relative;
-    top: -18px;
+p{
+    margin: 0;
 }
 
 .error-icon{
     margin-right: 35px;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    min-width: 22px;
 }
 </style>
 
-<div class="restore-complete flex-row">
-    <div class="flex-column content">
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
         <h6>Wallets Restored</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <div class="flow-text-box text-body1 text-primary">
             You've added the following wallets succesfully! You may now perform transactions using these addresses.
         </div>
+        <div class="flex-column flow-buttons">
+            <Button id={'home-btn'}
+                    classes={`button__solid button__purple`}
+                    styles={'margin-bottom: 16px;'}
+                    name={restore ? "Finish" : "Back to Home"}
+                    disabled={false}
+                    click={() => done()} />
 
-        <Button id={'home-btn'}
-                classes={`button__solid button__purple`}
-                styles={'margin-bottom: 16px;'}
-                name={restore ? "Finish" : "Back to Home"}
-                disabled={false}
-                click={() => done()} />
-
-        <a  class="text-caption text-secondary" 
-            href="https://www.lamden.io" 
-            target="_blank" 
-            rel="noopener noreferrer" >
-            Help & FAQ
-        </a>
+            <a  class="text-caption text-secondary" 
+                href="https://www.lamden.io" 
+                target="_blank" 
+                rel="noopener noreferrer" >
+                Help & FAQ
+            </a>
+        </div>
     </div>
-    <div class="key-box flex-column">
+    <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
         <div class="flex-row header text-subtitle2 text-primary-light">
-            <div class="header-name">{'Name'}</div>
-            <div class="header-address">{'Address'}</div>
+            <p class="header-name">{'Name'}</p>
+            <p class="header-address">{'Address'}</p>
         </div>
         {#if keys.error}
             <div class="flex-row key-row">
@@ -227,14 +173,18 @@ label.css-label-error {
                 {#if key.result.added}
                     <div class="flex-row key-row">
                         <div class="checkbox-box">
-                            <input type="checkbox" class="css-checkbox" bind:checked={keys.keyList[i].checked} class:added={key.added}>
-                            <label class="css-label"></label>
-                            <div class="checkmark-icon">{@html checkmarkWhite}</div>
+                            <label class="chk-container">
+                                <input type="checkbox" bind:checked={keys.keyList[i].checked} on:click|preventDefault>
+                                <span class="chk-checkmark"></span>
+                            </label>
                         </div>
-                        <div class="name">{`${key.name}`}</div>
-                        <div class="flex-column result-box text-subtitle1 text-primary-dark">
-                            <div>{`${key.vk}`}</div>
-                            <div class="message">{key.result.reason}</div>
+                        <div class="flex-column key-info text-body3 ">
+                            <p>{`${key.name} (${key.symbol})`}</p>
+                            <p class="nickname text-primary-dark">{`${key.nickname}`}</p>
+                        </div>
+                        <div class="flex-column result-box text-body3 text-secondary">
+                            <p>{`${key.vk}`}</p>
+                            <p class="message">{key.result.reason}</p>
                         </div>
                     </div>
                 {:else}
@@ -242,16 +192,17 @@ label.css-label-error {
                         <div class="error-icon">
                             {@html errorIcon}
                         </div>
-                        <div class="name">{`${key.name}`}</div>
-                        <div class="flex-column result-box text-subtitle1 text-primary-dark ">
-                            <div>{key.vk}</div>
-                            <div class="error">{key.result.reason}</div>
+                        <div class="flex-column key-info text-body3 ">
+                            <p>{`${key.name} (${key.symbol})`}</p>
+                            <p class="nickname text-primary-dark">{`${key.nickname}`}</p>
                         </div>
-                        
+                        <div class="flex-column result-box text-body3 text-secondary">
+                            <p>{key.vk}</p>
+                            <p class="error">{key.result.reason}</p>
+                        </div>
                     </div>
                 {/if}
             {/each}
         {/if}
     </div>
-
 </div>

@@ -1,4 +1,5 @@
 import { writable, get, derived } from 'svelte/store';
+import { validateTypes } from 'types-validate-assert';
 
 const sanatizedAccounts = (accounts) => {
     return accounts.map(account => {
@@ -42,6 +43,12 @@ export const createCoinStore = () => {
         subscribe,
         set,
         update,
+        getByVk: (vk) => {
+            if (validateTypes.isStringWithValue(vk)) return;
+
+            let foundAccount = get(CoinStore).find(account => account.vk === vk)
+            return foundAccount
+        }
     };
 }
 //Create CoinStore instance

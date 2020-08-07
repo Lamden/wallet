@@ -56,6 +56,7 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await sleep(2000)
     await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.keystoreInfo.password}'`)
     await driver.findElement(By.id('pwd-btn')).click()
+    await driver.executeScript(`document.getElementById('chk-all').innerText='testing'`)
     await driver.findElement(By.id('chk-all')).click()
     await driver.findElement(By.id('restore-btn')).click()
     await sleep(1000)
@@ -84,10 +85,7 @@ const lockWallet = async (driver, switchback) => {
 }
 const changeToTestnet = async (driver) => {
     await driver.findElement(By.id("nav-network-info")).click()
-    await driver.findElement(By.className('custom-select')).click()
-    await driver.findElement(By.xpath("//div[contains(text(),'Lamden Testnet')]")).click()
     await sleep(1000, true)
-    await driver.findElement(By.id("accounts")).click()
 }
 
 const setAsTrustedDapp = async (driver) => {
@@ -269,7 +267,7 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
         return await httpServer.close()
     }
     await stop().catch((err) => reject(err))
-    //driver && driver.quit();
+    driver && driver.quit();
     await sleep(1000, true)
     resolve()
 })}

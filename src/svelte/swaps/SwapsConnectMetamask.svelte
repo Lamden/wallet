@@ -103,10 +103,11 @@ a{
 }
 .metamask-logo{
     width: 10vw;
+    min-width: 170px;
 }
 p{
     width: max-content;
-    margin: 1rem 0 0;
+    margin: 0 0 1rem;
 }
 p.address{
     margin: 0 0 0.5rem;
@@ -115,21 +116,28 @@ p.green {
     color: green;
 }
 p.error-box{
-    max-width: 300px;
+    width: 720px;
     text-align: center;
+}
+strong{
+    color: var(--font-warning);
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: 0.44px;
 }
 
 </style>
 
-<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column content-left">
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
         <h6>Connect To Metamask</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <div class="flow-text-box text-body1 text-primary">
             {'The Ethereum portion of the swap will use MetaMask'}
         </div>
 
-        <div class="text-box2 text-body1">
+        <div class="flow-text-box2 text-body1">
             <span>{`To install metamask follow the instructions on `}
                 <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
             </span>
@@ -169,30 +177,30 @@ p.error-box{
 
 
     </div>
-    <div class="flex-column content-right" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-right" in:fade="{{delay: 0, duration: 200}}">
         <div class="metamask-logo">
             {@html MetaMask}
         </div>
-        <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
+        <a href="https://metamask.io/" class="text-body2 outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
         <p  class="text-body1"
             class:text-green={installStatus === 'Installed'}>
             {installStatus === 'Installed' ? `MetaMask is Installed`: checking && errorMsg === '' ?  `checking ${currChecks} / ${maxChecks}` : ''} 
         </p>
+        {#if installStatus === 'Installed' && errorMsg === ''}
+            {#if isCorrectNetwork}
+                <p class="text-body1">Connected to <strong>Ethereum {`${ethNetworkTypes[$currentNetwork.currencySymbol]}`}</strong></p>
+            {:else}
+                <p class="text-red text-body1 error-box">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
+            {/if}
+        {/if}
         {#if address !== ''}
             <span class="text-body2">{`ETH Address `}
             <a  href={`${blockExplorerURL}/address/${address}`} 
                 class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{` ${address}`}
             </a></span>
         {/if}
-        {#if installStatus === 'Installed' && errorMsg === ''}
-            {#if isCorrectNetwork}
-                <p>{`Connected to Ethereum ${ethNetworkTypes[$currentNetwork.currencySymbol]}`}</p>
-            {:else}
-                <p class="text-red error-box">{`Please switch MetaMask to ${ethNetworkTypes[$currentNetwork.currencySymbol]} and connect again.`}</p>
-            {/if}
-        {/if}
         {#if errorMsg !== ''}
-            <p class="text-red error-box">{errorMsg}</p>
+            <p class="text-red text-body1  error-box">{errorMsg}</p>
         {/if}
     </div>
 </div>

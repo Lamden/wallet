@@ -53,7 +53,6 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
 
     it('Returns wallet info', async function() {
         let response = await helpers.sendGetInfoRequest(driver)
-        console.log(response)
         assert.equal(response.installed, true)
         assert.equal(response.setup, true)
         assert.equal(response.locked, false)
@@ -65,7 +64,6 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
     it('Hide info when wallet is locked', async function() {
         await helpers.lockWallet(driver, 1)
         let response = await helpers.sendGetInfoRequest(driver)
-        console.log(response)
         assert.equal(response.installed, true)
         assert.equal(response.setup, true)
         assert.equal(response.locked, true)

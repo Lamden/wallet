@@ -75,11 +75,11 @@ strong{
 }
 </style>
 
-<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column content-left">
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
         <h6>Send Token Approval</h6>
     
-        <p class="text-box text-body1">
+        <p class="flow-text-box text-body1">
             {`Lamden requires access to your tokens to complete the swap process.`}
         </p>
 
@@ -134,7 +134,7 @@ strong{
             </a>
          </div>
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column flow-content-right">
         {#if sending}
             <Loading message="Waiting for response from MetaMask..."
                      subMessage="Check your MetaMask to confirm the transaction"

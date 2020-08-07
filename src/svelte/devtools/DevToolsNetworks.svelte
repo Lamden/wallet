@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, BalancesStore, networkTypesDropDownList } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, BalancesStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte';
@@ -17,8 +17,8 @@
     let name = ''
     let host = ''
     let port = ''
-    let currencySymbol = 'mTAU'
-    let type = 'mockchain'
+    let currencySymbol = 'CUST'
+    let type = 'custom'
     let checking = false;
     let added = false;
 
@@ -61,10 +61,6 @@
 
     const handleSelected = (e) => {
         NetworksStore.setCurrentNetwork(e.detail.selected.value)
-    }
-
-    const handleTypeSelected = (e) => {
-        type = e.detail.selected.value
     }
 
     const clearCache = () => {
@@ -150,13 +146,6 @@
             required={true}
             spellcheck={false}
         />
-        <DropDown 
-            items={networkTypesDropDownList()}
-            width={"250px"}
-            height={"42px"}
-            margin="0 0 3px 0"
-            label="Network Type"
-            on:selected={(e) => handleTypeSelected(e)} />  
         <InputBox 
             label="Hostname (IP)"
             placeholder={"http://<your host>"}

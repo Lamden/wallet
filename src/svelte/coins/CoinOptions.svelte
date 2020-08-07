@@ -118,7 +118,7 @@
 <style>
 .options-box{
     justify-content: space-evenly;
-    margin-top: 13px;
+    margin-top: 1rem;
 }
 .options{
     cursor: pointer;
@@ -130,9 +130,14 @@
     border-radius: 8px;
     padding: 16px 0;
 }
-p{
+p, a{
     margin: 0.5rem 0;
 }
+
+.linked-account{
+    margin: 1rem 0 2rem;
+}
+
 .coin-info{
     text-align: right;
 }
@@ -169,6 +174,17 @@ p{
 .relationship{
     margin-top: 0;
 }
+h3{
+    margin: 1rem 0 0;
+}
+h2{
+    margin: 1rem 0 0.5rem;
+}
+.app-icon{
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
 </style>
 
 <div id="coin-options" class="text-primary">
@@ -176,7 +192,7 @@ p{
     <DropDown
         id={'wallets-dd'}
         items={coinList()} 
-        label={'Accounts'}
+        label={'Selected Account'}
         on:selected={(e) => setSelectedWallet(e.detail.selected.value)}
     />
     {#if selectedWallet}
@@ -185,15 +201,21 @@ p{
         </p>
     {/if}
     {#if dAppInfo}
-        <p class="text-body1 relationship">{`dApp Relationship: ${dAppInfo.appName}`}</p>
+        <h3>Currenty Linked Account</h3>
+        <div class="flex-row linked-account">
+            <img class="app-icon" src="{dAppInfo.url + dAppInfo.logo}" alt="{dAppInfo.appName} logo"/>
+            <a href="{dAppInfo.url}" class="outside-link text-body1" rel="noopener noreferrer">{`${dAppInfo.appName}`}</a>
+        </div>
+        
     {/if}
 
     {#if dAppList.length > 0}
+        <h3>Create Linked Account</h3>
         <DropDown
             id={'dapps-dd'}
             items={dAppList} 
-            label={'Create dApp relationship'}
-            margin="2rem 0"
+            label={'Currencly Linked Apps'}
+            margin="0 0 2rem"
             on:selected={(e) => associateDapp(e.detail.selected.value)}
         />
     {/if}

@@ -15,11 +15,11 @@
     "test-swaps-neg": "mocha  --timeout 30000 selenium/tests/ui/swaps/Swaps_TokenSwap_Neg.js",
     "test-crypto": "mocha --recursive --timeout 30000 selenium/tests/crypto/*.js",
     "test-crypto-clearinghouse": "mocha --recursive --timeout 30000 selenium/tests/crypto/clearingHouse_API.js",
-    "test-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
+    "test-crypto-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
     "test-dapps": "mocha --recursive --timeout 30000 selenium/tests/dapp/*.js",
     "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",
     "test-dapps-get-info": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
-    "test-dapps-send-tx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
+    "test-dapps-sendtx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -46,7 +46,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
-    "lamden-js": "^1.8.6",
+    "lamden-js": "^1.9.0",
     "metamask-extension-provider": "^1.1.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",

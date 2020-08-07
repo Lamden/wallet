@@ -51,7 +51,7 @@
         justify-content: space-evenly;
         padding: 0 2rem;
     }
-    .flow{
+    .flow1{
         width: 100%;
         justify-content: space-evenly;
         align-items: center;
@@ -112,7 +112,7 @@
 <div class="flex-column detail"
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
-    <div class="flex-row flow">
+    <div class="flex-row flow1">
         <div class="icon" >
             <img src={`${confirmData.url}/${logoFormat(confirmData.messageData.logo)}`} alt="app logo" />
         </div>

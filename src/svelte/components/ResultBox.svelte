@@ -28,9 +28,8 @@ h2{
     margin: 1rem 0 0rem;
 }
 .results-box{
-    align-items: center;   
-    max-width: 800px; 
-    min-width: 600px;
+    align-items: center;
+    min-width: 550px; 
 }
 
 .icon{

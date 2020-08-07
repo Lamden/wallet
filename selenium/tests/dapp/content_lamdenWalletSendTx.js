@@ -55,7 +55,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.errors[0].includes('You must be an authorized dApp'), true)
         });
         it('Create conenction with wallet to our teset dApp website ', async function() {
-            let funding = {show: true, amount: 10};
+            let funding = {show: true, amount: 1};
             this.timeout(30000);
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
@@ -72,7 +72,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
             transaction.networkType = null 
             let response = await helpers.sendTx(driver, transaction, true)
-            console.log(response)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0], "networkType <string> required but not provided");
@@ -81,7 +80,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
             transaction.networkType = "badNetworkType"
             let response = await helpers.sendTx(driver, transaction, true)
-            console.log(response)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0].includes("'badNetworkType' is not a valid network type"), true);
@@ -90,7 +88,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
             transaction.networkType = "mockchain"
             let response = await helpers.sendTx(driver, transaction, true)
-            console.log(response)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0].includes("'networkType' <string> 'mockchain' is not a valid network type."), true);
@@ -136,7 +133,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let response = await helpers.getTxResult(driver)
             assert.equal(response.status, "success");
             let result = response.data
-            assert.equal(result.networkInfo[transaction.networkType], true);
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
             assert.equal(result.resultInfo.type, 'success')
             assert.equal(result.signed, true)
@@ -168,7 +164,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let txResponse = await helpers.sendTx(driver, transaction, true)
             assert.equal(txResponse.status, "success");
             let result = txResponse.data
-            assert.equal(result.networkInfo[transaction.networkType], true);
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
             assert.equal(result.resultInfo.type, 'success')
             assert.equal(result.signed, true)

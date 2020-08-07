@@ -53,9 +53,8 @@ export const accountsController = (utils) => {
         });
     }
 
-    const decryptKeys = () => {
-        var userInput = prompt("Enter your Lamden Wallet Password", "");
-        if (checkPassword(utils.hashStringValue(userInput))) return decryptedKeys()
+    const decryptKeys = (string) => {
+        if (checkPassword(string)) return decryptedKeys()
         return false
     }
 

@@ -84,6 +84,9 @@
     align-items: center;
     justify-content: space-evenly;
 }
+.swap-details > p {
+    margin: 0 0 1rem;
+}
 .logo{
     width: 95px;
     padding: 20px;
@@ -118,11 +121,11 @@
 }
 </style>
 
-<div class="flex-row swaps-intro" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column content-left">
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
         <h6>Checking For Tx Success</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <div class="flow-text-box text-body1 text-primary">
             {`Your Approval Transaction was posted to the Ethereum network.  Validating it was successful...`}
         </div>
 
@@ -162,7 +165,7 @@
             </a>
          </div>
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column flow-content-right">
         {#if !success}
             <Loading message="Checking for the success of your transaction.." 
                      subMessage={`Attempt ${attempts} of ${maxAttempts}`} />
@@ -172,6 +175,7 @@
             <div class="swap-details">
                 <div class="flex-column" in:fade="{{delay: 0, duration: 250}}">
                     <div class="logo">{@html lamdenLogoOld}</div>
+                    <p class="text-body2 text-primary-dark">ethereum</p>
                     <a href={`${getChainInfo().blockExplorer}/address/${getEthAddress()}`} 
                        class="outside-link text-subtitle2"
                         target="_blank" 
@@ -185,6 +189,7 @@
                 </div>
                 <div class="flex-column" in:fade="{{delay: 400, duration: 250}}">
                     <div class="logo">{@html lamdenLogoNew}</div>
+                    <p class="text-body2 text-primary-dark">lamden</p>
                     <a href={`https://explorer.lamden.io/address/${getLamdenAddress()}`} 
                        class="outside-link text-subtitle2"
                        target="_blank" 

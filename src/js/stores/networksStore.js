@@ -58,7 +58,11 @@ export const createNetworksStore = () => {
             NetworksStore.set(getValue.networks)
         });
     }
-
+    const updateAllBalances = (netKey = undefined) => {
+        let networkStore = get(NetworksStore);
+        let currentNetwork = foundNetwork(get(NetworksStore), !netKey ? networkStore.current : netKey)
+        chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: currentNetwork})
+    }
     //Create Intial Store
     const NetworksStore = writable(startValue);
 
@@ -105,9 +109,26 @@ export const createNetworksStore = () => {
                 NetworksStore.update(networksStore => {
                     //If the network is found then set this as the current network
                     if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
+                    updateAllBalances(netKey)
                     return networksStore;
                 })
             }
+        },
+        setNetworkByKey: (netKey) => {
+            if (!validateTypes.isStringWithValue(netKey)) return
+
+            //If this is already the current network then do nothing
+            if (netKey === get(NetworksStore).current) return
+            //Match netKey to a network
+            let foundNetwork = foundNetwork(get(NetworksStore), netKey)
+            //If network is found, make it current
+            if(foundNetwork){
+                NetworksStore.update(networksStore => {
+                    networksStore.current = netKey;
+                    return networksStore;
+                })
+            }
+
         },
         //Add a new network into the Networks Array
         addNetwork: (networkInfo) => {
@@ -182,6 +203,9 @@ export const allNetworks = derived(
 
 //A Derrived Store of both user and lamden networks
 export const mainnetNetwork = new Lamden.Network(lamdenNetworks[0]);
+
+//A Derrived Store of both user and lamden networks
+export const testnetNetwork = new Lamden.Network(lamdenNetworks[1]);
 
 //A Derrived Store that contains values formatted for a DropDown Box
 export const networksDropDownList = derived(

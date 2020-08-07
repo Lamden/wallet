@@ -32,6 +32,7 @@
     const { switchPage, openModal, closeModal } = getContext('app_functions');
 
     let refreshing = false;
+    let currentNetworkKey = networkKey($currentNetwork)
 
     let sendPages = {
         lamden: 'CoinLamdenSend'
@@ -106,7 +107,14 @@
             refreshing = false
             balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
 		}, 2000);
-	}
+    }
+    
+    currentNetwork.subscribe(newNetwork => {
+		if (networkKey(newNetwork) !== currentNetworkKey){
+			currentNetworkKey = networkKey(newNetwork)
+			handleRefresh()
+		}
+	})
 </script>
 
 <style>

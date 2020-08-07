@@ -16,7 +16,7 @@
     right: 0;
     height: 97px;
     background-color: var(--bg-color);
-    z-index: 50;
+    z-index: 25;
     border-bottom: 1px solid #3D3D3D;
 }
 .spacer{

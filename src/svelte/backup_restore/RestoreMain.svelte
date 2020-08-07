@@ -15,8 +15,8 @@
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
         changeStep: (step) => {
-            if (step === -1 && currentStep === 0) switchPage('Restore');
-            else if (step === -1) currentStep = back;
+            if (step === 0 && currentStep === 0) switchPage('Restore');
+            else if (step === 0) currentStep = back;
             else currentStep = step;
         },
         cancel: () => switchPage('Restore')
@@ -27,18 +27,19 @@
     let keys;
     let currentStep = 0;
 
-    let RestoreSteps = [
+    let steps = [
         {page: 'RestoreUpload', hideSteps: false, back: 0},
         {page: 'RestoreCheck', hideSteps: true, back: 0},
-        {page: 'RestorePassword', hideSteps: false, back: 0},
+        {page: 'RestorePassword', hideSteps: false, back: 1},
         {page: 'RestoreAddWallets', hideSteps: false, back: 0},
         {page: 'RestoreSaveWallets', hideSteps: true, back: 0},
         {page: 'RestoreComplete', hideSteps: false, back: 0},
     ]
 
-    $: currentPage = RestoreSteps[currentStep].page;
-    $: hideSteps = RestoreSteps[currentStep].hideSteps;
-    $: back = RestoreSteps[currentStep].back;
+    $: currentPage = steps[currentStep].page;
+    $: hideSteps = steps[currentStep].hideSteps;
+    $: back = steps[currentStep].back;
+    $: hideBack = steps[currentStep].hideBack ? false : true;
     
 </script>
 
@@ -86,7 +87,7 @@
         <svelte:component this={RestorePages[currentPage]} {file} {keystoreFile} {keys}/>
     </div>
     <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back}/>
+        <Steps {back} {hideBack}/>
     </div>
 </div>
 

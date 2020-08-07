@@ -31,6 +31,7 @@
 	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : 0;
 
 	let refreshing = false;
+	let currentNetworkKey = networkKey($currentNetwork)
 
 	onMount(() => {
 		handleRefresh();
@@ -44,6 +45,13 @@
 			refreshing = false
 		}, 2000);
 	}
+
+	currentNetwork.subscribe(newNetwork => {
+		if (networkKey(newNetwork) !== currentNetworkKey){
+			currentNetworkKey = networkKey(newNetwork)
+			handleRefresh()
+		}
+	})
 
 </script>
 
