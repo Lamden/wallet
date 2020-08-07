@@ -42,7 +42,7 @@
     "svelte-loader": "^2.13.4",
     "svg-inline-loader": "^0.8.0",
     "webpack": "^4.41.5",
-    "webpack-dev-server": "3.7.1",
+    "webpack-dev-server": "^3.11.0",
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
