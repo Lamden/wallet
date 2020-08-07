@@ -1,4 +1,7 @@
 <script>
+	import { fly } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
+    
     //Components
     import NavLogo from '../nav/NavLogo.svelte';
 	import { Components }  from '../Router.svelte'
@@ -47,12 +50,6 @@
 
 .layout-width{
     width: 100%
-}
-
-.loading{
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 97px);
 }
 
 .content{
@@ -104,7 +101,7 @@ form{
         <NavLogo />
     </div>
     <div class="content text-primary">
-        <div class="lockscreen">
+        <div class="lockscreen" in:fly="{{delay: 100, duration: 300, x: -200, y: 0, opacity: 0, easing: quintOut}}">
             <h6 class="heading">Sign In</h6>
             <div class="flow-text-box text-body1">  
                 Access your Lamden Wallet.
@@ -131,5 +128,3 @@ form{
         </div>
     </div>
 </div>
-
-

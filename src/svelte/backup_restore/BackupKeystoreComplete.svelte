@@ -57,8 +57,7 @@
 
 <style>
 .text-box2{
-    margin-bottom: 65px;
-    margin-bottom: 1rem;
+    margin-bottom: 3rem;
 }
 
 p{

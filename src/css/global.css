@@ -57,11 +57,15 @@ body{
     color: var(--primary-color);
 }
 
+.text-warning{
+    color: var(--font-warning);
+}
+
 .text-red{
     color: #f72d2d;
 }
 .text-green{
-    color: #31ce31;
+    color: var(--font-success);
 }
 
 .text-cyan{
@@ -594,7 +598,7 @@ button {
     padding-left: 35px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 18px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

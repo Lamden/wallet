@@ -1,5 +1,6 @@
 <script>
 	import { onMount, onDestroy, setContext } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	//Utils
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
@@ -103,7 +104,7 @@
 							<Menu />
 						</div>
 						<div class="content-pane flex-column">
-							<div class="components">
+							<div class="components" in:fade="{{delay: 0, duration: 500}}">
 								<svelte:component this={Pages[$currentPage.name]}/>
 							</div>
 							<div class="footer-box">

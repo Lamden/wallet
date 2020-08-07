@@ -1,5 +1,5 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onMount } from 'svelte';
 
 	//Stores
     import { currentNetwork } from '../../js/stores/stores.js';
@@ -27,6 +27,17 @@
         {id: 'back-btn', name: 'Back', click: () => home(), class: 'button__solid button__purple'}
     ]
     let message = {buttons}
+
+    onMount(() => {
+        if (typeof trusted === 'undefined') {
+            if (dappInfo[$currentNetwork.type].stampPreApproval > 0){
+                trusted = true;
+            }else{
+                trusted = false;
+            }
+            handleChange();
+        }
+    })
 
     const handleChange = () => {
         sending = true;
@@ -94,7 +105,7 @@
     </p>
     <h2>Is this safe?</h2>
     <p class="text-body2">
-        Since <strong>{dappInfo.appName}</strong> is locked to only sending transactions through its smart contract, it cannot spend your TAU directly.
+        Since <strong>{dappInfo.appName}</strong> is locked to only sending transactions through its smart contract, it cannot spend your <strong>{$currentNetwork.currencySymbol}</strong> directly.
         The Apps will however spend your <strong>{$currentNetwork.currencySymbol}</strong>, a bit at a time, as it makes transactions. For added security
         it is advised that you only transfer over as much <strong>{$currentNetwork.currencySymbol}</strong> to this account as the Apps needs to operate.
     </p>

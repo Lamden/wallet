@@ -64,6 +64,7 @@
 
 	onMount(() => {
         handleRefresh()
+        console.log(dappInfo)
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
 
@@ -142,7 +143,7 @@ p{
 }
 
 .dapp-logo{
-    width: 150px;
+    width: 125px;
 }
 
 .nickname{
@@ -277,6 +278,19 @@ p{
                         click={() => openModal('CoinDappOptions', {coin, dappInfo, startPage: 1})}
                         />
                 </div>
+            {/if}
+            {#if thisNetworkApproved && dappInfo} 
+                <p class="text-body2 text-green">
+                    Account linked to  
+                    <a href="{dappInfo.url}" class="outside-link" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
+                </p>
+            {/if}
+            {#if !thisNetworkApproved && dappInfo} 
+                <p class="text-body2 text-warning">
+                    You have not approved for this app for {$currentNetwork.name}. Vist 
+                    <a href="{dappInfo.url}" class="outside-link" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
+                    to create account link.
+                </p>
             {/if}
         
     </div>
