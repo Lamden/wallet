@@ -28,7 +28,6 @@ describe('Token Swap Negative Tests', function () {
         await driver.findElement(By.xpath("//button[contains(text(),'Import wallet')]")).click()
         await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
         await helpers.sleep(1000)
-        //await driver.findElement(By.tagName("textarea")).sendKeys(config.metamaskBackupPhrase)
         await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
         await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
         await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)

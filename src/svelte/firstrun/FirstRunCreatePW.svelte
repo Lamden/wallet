@@ -1,5 +1,6 @@
 <script> 
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     //Stores
     import { steps } from '../../js/stores/stores.js';
@@ -88,68 +89,57 @@
 </script>
 
 <style>
-.firstrun-create-pwd{
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    width: 498px;
-    padding: 0px 24px 0 242px;
-    justify-content: center;
-}
-
-form{
-    display: flex;
-    flex-direction: column;
-}
-
-.input-box{
-    margin-bottom: 14px;
-}
-
-.text-box{
-    margin-bottom: 1rem;
-}
+    form{
+        display: flex;
+        flex-direction: column;
+    }
+    form > input {
+        margin-top: 2rem;
+    }
 </style>
 
-<div class="firstrun-create-pwd">
-    <h6 class="text-primary">Create a Password</h6>
-    <div class="text-box text-body1 text-primary">
-        No username required. This password never changes so use a strong one that you'll remember. We recommend <a class="outside-link" href="https://www.lastpass.com/"> LastPass</a>.
-    </div>
-
-    <StrongPW password={pwd} charLength={10}/>
-
-    <form on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
-        <div class="input-box">
-            <InputBox
-                id="pwd1"
-                bind:thisInput={pwdInput1}
-                on:changed={() => pwd1Validity()}
-                on:keyup={() => strongPasswordUpdate()}
-                label={"Password"}
-                placeholder={"At least 10 symbols"}
-                inputType={'password'}
-                width="100%"
-                margin={"21px 0 0 0"}
-                {pattern}
-                required={true}/>
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
+        <h6 class="text-primary">Create a Password</h6>
+        <div class="flow-text-box text-body1 text-primary">
+            No username required. This password never changes so use a strong one that you'll remember. We recommend <a class="outside-link" href="https://www.lastpass.com/"> LastPass</a>.
         </div>
-        <div class="input-box">
-            <InputBox 
-                id="pwd2"
-                bind:thisInput={pwdInput2}
-                on:changed={() => pwd2Validity()}
-                label={"Confirm Password"}
-                placeholder={"At least 10 symbols"}
-                inputType={'password'}
-                width="100%"
-                required={true}/>
-        </div>
-        <input  id="save-pwd"
+
+        <StrongPW password={pwd} charLength={10}/>
+
+        <form id="password_form" class="flow-buttons" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
+            <div class="input-box">
+                <InputBox
+                    id="pwd1"
+                    bind:thisInput={pwdInput1}
+                    on:changed={() => pwd1Validity()}
+                    on:keyup={() => strongPasswordUpdate()}
+                    label={"Password"}
+                    placeholder={"At least 10 symbols"}
+                    inputType={'password'}
+                    {pattern}
+                    required={true}/>
+            </div>
+            <div class="input-box">
+                <InputBox 
+                    id="pwd2"
+                    bind:thisInput={pwdInput2}
+                    on:changed={() => pwd2Validity()}
+                    label={"Confirm Password"}
+                    placeholder={"At least 10 symbols"}
+                    inputType={'password'}
+                    required={true}/>
+            </div>
+        </form>
+        <div class="buttons flex-column">
+            <input  
+                id="save-pwd"
+                form="password_form"
                 on:click={() => formValidation()}
                 value="Save Password"
                 class="button__solid button__purple submit submit-button submit-button-text" 
                 type="submit" >
-    </form>
+        </div>
+    </div>
+    <div class="flex-column flow-content-right"></div>
 </div>
-

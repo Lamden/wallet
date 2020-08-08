@@ -40,6 +40,6 @@
 
 <div class="loading">
     <div class="spinner" style={`width: ${width}; height: ${width};`}>{@html spinner}</div>
-    {#if message !== ''}<h6 class="message text-primary">{message}</h6>{/if}
+    {#if message !== ''}<h3 class="message text-primary">{message}</h3>{/if}
     {#if subMessage !== ''}<p class="text-primary text-subtitle2">{subMessage}</p>{/if}
 </div>

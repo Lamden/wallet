@@ -36,28 +36,30 @@
 </script>
 
 <style>
-.charm-item{
-    background: var(--bg-color-grey);
-    border: 1px solid rgba(38, 38, 38, 0.64);
-    width: fit-content;
-    margin: 1rem;
-    padding: 15px 40px;
-    max-width: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: fit-content;
-    border-radius: 4px;
-}
-.charm-item > div{
-    display: flex;
-    align-items: center;
-}
-.charm-item > img{
-    width: 60px;
-    margin-top: -30px;
-}
-
+    .charm-item{
+        background: var(--bg-color-grey);
+        border: 1px solid rgba(38, 38, 38, 0.64);
+        width: fit-content;
+        margin: 1rem;
+        padding: 15px 40px;
+        max-width: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: fit-content;
+        border-radius: 4px;
+    }
+    .charm-item > div{
+        display: flex;
+        align-items: center;
+    }
+    .charm-item > img{
+        width: 60px;
+        margin-top: -30px;
+    }
+    p{ 
+        margin: 0;
+    }
 </style>
 
 <div class="charm-item flex-column">
@@ -66,7 +68,7 @@
     {:else}
         <img src={lamden_logo} alt="charm item" />
     {/if}
-    <h2>{charmInfo.name}</h2>
+    <p class="text-body1">{charmInfo.name}</p>
     {#await value}
         <div class="text-body2">{defaultValue}</div>
     {:then response}

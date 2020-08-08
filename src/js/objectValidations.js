@@ -10,14 +10,6 @@ export const isPageInfoObj = (pageInfoObj) => {
     return true;
 }
 
-export const isStorageObj = (storageObj) => {
-    //Reject undefined or missing info.
-    if (!validateTypes.isObjectWithKeys(storageObj)) return false;
-    if(!validateTypes.hasKeys(storageObj, ['used', 'remaining', 'max'])) return false;
-    if (isNaN(storageObj.used) || isNaN(storageObj.remaining) || isNaN(storageObj.max)) return false;
-    return true;
-}
-
 export const isFileObj = (name, code, methods, networkObj) => {
     if (!validateTypes.isStringWithValue(name)) return false;
     if (!validateTypes.isString(code)) return false;
@@ -30,17 +22,8 @@ export const isNetworkObj = (networkInfo) => {
     //Reject undefined or missing info
     if (!validateTypes.isObjectWithKeys(networkInfo)) return false;
     if (!validateTypes.isStringWithValue(networkInfo.name)) return false;
-    if (!validateTypes.isStringWithValue(networkInfo.host)) return false;
-    if (!validateTypes.isStringWithValue(networkInfo.port)) return false;
-    return true;
-}
-
-export const isTxDataObj = (txDataObj) => {
-    if (!validateTypes.isObjectWithKeys(txDataObj)) return false;
-    if (!validateTypes.hasKeys(txDataObj, ['network', 'sender'])) return false;
-    if (!validateTypes.isStringWithValue(txDataObj.network.ip)) return false;
-    if (!validateTypes.isStringWithValue(txDataObj.network.port)) return false;
-    if (!validateTypes.isStringWithValue(txDataObj.sender.vk)) return false;
+    if (networkInfo.name.includes("|")) return false;
+    if (!validateTypes.isArrayWithValues(networkInfo.hosts)) return false;
     return true;
 }
 export const isCoinInfoObj = (coinInfoObj) => {
@@ -56,9 +39,8 @@ export const isCoinInfoObj = (coinInfoObj) => {
 
 export const isSettingsStoreObj = (obj) => {
     if (!validateTypes.isObjectWithKeys(obj)) return false;
-    if (!validateTypes.hasKeys(obj, ['currentPage', 'themeStyle', 'version'])) return false;
+    if (!validateTypes.hasKeys(obj, ['currentPage', 'themeStyle'])) return false;
     if (!isPageInfoObj(obj.currentPage)) return false;
-    if (!validateTypes.isStringWithValue(obj.version)) return false;
     return true;
 }
 

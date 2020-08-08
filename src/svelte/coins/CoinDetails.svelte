@@ -7,9 +7,8 @@
         DappStore, 
         SettingsStore, 
         currentNetwork, 
-        breadcrumbs, 
-        TxStore, networkKey, 
         BalancesStore,
+        networkKey,
         PendingTxStore } from '../../js/stores/stores.js';
 
     //Components
@@ -19,17 +18,21 @@
     
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import verified_app from '../../img/menu_icons/icon_verified_app.svg'
     import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import settings from '../../img/menu_icons/icon_settings.svg';
     import options from '../../img/menu_icons/icon_options.svg';
+    import refresh from '../../img/menu_icons/icon_refresh.svg';
     
-
     //Utils
     import { copyToClipboard } from '../../js/utils.js'
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
+
+    let refreshing = false;
+    let currentNetworkKey = networkKey($currentNetwork)
 
     let sendPages = {
         lamden: 'CoinLamdenSend'
@@ -44,7 +47,7 @@
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
     $: background = dappInfo ? dappInfo.background ? `${dappInfo.url}${dappInfo.background}` : squares_bg : squares_bg
     $: symbol = coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
     $: pendingTxList = () => {
@@ -55,26 +58,16 @@
         return pendingList
     }
     $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
-    $: stampPreApproval = thisNetworkApproved ? parseInt(dappInfo[$currentNetwork.type].stampPreApproval) || 0 : 0
-    $: stampsUsed = thisNetworkApproved ? parseInt(dappInfo[$currentNetwork.type].stampsUsed) || 0 : 0
-    $: stampsRemaining = thisNetworkApproved ? stampPreApproval - stampsUsed : 0
+    $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
     $: stampRatio = 1
 
 
 	onMount(() => {
-        breadcrumbs.set([
-            {name: 'Accounts', page: {name: 'CoinsMain'}},
-            {name: `${coin.nickname}`, page: {name: ''}},
-        ]);
-        getBalance()
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
-        fetchTransactions();
+        if ($currentNetwork.blockExplorer) fetchTransactions();
 
     });
 
-    const getBalance = async () => {
-        chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin.vk})
-    }
 
     const getDappInfo = (dappStore) => {
         return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
@@ -94,7 +87,9 @@
             return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=10`)
             .then(res => res.json())
             .then(json => {
-                console.log(json.data)
+                if (transactionsList.length > 0 && json.data.length > 0){
+                    if (transactionsList[0].hash !== json.data[0].hash) handleRefresh()
+                }
                 transactionsList = json.data
             })
             
@@ -103,11 +98,34 @@
     }
 
     const delayedRefresh = () => {
-        setTimeout(fetchTransactions, 10000)
+        if($currentNetwork.blockExplorer) setTimeout(fetchTransactions, 10000)
     }
+
+    const handleRefresh = () => {
+        if (refreshing) return
+		chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin})
+		refreshing = true
+		setTimeout(() => {
+            refreshing = false
+            balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
+		}, 2000);
+    }
+    
+    currentNetwork.subscribe(newNetwork => {
+		if (networkKey(newNetwork) !== currentNetworkKey){
+			currentNetworkKey = networkKey(newNetwork)
+			handleRefresh()
+		}
+	})
 </script>
 
 <style>
+h2{
+    margin: 0;
+}
+p{
+    margin: 0;
+}
 .hero-rec{
 	box-sizing: border-box;
 	min-height: 247px;
@@ -117,34 +135,20 @@
     background-size: cover;
     background-repeat: no-repeat;
 }
+.balance-total{
+    align-items: center;
+}
 
 .wallet-details{
     flex-grow: 1;
 }
 
 .dapp-logo{
-    width: 150px;
+    width: 125px;
 }
 
 .nickname{
     margin-bottom: 20px;
-}
-
-small > a {
-    margin: 0 5px;
-}
-small.flex-row{
-    align-items: center;
-}
-
-.amount{
-    font-style: normal;
-    font-weight: normal;
-    font-size: 55px;
-    line-height: 69px;
-    display: flex;
-    align-items: center;
-    letter-spacing: 0.25px;
 }
 
 .buttons{
@@ -169,6 +173,24 @@ small.flex-row{
     margin: 10px 0px;
 }
 
+.dapp-name{
+    margin: 0;
+}
+
+.trusted-icon{
+    width: 22px;
+    margin-right: 10px;
+    align-self: center;
+}
+
+.refresh-icon{
+    width: 40px;
+}
+
+.text-huge:first-child{
+    margin-right: 10px;
+}
+
 @media only screen and (max-width: 970px) {
   .buttons {
     flex-direction: column;
@@ -184,32 +206,31 @@ small.flex-row{
 	<div class="hero-rec flex-column" style="background-image: url({background});">
         <div class="flex-row">
             <div class="flex-column wallet-details">
-                <div class="nickname text-body3">
+                <div class="nickname text-body1">
                     {#if thisNetworkApproved && dappInfo}
-                        {dappInfo.appName}
+                        <div class="flex-row">
+                            {#if trustedApp}
+                                <div class="trusted-icon">
+                                    {@html verified_app}
+                                </div>
+                            {/if}
+                            <h2 class="dapp-name">{dappInfo.appName}</h2>
+                        </div>
                     {:else}
-                        <div>{coin.nickname}</div>
-                        {#if dappInfo}
-                            <small class="text-subtitle2">
-                                {`${dappInfo.appName} has not requested access to Lamden's ${$currentNetwork.type.toUpperCase()}`}
-                            </small>
-                            <small class="flex-row text-subtitle2">
-                                {`See`}
-                                <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
-                                {`for details`}
-                            </small>
-                        {/if}
+                        <h2>{coin.nickname}</h2>
                     {/if}
                 </div>
                 <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
-                <div class="amount"> {balance} </div>
-                {#if thisNetworkApproved}
-                    <div class="text-body2">{`
-                        pre-approved stamps left: ${stampsRemaining.toLocaleString()} 
-                         (${parseFloat(stampsRemaining/stampRatio).toLocaleString()} ${$currentNetwork.currencySymbol})
-                        `}
+                <div class="flex-row balance-total">
+                    <p class="text-huge">{balance}</p>
+                    <div on:click={handleRefresh} 
+                        id="refresh-icon"
+                        class="flex-col refresh-icon" 
+                        class:spinner={refreshing}>
+                        {@html refresh} 
                     </div>
-                {/if}
+                </div>
+                
             </div>
             {#if thisNetworkApproved && dappLogo }
                 <div>
@@ -259,10 +280,25 @@ small.flex-row{
                         />
                 </div>
             {/if}
+            {#if thisNetworkApproved && dappInfo} 
+                <p class="text-body2 text-green">
+                    Account linked to  
+                    <a href="{dappInfo.url}" class="outside-link" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
+                </p>
+            {/if}
+            {#if !thisNetworkApproved && dappInfo} 
+                <p class="text-body2 text-warning">
+                    You have not approved for this app for {$currentNetwork.name}. Vist 
+                    <a href="{dappInfo.url}" class="outside-link" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
+                    to create account link.
+                </p>
+            {/if}
         
     </div>
     {#if thisNetworkApproved && $currentNetwork.lamden}
         <Charms dappInfo={dappInfo} />
     {/if}
-    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions}/>
+
+    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions} />
+
 </div>

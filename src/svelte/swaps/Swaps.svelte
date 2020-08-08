@@ -1,8 +1,8 @@
 <script> 
-    import { onMount, getContext } from 'svelte';
+    import { getContext } from 'svelte';
 
     //Stores
-    import { breadcrumbs, currentNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -14,10 +14,6 @@
 
 	//Context
     const { switchPage } = getContext('app_functions');
-
-	onMount(() => {
-        breadcrumbs.set([{name: 'Swap Tokens', page: {name: ''}}]);
-    });
 
 </script>
 
@@ -49,15 +45,16 @@
 
 .subtext{
     max-width: 601px;
+    line-height: 1.4;
 }
 </style>
 
 <div class="swaps text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-        <h5 class="heading">
+        <h2 class="heading">
             {`Swap your Ethereum ${$currentNetwork.currencySymbol} Tokens for Lamden ${$currentNetwork.currencySymbol}`}
-        </h5>
-        <div class="subtext text-body2 text-primary-dark">
+        </h2>
+        <div class="subtext text-body1 text-primary-dark">
             {`
                 During this process you will give Lamden access to spend your Ethereum tokens.  
                 Lamden will burn them and send you the equivalent number of Lamden Tokens.

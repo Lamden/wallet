@@ -1,14 +1,15 @@
 <script>
     import { onDestroy, onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
 
     //Image
     import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
-    import lamdenLogoNew from '../../img/coin_logos/lamden_logo_new.svg'
+    import lamdenLogoNew from '../../img/coin_logos/lamden_logo_white.svg'
     import errorCircle from '../../img/menu_icons/icon_error-circle.svg'
-    import flag from '../../img/menu_icons/icon_flag.svg'
+    import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
 
     //Utils
     import ClearingHouse_API from '../../js/crypto/clearingHouseAPI'
@@ -31,7 +32,7 @@
     const { switchPage } = getContext('app_functions');
 
     let attempts = 0;
-    let maxAttempts = 20;
+    let maxAttempts = 100;
     let clearingHouseAPI;
     let swapStatus;
     let swapResult;
@@ -64,6 +65,7 @@
         .then(res => {
             swapStatus = res
             setSwapStatus(swapStatus)
+            
             sending = false
 
             if (swapStatus.error){
@@ -88,6 +90,7 @@
 
     const getSwapStatus = async () => {
         let sending = true;
+        if (!swapStatus) return;
         return clearingHouseAPI.checkSwapStatus(swapStatus.uuid_receipt)
         .then(res => {
             swapResult = res
@@ -131,7 +134,7 @@
                         else timerId = setTimeout(checkStatus, 1000);
                     }
                 }              
-            }, 1000);
+            }, 1500);
         })
     }
 
@@ -141,7 +144,7 @@
 </script>
 
 <style>
-.content-right{
+.flow-content-right{
     justify-content: flex-start;
 }
 .loading-column{
@@ -168,10 +171,8 @@
     padding: 20px;
 }
 .flag{
-    width: 100px;
-    height: 100px;
-    margin-bottom: 1rem;
-    margin-left: 2rem;
+    width: 150px;
+    margin: 0 auto;
 }
 .swap-deatils > div {
     align-items: center;
@@ -201,6 +202,12 @@ span.info-title{
     height: 153px;
     justify-content: space-between;
 }
+.outside-link{
+    font-weight: 300;
+}
+h3{
+    color: var(--font-warning);
+}
 @media (min-width: 1024px) {
     .swap-details{
         flex-direction: row;
@@ -216,17 +223,20 @@ span.info-title{
 }
 </style>
 
-<div class="flex-row swaps-intro">
-    <div class="flex-column content-left">
+<div class="flex-row flow-page">
+    <div class="flex-column flow-content-left">
         <h6>Swapping</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <div class="flow-text-box text-body1 text-primary">
             {`Swapping Ethereum ${$currentNetwork.currencySymbol} for Lamden ${$currentNetwork.currencySymbol}`}
         </div>
         {#if !success && errorMsg === ''}
-            <div class="text-box text-body1 text-red">
+            <div class="flow-text-box text-body1 text-red">
                 {`DO NOT CLOSE THIS PAGE`}
             </div>
+        {/if}
+        {#if success}
+            <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
         {/if}
         <div class="flex-column buttons">
             <Button id={'home-btn'}
@@ -238,15 +248,14 @@ span.info-title{
                     click={() => switchPage('CoinsMain')} />  
         </div>
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column flow-content-right">
         {#if success}
-            <div class="flag">{@html flag}</div>
+            <h2 class="text-green" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
         {/if}
-        <p  class="text-body1" 
-            class:text-red={errorMsg !== ''} 
-            class:text-green={swappingMessage == 'Swap is completed.'}>
-            {errorMsg === '' ? swappingMessage : errorMsg}
-        </p>
+        {#if errorMsg !== ''}
+            <p class="text-body1 text-red" >{errorMsg}</p>
+        {/if}
+
         {#if !success}
             <div class="swap-details">
                 <div class="flex-column">
@@ -312,7 +321,7 @@ span.info-title{
                         </div>
                     {/each}
                 </div>
-                <h2>{'SAVE THIS INFORMATION FOR YOUR RECORDS'}</h2>
+                <h3>{'SAVE THIS INFORMATION FOR YOUR RECORDS'}</h3>
             {/if}
         {/if}
     </div>

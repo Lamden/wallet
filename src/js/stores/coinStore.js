@@ -1,4 +1,12 @@
 import { writable, get, derived } from 'svelte/store';
+import { validateTypes } from 'types-validate-assert';
+
+const sanatizedAccounts = (accounts) => {
+    return accounts.map(account => {
+        if (account.sk !== "watchOnly") account.sk = "encrypted"
+        return account
+    })
+}
 
 export const createCoinStore = () => {
     let initialized = false;
@@ -7,7 +15,7 @@ export const createCoinStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"coins": []}, function(getValue) {
             initialized = true;
-            CoinStore.set(getValue.coins)
+            CoinStore.set(sanatizedAccounts(getValue.coins))
         });
     }
 
@@ -18,7 +26,7 @@ export const createCoinStore = () => {
         for (let key in changes) {
             if (key === 'coins') {
                 if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(CoinStore))) {
-                    CoinStore.set(changes[key].newValue)
+                    CoinStore.set(sanatizedAccounts(changes[key].newValue))
                 }
             }
         }
@@ -35,6 +43,12 @@ export const createCoinStore = () => {
         subscribe,
         set,
         update,
+        getByVk: (vk) => {
+            if (validateTypes.isStringWithValue(vk)) return;
+
+            let foundAccount = get(CoinStore).find(account => account.vk === vk)
+            return foundAccount
+        }
     };
 }
 //Create CoinStore instance

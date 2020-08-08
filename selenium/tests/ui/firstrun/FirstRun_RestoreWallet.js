@@ -184,6 +184,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
 
     });
     it('RestoreAddWallets.svelte - can check all boxes', async function() {
+        await driver.executeScript(`document.getElementById('chk-all').innerText='testing'`)
         await driver.findElement(By.id('chk-all')).click()
 
         let checkboxes = await driver.findElements(By.xpath("//input[@type='checkbox']"))
@@ -198,9 +199,6 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
         let finish_Button =  await driver.findElement(By.id('home-btn'))
         await finish_Button.getAttribute('innerText').then(text => {
             assert.equal(text, 'FINISH');
-        })
-        await driver.findElement(By.className('name')).getAttribute('innerText').then(text => {
-            assert.equal(text, 'Lamden');
         })
         await driver.findElement(By.className('message')).getAttribute('innerText').then(text => {
             assert.equal(text, 'Added My TAU Address to your wallet');

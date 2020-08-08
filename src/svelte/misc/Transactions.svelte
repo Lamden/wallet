@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte'
@@ -29,13 +29,16 @@
 </script>
 
 <style>
-.tx-history-h4{
+.tx-history-h3{
     align-items: center;
 }
+h3{
+    margin-right: 10px;
+}
 .refresh-icon{
-	margin-left: 10px;
     width: 20px;
-    justify-content: center;
+    position: relative;
+    top: 1px;
 }
 .button-more{
     justify-content: center;
@@ -58,8 +61,8 @@ h4{
 }
 </style>
 
-<div class="flex-row tx-history-h4">
-    <h4>Transaction History</h4>			
+<div class="flex-row tx-history-h3">
+    <h3>Transaction History</h3>			
     <div on:click={refreshHistory} 
 		 class="flex-col refresh-icon clickable" 
 		 class:spinner={refreshing}>

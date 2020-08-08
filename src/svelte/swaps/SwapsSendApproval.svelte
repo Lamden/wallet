@@ -1,5 +1,6 @@
 <script>
     import { getContext, onMount, onDestroy } from 'svelte';
+    import { fade } from 'svelte/transition';
     
     //Stores
     import { steps, currentNetwork } from '../../js/stores/stores.js';
@@ -37,30 +38,20 @@
         })
     })
 
-    onDestroy(() =>{
-        chrome.runtime.onMessage.removeListener(tokenApprovalSent)
-    })
-
     const sendTokenApproval = () => {
         if (!sent){
-            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, () => {
-                sending = true
-                errorMsg = ''
+            sending = true
+            errorMsg = ''
+            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value }}, (response) => {
+                sending = false
+                if (typeof response.error === 'undefined') {
+                    metamaskTxResponse = response
+                } else {
+                    errorMsg = response.error
+                }
             })
         }
     }
-
-    const tokenApprovalSent = (message, sender, sendResponse) => {
-		if (message.type === 'tokenApprovalSent') {
-            sending = false
-            if (typeof message.data.error === 'undefined') {
-                metamaskTxResponse = message.data
-            } else {
-                errorMsg = message.data.error
-            }
-        }
-    }
-    chrome.runtime.onMessage.addListener(tokenApprovalSent)
 
 </script>
 
@@ -75,28 +66,38 @@
     width: 100px;
     margin-bottom: 1rem;
 }
+p.text-body2{
+    font-weight: 300;
+    line-height: 1.3;
+}
+strong{
+    color: cyan;
+}
 </style>
 
-<div class="flex-row swaps-intro">
-    <div class="flex-column content-left">
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
         <h6>Send Token Approval</h6>
     
-        <div class="text-box text-body1 text-primary">
+        <p class="flow-text-box text-body1">
             {`Lamden requires access to your tokens to complete the swap process.`}
-        </div>
+        </p>
 
-        <div>
-            {`Current ${getChainInfo().tauSymbol} Balance: ${getTokenBalance()}`}
-        </div>
+        <p class="text-body2 ">
+            <strong>Ethereum Balance:</strong><br>
+            {`${getTokenBalance()} ${getChainInfo().tauSymbol}`}
+        </p>
 
-        <InputBox 
-            bind:thisInput={inputNode}
-            label={`Approve ${getChainInfo().tauSymbol}`}
-            inputType={'number'}
-            value={`${getTokenBalance()}`}
-            placeholder={`${getChainInfo().tauSymbol} Amount`}
-            margin={'1rem 0'}
-        />
+        {#if !sent}
+            <InputBox 
+                bind:thisInput={inputNode}
+                label={`Approve Amount`}
+                inputType={'number'}
+                value={`${getTokenBalance()}`}
+                placeholder={`${getChainInfo().tauSymbol} Amount`}
+                disabled={sending}
+            />
+        {/if}
 
         <div class="flex-column buttons">
             {#if sent}
@@ -133,21 +134,21 @@
             </a>
          </div>
     </div>
-    <div class="flex-column content-right">
+    <div class="flex-column flow-content-right">
         {#if sending}
             <Loading message="Waiting for response from MetaMask..."
                      subMessage="Check your MetaMask to confirm the transaction"
             />
         {/if}
         {#if sent}
-            <div class="flex-column result">
-                <div class="circle-checkmark">{@html circleCheck}</div>
-                <h2>{'Approved!'}</h2>
+            <div class="flex-column result" >
+                <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
+                <h3>{'Approved!'}</h3>
             </div>
         {/if}
         {#if errorMsg !== ''}
             <div class="flex-column result">
-                <div class="circle-error">{@html iconErrorCircle}</div>
+                <div class="circle-error" in:fade="{{delay: 0, duration: 500}}">{@html iconErrorCircle}</div>
                 <p class="text-red text_body2">{errorMsg}</p>
             </div>
         {/if}

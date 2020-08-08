@@ -1,4 +1,7 @@
 <script>
+	import { fly } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
+    
     //Components
     import NavLogo from '../nav/NavLogo.svelte';
 	import { Components }  from '../Router.svelte'
@@ -14,8 +17,8 @@
 
     const handleSubmit = () => {
         if (formObj.checkValidity()){
-            chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (walletIsLocked) => {
-                if (walletIsLocked || chrome.runtime.lastError) {
+            chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (unlocked) => {
+                if (!unlocked || chrome.runtime.lastError) {
                     setValidity(pwdObj, "Incorrect Password")
                 }
             })
@@ -45,12 +48,6 @@
 
 .layout-width{
     width: 100%
-}
-
-.loading{
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 97px);
 }
 
 .content{
@@ -102,9 +99,9 @@ form{
         <NavLogo />
     </div>
     <div class="content text-primary">
-        <div class="lockscreen">
+        <div class="lockscreen" in:fly="{{delay: 100, duration: 300, x: -200, y: 0, opacity: 0, easing: quintOut}}">
             <h6 class="heading">Sign In</h6>
-            <div class="text-box text-body1">  
+            <div class="flow-text-box text-body1">  
                 Access your Lamden Wallet.
             </div>
         
@@ -129,5 +126,3 @@ form{
         </div>
     </div>
 </div>
-
-

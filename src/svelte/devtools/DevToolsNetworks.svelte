@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
 	//Stores
-    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, networkTypesDropDownList } from '../../js/stores/stores.js';
+    import { NetworksStore, currentNetwork, networksDropDownList, CacheStore, BalancesStore } from '../../js/stores/stores.js';
 
 	//Components
     import { Components }  from '../Router.svelte';
@@ -16,15 +16,15 @@
 
     let name = ''
     let host = ''
-    let port = '8000'
-    let currencySymbol = 'mTAU'
-    let type = 'mockchain'
+    let port = ''
+    let currencySymbol = 'CUST'
+    let type = 'custom'
     let checking = false;
     let added = false;
 
     $: addButtonColor = checking ? '' : 'button__purple';
     $: buttonName = checking ? 'Checking For Network' : added ? 'Added!' : 'Add Network';
-    $: network = {name, host, port, currencySymbol, type, lamden: false, selected: false}
+    $: network = {name, hosts: [`${host}:${port}`], currencySymbol, type, lamden: false, selected: false}
 
     const formValidation = async () => {
         if (formField.checkValidity()){
@@ -63,12 +63,9 @@
         NetworksStore.setCurrentNetwork(e.detail.selected.value)
     }
 
-    const handleTypeSelected = (e) => {
-        type = e.detail.selected.value
-    }
-
     const clearCache = () => {
-        CacheStore.refreshNetwork($currentNetwork.name)
+        CacheStore.refreshAllCache($currentNetwork)
+        BalancesStore.refreshAllCache($currentNetwork)
     }
 
     const reportValidityMessage = (node, message) => {
@@ -105,7 +102,7 @@
 <div class="edit-networks flex-row">
     <div class="current-network flex-column">
         <div>
-            <h5>Current Network</h5>
+            <h2>Current Network</h2>
             <DropDown 
                 items={$networksDropDownList}
                 width={"250px"}
@@ -138,24 +135,17 @@
 
     </div>
     <form class="add-network" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
-        <h5>Add Network</h5>
+        <h2>Add Network</h2>
         <InputBox 
             label="Name"
             placeholder={"Network Name"}
             bind:value={name}
             bind:thisInput={nameField}
             width="250px"
-            styles={'margin-bottom: 20px'}
+            margin="0 0 1rem 0"
             required={true}
             spellcheck={false}
         />
-        <DropDown 
-            items={networkTypesDropDownList()}
-            width={"250px"}
-            height={"42px"}
-            styles={'margin-bottom: 3px'}
-            label="Network Type"
-            on:selected={(e) => handleTypeSelected(e)} />  
         <InputBox 
             label="Hostname (IP)"
             placeholder={"http://<your host>"}
@@ -182,7 +172,7 @@
                 bind:value={currencySymbol}
                 on:keyup={() => clearIPValidation()}
                 width="115px"
-                styles={'margin: 0 0 20px 10px'}
+                margin="0 0 1rem 10px"
                 spellcheck={false}
             />
         </div>

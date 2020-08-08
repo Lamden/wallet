@@ -18,25 +18,25 @@
     }
 
     $: icon = typeIcons[result.type]
+    $: resultMessage = result.message ? result.message : result.type;
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
 
 </script>
 
 <style>
-.results-box{
-    align-items: center;   
-    max-width: 800px; 
-    min-width: 600px;
+h2{
+    margin: 1rem 0 0rem;
 }
-
-.error-box{
+.results-box{
     align-items: center;
+    min-width: 550px; 
 }
 
 .icon{
     margin-right: 10px;
     width: 20px;
-    height: 20px;
+    position: relative;
+    top: 5px;
 }
 
 .buttons{
@@ -44,27 +44,32 @@
 }
 
 .message{
-    align-items: center;
-    padding-top: 2rem;
+    margin: 2rem 0 1rem;
+}
+p{
+    margin: 0;
+}
+p#results-message{
+    font-size: 24px;
+    font-weight: 300;
 }
 
 </style>
 
 <div class="results-box flex-column">
-    <h5 id={'results-title'}>{result.title}</h5> 
+    <h2 id={'results-title'}>{result.title}</h2> 
 
-    <div id={'results-subtitle'} class="text-body1">{result.subtitle}</div>
+    <h3 id={'results-subtitle'} >{result.subtitle}</h3>
 
     <div class="message flex-row">
         <div class="icon">{@html icon}</div>
-        <h6 id={'results-message'}>{result.message}</h6>
+        <p id={'results-message'} class="text-body1">{resultMessage}</p>
     </div>
     {#if errorInfo}
         <div class="error-info text-body1 flex-column">
-            <h6>Error Info</h6>
             <div class="flex-column">
                 {#each errorInfo as error}
-                    <div class="error">{error}</div>  
+                    <p class="error">{error}</p>  
                 {/each}
             </div>
         </div>

@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
     
     //Stores
     import { steps } from '../../js/stores/stores.js';
@@ -30,7 +31,7 @@
                 stepList: [
                     {number: 1, name: 'Upload', desc:'Keystore File'},
                     {number: 2, name: 'Password', desc:'For Keystore'},
-                    {number: 3, name: 'Restore', desc:'Select Accounts'},
+                    {number: 3, name: 'Decide', desc:'Select Accounts'},
                     {number: 4, name: 'Complete!', desc:'Return to Wallet'},
                 ]
             });
@@ -76,22 +77,22 @@
     display: none;
 }
 
-.restore-upload{
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    width: 498px;
-    padding: 0px 24px 0 242px;
-    justify-content: center;
-}
-
 .caption-box{
     display: inline;
     margin: 16px 0 20px 0;
 }
 
+.caption-box.text-caption{
+    text-align: left;
+}
+
 a{
     text-decoration: unset;
+}
+
+.text-purple:hover{
+    text-decoration: underline;
+    color: var(--font-accent);
 }
 
 span{
@@ -113,46 +114,45 @@ span{
 }
 
 </style>
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
+        <h6>Restore Accounts</h6>
+        
+        <div class="flow-text-box text-body1 text-primary">
+            To restore your accounts, please upload the keystore file created during your backup.
+        </div>
+        
+        <div class="caption-box text-caption text-secondary">
+            <span class="text-purple" on:click={() => openPicker()}>Click here to choose a file</span>
+            or drag and drop your file below.
+        </div>
 
-<div class="restore-upload">
-    <h6>Restore Accounts</h6>
-    
-    <div class="text-box text-body1 text-primary">
-        To restore your accounts, please upload the keystore file created during your backup.
-    </div>
-    
-    <div class="caption-box text-caption text-secondary">
-        <span class="text-purple" on:click={() => openPicker()}>Click here to choose a file</span>
-        or drag and drop your file below.
-    </div>
+        <div class={`dropzone flex-column text-primary-dark ${dragover}`}
+            class:dragover={dragover} 
+            on:dragover|preventDefault={(e) => handleDragover(e)}
+            on:dragleave|preventDefault={(e) => handleDragleave(e)}
+            on:drop={(ev) => handleFileEvent(ev)}>
+            Drop File Here
+        </div>
+        
+        <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
 
-    <div class={`dropzone flex-column text-primary-dark ${dragover}`}
-        class:dragover={dragover} 
-        on:dragover|preventDefault={(e) => handleDragover(e)}
-        on:dragleave|preventDefault={(e) => handleDragleave(e)}
-        on:drop={(ev) => handleFileEvent(ev)}>
-        Drop File Here
-    </div>
-    
-    <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>
-    
-    <Button id={'confirm-keystore-btn'}
-            classes={`button__solid ${activeButton}`}
-            styles={'margin-bottom: 16px;'}
-            name="Confirm Keystore"
-            disabled={disabledButton}
-            click={() => nextPage()} />
+        <div class="flex-column flow-buttons">
+            <Button id={'confirm-keystore-btn'}
+                    classes={`button__solid ${activeButton}`}
+                    styles={'margin-bottom: 16px;'}
+                    name="Confirm Keystore"
+                    disabled={disabledButton}
+                    click={() => nextPage()} />
 
-    <a  class="text-caption text-secondary" 
-        href="https://www.lamden.io" 
-        target="_blank" 
-        rel="noopener noreferrer" >
-        Help & FAQ
-    </a>
+            <a  class="text-caption text-secondary" 
+                href="https://www.lamden.io" 
+                target="_blank" 
+                rel="noopener noreferrer" >
+                Help & FAQ
+            </a>
+        </div>
+    </div>
+    <div class="flex-column flow-content-right"> </div>
 </div>
-
-
-
-
-
 

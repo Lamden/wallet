@@ -1,5 +1,7 @@
 <script>
     import { getContext } from 'svelte'
+    import { fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
 	//Stores
     import { allNetworks, CoinStore, currentNetwork } from '../../js/stores/stores.js';
@@ -27,7 +29,7 @@
 
     const openHashLink = () => {
         if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
-        else window.open(`${$currentNetwork.host}:${$currentNetwork.port}/tx?hash=${txData.hash}`, '_blank');
+        else window.open(`${$currentNetwork.host}/tx?hash=${txData.hash}`, '_blank');
     }
 
     const processErrorMessage = (err) => {
@@ -116,7 +118,7 @@
 
 </style>
 
-<div class='tx-container flex-column'>
+<div class='tx-container flex-column' in:fly="{{delay: 0, duration: 250, x: 0, y: 25, opacity: 0.0, easing: quintOut}}">
     <div class="hash-box flex-row">
         <div class="hash-link text-subtitle2 " on:click={openHashLink}>{txData.hash}</div>
         <div class="time-icon flex-row"> 

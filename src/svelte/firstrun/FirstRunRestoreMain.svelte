@@ -15,8 +15,8 @@
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
         changeStep: (step) => {
-            if (step === -1 && currentStep === 0) switchPage('FirstRunMain');
-            else if (step === -1) currentStep = back;
+            if (step === 0 && currentStep === 0) switchPage('FirstRunMain');
+            else if (step === 0) currentStep = back;
             currentStep = step;
         },
         done: () => checkFirstRun()
@@ -28,20 +28,21 @@
     let restore = true;
     let currentStep = 0;
 
-    let RestoreSteps = [
-        {page: 'FirstRunCreatePW', hideSteps: false, back: -1},
+    let steps = [
+        {page: 'FirstRunCreatePW', hideSteps: false, back: 0},
         {page: 'RestoreUpload', hideSteps: false, back: 0},
         {page: 'RestoreCheck', hideSteps: true, back: 0},
-        {page: 'RestorePassword', hideSteps: false, back: 0},
-        {page: 'RestoreAddWallets', hideSteps: false, back: 0},
-        {page: 'RestoreSaveWallets', hideSteps: true, back: 0},
+        {page: 'RestorePassword', hideSteps: false, back: 1},
+        {page: 'RestoreAddWallets', hideSteps: false, back: 1},
+        {page: 'RestoreSaveWallets', hideSteps: true, back: 0, hideBack: true},
         {page: 'RestoreComplete', hideSteps: false, back: 0},
         {page: 'FirstRunFinishing', hideSteps: false, back: 0},
     ]
 
-    $: currentPage = RestoreSteps[currentStep].page;
-    $: hideSteps = RestoreSteps[currentStep].hideSteps;
-    $: back = RestoreSteps[currentStep].back;
+    $: currentPage = steps[currentStep].page;
+    $: hideSteps = steps[currentStep].hideSteps;
+    $: back = steps[currentStep].back;
+    $: hideBack = steps[currentStep].hideBack ? false : true;
     
 </script>
 
@@ -89,7 +90,7 @@
         <svelte:component this={FirstRun[currentPage]} {file} {keystoreFile} {keys} {restore}/>
     </div>
     <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back}/>
+        <Steps {back} {hideBack}/>
     </div>
 </div>
 

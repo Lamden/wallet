@@ -1,8 +1,10 @@
 <script>
     import { getContext, setContext, afterUpdate } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { currentNetwork, BalancesStore, balanceTotal, DappStore } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, balanceTotal, DappStore, networkKey } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
@@ -19,32 +21,30 @@
     //Context
     const { switchPage } = getContext('app_functions');
     
-    $: watching = coin.sk === 'watchOnly';
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
-    $: balanceStr = balance.toLocaleString('en')
-    $: percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
+    $: watching = coin.sk === "watchOnly"
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
+    $: balanceStr = balance ? balance.toLocaleString('en') : '0'
+    $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
     $: dappCharms = dappNetworkInfo ? dappNetworkInfo.charms || [] : []
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
 
     afterUpdate(() => {
-        balance = BalancesStore.getBalance($currentNetwork.url, coin.vk)
-        balanceStr = balance.toLocaleString('en')
-        percent = typeof $balanceTotal[$currentNetwork.url] === 'undefined' ? "" : toPercentString();
+        balance = BalancesStore.getBalance($currentNetwork, coin.vk)
+        balanceStr = balance ? balance.toLocaleString('en') : '0'
+        percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "0.0 %" : toPercentString();
     })
 
     const toPercentString = () => {
-        if (isNaN((balance / $balanceTotal[$currentNetwork.url]))) return '0.0 %'
-        return ((balance / $balanceTotal[$currentNetwork.url])* 100).toFixed(2).toString() + ' %'
+        if (isNaN((balance / $balanceTotal[networkKey($currentNetwork)]))) return '0.0 %'
+        return ((balance / $balanceTotal[networkKey($currentNetwork)])* 100).toFixed(2).toString() + ' %'
     }
     const getDappInfo = (dappStore) => {
         return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
     }
 
     const getItemValue = async (info) => {
-        console.log(info)
-        console.log(dappInfo)
         let key = ''
         if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
             key = info.key.replace("<wallet vk>", coin.vk)
@@ -133,12 +133,17 @@ p > a {
     align-items: center;
     padding-left: 100px;
 }
-.charm-name{
-    margin-bottom: 0;
+.name-box{
+    line-height: 1.5;
 }
 </style>
 
-<div id={`coin-row-${id}`} class="coin-box" on:click={ () => switchPage('CoinDetails', coin)}>
+<div 
+    id={`coin-row-${id}`} 
+    class="coin-box" 
+    on:click={ () => switchPage('CoinDetails', coin)}
+    in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
+    >
     <div class="logo flex-column">
         {#if dappLogo}
             <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo">
@@ -166,7 +171,7 @@ p > a {
         <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
     </div>
     {#if watching}
-        <div class="text-body2 text-primary-dark watching-text">{"watching"}</div>
+        <div class="text-body2 text-primary-dark watching-text percent">{"watching"}</div>
     {:else}
         <div class="percent text text-body1"> {`${percent}`}</div>
     {/if}
@@ -182,7 +187,7 @@ p > a {
         </div>
     {/each}
     <div class="dapp-info">
-        <p>{`Created for dapp at`}
+        <p>{`linked to `}
             <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
         </p>
     </div>

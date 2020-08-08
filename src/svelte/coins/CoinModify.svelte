@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext, setContext } from 'svelte';
+    import { getContext, setContext } from 'svelte';
 
     //Components
     import { Modals, Components } from '../Router.svelte';
@@ -12,6 +12,9 @@
         nextPage: () => currentStep = currentStep + 1,
         setPage: (num) => currentStep = num,
         setSelectedCoin: (coin) => selectedCoin = coin,
+        getSelectedAccount: () => {return selectedCoin},
+        setDappInfo: (value) => dappInfo = value,
+        getDappInfo: () => {return dappInfo},
         setResult: (result) => resultInfo = result,
         setMessage: (msg) => message = msg,
         home: () => currentStep = 1,
@@ -22,6 +25,7 @@
     let resultInfo = {}
     let message = '';
     let selectedCoin;
+    let dappInfo = undefined;
     let steps = [
         {page: 'CoinOptions', cancelButton: false},
         {page: 'CoinEditNickname', cancelButton: true},
@@ -44,7 +48,7 @@
 
 <style>
 .coin-modify{
-    width: 750px;
+    width: 550px;
 }
 .cancel-button{
     display: flex;
@@ -56,7 +60,8 @@
     <svelte:component this={Modals[steps[currentStep - 1].page]} coin={selectedCoin} result={resultInfo} {message} />
     {#if steps[currentStep - 1].cancelButton}
         <div class="cancel-button">
-            <Button classes={'button__text text-caption'} 
+            <Button id="cancel-modal-btn"
+                    classes={'button__text text-caption'} 
                     width={'125px'}
                     height={'24px'}
                     padding={0}

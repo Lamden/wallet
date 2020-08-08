@@ -41,7 +41,8 @@ var options = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
         include: [
-          path.resolve(__dirname, "node_modules", "monaco-editor")
+          path.resolve(__dirname, "node_modules", "monaco-editor"),
+          path.resolve(__dirname, "node_modules", "flatpickr")
         ],
       },
       {

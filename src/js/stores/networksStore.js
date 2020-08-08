@@ -8,20 +8,43 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 
 import Lamden from 'lamden-js'
 
-const lamdenNetworks = [
-    {name: 'Lamden Testnet', 
-    host:'http://167.172.126.5', 
-    port: '18080', 
+const launchDate = new Date("2020-09-16T00:00:00.000Z")
+const today = new Date()
+let lamdenNetworks;
+
+let mainnet = {
+    name: 'Lamden Mainnet', 
+    hosts: ['https://masternode-01.lamden.io:443', 'https://masternode-02.lamden.io:443'],
+    type:'mainnet', 
+    lamden: true, 
+    currencySymbol: 'TAU',
+    blockExplorer: 'https://explorer.lamden.io'
+}
+let testnet = {
+    name: 'Lamden Testnet', 
+    hosts: ['http://167.172.126.5:18080'], 
     type:'testnet', 
     lamden: true, 
     currencySymbol: 'dTAU',
-    blockExplorer: 'https://explorer.lamden.io'}
-]
+    blockExplorer: 'https://explorer.lamden.io'
+}
 
-const defualtNetworksStore = {
+if (today >  launchDate){
+    lamdenNetworks = [mainnet, testnet]
+}else{
+    lamdenNetworks = [testnet]
+}
+
+let defualtNetworksStore = {
     lamden: [],
     user : [],
-    current: 'http://167.172.126.5:18080'
+    current: 'Lamden Mainnet|mainnet|lamden'
+}
+
+if (today >  launchDate){
+    lamdenNetworks = [mainnet, testnet]
+}else{
+    lamdenNetworks = [testnet]
 }
 
 const makeList = (networkStore) => {
@@ -33,9 +56,11 @@ const foundNetwork = (networkStore, matchKey) => {
     return networks.find(network => networkKey(network) === matchKey)
 }
 
-const getNetworkByName = (networkStore, name) => {
-    return networkStore.lamden.find(network => network.name === name)
-}
+//A Derrived Store of both user and lamden networks
+export const mainnetNetwork = new Lamden.Network(mainnet);
+
+//A Derrived Store of both user and lamden networks
+export const testnetNetwork = new Lamden.Network(testnet);
 
 export const createNetworksStore = () => {
     let initialized = false;
@@ -46,27 +71,37 @@ export const createNetworksStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"networks": startValue}, function(getValue) {
             initialized = true;
+            if (today < launchDate){
+                if (getValue.networks.current === networkKey(mainnet)){
+                    getValue.networks.current = networkKey(testnet)
+                }
+            }
             NetworksStore.set(getValue.networks)
         });
     }
-
+    const updateAllBalances = (netKey = undefined) => {
+        let networkStore = get(NetworksStore);
+        let currentNetwork = foundNetwork(get(NetworksStore), !netKey ? networkStore.current : netKey)
+        chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: currentNetwork})
+    }
     //Create Intial Store
     const NetworksStore = writable(startValue);
 
     //This is called everytime the NetworksStore updated
-    NetworksStore.subscribe(current => {
+    NetworksStore.subscribe(currentStore => {
         if (!initialized) {
-            return current
+            return currentStore
         }
         //Only accept an object that can be determined to be a networks storage object
         // if store has already been initialized
-        if (isNetworkStoreObj(current)){
-            current.lamden = lamdenNetworks;
-            chrome.storage.local.set({"networks": current});
+        if (isNetworkStoreObj(currentStore)){
+            currentStore.lamden = lamdenNetworks;
+            let found = foundNetwork(currentStore, currentStore.current)
+            if (!found) currentStore.current = defualtNetworksStore.current
+            chrome.storage.local.set({"networks": currentStore});
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore();
-            console.log('Recovered from bad Network Store Value')
         }
     });
 
@@ -81,6 +116,8 @@ export const createNetworksStore = () => {
         subscribe,
         set,
         update,
+        mainnetNetwork,
+        testnetNetwork,
         //Make a network the current selected network
         //This sets the value of the derived "currentNetwork" store
         setCurrentNetwork: (networkInfo) => {
@@ -88,24 +125,45 @@ export const createNetworksStore = () => {
             if (!isNetworkObj(networkInfo)) return;
 
             let netKey = networkKey(networkInfo);
+
             //If this is already the current network then do nothing
             if (netKey !== get(NetworksStore).current){
                 NetworksStore.update(networksStore => {
                     //If the network is found then set this as the current network
                     if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
+                    updateAllBalances(netKey)
                     return networksStore;
                 })
             }
+        },
+        setNetworkByKey: (netKey) => {
+            if (!validateTypes.isStringWithValue(netKey)) return
+
+            //If this is already the current network then do nothing
+            if (netKey === get(NetworksStore).current) return
+            //Match netKey to a network
+            let foundNetwork = foundNetwork(get(NetworksStore), netKey)
+            //If network is found, make it current
+            if(foundNetwork){
+                NetworksStore.update(networksStore => {
+                    networksStore.current = netKey;
+                    return networksStore;
+                })
+            }
+
         },
         //Add a new network into the Networks Array
         addNetwork: (networkInfo) => {
             //Reject undefined or missing Network info
             if (!isNetworkObj(networkInfo)) return {added: false, reason: 'badArg'};
 
+            if (networkInfo.name.includes("|")) return {added: false, reason: 'badArg'};
+
             //Set Defaults if they weren't passed
             if (!networkInfo.online) networkInfo.online = false;
 
-            //Don't add network if ip/port already exists
+
+            //Don't add network if a similar one exits
             let netKey = networkKey(networkInfo);
             if (foundNetwork(get(NetworksStore), netKey)) return {added: false, reason: 'duplicate'};
             
@@ -164,6 +222,8 @@ export const allNetworks = derived(
     $NetworksStore => {
         return makeList($NetworksStore)
 })
+
+
 
 //A Derrived Store that contains values formatted for a DropDown Box
 export const networksDropDownList = derived(

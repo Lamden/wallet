@@ -2,34 +2,37 @@
 	import { onMount, onDestroy, setContext } from 'svelte';
 
     //Images
-    import lamden_logo from '../img/nav/lamden_logo_new.svg';
+    import lamden_logo from '../img/coin_logos/lamden_logo_white.svg';
     import lamden_words from '../img/nav/lamden_words.svg';
 
 	//Components
 	import ApproveConnection from './confirms/ApproveConnection.svelte'
 	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
+	import CurrencyApproval from './confirms/CurrencyApproval.svelte'
 	
 	setContext('confirm_functions', {
 		approveApp: () => sendApproveApp(),
 		setTrusted: (trusted) => trustedApp = trusted,
-		setFunding: (funding) => funding ? fundingInfo = funding : null,
+		setFunding: (funding) => setFundingInfo(funding),
 		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
-		openNewTab: (url) => openNewTab(url)
+		openNewTab: (url) => openNewTab(url),
+		logoFormat: (logo) => fixLogo(logo) 
 	});
 
 	const componentMap = {
 		ApproveConnection, 
-		ApproveTransaction
+		ApproveTransaction,
+		CurrencyApproval
 	}
 	let confirmData;
+	
 	let confirmed = false;
 	let trustedApp = false;
 	let fundingInfo = false;
 
-	onMount(() => {
+	onMount(() => {		
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
-			console.log(response)
 			if (response) confirmData = response
 		})
 
@@ -39,6 +42,10 @@
 	});
 
 	const confirm = () => confirmed = true;
+
+	const setFundingInfo = (funding) => {
+		fundingInfo = funding
+	}
 
 	const sendApproveApp = () => {
 		confirm();
@@ -64,20 +71,25 @@
 		if (!confirmed) chrome.runtime.sendMessage({type: 'denyPopup', data: confirmData.type})
 	}
 
+	const fixLogo = (logo) => logo.substring(0, 1) === '/' ? logo.substring(1, logo.length) : logo
+
 	window.addEventListener("beforeunload", sendRejection);
 </script>
 
 <style>
-	:global(body){
-		color: var(--font-primary);
-		background-color: var(--bg-color);
+	:global(h2){
+		margin-bottom: 1rem;
+		text-align: center;
 	}
 
-	:global(h1){
-		font-style: normal;
-		font-weight: normal;
-		font-size: 24px;
-		line-height: 28px;
+	:global(.dapp-name){
+    	margin-bottom: 0.25rem;
+		align-items: center;
+		
+	}
+
+	:global(.dapp-name-text){
+		font-size: 23px;
 	}
 
 	.container{

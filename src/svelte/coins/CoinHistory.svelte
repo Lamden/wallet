@@ -1,8 +1,8 @@
 <script>
-    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
+    import { beforeUpdate, afterUpdate } from 'svelte';
     
     //Stores
-    import { breadcrumbs, currentNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork } from '../../js/stores/stores.js';
 
 	//Components
     import { Transactions, PendingTransactions }  from '../Router.svelte'
@@ -17,11 +17,6 @@
     export let transactionsList;
     export let fetchTransactions;
 
-
-	onMount(() => {
-        if (all) breadcrumbs.set([{name: 'History', page: {name: ''}},]);
-    });
-
 </script>
 
 <style>
@@ -34,12 +29,17 @@
 
 <div class="history text-primary">
     <div class="flex-row">
-        <div><h4>Pending</h4></div>
+        <h3>Pending</h3>
         <div>{@html refresh}</div>
     </div>
     
     <PendingTransactions pendingTransactions={pendingTxList} />
-    {#if transactionsList.length > 0}
-        <Transactions {transactionsList} vk={coin.vk} {fetchTransactions}/>
+
+    {#if $currentNetwork.blockExplorer}
+        {#if transactionsList.length > 0}
+            <Transactions {transactionsList} vk={coin.vk} {fetchTransactions} />
+        {/if}
+    {:else}
+        <p>This network does not have a Block Explorer to pull a transaction history from.</p>
     {/if}
 </div>

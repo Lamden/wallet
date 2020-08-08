@@ -122,8 +122,8 @@
 </style>
 
 <div class="coin-delete">
-    <h1> {`${dappInfo.appName} - Revoke Wallet Access`} </h1>
-    <h2>You are about to do the following:</h2>
+    <h2> {`${dappInfo.appName} - Revoke Wallet Access`} </h2>
+    <h3>You are about to do the following:</h3>
     <div class="bullets text-subtitle2">
         <div class="flex-row">
             <p class="flex-row">
@@ -133,7 +133,10 @@
             </p>
             <div class="text-cyan">{`${$currentNetwork.type.toUpperCase()}.`}</div>
         </div>
-        <p>{`This action will NOT delete the Account from your Lamden Wallet.`}</p>
+        <div id={'warning-msg'} class="flex-row warning-message">
+            <div class="icon" >{@html warning}</div>
+            <p class="text-body-1">{`This action will NOT delete the Account from your Lamden Wallet.`}</p>
+        </div>
     </div>
 
     <form on:submit|preventDefault={() => handleSubmit(formObj) } bind:this={formObj} target="_self">
@@ -144,16 +147,11 @@
                     bind:thisInput={passwordObj}
                     label={"Password"}
                     placeholder={`Enter Lamden Wallet Password`}
-                    styles={`margin-bottom: 17px;`}
+                    margin="0 0 1rem 0"
                     on:changed={() => setValidity(passwordObj, '')}
                     on:keyup={refreshValidityKeyup}
                     inputType={"password"}
                     required={true}/>
-            {:else}
-                <div id={'warning-msg'} class="warning-message flex-row">
-                    <div class="icon" >{@html warning}</div>
-                    <h6>{`Please Confirm ${dappInfo.appName} Access Removal`}</h6>
-                </div>
             {/if}
         </div>
         <div class="buttons flex-column">

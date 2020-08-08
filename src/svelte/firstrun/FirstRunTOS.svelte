@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     //Stores
     import { steps } from '../../js/stores/stores.js';
@@ -29,39 +30,32 @@
 </script>
 
 <style>
-.firstrun-tos{
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    width: 498px;
-    padding: 0px 24px 0 242px;
-    justify-content: center;
-}
-
-.text-box{
-   height: 144px;
-   margin-bottom: 20px;
+strong{
+    font-weight: 400;
 }
 </style>
-
-<div class="firstrun-tos">
-    <h6 class="text-primary">Remember</h6>
-    
-    <div class="text-box text-body1 text-primary">
-        Storing your password and backing up your wallet is YOUR RESPONSIBILITY. This is important to keeping your cryptocurrency safe.
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
+        <h6 class="text-primary">Remember</h6>
+        
+        <div class="flow-text-box text-body1 text-primary">
+            Storing your password and backing up your wallet is <strong>YOUR RESPONSIBILITY</strong>. This is important to keeping your cryptocurrency safe.
+        </div>
+        <div class="flex-column flow-buttons">
+            <Button
+                id={"i-understand"} 
+                classes={'button__solid button__purple'}
+                styles={'margin-bottom: 16px;'}
+                name="I understand" 
+                click={() => accept()} />
+            <Button
+                id={"go-back"}  
+                classes={'button__solid'}
+                styles={'margin-bottom: 16px;'}
+                name="go back" 
+                click={() => startOver()} />
+        </div>
     </div>
-
-    <Button
-        id={"i-understand"} 
-        classes={'button__solid button__purple'}
-        styles={'margin-bottom: 16px;'}
-        name="I understand" 
-        click={() => accept()} />
-    <Button
-        id={"go-back"}  
-        classes={'button__solid'}
-        styles={'margin-bottom: 16px;'}
-        name="go back" 
-        click={() => startOver()} />
+    <div class="flex-column flow-content-right"> </div>
 </div>
 

@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
     
     //Stores
     import { steps } from '../../js/stores/stores.js';
@@ -58,99 +59,84 @@
 </script>
 
 <style>
-.backup-createpw{
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    width: 498px;
-    padding: 0px 24px 0 242px;
-    justify-content: center;
-}
+    input{
+        margin-bottom: 1rem;
+    }
 
-.text-box{
-    margin-bottom: 8px;
-}
-
-.text-box2{
-    color: var(--font-primary-dark);
-    margin-bottom: 1rem;
-}
-
-.inputs{
-    margin-top: 1rem;
-}
-
-.buttons{
-    margin-bottom: 1rem;
-}
-a{
-    text-decoration: unset;
-}
-
+    a{
+        text-decoration: unset;
+    }
+    .flow-content-right{
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+    h3{
+        color: var(--font-warning);
+        margin-top: 3rem;
+    }
 </style>
 
-<div class="backup-createpw">
-    <h6>Keystore Password</h6>
-    
-    <div class="text-box text-body1 text-primary">
-        We suggest creating a complex password
-        and storing it in a password manager such as
-        <a class="outside-link" href="https://www.lastpass.com/"> www.lastpass.com </a>
-    </div>
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
+        <h6>Keystore Password</h6>
+        
+        <div class="flow-text-box text-body1 text-primary">
+            For maximun security we suggest creating a complex password
+            and storing it in a password manager such as
+            <a class="outside-link" href="https://www.lastpass.com/"> LastPass </a>
+        </div>
 
-    <div class="text-box2 text-body1">
-        Lamden is not responsible for lost or stolen passwords 
-    </div>
+        <StrongPW password={pwd} charLength={15}/>
 
-    <StrongPW password={pwd} charLength={15}/>
+        <form id="password-form" class="inputs" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
+                <InputBox
+                    id={'pwd1-input'}
+                    label={"Password"}
+                    placeholder={"At least 15 symbols"}
+                    bind:thisInput={pwdInput1}
+                    on:changed={() => pwd1Validity()}
+                    on:keyup={() => strongPasswordUpdate()}
+                    inputType={"password"}
+                    {pattern}
+                    required={true}
+                    autofocus={true}/>
+                <InputBox
+                    id={'pwd2-input'} 
+                    label={"Confirm Password"}
+                    placeholder={"At least 15 symbols"}
+                    margin="0 0 1rem"
+                    bind:thisInput={pwdInput2}
+                    on:changed={() => pwd2Validity()}
+                    inputType={"password"}
+                    required={true}/>
 
-    <form class="inputs" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
-            <InputBox
-                id={'pwd1-input'}
-                label={"Password"}
-                placeholder={"At least 15 symbols"}
-                width="100%"
-                bind:thisInput={pwdInput1}
-                on:changed={() => pwd1Validity()}
-                on:keyup={() => strongPasswordUpdate()}
-                inputType={"password"}
-                {pattern}
-                required={true}
-                autofocus={true}/>
-            <InputBox
-                id={'pwd2-input'} 
-                label={"Confirm Password"}
-                placeholder={"At least 15 symbols"}
-                width="100%"
-                styles={'margin-bottom: 16px;'}
-                bind:thisInput={pwdInput2}
-                on:changed={() => pwd2Validity()}
-                inputType={"password"}
-                required={true}/>
-
-            <InputBox
-                id={'hint-input'}
-                bind:thisInput={hintObj}
-                label={"Password Hint (Optional)"}
-                styles={'margin-bottom: 16px;'}
-                placeholder={"Create a Password Hint"}
-                width="100%"
-            />
-
-        <div class="buttons">
+                <InputBox
+                    id={'hint-input'}
+                    bind:thisInput={hintObj}
+                    label={"Password Hint (Optional)"}
+                    margin="0 0 1rem"
+                    placeholder={"Create a Password Hint"}
+                />
+        </form>
+        <div class="flex-column flow-buttons">
             <input  id={'create-pw-btn'}
+                    form="password-form"
                     on:click={() => formValidation()}
                     value="Create Keystore"
                     class="button__solid button__purple submit submit-button submit-button-text" 
                     type="submit" > 
+            <a  class="text-caption text-secondary" 
+                href="https://www.lamden.io" 
+                target="_blank" 
+                rel="noopener noreferrer" >
+                Help & FAQ
+            </a>
         </div>
-    </form>
-
-
-    <a  class="text-caption text-secondary" 
-        href="https://www.lamden.io" 
-        target="_blank" 
-        rel="noopener noreferrer" >
-        Help & FAQ
-    </a>
+    </div>
+    <div class="flow-content-right" in:fade="{{delay: 0, duration: 200}}">
+        <h3>Lamden is not responsible for lost or stolen passwords </h3>
+    </div>
 </div>
+
+

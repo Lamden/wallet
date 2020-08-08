@@ -166,7 +166,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             connection.networkType = 'wrongNet'
             let response = await helpers.sendConnectRequest(driver, connection)
             assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'networkType' <string> 'wrongNet' is not a valid network type. Valid Types are mainnet,testnet,mockchain."), true);
+            assert.equal(response.errors.includes("'networkType' <string> 'wrongNet' is not a valid network type."), true);
         });
         it('Rejects missing logo', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
@@ -316,65 +316,18 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors.includes("Tried to approve app but wallet was locked"), true);
-            await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
         });
         it('POPUP: Can Approve a connection request and return wallet info', async function() {
+            await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            console.log(await helpers.sendConnectRequest(driver, connection, false))
+            await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response;
+            
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);
-        });
-        it('Send error if already authorized for a network/contract combo', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            let response = await helpers.sendConnectRequest(driver, connection, true)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes(`App is already authorized to use ${connection.contractName} on ${connection.networkType}`), true);
-        });
-        it('POPUP: Can Re-approve connection', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.contractName = "submission" 
-            connection.reapprove = true;
-            console.log('Prompting!')
-            console.log(connection)
-            await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
-            let response = await helpers.getWalletResponse(driver)
-            console.log(response)
-            assert.equal(response.errors, null);
-            assert.equal(response.wallets[0], connectionInfo.wallets[0]);
-            assert.equal(response.approvals['testnet'].contractName, 'submission');
-            connectionInfo = response;
-        });
-        it('POPUP: Can Re-approve connection and create a new keypair', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.contractName = "currency" 
-            connection.reapprove = true;
-            connection.newKeypair = true;
-            console.log('Prompting!')
-            await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
-            let response = await helpers.getWalletResponse(driver)
-            assert.equal(response.errors, null);
-            assert.equal(response.wallets[0] === connectionInfo.wallets[0], false);
-            assert.equal(response.approvals['testnet'].contractName, connection.contractName);
-            connectionInfo = response;
-        });
-        it('Sends error if the dapp was previously approved but the wallet has no keypair for it anymore', async function() {
-            await helpers.switchWindow(driver, 0)
-            await driver.executeScript(`
-                backpage = chrome.extension.getBackgroundPage();
-                backpage.deleteCoin({vk: "${connectionInfo.wallets[0]}"})
-            `);
-            await helpers.switchWindow(driver, 1)
-            await helpers.sleep(2000, true)
-            let connection = await helpers.getInstance(dappsInfo.basicConnectionInfo)
-            let response = await helpers.sendConnectRequest(driver, connection, true)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors[0].includes(`Prompt the user to restore their keypair for vk '${connectionInfo.wallets[0]}'`), true);
         });
     })
 })

@@ -2,7 +2,7 @@
 	import { onMount, getContext, setContext } from 'svelte'
 	
     //Stores
-    import { breadcrumbs, currentNetwork, activeTab, FilesStore, NetworksStore } from '../../js/stores/stores.js';
+    import { currentNetwork, activeTab, FilesStore, NetworksStore } from '../../js/stores/stores.js';
 
 	//Components
 	import { IdeErrorsBox, IdeMethods, IdeGetVariable, IdeTabs, Components }  from '../Router.svelte';
@@ -24,7 +24,6 @@
 	let CONTRACTING_API = "http://167.99.173.97/contracting"
 
 	onMount(() =>{
-		breadcrumbs.set([{name: 'Smart Contracts', page: {name: ''}}]);
 		Monaco.then(mod => {
 			if (mod){
 				monaco = mod;
@@ -58,7 +57,7 @@
 					code: $activeTab.code
 				})
 			})
-			.catch(err => console.log(err))
+			.catch(err => console.log({err}))
 			.then(res => res.json())
 			.then(json =>{
 				sendCallback(json)

@@ -2,7 +2,6 @@
 //Layout
 import Nav from './nav/Nav.svelte';
 import NavLogo from './nav/NavLogo.svelte';
-import NavBreadcrumb from './nav/NavBreadcrumb.svelte';
 import NavControls from './nav/NavControls.svelte';
 import NavStatus from './nav/NavStatus.svelte';
 import Menu from './menu/Menu.svelte';
@@ -27,7 +26,7 @@ import CoinModify from './coins/CoinModify.svelte';
 import CoinOptions from './coins/CoinOptions.svelte';
 import CoinDappOptions from './coins/CoinDappOptions.svelte';
 import CoinDappSettings from './coins/CoinDappSettings.svelte';
-import CoinDappPreApproval from './coins/CoinDappPreApproval.svelte';
+import CoinDappTrusted from './coins/CoinDappTrusted.svelte';
 import CoinDappRevoke from './coins/CoinDappRevoke.svelte';
 import CoinAdd from './coins/CoinAdd.svelte';
 import CoinAddDetails from './coins/CoinAddDetails.svelte';
@@ -60,7 +59,6 @@ import RestoreSaveWallets from './backup_restore/RestoreSaveWallets.svelte';
 import RestoreComplete from './backup_restore/RestoreComplete.svelte';
 
 //History
-import HistoryMain from './history/HistoryMain.svelte';
 import PendingTransactions from './history/PendingTransactions.svelte'
 import PendingTransaction from './history/PendingTransaction.svelte'
 
@@ -74,6 +72,8 @@ import DevToolsDeleteNetwork from './devtools/DevToolsDeleteNetwork.svelte';
 import Button from './components/Button.svelte';
 import Switch from './components/Switch.svelte';
 import InputBox from './components/InputBox.svelte';
+import DatePicker from './components/DatePicker.svelte';
+import TimeDelta from './components/TimeDelta.svelte';
 import Steps from './components/Steps.svelte';
 import Step from './components/Step.svelte';
 import Loading from './components/Loading.svelte';
@@ -82,10 +82,12 @@ import Card from './components/Card.svelte';
 import Modal from './components/Modal.svelte';
 import DropDown from './components/DropDown.svelte';
 import MessageBox from './components/MessageBox.svelte';
-import TxInfoBox from './components/TxInfoBox.svelte';
 import ResultBox from './components/ResultBox.svelte';
 import StrongPW from './components/StrongPW.svelte';
 import Transaction from './components/Transaction.svelte';
+import Kwargs from './components/Kwargs.svelte';
+import Kwarg from './components/Kwarg.svelte';
+import Countdown from './components/Countdown.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -159,7 +161,6 @@ export const Pages = {
     Backup,
     Swaps,
     DevToolsMain, 
-    HistoryMain, 
     About, 
     IdeMain,
     ...FirstRun 
@@ -169,6 +170,7 @@ export const Components = {
     Button, 
     Switch, 
     InputBox, 
+    DatePicker, TimeDelta,
     Steps, 
     Step, 
     Loading, 
@@ -177,20 +179,21 @@ export const Components = {
     Modal,
     DropDown,
     StrongPW,
-    Transaction
+    Transaction,
+    Kwargs, Kwarg,
+    Countdown
 };
 
 export const Modals = {
     CoinLamdenSend, 
     CoinLamdenContract,
     CoinModify, CoinOptions, CoinDelete, CoinEditNickname,
-    CoinDappOptions, CoinDappSettings, CoinDappPreApproval, CoinDappRevoke,
+    CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
     CoinLamdenContract,
     CoinAdd, CoinAddDetails,
     CoinConfirmTx,
     CoinSendingTx,
     ResultBox,
-    TxInfoBox,
     MessageBox,
     CoinDeleting,
     DevToolsDeleteNetwork,
@@ -200,7 +203,7 @@ export const Modals = {
 }
 
 export {
-    Nav, NavLogo, NavBreadcrumb, NavControls, NavStatus,
+    Nav, NavLogo, NavControls, NavStatus,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
     Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory,
@@ -209,7 +212,7 @@ export {
     Restore,
     LockScreen,
     Modal,
-    HistoryMain, PendingTransactions, PendingTransaction,
+    PendingTransactions, PendingTransaction,
     Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,

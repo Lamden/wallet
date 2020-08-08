@@ -55,6 +55,6 @@
 </style>
 
 <div class="deleting-coin flex-column">
-    <h5>Deleting Account from Wallet</h5>
+    <h2>Deleting Account from Wallet</h2>
     <Loading />
 </div>

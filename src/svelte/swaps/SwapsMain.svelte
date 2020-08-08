@@ -11,8 +11,8 @@
 
     setContext('functions', {
         changeStep: (step) => {
-            if (step === -1 && currentStep === 0) switchPage('Swaps');
-            else if (step === -1) currentStep = back;
+            if (step === 0 && currentStep === 0) switchPage('Swaps');
+            else if (step === 0) currentStep = back;
             else currentStep = step;
         },
         setSwapInfo: (info) => {swapInfo = info},
@@ -39,7 +39,7 @@
     let swapStatus = {};
     let swapResult = {};
 
-    let SwapsSteps = [
+    let steps = [
         {page: 'SwapsChooseLamden', hideSteps: false, back: 0},
         {page: 'SwapsConnectMetamask', hideSteps: false, back: 0},
         {page: 'SwapsSendApproval', hideSteps: false, back: 1},
@@ -47,9 +47,10 @@
         {page: 'SwapsPerformSwap', hideSteps: false, back: 0}
     ]
 
-    $: currentPage = SwapsSteps[currentStep].page;
-    $: hideSteps = SwapsSteps[currentStep].hideSteps;
-    $: back = SwapsSteps[currentStep].back;
+    $: currentPage = steps[currentStep].page;
+    $: hideSteps = steps[currentStep].hideSteps;
+    $: back = steps[currentStep].back;
+    $: hideBack = steps[currentStep].hideBack ? false : true;
 
     const getApprovalAmount = () => {
         try{
@@ -61,88 +62,16 @@
     
 </script>
 
-<style>
-.layout{
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
 
-.content{
-    flex-grow: 1;
-    display: flex;
-}
-
-.header{
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    left: 0%;
-    right: 0%;
-    top: 0%;
-    bottom: 0%;
-    right: 0;
-    height: 97px;
-    border-bottom: 1px solid #3D3D3D;
-}
-
-.steps{
-    display: flex;
-    justify-content: center;
-    height: 180px;
-}
-
-.hide-steps{
-    display: none;
-}
-
-:global(.swaps-intro){
-    flex-grow:1;
-    padding-top: 100px;
-}
-:global(.content-left){
-    box-sizing: border-box;
-    padding: 0px 24px 0 60px;
-    width: 316px;
-    justify-content: flex-start;
-}
-:global(.content-right){
-    align-items: center;
-    justify-content: flex-start;
-    flex-grow: 1;
-    padding: 3rem 5% 0;
-    width: calc(100vw - 498px);
-    max-width: 800px;
-}
-:global(.content-left > .text-box){
-    margin: 1rem 0;
-}
-:global(.content-left > .buttons){
-    flex-grow: 1;
-    max-height: 250px;
-    justify-content: flex-end;
-}
-
-@media (min-width: 900px) {
-    :global(.content-left){
-        padding: 0px 24px 0 242px;
-        min-width: 498px;
-    }
-    :global(.content-right){
-        width: calc(100vw - 625px);
-    }
-}
-</style>
-
-<div class="layout">
-    <div class="header">
+<div class="flow-layout">
+    <div class="flow-header">
         <NavLogo />
     </div>
-    <div class="content">
+    <div class="flow-content">
         <svelte:component this={SwapsPages[currentPage]} />
     </div>
-    <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back}/>
+    <div class="flow-steps" class:flow-hide-steps={hideSteps}>
+        <Steps {back} {hideBack}/>
     </div>
 </div>
 

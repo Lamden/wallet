@@ -6,6 +6,11 @@
 
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
+    //Icons
+    import smartContract from '../../img/menu_icons/icon_smartcontract.svg'
+    import network from '../../img/menu_icons/icon_network.svg'
+    import process from '../../img/menu_icons/icon_process.svg'
+    import arrow_right from '../../img/menu_icons/icon_arrow-right-2color.svg'
 
     //Context
     const { approveTx, close, openNewTab } = getContext('confirm_functions');
@@ -21,47 +26,70 @@
 </script>
 
 <style>
+p{
+    margin: 0;
+}
 .details{
     align-items: center;
     flex-grow: 1;
     justify-content: space-between;
     padding: 20px;
-    text-align: center;
 }
 
 .hero-rec{
     width: 100%;
-    height: 119px;
-    padding: 15px 0;
+    padding: 1.2rem 20px;
     justify-content: space-between;
+    align-items: center;
     background-size: cover;
     background-repeat: no-repeat;
-    align-items: center;
-}
-
-.dapp-name{
-    margin-bottom: 0.5rem;
+    box-sizing: border-box;
 }
 
 .approve-items{
-    justify-content: center;
-    align-content: space-around;
     width: 100%;
+    justify-content: space-between;
 }
 
-.item{
-    width: 45%;
-    justify-content: space-evenly;
-    border-right: 1px solid gray;
+.approve-items .item{
+    padding: 5px 15px 5px 5px;
+    width: fit-content;
+    max-width: 48%;
+}
+.approve-items .item_icon{
+    width: 22px;
+    min-width: 22px;
+    margin-right: 5px;
+}
+.approve-items .item_value{
+    max-width: 100%;
+    word-break: break-word;
 }
 
-.item:last-child{
+.approve-items .item:last-child{
     border-right: none;
+}
+.approve-items .item p {
+    margin: 0 0 0.25px 0;
+}
+.function{
+    align-items: center;
+    margin: 1rem 0 ; 
+}
+.function .text-body2{
+    font-size: 1.4em;
+}
+.function_icon{
+    width: 60px;
+    margin-right: 5px;
 }
 
 .kwargs {
     align-items: flex-start;
-    max-height: 175px;
+    width: 100%;
+    padding: 0 5px;
+    flex-grow: 1;
+    max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -74,66 +102,95 @@
     margin-bottom: unset;
 }
 
-.text-subtitle4.copy-link{
-    margin-top: 1rem;
-}
-
 .buttons{
-    margin-bottom: 0.5rem;
+    margin: 1rem 0;
+}
+a.help{
+    text-align: center;
+}
+.dapp-name > img {
+    width: 37px;
+    margin-right: 10px;
+}
+.kwargs .flex-row{
+    align-items: center;
+}
+.kwarg_icon{
+    width: 15px;
+    margin-right: 5px;
+    position: relative;
+    top: 1px;
 }
 
 </style>
 
 <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-    <h1>{`Confirm Transaction From`}</h1>
-    <div class="text-body3 dapp-name">{`${dappInfo.appName}`}</div>
-    <div class=" appurl-link text-body2 text-primary-dark" on:click={() => openNewTab(dappInfo.url)}>{`source ${dappInfo.url}`}</div>
+    <h2>{`Confirm Transaction From`}</h2>
+    <div class="flex-row dapp-name">
+        <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />
+        <p class="dapp-name-text">{`${dappInfo.appName}`}</p>
+    </div>
+    <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>
 <div class="details flex-column">
     <div class="approve-items flex-row">
-        <div class="item flex-column">
-            <div class="text-body2 text-primary-dark">{`Smart Contract`}</div>
-            <div>{txData.txInfo.contractName}</div>
+        <div class="item flex-row">
+            <div class="item_icon">
+                {@html smartContract}
+            </div>
+            <div class="item_info flex-column">
+                <p class="text-body2 text-primary-dark">{`Smart Contract`}</p>
+                <p class="item_value">{txData.txInfo.contractName}</p>
+            </div>
         </div>
-        <div class="item flex-column">
-            <div class="text-body2 text-primary-dark">{`Method`}</div>
-            <div>{txData.txInfo.methodName}</div>
+        <div class="item flex-row">
+            <div class="item_icon">
+                {@html network}
+            </div>
+            <div class="item_info flex-column">
+                <p class="text-body2 text-primary-dark">{`Network`}</p>
+                <p class="item_value">{confirmData.messageData.network.name}</p>
+            </div>
         </div>
-        <div class="item flex-column">
-            <div class="text-body2 text-primary-dark">{`On Network`}</div>
-            <div>{txData.networkInfo.type.toUpperCase()}</div>
+    </div>
+    <div class="function flex-row">
+        <div class="function_icon">
+            {@html process}
+        </div>
+        <div class="function_info flex-column">
+            <p class="text-body2 text-primary-dark">{`Action`}</p>
+            <p class="text-body2">{txData.txInfo.methodName}</p>
         </div>
     </div>
 
     <div class="kwargs flex-column">
         {#each Object.keys(txData.txInfo.kwargs) as kwarg }
-            <div class="text-subtitle2">{kwarg}</div>
-            <div class="kwarg-value text-subtitle4 text-primary-dark">{txData.txInfo.kwargs[kwarg]}</div>
+        <div class="flex-row">
+            <div class="kwarg_icon">{@html arrow_right}</div>
+            <p class="text-subtitle2">{kwarg}</p>
+        </div>
+        <div class="kwarg-value text-subtitle4 text-primary-dark">{txData.txInfo.kwargs[kwarg]}</div>
         {/each}
     </div>
-    <div class="flex-column">
-        <div class="buttons flex-row">
-            <Button 
-                id={'deny-btn'}
-                classes={'button__solid button__purple'}
-                name="Deny"
-                width={'175px'}
-                height={'42px'}
-                margin={'0 20px 0 0'}
-                click={close} />
+    <div class="buttons flex-row">
+        <Button 
+            id={'deny-btn'}
+            classes={'button__solid button__purple'}
+            name="Deny"
+            width={'175px'}
+            height={'42px'}
+            margin={'0 20px 0 0'}
+            click={close} />
 
-            <Button 
-                id={'approve-btn'}
-                classes={'button__solid'}
-                name="Approve"
-                width={'175px'}
-                height={'42px'}
-                click={approveTx} />
-        </div>
-        <div>
-            <a class="text-subtitle4 copy-link" href="www.lamden.io">help?</a>
-        </div>   
+        <Button 
+            id={'approve-btn'}
+            classes={'button__solid'}
+            name="Approve"
+            width={'175px'}
+            height={'42px'}
+            click={approveTx} />
     </div>
+    <a class="outside-link help" href={confirmData.url} rel="noopener noreferrer" target="_blank">what is this?</a>
 </div>
 
 

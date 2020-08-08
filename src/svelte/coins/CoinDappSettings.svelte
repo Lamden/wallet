@@ -5,13 +5,14 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { TxStore, currentNetwork, BalancesStore } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
-    const { Button, DropDown } = Components;
+    const { Button } = Components;
     
     //Images
+    import verified_app from '../../img/menu_icons/icon_verified_app.svg'
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
     import plusWhite from '../../img/menu_icons/icon_plus-white.svg';
@@ -27,29 +28,20 @@
 
     let selectedWallet = {};
     let copySuccessful = false;
-    let options = [
-        {id: 'preapproval-btn', name: 'Pre-Approve', desc: 'automatic transactions', icon: plusWhite, color: 'purple', click: () => showPreApprove() },
-        {id: 'preapproval-btn', name: 'Revoke Access', desc: 'remove access to wallet', icon: deleteIcon, color: 'grey', click: () => showRevokeAccess() }
-    ]
+
 
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
-    $: stampPreApproval = parseInt(dappInfo[$currentNetwork.type].stampPreApproval) || 0;
-    $: stampsUsed = parseInt(dappInfo[$currentNetwork.type].stampsUsed) || 0;
-    $: stampsRemaining = stampPreApproval - stampsUsed
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
+    $: trustedApp = dappInfo[$currentNetwork.type].trustedApp;
     $: ratio = 0;
-    $: numOfTransactions =  0
-    $: totalStamps = 0
+    $: addressLink = `${$currentNetwork.blockExplorer}/address/${coin.vk}`
+    $: options = [
+        {id: 'preapproval-btn', name: 'Automatic Transactions', desc: `get rid of popups`, icon: verified_app, color: 'purple', click: () => showPreApprove() },
+        {id: 'revoke-btn', name: 'Revoke Access', desc: `remove access to ${$currentNetwork.type}`, icon: deleteIcon, color: 'grey', click: () => showRevokeAccess() }
+    ]
 
     onMount(() => {
         stampRatio.then(res => ratio = res)
-        try{
-            numOfTransactions =  $TxStore[$currentNetwork.url][dappInfo.vk].length
-            totalStamps = calcStamps($TxStore[$currentNetwork.url][dappInfo.vk]) 
-        }catch (e){
-            numOfTransactions =  0
-            totalStamps = 0
-        }
     })
 
     const showPreApprove = () => {
@@ -64,19 +56,6 @@
         copyToClipboard(dappInfo.vk)
         copySuccessful = true;
     }
-
-    const calcStamps = (txList) => {
-        let stampCount = 0
-        txList.forEach(tx => {
-            if (typeof tx.resultInfo !== 'undefined'){
-                if (!isNaN(tx.resultInfo.stampsUsed)){
-                    stampCount = parseInt(stampCount) + parseInt(tx.resultInfo.stampsUsed)
-                }
-            }
-        })
-        return stampCount;
-    }
-
 </script>
 
 <style>
@@ -124,6 +103,7 @@
 }
 .icon.copy{
     margin-left: 12px;
+    cursor: pointer;
 }
 p{
     line-height: 0;
@@ -136,12 +116,28 @@ p{
     align-items: center;
 }
 .outside-link{
+    font-size: 0.9em;
     word-break: break-word;
+}
+
+.trusted-icon{
+    width: 25px;
+    margin: 1rem 15px 0 0;
+    position: relative;
+    top: 5px;
 }
 </style>
 
 <div id="coin-dapp-settings" class="text-primary">
-    <h1>{`${dappInfo.appName} Settings`}</h1>
+    <div class="flex-row dapp-name">
+        {#if trustedApp}
+            <div class="trusted-icon" title="automatic transactions ON">
+                {@html verified_app}
+            </div>
+        {/if}
+        <h2>{`${dappInfo.appName} Settings`}</h2>
+    </div>
+    
     <div class="dapp-info text-subtitle3">
         {#if dappInfo}
             
@@ -154,9 +150,9 @@ p{
                 <p>{dappInfo[$currentNetwork.type].contractName}</p>
             </div>
             <div class="flex-row align-center">
-                <p>Accoumt Address:</p>
-                <div class="outside-link" on:click={copyWalletAddress}>{dappInfo.vk}</div>
-                <div class="icon copy">
+                <p>Account Address:</p>
+                <a class="outside-link" href={addressLink} rel="noopener noreferrer" target="_blank">{dappInfo.vk}</a>
+                <div class="icon copy" on:click={copyWalletAddress}>
                     {#if copySuccessful}
                         {@html copyGreen}
                     {:else}
@@ -167,19 +163,6 @@ p{
             <div class="flex-row align-center">
                 <p>Balance:</p>
                 <p>{`${balance} ${$currentNetwork.currencySymbol}`}</p>
-            </div>
-            <div class="flex-row align-center">
-                <p>Pre-Approved Stamps Remaining:</p>
-                <p>{`${stampsRemaining.toLocaleString()} (${stampsRemaining/ratio} ${$currentNetwork.currencySymbol})`}</p>
-                <p>{` / ${stampPreApproval.toLocaleString()} stamps`}</p>
-            </div>
-            <div class="flex-row align-center">
-                <p>Transaction Count:</p>
-                <p>{`${numOfTransactions.toLocaleString()}`}</p>
-            </div>
-            <div class="flex-row align-center">
-                <p>Total Stamps Used:</p>
-                <p>{`${totalStamps.toLocaleString()} stamps (${totalStamps/ratio} ${$currentNetwork.currencySymbol})`}</p>
             </div>
         {/if}
     </div>
@@ -195,13 +178,4 @@ p{
             </div>
         {/each}
     </div>
-
-    <div class="buttons flex-column">
-        <Button classes={'button__solid'} 
-            width={'232px'}
-            margin={'0 0 0 0'}
-            name="Back" 
-            click={() => close()} />    
-    </div>
-
 </div>

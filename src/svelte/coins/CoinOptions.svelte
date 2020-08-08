@@ -5,7 +5,7 @@
     import { copyToClipboard } from '../../js/utils.js'
 
 	//Stores
-    import { CoinStore, TxStore, currentNetwork, BalancesStore, dappsDropDown } from '../../js/stores/stores.js';
+    import { CoinStore, currentNetwork, BalancesStore, dappsDropDown } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -19,14 +19,13 @@
 
 	//Context
     const { getModalData } = getContext('app_functions');
-    const { close, setPage, setSelectedCoin, setMessage } = getContext('coinmodify_functions');
+    const { close, setPage, setSelectedCoin, setMessage, setDappInfo } = getContext('coinmodify_functions');
 
     let selectedWallet;
     let copySuccessful;
     let options = [
         {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
         {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', icon: edit, color: 'purple', click: () => showEdit() },
-        {id: 'delete-tx-btn', name: 'Purge Transactions', desc: 'Clear Tx History', icon: del, color: 'grey', click: () => clearTxHistory() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
     ]
     const buttons = [
@@ -37,7 +36,7 @@
     $: coin = getModalData();
     $: nickname = coin.nickname;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'
     $: dAppList = makeDappList($dappsDropDown)
     $: dAppInfo = undefined;
 
@@ -74,12 +73,15 @@
             if (dapp.value.vk === selectedWallet.vk) dAppInfo = {...dapp.value};
         });
         if (!dAppInfo) {
+            setDappInfo(undefined)
             list.unshift({
                 value: undefined,
                 name: "Select from approved dApps",
                 selected: true,
             });
             return list
+        }else{
+            setDappInfo(dAppInfo)
         }
         return []
     }
@@ -111,26 +113,33 @@
         nickname = wallet.nickname;
         dAppList = makeDappList($dappsDropDown)
     }
-
-    const clearTxHistory = () => {
-        TxStore.clearTx($currentNetwork, selectedWallet.vk)
-    }
 </script>
 
 <style>
 .options-box{
-    justify-content: space-between;
-    margin-top: 13px;
+    justify-content: space-evenly;
+    margin-top: 1rem;
 }
 .options{
     cursor: pointer;
     box-sizing: border-box;
     align-items: center;
     justify-content: space-between;
-    width: 175px;
-    height: 100px;
+    width: 150px;
+    height: 95px;
     border-radius: 8px;
     padding: 16px 0;
+}
+p, a{
+    margin: 0.5rem 0;
+}
+
+.linked-account{
+    margin: 1rem 0 2rem;
+}
+
+.coin-info{
+    text-align: right;
 }
 .results{
     margin-top: 7px;
@@ -165,35 +174,48 @@
 .relationship{
     margin-top: 0;
 }
+h3{
+    margin: 1rem 0 0;
+}
+h2{
+    margin: 1rem 0 0.5rem;
+}
+.app-icon{
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
 </style>
 
 <div id="coin-options" class="text-primary">
-    <h5> {`${nickname} Options`} </h5>
+    <h2> {`${nickname} Options`} </h2>
     <DropDown
         id={'wallets-dd'}
         items={coinList()} 
-        label={'Accounts'}
-        styles="margin-bottom: 19px;"
+        label={'Selected Account'}
         on:selected={(e) => setSelectedWallet(e.detail.selected.value)}
     />
-    <div class="coin-info text-subtitle3">
-        {#if selectedWallet}
-            {selectedWallet.name}
-            <strong>
-                {`${selectedWallet.symbol} - ${balance} ${$currentNetwork.currencySymbol}`}
-            </strong> 
-        {/if}
-    </div>
+    {#if selectedWallet}
+        <p class="coin-info text-subtitle2">
+            {`${balance} ${$currentNetwork.currencySymbol}`}
+        </p>
+    {/if}
     {#if dAppInfo}
-        <p class="text-body1 relationship">{`dApp Relationship: ${dAppInfo.appName}`}</p>
+        <h3>Currenty Linked Account</h3>
+        <div class="flex-row linked-account">
+            <img class="app-icon" src="{dAppInfo.url + dAppInfo.logo}" alt="{dAppInfo.appName} logo"/>
+            <a href="{dAppInfo.url}" class="outside-link text-body1" rel="noopener noreferrer">{`${dAppInfo.appName}`}</a>
+        </div>
+        
     {/if}
 
     {#if dAppList.length > 0}
+        <h3>Create Linked Account</h3>
         <DropDown
             id={'dapps-dd'}
             items={dAppList} 
-            label={'Create dApp relationship'}
-            styles="margin-bottom: 19px;"
+            label={'Currencly Linked Apps'}
+            margin="0 0 2rem"
             on:selected={(e) => associateDapp(e.detail.selected.value)}
         />
     {/if}

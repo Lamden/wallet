@@ -11,25 +11,16 @@
     import squares_bg from '../../img/backgrounds/squares_bg.png';
 
     //Context
-    const { approveApp } = getContext('confirm_functions');
+    const { approveApp, logoFormat } = getContext('confirm_functions');
 
     export let confirmData;
 
     let step = 1
 
-    const nextStep = () => {
-        if (step === 3){
-            approveApp()
-        }else{
-            step += 1
-        }
-
+    const setStep = (nextStep) => {
+        if (nextStep.detail > 3) approveApp()
+        else step = nextStep.detail
     };
-
-    const back = () => step > 1 ? step -= 1 : step = 1;
-
-	const fixLogo = (logo) => logo.substring(0, 1) === '/' ? logo.substring(1, logo.length) : logo
-
 </script>
 
 <style>
@@ -52,6 +43,7 @@
 
     .dapp-name{
         align-items: center;
+        margin-bottom: 0.25rem;
     }
 
     p{
@@ -66,30 +58,28 @@
 
 <div class="approve-conection flex-column">
     <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-        <h1>Create Wallet Account</h1>
+        <h2>Connection Request From</h2>
         <div class="flex-row dapp-name">
-            <img src={`${confirmData.url}/${fixLogo(confirmData.messageData.logo)}`} alt="app logo" />
-            <p class="text-body3">{`${confirmData.messageData.appName}`}</p>
+            <img src={`${confirmData.url}/${logoFormat(confirmData.messageData.logo)}`} alt="app logo" />
+            <p class="dapp-name-text">{`${confirmData.messageData.appName}`}</p>
         </div>
         <a class="outside-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{`source ${confirmData.url}`}</a>
     </div>
     {#if step == 1}
         <ApproveConnectionIntro {confirmData}
-            on:nextStep={nextStep}
+            on:setStep={setStep}
         />
     {/if}
 
     {#if step == 2}
         <ApproveConnectionFund {confirmData}
-            on:nextStep={nextStep} 
-            on:back={back}
+            on:setStep={setStep} 
         />
     {/if}   
 
     {#if step == 3}
         <ApproveConnectionTrusted {confirmData}
-            on:nextStep={nextStep} 
-            on:back={back}
+            on:setStep={setStep} 
         />
     {/if}
 

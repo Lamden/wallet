@@ -5,19 +5,18 @@
 	import { 
 			CoinStore,
 			balanceTotal,
-			breadcrumbs,
-			currentNetwork
+			currentNetwork,
+			networkKey
 		} from '../../js/stores/stores.js';
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
-	const { Button } = Components;
+	const { Button, Countdown } = Components;
 
 	//Images
 	import squares_bg from '../../img/backgrounds/squares_bg.png';
 	import refresh from '../../img/menu_icons/icon_refresh.svg';
 	import plus from '../../img/menu_icons/icon_plus.svg';
-
 
 	//Utils
 	import { decryptObject } from '../../js/utils.js';
@@ -28,21 +27,21 @@
 	//Props
 	export let name
 
-	$: totalBalance = $balanceTotal[$currentNetwork.url] ? $balanceTotal[$currentNetwork.url] : 0;
+	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : 0;
 
 	let refreshing = false;
 
-	onMount(async () => {
-		breadcrumbs.set([{name: 'Accounts', page: {name: ''}}]);
+	onMount(() => {
 		handleRefresh();
 	});
 
 	const handleRefresh = () => {
+		if (refreshing) return
 		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false
-		}, 1000);
+		}, 2000);
 	}
 
 </script>
@@ -54,10 +53,11 @@
 }
 
 .hero-rec{
+	position: relative;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	height: 430px;
+	height: 346px;
 	border-radius: 4px;
 	margin-bottom: 18px;
     padding: 40px;
@@ -66,12 +66,11 @@
 }
 
 .refresh-icon{
-	margin-left: 10px;
     width: 40px;
-    justify-content: center;
-    height: 70px;
 }
-
+.text-huge:first-child{
+    margin-right: 10px;
+}
 .header{
 	display: flex;
 	flex-direction: row;
@@ -105,46 +104,31 @@
 	margin-right: 28px;  
 	width: 203px;
 }
-.balance-words{
-	padding-left: 42px;
-	margin: 14px 0;
-	
-}
 .balance-total{
-	padding-left: 42px;
-	align-items: flex-start;
+	align-items: center;
+}
+p{
+    margin: 0;
+}
+.buttons{
+	align-items: flex-end;
 	flex-grow: 1;
 }
-
-.spinner{
-	animation: rotation 4s infinite linear;
-}
-
-@keyframes rotation {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-720deg);
-  }
-}
-
 </style>
 
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-		<div class="balance-words text-body3">
+		<Countdown />
+		<div class="balance-words text-body1">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
-		<div class="balance-total">
-			<div class="flex-row  text-title">
-				{`${totalBalance.toLocaleString('en')}`}
-				<div on:click={handleRefresh} 
-					id="refresh-icon"
-					class="flex-col refresh-icon clickable" 
-					class:spinner={refreshing}>
-					{@html refresh} 
-				</div>
+		<div class="flex-row balance-total">
+			<p class="text-huge">{`${totalBalance.toLocaleString('en')}`}</p>
+			<div on:click={handleRefresh} 
+				id="refresh-icon"
+				class="flex-col refresh-icon" 
+				class:spinner={refreshing}>
+				{@html refresh} 
 			</div>
 
 		</div>

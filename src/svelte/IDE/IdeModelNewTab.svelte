@@ -15,6 +15,7 @@
     let contractField;
 
     let contractName = "";
+    let contractExists = false;
 
     const newTabFile = () => {
         FilesStore.addDefaultFile();
@@ -80,7 +81,6 @@
 .existing-row{
     justify-content: space-evenly;
     align-items: flex-end;
-    margin-top: -10px;
 }
 .cancel-row{
     align-items: center;
@@ -90,35 +90,36 @@
 
 <div class="container flex-column">
     <div class="flex-column">
-        <h5>Open Contract</h5>
+        <h2>Open Contract</h2>
         <div class="text-subtitle3">
             Start a new contract or Open and existing contract from the blockchain
         </div>
     </div>
-    <h4>New</h4>
+    <h3>New</h3>
     <div class="flex-row new-row">
         <Button 
             id={'newTab-btn'} 
-            classes={'button__solid button__purple'}
+            classes={'button__transparent'}
             width={'40%'}
             name="Blank Contract"
             click={newTabBlankFile} 
         />
         <Button 
             id={'newTab-btn'} 
-            classes={'button__solid button__purple'}
+            classes={'button__transparent'}
             width={'40%'}
             name="Example Contract"
             click={newTabFile} 
         />
     </div>
 
-    <h4>From Blockchain</h4>
+    <h3>From Blockchain</h3>
     <div class="flex-row existing-row">
         <InputBox
             id={'contract-input'}
             label={`Contract (${$currentNetwork.name})`}
             width={'50%'}
+            height={'42px'}
             bind:thisInput={contractField}
             bind:value={contractName}
             on:changed={refreshValidity}
@@ -126,7 +127,7 @@
         />
         <Button 
             id={'contractTab-btn'} 
-            classes={'button__solid'}
+            classes={'button__solid button__purple'}
             name="Open"
             width={'30%'}
             height={'42px'}

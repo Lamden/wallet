@@ -1,4 +1,7 @@
 <script>
+	import { fly } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
+    
     //Components
     import { MenuBox }  from '../Router.svelte'
     
@@ -18,11 +21,10 @@
         {
             heading: 'Wallet',
             items:[
-                {id:"holdings", logo: holdings, name: 'Accounts', page: {name: 'CoinsMain'}},
-               // {id:"history", logo: history, name: 'History', page: {name: 'HistoryMain'}},
-                {id:"devtools", logo: devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
+                {id:"accounts", logo: holdings, name: 'Accounts', page: {name: 'CoinsMain'}},
                 {id:"smart-contracts", logo: ide, name: 'Smart Contracts', page: {name: 'IdeMain'}},
                 {id:"token-swap", logo: swap, name: 'Token Swap', page: {name: 'Swaps'}},
+                {id:"devtools", logo: devtools, name: 'Developer Tools', page: {name: 'DevToolsMain'}},
             ]
         },
         {
@@ -46,20 +48,20 @@
 
 <style>
 .menus{
+    position: fixed;
     padding: 21px 0px 0px 40px;
     width: 46px;
-    
 }
 
 @media (min-width: 900px) {
     .menus{
-        width: unset;
+        width: 240px;
     }
 }
 
 </style>
 
-<div class="menus flex-column text-primary">
+<div class="menus flex-column text-primary" in:fly="{{delay: 0, duration: 500, x: -50, y: 0, opacity: 0.0, easing: quintOut}}">
     {#each menus as menu}
         <MenuBox heading={menu.heading} menuItems={menu.items} />
     {/each}

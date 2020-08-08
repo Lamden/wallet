@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,600,700,800&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
   
 
@@ -20,6 +20,8 @@ body{
     --font-primary-light: #ffffff99; 
     --font-secondary: #D1D1D1;
     --font-accent: #4FB8FF;
+    --font-success: #31ce31;
+    --font-warning: orange;
     --bg-color: #151515; 
     --bg-color-grey: #303030;
     --bg-menu-grey: #262626a3;
@@ -34,7 +36,7 @@ body{
     margin: 0;
     min-height: unset;
     display: flex; 
-    color: var(--font-primary-dark)
+    color: var(--font-primary)
 }
 
 .flex-column{
@@ -55,11 +57,15 @@ body{
     color: var(--primary-color);
 }
 
+.text-warning{
+    color: var(--font-warning);
+}
+
 .text-red{
     color: #f72d2d;
 }
 .text-green{
-    color: #31ce31;
+    color: var(--font-success);
 }
 
 .text-cyan{
@@ -86,44 +92,69 @@ body{
     font-weight: bold
 }
 
+
+.text-title, h1{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 45px;
+    letter-spacing: 0.25px;
+}
+
+h2{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 30px;
+    letter-spacing: 0.25px;
+    margin: 1rem 0 2rem;
+}
+
+h3{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.44px;
+}
+
+
 .text-body1{
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
-    line-height: 24px;
     letter-spacing: 0.44px;
 }
 
-.text-body2{
+.text-body2, h4{
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
-    line-height: 20px;
     letter-spacing: 0.25px;
 }
-.text-body3{
+.text-body3, h5{
     font-style: normal;
     font-weight: normal;
-    font-size: 25px;
-    line-height: 24px;
+    font-size: 12px;
     letter-spacing: 0.44px;
 }
 
-
-.text-title{
-    font-family: 'Quicksand', sans-serif;
+.text-huge{
     font-style: normal;
     font-weight: normal;
     font-size: 55px;
-    line-height: 69px;
+    letter-spacing: 0.25px;    
+}
+
+h6{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 22px;
     letter-spacing: 0.25px;
+    margin: 1rem 0 2rem;
 }
 
 .text-subtitle1{
     font-style: normal;
     font-weight: normal;
     font-size: 10px;
-    line-height: 15px;
     letter-spacing: 0.25px;
 }
 
@@ -131,7 +162,6 @@ body{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-    line-height: 24px;
     letter-spacing: 0.1px;
 }
 
@@ -139,7 +169,6 @@ body{
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
-    line-height: 20px;
     letter-spacing: 0.44px;
 }
 
@@ -148,15 +177,14 @@ body{
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
-    line-height: 16px;
     letter-spacing: 0.4px;
+    text-align: center;
 }
 
 .text-caption2{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-    line-height: 28px;
     letter-spacing: 0.15px;
 }
 
@@ -164,7 +192,6 @@ body{
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-    line-height: 16px;
     letter-spacing: 0.75px;
     text-transform: uppercase;
 }
@@ -192,9 +219,16 @@ body{
     border-radius: 5px 0 0 5px;
 }
 
+.buttonGroup__left:focus{
+    z-index: 1
+}
+
 .buttonGroup__right{
     box-shadow: unset;
     border-radius: 0 5px 5px 0;
+}
+.buttonGroup__right:focus{
+    z-index: 1
 }
 
 .buttonGroup__center{
@@ -203,7 +237,9 @@ body{
     border-left: 1px solid var(--font-primary-darker);
     border-right: 1px solid var(--font-primary-darker);
 }
-
+.buttonGroup__center:focus{
+    z-index: 1
+}
 
 .button__hover_blue:hover{
     background-color: var(--font-accent);
@@ -276,6 +312,7 @@ button {
 
 .submit-button {
     width: 232px;
+    height: 42px;
     padding: 13px 16px;
     cursor: pointer;
 }
@@ -289,10 +326,6 @@ button {
     text-align: center;
     letter-spacing: 0.75px;
     text-transform: uppercase;
-}
-
-.coin-info{
-    height: 40px;
 }
 
 .error {
@@ -394,8 +427,229 @@ button {
     fill: var(--font-accent)
 }
 
-input[type="checkbox"]{
-    width: 18px;
-    height: 18px;
-    background: #DADADA;
+.inputbox-label{
+    position: relative;
+    top: 8px;
+    left: 9px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 11px;
+    line-height: 16px;
+    padding: 0 4px;
+    color: var(--font-primary);
+    background: transparent;
 }
+
+.mainbox{
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    background: none;
+    border: 1px solid #e0e0e03d;
+    box-sizing: border-box;
+    transition: border 0.5s;
+    border-radius: 4px;
+    padding: 10px 12px;
+
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.1em;
+    line-height: 1;
+    color: var(--font-primary);
+    letter-spacing: 0.44px;
+}
+
+.mainbox:focus{
+    outline: none; 
+    border: 1px solid var(--primary-color);
+}
+
+.mainbox::-webkit-input-placeholder { 
+    font-style: normal;
+    font-weight: normal;
+    font-size: 1.1em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.44px;
+    color: var(--font-primary-dark);
+}
+
+/* Chrome, Safari, Edge, Opera */
+.mainbox::-webkit-outer-spin-button,
+.mainbox::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.mainbox[type=number] {
+  -moz-appearance:textfield;
+}
+
+.mainbox:-webkit-autofill,
+.mainbox:-webkit-autofill:hover, 
+.mainbox:-webkit-autofill:focus
+ {
+  border: 1px solid #e0e0e03d;
+  -webkit-text-fill-color: var(--font-primary);
+  box-shadow: 0 0 0px 1000px var(--bg-color) inset;
+}
+
+
+.flow-layout{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.flow-page{
+    flex-grow:1;
+    padding-top: 100px;
+}
+.flow-content{
+    flex-grow: 1;
+    display: flex;
+}
+.flow-header{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+    right: 0;
+    height: 97px;
+    border-bottom: 1px solid #3D3D3D;
+}
+.flow-steps{
+    display: flex;
+    justify-content: center;
+    height: 180px;
+}
+
+.flow-hide-steps{
+    display: none;
+}
+.flow-content-left{
+    box-sizing: border-box;
+    padding: 0px 24px 0 60px;
+    max-height: 550px;
+    width: 316px;
+    justify-content: flex-start;
+}
+.flow-content-right{
+    align-items: center;
+    justify-content: flex-start;
+    flex-grow: 1;
+    padding: 1rem 5% 0;
+    width: calc(100vw - 498px);
+    max-width: 800px;
+}
+.flow-content-left > .text-box{
+    margin: 1rem 0;
+}
+.flow-content-left > .buttons{
+    flex-grow: 1;
+    max-height: 250px;
+    justify-content: flex-end;
+}
+
+.flow-text-box{
+    font-weight: 300;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+.flow-buttons{
+    flex-grow: 1;
+    justify-content: center;  
+}
+
+@media (min-width: 900px) {
+    .flow-content-left{
+        padding: 0px 24px 0 242px;
+        min-width: 498px;
+    }
+    .flow-content-right{
+        width: calc(100vw - 625px);
+    }
+}
+
+
+.spinner{
+	animation: rotation 4s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-720deg);
+  }
+}
+
+
+.chk-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .chk-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  .chk-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    border-radius: 4px;
+    background-color: #eee;
+  }
+  
+  .chk-container:hover input ~ .chk-checkmark {
+    background-color: #ccc;
+  }
+  
+  .chk-container input:checked ~ .chk-checkmark {
+    background-color: var(--primary-color);
+  }
+  
+  .chk-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+
+  .chk-container input:checked ~ .chk-checkmark:after {
+    display: block;
+  }
+
+  .chk-container .chk-checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }

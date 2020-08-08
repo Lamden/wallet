@@ -1,9 +1,4 @@
 <script>    
-    import { onMount } from 'svelte';
-
-	//Stores
-    import { breadcrumbs } from '../../js/stores/stores.js';
-
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
     import github_bg from '../../img/backgrounds/github_bg.png';
@@ -19,6 +14,8 @@
 	//Components
 	import { Components }  from '../Router.svelte'
     const { Card } = Components;
+
+    let version = chrome.runtime.getManifest().version;
 
     const openLink = (url) => {
         window.open(url, '_blank');
@@ -66,12 +63,6 @@
         },
     ]
 
-    onMount(() => {
-        breadcrumbs.set([
-            {name: 'About', page: {name: ''}},
-        ]);
-    });
-
 </script>
 
 <style>
@@ -104,6 +95,7 @@
 }
 </style>
 <div class="box text-primary">
+    <p class="text-body3"><strong>Version</strong> {version}</p>
     <div class="about-box"> 
         {#each aboutLinks as cardInfo}
             <Card {cardInfo} width={'45%'} />

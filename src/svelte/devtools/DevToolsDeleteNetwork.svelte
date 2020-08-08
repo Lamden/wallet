@@ -30,7 +30,7 @@
 </style>
 
 <div class="network-delete">
-    <h5> Delete Network Connection </h5>
+    <h2> Delete Network Connection </h2>
 
 
     <div class="subtitle text-subtitle3">

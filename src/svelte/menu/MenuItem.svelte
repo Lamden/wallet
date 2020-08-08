@@ -7,9 +7,6 @@
     //Context
     const { switchPage } = getContext('app_functions');
 
-    //Images
-    import warningIcon from '../../img/menu_icons/icon_warning.svg'
-
     //Props
     export let menuItem;
 
@@ -78,11 +75,8 @@
     background-color: #461BC2;
 }
 
-.warning-icon{
-    position: absolute;
-    width: 13px;
-    margin-left: -6px;
-    margin-top: -4px;
+.warning{
+    color: var(--font-warning);
 }
 
 @media (min-width: 900px) {
@@ -106,14 +100,6 @@
         height: 14px;
         margin-right: 15px;
     }
-    .warning-icon{
-        display: block;
-        width: 18px;
-        margin-right: 29px;
-        margin-left: -47px;
-        margin-top: 0px;
-        z-index: 10;
-    }
 }
 </style>
 
@@ -125,12 +111,7 @@
      on:click={ () => menuAction() }
     >
     <div class="logo">{@html menuItem.logo}</div>
-    <span class="name"> {menuItem.name} </span>
-    {#if backupPage && $needsBackup}
-        <div class="warning-icon">
-            {@html warningIcon}
-        </div>
-    {/if}
+    <span class="name" class:warning={backupPage && $needsBackup}> {menuItem.name} </span>
     <div class="floating-label text-subtitle2 ">
         {menuItem.name}
     </div>

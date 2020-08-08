@@ -106,6 +106,10 @@ div.text-body1, div.text-body2{
             {/if}
         </div>
     </div>
-    <div class="text-body1 text-primary">{stepInfo.name}</div>
+    <div class="text-body1" 
+        class:text-primary-dark={!complete && !current}
+        class:text-primary={complete || current}>
+        {stepInfo.name}
+    </div>
     <div class="text-body2 text-primary-dark">{stepInfo.desc}</div>
 </div>

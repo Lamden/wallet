@@ -13,8 +13,12 @@
     import network from '../../img/menu_icons/icon_network.svg'
 
     const dispatch = createEventDispatcher();
-    const next = () => dispatch('nextStep')
-
+    const next = () => {
+        let nextStep = 2;
+        if (confirmData.messageData.accounts.length === 0) nextStep = 3;
+        dispatch('setStep', nextStep)
+    }
+        
     //Context
     const { close, openNewTab } = getContext('confirm_functions');
 
@@ -37,8 +41,8 @@
         width: 100%;
     }
     .description{
-        font-weight: 100;
-        font-size: 1.4em;
+        font-weight: 600;
+        font-size: 1.2em;
         text-align: center;
     }
     .buttons{
@@ -48,15 +52,14 @@
         text-align: center;
     }
     .item{
-        width: 100%;
+        width: 265px;
+        margin: 0.25rem auto;
     }
     .item_icon{
-        width: 75px;
-        margin: 0 0 0 20%;
+        width: 60px;
     }
     .item_info{
-        margin-left: 20px;
-        padding-top: 0.5rem;
+        margin: auto 0 auto 20px;
         text-align: initial;
     }
     .item_info > p {
@@ -68,14 +71,19 @@
     .buttons{
         padding: 1rem 0;
     }
+    p {
+        margin: 0;
+    }
+    p.intro{
+        font-size: 1.2em;
+    }
 </style>
 
 <div class="flex-column detail"
-    in:fly="{{delay: 0, duration: 300, x: -500, y: 0, opacity: 0.25, easing: quintOut}}">
+    in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
+    
+    <p class="intro">A website would like to create a <a class="outside-link" href="www.lamden.io">linked account</a> in your wallet</p>
 
-    <div class="description text-subtitle2">
-        {confirmData.messageData.description}
-    </div>
 
     <div class="approve-items flex-col">
         <div class="item flex-row">
@@ -97,6 +105,11 @@
             </div>
         </div>
     </div>
+
+    <p class="description text-subtitle2">
+        {confirmData.messageData.description}
+    </p>
+
     <div class="flex-column">
         <div class="buttons flex-row">
             <Button 
@@ -117,7 +130,7 @@
                 click={next} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="www.lamden.io">what is this?</a>
+            <a class="outside-link" href="www.lamden.io">what are linked accounts?</a>
         </div>   
     </div>
 </div>

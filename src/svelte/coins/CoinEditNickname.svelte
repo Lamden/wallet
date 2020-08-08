@@ -18,7 +18,7 @@
     //Props
     export let coin;
     
-    $: balance = BalancesStore.getBalance($currentNetwork.url, coin.vk).toLocaleString('en') || '0'
+    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
 
     let returnMessage = {};
     
@@ -32,15 +32,11 @@
     })
 
     const saveNickName = () => {
-        CoinStore.update( current => {
-            let coinMatch = current.find( c => coin.network === c.network && coin.symbol === c.symbol && coin.vk === c.vk)
-            if (coinMatch) {
-                coinMatch.nickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
-            }
-            return current
+        let newNickname = nicknameObj.value === '' ? `My ${coin.name} ${coin.symbol}` : nicknameObj.value;
+        chrome.runtime.sendMessage({type: 'changeCoinNickname', data: {accountInfo: coin, newNickname}}, () => {
+            sendMessage()
+            setPage(6);
         })
-        sendMessage()
-        setPage(6);
     }
 
     const sendMessage = () => {
@@ -57,24 +53,24 @@
     align-items: center;
     margin: 14px 0;
 }
+p{
+    text-align: right;
+    margin: 0.5rem 0 1rem;
+}
 </style>
 
 <div class="edit-nickname">
-    <h5> Edit Account Nickname </h5>
+    <h2> Edit Account Nickname </h2>
 
     <InputBox
         id={"modify-edit-nickname"}
         label="nickname"
-        margin="0 0 19px 0"
         bind:thisInput={nicknameObj}
     />
 
-    <div id={'modify-edit-info'} class="coin-info text-subtitle3">
-        {coin.name}
-        <strong>
+    <p id={'modify-edit-info'} class="coin-info text-subtitle2">
             {`${balance} ${$currentNetwork.currencySymbol}`}
-        </strong> 
-    </div>
+    </p>
 
     <div class="buttons flex-column">
         <Button

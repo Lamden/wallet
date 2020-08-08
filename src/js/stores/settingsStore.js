@@ -8,13 +8,21 @@ const { validateTypes } = validators;
 import { isSettingsStoreObj,  isPageInfoObj} from '../objectValidations';
 
 const defualtSettingsStore = {
-    'currentPage' : {'name': 'FirstRunMain', 'data' : {}},
-    'themeStyle':'dark',
-    'version':'0.12.0'
+    'currentPage' : {
+        'name': 'FirstRunMain', 
+        'data' : {}
+    },
+    'themeStyle':'dark'
+}
+
+const mainnetLaunchDetails = {
+    'launchDate': '2020-09-16T00:00:00.000Z',
+    'switched': false
 }
 
 const createSettingsStore = () => {
     let startValue = defualtSettingsStore
+    if (!startValue.mainnetLaunch) startValue.mainnetLaunch = mainnetLaunchDetails
     let initialized = false;
 
     const getStore = () => {
@@ -26,7 +34,7 @@ const createSettingsStore = () => {
     }
 
     //Create Intial Store
-    const SettingsStore = writable(startValue);
+    var SettingsStore = writable(startValue);
 
     //This is called everytime the SettingsStore updated
     SettingsStore.subscribe(current => {
@@ -40,12 +48,10 @@ const createSettingsStore = () => {
         }else{
             //Recover store value in memory to previous chome.storage.local value
             getStore();
-            console.log('Recovered from bad Settings Store Value');
         }
     });
 
-    //Set the Coinstore to the value of the chome.storage.local
-    getStore()
+    getStore();
 
     let subscribe = SettingsStore.subscribe;
     let update = SettingsStore.update;

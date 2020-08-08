@@ -1,5 +1,5 @@
 {
-    "swapAmount": 10,
+    "swapAmount": 2,
     "getTokenAmount": {
         "address": "0x20b367e6EdeC9A06E14CDad7F8B31fCdE5Dada9D",
         "expectedAmount": 100.55

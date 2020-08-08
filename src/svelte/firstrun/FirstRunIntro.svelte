@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     //Stores
     import { steps } from '../../js/stores/stores.js';
@@ -19,19 +20,6 @@
 </script>
 
 <style>
-.firstrun-intro{
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    width: 498px;
-    padding: 0px 24px 0 242px;
-    justify-content: center;
-}
-
-.text-box{
-   height: 144px;
-   margin-bottom: 20px;
-}
 
 a{
     margin-top: 10px;
@@ -39,26 +27,31 @@ a{
 }
 
 </style>
+<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+    <div class="flex-column flow-content-left">
+        <h6 class="text-primary">Welcome!</h6>
+        <div class="flow-text-box text-body1 text-primary">
+            Creating a wallet is easy and secure. All accounts are encrypted locally in your browser, not on remote servers.
+        </div>
+        <div class="flex-column flow-buttons">
+            <Button id="create-wallet"
+                    classes={'button__solid button__purple'}
+                    margin="0 0 1rem"
+                    name="Create A Wallet" 
+                    click={() => changeStep(1)} />
+            <Button id="restore-wallet"
+                    classes={'button__solid'}
+                    margin="0 0 1rem"
+                    name="Restore a Wallet" 
+                    click={() => switchPage('FirstRunRestoreMain')} />
+            <a  class="text-caption text-secondary" 
+                href="https://www.lamden.io" 
+                target="_blank" 
+                rel="noopener noreferrer" >
+                Learn More About Lamden
+            </a>
+        </div>
 
-<div class="firstrun-intro">
-    <h6 class="text-primary">Welcome!</h6>
-    <div class="text-box text-body1 text-primary">
-        Creating a wallet is easy and secure. All accounts are encrypted locally in your browser, not on remote servers.
     </div>
-    <Button id="create-wallet"
-            classes={'button__solid button__purple'}
-            styles={'margin-bottom: 16px;'}
-            name="Create A Wallet" 
-            click={() => changeStep(1)} />
-    <Button id="restore-wallet"
-            classes={'button__solid'} 
-            styles={'margin-bottom: 16px;'}
-            name="Restore a Wallet" 
-            click={() => switchPage('FirstRunRestoreMain')} />
-    <a  class="text-caption text-secondary" 
-        href="https://www.lamden.io" 
-        target="_blank" 
-        rel="noopener noreferrer" >
-        Learn More About Lamden
-    </a>
+    <div class="flex-column flow-content-right"> </div>
 </div>

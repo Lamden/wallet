@@ -105,8 +105,8 @@
 			}
 		})
 
-		if (window.innerWidth < 900) container.style.width = `${window.innerWidth - 186}px`;
-		else container.style.width = `${window.innerWidth - 402}px`;
+		if (window.innerWidth < 900) container.style.width = `${window.innerWidth - 230}px`;
+		else container.style.width = `${window.innerWidth - 420}px`;
 	}
 
 	const updateCode = () => {
@@ -114,8 +114,8 @@
 	}
 
 	const handler = (e) => {
-		if (e.target.innerWidth < 900) container.style.width = `${e.target.innerWidth - 186}px`;
-		else container.style.width = `${e.target.innerWidth - 402}px`;
+		if (e.target.innerWidth < 900) container.style.width = `${e.target.innerWidth - 230}px`;
+		else container.style.width = `${e.target.innerWidth - 420}px`;
 		container.style.fontFamily = "'Courier Prime', monospace"
 	}
 

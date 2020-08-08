@@ -1,4 +1,4 @@
-<script>
+<script>    
     //Components
 	import { MenuItem }  from '../Router.svelte'
 
@@ -12,8 +12,8 @@
 .box{
     display: flex;
     flex-direction: column;
-    background: rgba(38, 38, 38, 0.64);
-    box-shadow: 0px 1px 2px rgba(8, 35, 48, 0.24), 0px 2px 6px rgba(8, 35, 48, 0.16);
+    background: #262626;
+    box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
     border-radius: 4px;
     margin-bottom: 7px;
 }
