@@ -37,7 +37,7 @@
 
     {#if $currentNetwork.blockExplorer}
         {#if transactionsList.length > 0}
-            <Transactions {transactionsList} vk={coin.vk} {fetchTransactions}/>
+            <Transactions {transactionsList} vk={coin.vk} {fetchTransactions} />
         {/if}
     {:else}
         <p>This network does not have a Block Explorer to pull a transaction history from.</p>

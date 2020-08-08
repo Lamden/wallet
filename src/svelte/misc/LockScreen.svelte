@@ -18,9 +18,7 @@
     const handleSubmit = () => {
         if (formObj.checkValidity()){
             chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (unlocked) => {
-                console.log({unlocked})
                 if (!unlocked || chrome.runtime.lastError) {
-                    console.log('WAllet is locked still')
                     setValidity(pwdObj, "Incorrect Password")
                 }
             })

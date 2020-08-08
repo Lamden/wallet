@@ -40,7 +40,6 @@ const createFilesStore = () => {
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()
-            console.log('Recovered from bad Files Store Value')
         }
     });
 

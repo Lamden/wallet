@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     //Stores
-    import { currentNetwork, BalancesStore, mainnetNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, NetworksStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -24,7 +24,7 @@
     let passwordOkay = false;
     let account = getSelectedAccount();
     let dappInfo = getDappInfo();
-    let tauBalance = BalancesStore.getBalance(mainnetNetwork, account.vk) || 0
+    let tauBalance = BalancesStore.getBalance(NetworksStore.mainnetNetwork, account.vk) || 0
 
     const handleSubmit = (form) => {
         if (passwordOkay){

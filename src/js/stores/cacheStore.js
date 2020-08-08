@@ -31,7 +31,6 @@ const createCacheStore = () => {
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore()
-            console.log('Recovered from bad Cache Store Value')
         }
     });
 
@@ -83,7 +82,6 @@ const createCacheStore = () => {
         },
         //Remove all contracts under a network so that the API will cheeck them again
         refreshNetworkCache: (networkObj) => {
-            console.log('cacheStore is Network object good? ' + validateTypes.isSpecificClass(networkObj, "Network"))
             //Reject missing or undefined arguments
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 

@@ -143,7 +143,6 @@ const defaultTypeValues = {
 const formatKwargs = (kwargsList) => {
     kwargs = {}
     kwargsList.forEach(item => {
-        console.log(item)
         if (item.value !== "" && typeof item.value !== 'undefined') {
             kwargs[item.name] = Encoder(item.type, item.value)
         }

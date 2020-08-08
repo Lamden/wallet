@@ -2,7 +2,7 @@
     import { getContext, onMount, afterUpdate } from 'svelte';
 
 	//Stores
-    import { currentNetwork, NetworksStore, mainnetNetwork, testnetNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork, NetworksStore } from '../../js/stores/stores.js';
     
 	//Components
     import { NavStatus }  from '../Router.svelte'
@@ -30,10 +30,10 @@
     }
 
     const handleClick = () => {
-        if (!$currentNetwork.type === 'custom') NetworksStore.setCurrentNetwork(mainnetNetwork)
+        if (!$currentNetwork.type === 'custom') NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
         else{
-            if ($currentNetwork.type === 'mainnet') NetworksStore.setCurrentNetwork(testnetNetwork)
-            else NetworksStore.setCurrentNetwork(mainnetNetwork)
+            if ($currentNetwork.type === 'mainnet') NetworksStore.setCurrentNetwork(NetworksStore.testnetNetwork)
+            else NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
         }
     }
 </script>

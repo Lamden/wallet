@@ -42,7 +42,7 @@
 		mode: "single"
 	}
 
-	onMount(() => {console.log(backgroundColor)
+	onMount(() => {
 		dateFormated = new Date().toString();
 		dispatch('changed')
 	})

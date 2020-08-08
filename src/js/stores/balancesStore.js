@@ -67,7 +67,6 @@ export const createBalancesStore = () => {
             }
         },
         refreshNetworkCache: (networkObj) => {
-            console.log('balanceStore is Network object good? ' + validateTypes.isSpecificClass(networkObj, "Network"))
             //Reject missing or undefined arguments
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
             chrome.runtime.sendMessage({type: 'balancesStoreClearNetwork', data: networkObj.getNetworkInfo()})

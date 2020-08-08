@@ -10,6 +10,16 @@ export const dappController = (utils, actions) => {
         }
     });
 
+    chrome.runtime.onInstalled.addListener(function(details) {
+        if (details.reason === "update"){
+            let currVer = chrome.runtime.getManifest().version;
+            let prevVer = details.previousVersion
+            if (prevVer <= "0.12.0" && currVer > prevVer){
+                initiateTrustedApp()
+            }
+        }
+    });
+
     const getSenderHash = (sender) => {
         return sender.url.split('#')[1]
     }
@@ -222,8 +232,26 @@ export const dappController = (utils, actions) => {
         return false
     }
 
+    const initiateTrustedApp = () => {
+        const networksList = ['mainnet', 'testnet']
+        Object.keys(dappsStore).forEach(url => {
+            networksList.forEach(network => {
+                if (dappsStore[url][network]){
+                    if (typeof dappsStore[url][network].stampPreApproval !== "undefined"){
+                        if (parseFloat(dappsStore[url][network].stampPreApproval) > 0) dappsStore[url][network].trustedApp = true;
+                        else dappsStore[url][network].trustedApp = false;
+                    }else{
+                        if (typeof dappsStore[url][network].trustedApp === "undefined") dappsStore[url][network].trustedApp = false;
+                    }
+                    delete dappsStore[url][network].stampPreApproval
+                    delete dappsStore[url][network].stampsUsed
+                }
+            })
+        })
+        chrome.storage.local.set({"dapps": dappsStore});
+    }
+
     const setTrusted = (data) => {
-        console.log(data)
         try{
             delete dappsStore[data.dappUrl][data.networkType].stampPreApproval
             delete dappsStore[data.dappUrl][data.networkType].stampsUsed

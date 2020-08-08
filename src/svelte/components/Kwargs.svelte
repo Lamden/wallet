@@ -13,7 +13,6 @@
     export let backgroundColor;
 
     afterUpdate(() => {
-        console.log(backgroundColor)
         dispatch('newArgValues', {argumentList, methodIndex})
     })
 

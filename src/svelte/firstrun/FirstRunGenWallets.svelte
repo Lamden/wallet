@@ -43,7 +43,6 @@
 
     const createStartingWallet = (resolve) => {
         chrome.runtime.sendMessage({type: 'accountsAddNewLamden', data: 'My Lamden Account'}, (result) => {
-            console.log(result)
             if (result.error){
                 message = result.error
             }else{

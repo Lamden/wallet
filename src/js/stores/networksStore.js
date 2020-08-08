@@ -8,29 +8,43 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 
 import Lamden from 'lamden-js'
 
-const lamdenNetworks = [
-    {
-        name: 'Lamden Mainnet', 
-        hosts: ['https://masternode-01.lamden.io:443', 'https://masternode-02.lamden.io:443'],
-        type:'mainnet', 
-        lamden: true, 
-        currencySymbol: 'TAU',
-        blockExplorer: 'https://explorer.lamden.io'
-    },
-    {
-        name: 'Lamden Testnet', 
-        hosts: ['http://167.172.126.5:18080'], 
-        type:'testnet', 
-        lamden: true, 
-        currencySymbol: 'dTAU',
-        blockExplorer: 'https://explorer.lamden.io'
-    },
-]
+const launchDate = new Date("2020-09-16T00:00:00.000Z")
+const today = new Date()
+let lamdenNetworks;
 
-const defualtNetworksStore = {
+let mainnet = {
+    name: 'Lamden Mainnet', 
+    hosts: ['https://masternode-01.lamden.io:443', 'https://masternode-02.lamden.io:443'],
+    type:'mainnet', 
+    lamden: true, 
+    currencySymbol: 'TAU',
+    blockExplorer: 'https://explorer.lamden.io'
+}
+let testnet = {
+    name: 'Lamden Testnet', 
+    hosts: ['http://167.172.126.5:18080'], 
+    type:'testnet', 
+    lamden: true, 
+    currencySymbol: 'dTAU',
+    blockExplorer: 'https://explorer.lamden.io'
+}
+
+if (today >  launchDate){
+    lamdenNetworks = [mainnet, testnet]
+}else{
+    lamdenNetworks = [testnet]
+}
+
+let defualtNetworksStore = {
     lamden: [],
     user : [],
     current: 'Lamden Mainnet|mainnet|lamden'
+}
+
+if (today >  launchDate){
+    lamdenNetworks = [mainnet, testnet]
+}else{
+    lamdenNetworks = [testnet]
 }
 
 const makeList = (networkStore) => {
@@ -42,9 +56,11 @@ const foundNetwork = (networkStore, matchKey) => {
     return networks.find(network => networkKey(network) === matchKey)
 }
 
-const getNetworkByName = (networkStore, name) => {
-    return networkStore.lamden.find(network => network.name === name)
-}
+//A Derrived Store of both user and lamden networks
+export const mainnetNetwork = new Lamden.Network(mainnet);
+
+//A Derrived Store of both user and lamden networks
+export const testnetNetwork = new Lamden.Network(testnet);
 
 export const createNetworksStore = () => {
     let initialized = false;
@@ -55,6 +71,11 @@ export const createNetworksStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"networks": startValue}, function(getValue) {
             initialized = true;
+            if (today < launchDate){
+                if (getValue.networks.current === networkKey(mainnet)){
+                    getValue.networks.current = networkKey(testnet)
+                }
+            }
             NetworksStore.set(getValue.networks)
         });
     }
@@ -81,7 +102,6 @@ export const createNetworksStore = () => {
         }else{
             //If non-object found then set the store back to the previous local store value
             getStore();
-            console.log('Recovered from bad Network Store Value')
         }
     });
 
@@ -96,6 +116,8 @@ export const createNetworksStore = () => {
         subscribe,
         set,
         update,
+        mainnetNetwork,
+        testnetNetwork,
         //Make a network the current selected network
         //This sets the value of the derived "currentNetwork" store
         setCurrentNetwork: (networkInfo) => {
@@ -201,11 +223,7 @@ export const allNetworks = derived(
         return makeList($NetworksStore)
 })
 
-//A Derrived Store of both user and lamden networks
-export const mainnetNetwork = new Lamden.Network(lamdenNetworks[0]);
 
-//A Derrived Store of both user and lamden networks
-export const testnetNetwork = new Lamden.Network(lamdenNetworks[1]);
 
 //A Derrived Store that contains values formatted for a DropDown Box
 export const networksDropDownList = derived(

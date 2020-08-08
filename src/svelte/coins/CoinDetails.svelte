@@ -63,8 +63,6 @@
 
 
 	onMount(() => {
-        handleRefresh()
-        console.log(dappInfo)
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
 
@@ -89,6 +87,9 @@
             return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=10`)
             .then(res => res.json())
             .then(json => {
+                if (transactionsList.length > 0 && json.data.length > 0){
+                    if (transactionsList[0].hash !== json.data[0].hash) handleRefresh()
+                }
                 transactionsList = json.data
             })
             
@@ -298,6 +299,6 @@ p{
         <Charms dappInfo={dappInfo} />
     {/if}
 
-    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions}/>
+    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions} />
 
 </div>

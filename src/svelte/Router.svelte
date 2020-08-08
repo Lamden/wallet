@@ -87,6 +87,7 @@ import StrongPW from './components/StrongPW.svelte';
 import Transaction from './components/Transaction.svelte';
 import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
+import Countdown from './components/Countdown.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -179,7 +180,8 @@ export const Components = {
     DropDown,
     StrongPW,
     Transaction,
-    Kwargs, Kwarg
+    Kwargs, Kwarg,
+    Countdown
 };
 
 export const Modals = {

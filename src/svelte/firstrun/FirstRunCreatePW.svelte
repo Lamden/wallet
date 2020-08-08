@@ -77,7 +77,6 @@
     }
     
     const savePassword = () => {
-        console.log(hashStringValue(pwdInput1.value))
         chrome.runtime.sendMessage({type: 'createPassword', data: hashStringValue(pwdInput1.value)}, (response) => {
             if(response) {
                 if (restore) changeStep(1);

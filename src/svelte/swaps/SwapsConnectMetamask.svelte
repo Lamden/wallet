@@ -50,7 +50,6 @@
         checkForResponses.clear();
         checkForResponses.start();
         chrome.runtime.sendMessage({type: 'connectToMetamask', data: {}}, (response) => {
-            console.log(response)
             let address = response.address
             if (typeof address.error === 'undefined'){
                 metamaskInfo = response

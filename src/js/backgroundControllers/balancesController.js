@@ -1,58 +1,54 @@
 export const balancesController = (utils) => {
     let balancesStore = {};
-    let updatingBalances = false;
+    let updatingBalances = {status: "waiting", time: new Date()};
 
     chrome.storage.local.get({"balances":{}},function(getValue) {balancesStore = getValue.balances;})
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'balances') {
-                console.log(changes)
                 balancesStore = changes[key].newValue;
             }
         }
     });
 
     const updateOne = (account, network) => {
-        console.log({updatingBalances})
-        if (!updatingBalances){
-            updatingBalances = true;
+        if (updatingBalances.status === "waiting"){
+            updatingBalances = {status: "updating", time: new Date()};
             getUpdate(account, network)
             .then((res) => {
-                console.log({res, account, network})
                 if (res){
                     chrome.storage.local.set({"balances": balancesStore}, () =>{
-                        updatingBalances = false;
+                        updatingBalances.status = "waiting";
                     });
                 }else{
-                    updatingBalances = false;
+                    updatingBalances.status = "waiting";
                 }
             })
+            .catch(() => updatingBalances.status = "waiting")
         }
     }
 
     const updateAll = (accountsList, network) => {
         const accountsToProcess = accountsList.length; 
-        if (accountsToProcess > 0){
+        if (accountsToProcess > 0 && updatingBalances.status === "waiting"){
             let accountsProcessed = 0;
-            updatingBalances = true;
             let somethingUpdated = false;
+            updatingBalances = {status: "updating", time: new Date()};
             accountsList.forEach((account) => {
                 getUpdate(account, network)
                 .then((updated) => {
-                    console.log(updated)
                     if (updated) somethingUpdated = true;
                     accountsProcessed = accountsProcessed + 1
                     if (accountsProcessed >= accountsToProcess){
                         if (somethingUpdated){
                             chrome.storage.local.set({"balances": balancesStore}, () =>{
-                                updatingBalances = false;
+                                updatingBalances.status = "waiting"
                             });
                         }
                     }
                 })
+                .catch(() => updatingBalances.status = "waiting")
             })
-        }else{
-            setStore(balancesStore)
         }
     }
 
@@ -84,11 +80,11 @@ export const balancesController = (utils) => {
     }
 
     const setStore = (newValue) => {
-        if (updatingBalances) setTimeout(setStore, 100)
+        if (updatingBalances === "updating") setTimeout(setStore, 100)
         else{
-            updatingBalances = true;
+            updatingBalances = {status: "updating", time: new Date()};
             chrome.storage.local.set({"balances": newValue}, () =>{
-                updatingBalances = false;
+                updatingBalances.status = "waiting";
             });
         }
     }
@@ -115,6 +111,11 @@ export const balancesController = (utils) => {
         return accounts
     }
 
+    setInterval(() => {
+        if (updatingBalances.status === "updating" && new Date() - updatingBalances.time > 5) {
+            updatingBalances.status = "waiting"
+        }
+    }, 5000)
     return {
         updateAll,
         updateOne,

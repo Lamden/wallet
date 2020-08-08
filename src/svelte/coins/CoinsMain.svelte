@@ -11,13 +11,12 @@
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
-	const { Button } = Components;
+	const { Button, Countdown } = Components;
 
 	//Images
 	import squares_bg from '../../img/backgrounds/squares_bg.png';
 	import refresh from '../../img/menu_icons/icon_refresh.svg';
 	import plus from '../../img/menu_icons/icon_plus.svg';
-
 
 	//Utils
 	import { decryptObject } from '../../js/utils.js';
@@ -31,7 +30,6 @@
 	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : 0;
 
 	let refreshing = false;
-	let currentNetworkKey = networkKey($currentNetwork)
 
 	onMount(() => {
 		handleRefresh();
@@ -46,13 +44,6 @@
 		}, 2000);
 	}
 
-	currentNetwork.subscribe(newNetwork => {
-		if (networkKey(newNetwork) !== currentNetworkKey){
-			currentNetworkKey = networkKey(newNetwork)
-			handleRefresh()
-		}
-	})
-
 </script>
 
 <style>
@@ -62,6 +53,7 @@
 }
 
 .hero-rec{
+	position: relative;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -126,6 +118,7 @@ p{
 
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
+		<Countdown />
 		<div class="balance-words text-body1">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
@@ -137,6 +130,7 @@ p{
 				class:spinner={refreshing}>
 				{@html refresh} 
 			</div>
+
 		</div>
 		<div class="flex-row buttons">
 			<Button id={'add-btn'}

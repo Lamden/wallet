@@ -39,9 +39,8 @@ export const isCoinInfoObj = (coinInfoObj) => {
 
 export const isSettingsStoreObj = (obj) => {
     if (!validateTypes.isObjectWithKeys(obj)) return false;
-    if (!validateTypes.hasKeys(obj, ['currentPage', 'themeStyle', 'version'])) return false;
+    if (!validateTypes.hasKeys(obj, ['currentPage', 'themeStyle'])) return false;
     if (!isPageInfoObj(obj.currentPage)) return false;
-    if (!validateTypes.isStringWithValue(obj.version)) return false;
     return true;
 }
 

@@ -32,7 +32,7 @@
     const { switchPage } = getContext('app_functions');
 
     let attempts = 0;
-    let maxAttempts = 20;
+    let maxAttempts = 100;
     let clearingHouseAPI;
     let swapStatus;
     let swapResult;
@@ -65,6 +65,7 @@
         .then(res => {
             swapStatus = res
             setSwapStatus(swapStatus)
+            
             sending = false
 
             if (swapStatus.error){
@@ -89,6 +90,7 @@
 
     const getSwapStatus = async () => {
         let sending = true;
+        if (!swapStatus) return;
         return clearingHouseAPI.checkSwapStatus(swapStatus.uuid_receipt)
         .then(res => {
             swapResult = res
@@ -132,7 +134,7 @@
                         else timerId = setTimeout(checkStatus, 1000);
                     }
                 }              
-            }, 1000);
+            }, 1500);
         })
     }
 
