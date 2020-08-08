@@ -1,6 +1,4 @@
 <script>
-	import { scale } from 'svelte/transition';
-    import { quintOut } from 'svelte/easing';
     //Props
     export let id;
     export let name = '';
@@ -79,7 +77,6 @@ button{
         
         tabIndex={tabIndex}
         type="button"
-        in:scale="{{duration: 500, delay: 0, opacity: 0, start: 0.75, easing: quintOut}}"
     >
 
     {#if icon !== ''}
