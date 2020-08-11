@@ -8,7 +8,7 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 
 import Lamden from 'lamden-js'
 
-const launchDate = new Date("2020-09-16T00:00:00.000Z")
+const launchDate = new Date("2020-09-16T16:00:00.000Z")
 const today = new Date()
 let lamdenNetworks;
 
@@ -18,7 +18,7 @@ let mainnet = {
     type:'mainnet', 
     lamden: true, 
     currencySymbol: 'TAU',
-    blockExplorer: 'https://explorer.lamden.io'
+    blockExplorer: 'https://mainnet.lamden.io'
 }
 let testnet = {
     name: 'Lamden Testnet', 
@@ -26,7 +26,7 @@ let testnet = {
     type:'testnet', 
     lamden: true, 
     currencySymbol: 'dTAU',
-    blockExplorer: 'https://explorer.lamden.io'
+    blockExplorer: 'https://testnet.lamden.io'
 }
 
 if (today >  launchDate){
