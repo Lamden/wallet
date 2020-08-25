@@ -55,17 +55,18 @@
         width: 100%;
         justify-content: space-evenly;
         align-items: center;
+        box-sizing: border-box;
+        padding: 0 15%;
 
     }
     img{
         width: 100%;
     }
     .icon{
-        width: 60px;
+        width: 45px;
     }
     .icon > .checkmark{
         width: 50px;
-        margin: 0 auto;
     }
     .icon-arrows{
         width: 22px;
@@ -97,13 +98,23 @@
         display: flex;
     }
     label > input {
-        margin: 0 10px 0 0;
-        position: relative;
-        top: -6px;
+        margin: 0 15px 0 0;
     }
     label > strong {
         color: var(--font-accent);
-        margin-right: 10px;
+        align-self: center;
+        text-decoration: none;
+        margin-right: 15px;
+        font-size: 1.2em;
+    }
+    p.choice{
+        font-size: 1em;
+        font-weight: 300;
+        margin: 0;
+    }
+    p.message{
+        font-weight: bolder;
+        letter-spacing: 0.6px;
     }
     .text-primary-dark{
         align-self: center;
@@ -135,14 +146,21 @@
     </div>
 
     <div class="flex-column padding">
+        <p class="message">Do you want to authorize <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">automatic transactions</a> for this wallet?</p>
         <label>
             <input id="trusted" type=radio bind:group={trusted} value={true}>
-            <strong>Automatic</strong>Transactions from {confirmData.messageData.appName} to its smart contract are approved by the wallet automatically
+            <strong>Yes</strong> 
+            <p class="choice">
+                Automatically approve transactions from {confirmData.messageData.appName} to its smart contract. 
+                Does not include transactions to send {confirmData.messageData.network.currencySymbol}. However, will generate <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">transaction costs</a>.
+            </p>
         </label>
+
 
         <label >
             <input id="not-trusted" type=radio bind:group={trusted} value={false}>
-            <strong>Manual</strong>Approve all transactions from {confirmData.messageData.appName} to its smart contract via a popup
+            <strong>No</strong>
+            <p class="choice">Approve all transactions from {confirmData.messageData.appName} to its smart contract manually via popup window.</p>
         </label>
     </div>
 
@@ -162,13 +180,13 @@
             <Button 
                 id={'trusted-next-btn'}
                 classes={'button__solid button__purple'}
-                name="Approve App"
+                name="Create Account"
                 width={'175px'}
                 height={'42px'}
                 click={setChoice} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="www.lamden.io">learn more about automatic transactions</a>
+            <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn about automatic transactions</a>
         </div>  
     </div>
 </div>    

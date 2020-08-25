@@ -109,7 +109,7 @@
         The Apps will however spend your <strong>{$currentNetwork.currencySymbol}</strong>, a bit at a time, as it makes transactions. For added security
         it is advised that you only transfer over as much <strong>{$currentNetwork.currencySymbol}</strong> to this account as the Apps needs to operate.
     </p>
-    <a class="outside-link" href="www.lamden.io">learn more about automatic transactions</a>
+    <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn more about automatic transactions</a>
     <div class="flex-row flow1">
         <div class="icon" >
             <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />

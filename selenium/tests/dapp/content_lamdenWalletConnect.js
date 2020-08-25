@@ -65,7 +65,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.errors.includes("'contractName' <string> required to process connect request"), true);
             assert.equal(response.errors.includes("'logo' <string> required to process connect request"), true);
             assert.equal(response.errors.includes("'networkType' <string> required to process connect request"), true);
-            assert.equal(response.errors.includes("'description' <string> required to process connect request"), true);
 
         });
         it('Rejects missing appName', async function() {
@@ -88,27 +87,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let response = await helpers.sendConnectRequest(driver, connection)
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors.includes("'appName' <string> required to process connect request"), true);
-        });
-        it('Rejects missing description', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            delete connection.description
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'description' <string> required to process connect request"), true);
-        });
-        it('Rejects non string description', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.description = 5
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'description' <string> required to process connect request"), true);
-        });
-        it('Rejects too short of a description', async function() {
-            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
-            connection.description = "This isnt 60 characters"
-            let response = await helpers.sendConnectRequest(driver, connection)
-            assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("'description' <string> character length required to be greather than 60"), true);
         });
         it('Rejects missing contractName', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
@@ -312,7 +290,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.lockWallet(driver, 1)
             await helpers.sleep(2000, true)
-            await helpers.approvePopup(driver, 2, 1)
+            await helpers.approvePopup(driver, 2, 1, true, {show: false})
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors.includes("Tried to approve app but wallet was locked"), true);
@@ -321,7 +299,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1)
+            await helpers.approvePopup(driver, 2, 1, true, {show: false})
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response;
             

@@ -160,7 +160,7 @@ export const masterController = () => {
                 //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
                 const wallet = accounts.getAccountByVK(dappInfo.vk);
                 //Create a unique ID for this transaction for reference later if needed
-                txInfo.uid = utils.hashStringValue(new Date().toISOString())
+                if (!txInfo.uid) txInfo.uid = utils.hashStringValue(new Date().toISOString())
                 //Set senderVk to the one assocated with this dapp
                 txInfo.senderVk = wallet.vk;
                 //Allow approval requests to be submitted without hardcoding the approved smart contract

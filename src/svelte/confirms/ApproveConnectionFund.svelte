@@ -81,10 +81,15 @@
         width: 75%;
         padding-right: 10px;
     }
+    .fund-details{
+        height: 160px;
+        justify-content: center;
+        align-items: center;
+    }
     .icon{
         width: 25%;
         box-sizing: border-box;
-        padding: 20px;
+        padding: 30px 20px 20px 20px;
     }
     .buttons{
         margin-bottom: 0.5rem;
@@ -114,9 +119,12 @@
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
     <p>
-        Transfer {confirmData.messageData.network.currencySymbol} to your new {confirmData.messageData.appName} account and start using it right away.
+        You can send {confirmData.messageData.network.currencySymbol} to your 
+        {confirmData.messageData.appName} <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">linked account</a> 
+        to start using it right away.
+
     </p>
-    <div class="flex-row">
+    <div class="flex-row fund-details">
         <div class="icon" >
             {@html send_coins}
         </div>
@@ -155,13 +163,13 @@
             <Button 
                 id={'fund-next-btn'}
                 classes={'button__solid button__purple'}
-                name={amount > 0 ? "Yes" : "Not Now"}
+                name={amount > 0 ? "Yes" : "Skip"}
                 width={'175px'}
                 height={'42px'}
                 click={set} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="www.lamden.io">learn more about transaction costs</a>
+            <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn more</a>
         </div>  
     </div>
 </div>

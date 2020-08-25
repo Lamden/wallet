@@ -82,7 +82,7 @@ p{
 
         <div class="text-box2 text-body2 text-primary-dark">
             Safe storage of your keystore and password are important to keeping your cryptocurrency safe. 
-            We recommend <a class="outside-link" href="https://www.lastpass.com/"> LastPass</a> as a way to create and store complex passwords.
+            We recommend <a class="outside-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a> as a way to create and store complex passwords.
         </div>
         <div class="consent flex-row">
             <label class="chk-container text-body2" class:checked={consent} class:unchecked={!consent}>

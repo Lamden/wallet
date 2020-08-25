@@ -15,6 +15,8 @@
 
     export let confirmData;
 
+    confirmData.messageData.accounts = confirmData.messageData.accounts.filter(account => account.balance > 0)
+
     let step = 1
 
     const setStep = (nextStep) => {
@@ -58,7 +60,7 @@
 
 <div class="approve-conection flex-column">
     <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
-        <h2>Connection Request From</h2>
+        <h2>Linked Account Creation</h2>
         <div class="flex-row dapp-name">
             <img src={`${confirmData.url}/${logoFormat(confirmData.messageData.logo)}`} alt="app logo" />
             <p class="dapp-name-text">{`${confirmData.messageData.appName}`}</p>
