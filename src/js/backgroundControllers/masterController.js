@@ -69,14 +69,6 @@ export const masterController = () => {
         return walletInfo
     }
 
-    const deleteAccount = (accountInfo) => {
-        if (accounts.deleteOne(accountInfo)) {
-            dapps.DappStoreDelete(accountInfo.vk);
-            return true
-        }
-        return false;
-    }
-
     const updateAllBalances = () => {
         let accountsList = accounts.getSanatizedAccounts()
         if (typeof accountsList === 'undefined') return false
@@ -234,6 +226,17 @@ export const masterController = () => {
         });
     }
 
+    const deleteAccount = (data) => {
+        const { account, string } = data;
+        if (accounts.checkPassword(string)){
+            if (accounts.deleteOne(account)) {
+                dapps.deleteDapp(account.vk)
+                return true
+            }
+        }
+        return false
+    }
+
     return{
         "accounts" : {
             walletIsLocked: accounts.walletIsLocked,
@@ -243,7 +246,6 @@ export const masterController = () => {
             addNewLamdenAccount: accounts.addNewLamdenAccount,
             addOne: accounts.addOne,
             addMany: accounts.addMany,
-            deleteOne: accounts.deleteOne,
             changeAccountNickname: accounts.changeAccountNickname,
             decryptKeys: accounts.decryptKeys
         },

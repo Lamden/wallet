@@ -103,7 +103,8 @@
 }
 
 .content-box{
-    margin: 1rem 0;
+    width: 260px;
+    margin: 1rem auto 2rem;
 }
 
 .warning-message{
@@ -121,7 +122,7 @@
 }
 </style>
 
-<div class="coin-delete">
+<div>
     <h2> {`${dappInfo.appName} - Revoke Wallet Access`} </h2>
     <h3>You are about to do the following:</h3>
     <div class="bullets text-subtitle2">
@@ -147,7 +148,6 @@
                     bind:thisInput={passwordObj}
                     label={"Password"}
                     placeholder={`Enter Lamden Wallet Password`}
-                    margin="0 0 1rem 0"
                     on:changed={() => setValidity(passwordObj, '')}
                     on:keyup={refreshValidityKeyup}
                     inputType={"password"}

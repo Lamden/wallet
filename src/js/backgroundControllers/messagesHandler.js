@@ -92,7 +92,7 @@ export const messagesHandler = (masterController) => {
                         return true
                     }
                     //Delete a coin/wallet from the coinStore
-                    if (message.type === 'coinStoreDelete') sendResponse(masterController.accounts.deleteOne(message.data))
+                    if (message.type === 'coinStoreDelete') sendResponse(masterController.deleteAccount(message.data))
                     //Change the name of a Coin
                     if (message.type === 'changeCoinNickname') sendResponse(masterController.accounts.changeAccountNickname(message.data))
                     //Call the currentNetwork API to refresh all balances in the coinStore
