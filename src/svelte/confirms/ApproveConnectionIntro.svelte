@@ -76,14 +76,20 @@
     }
     p.intro{
         font-size: 1.2em;
+        text-align: center;
+        line-height: 1.5;
     }
 </style>
 
 <div class="flex-column detail"
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
     
-    <p class="intro">A website would like to create a <a class="outside-link" href="www.lamden.io">linked account</a> in your wallet</p>
-
+    <p class="intro">
+        To interact with {confirmData.messageData.appName}, you need to create a 
+        <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">linked account</a>. 
+        Let us help you through the process.
+    </p>
+    
 
     <div class="approve-items flex-col">
         <div class="item flex-row">
@@ -106,8 +112,8 @@
         </div>
     </div>
 
-    <p class="description text-subtitle2">
-        {confirmData.messageData.description}
+    <p class="intro">
+        Click next to proceed
     </p>
 
     <div class="flex-column">
@@ -115,7 +121,7 @@
             <Button 
                 id={'deny-btn'}
                 classes={'button__solid '}
-                name="Deny"
+                name="Not Now"
                 width={'175px'}
                 height={'42px'}
                 margin={'0 20px 0 0'}
@@ -130,7 +136,7 @@
                 click={next} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="www.lamden.io">what are linked accounts?</a>
+            <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn about linked accounts</a>
         </div>   
     </div>
 </div>

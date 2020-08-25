@@ -69,13 +69,6 @@ export const dappController = (utils, actions) => {
         }else{
             errors.push("'networkType' <string> required to process connect request")
         }
-        if (validateTypes.isStringWithValue(messageData.description)) {
-            if (messageData.description.length < 60){
-                errors.push("'description' <string> character length required to be greather than 60")
-            }
-        }else{
-            errors.push("'description' <string> required to process connect request")
-        }
         if (typeof messageData.charms !== 'undefined') {
             if (validateTypes.isArrayWithValues(messageData.charms)){
                 messageData.charms.forEach((charm, index) => {

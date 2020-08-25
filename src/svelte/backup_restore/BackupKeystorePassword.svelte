@@ -84,7 +84,7 @@
         <div class="flow-text-box text-body1 text-primary">
             For maximun security we suggest creating a complex password
             and storing it in a password manager such as
-            <a class="outside-link" href="https://www.lastpass.com/"> LastPass </a>
+            <a class="outside-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass </a>
         </div>
 
         <StrongPW password={pwd} charLength={15}/>

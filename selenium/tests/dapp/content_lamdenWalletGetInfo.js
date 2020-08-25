@@ -42,11 +42,11 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
         assert.equal(response.errors.length, 1);
         assert.equal(response.errors[0].includes("You must be an authorized"), true)
     });
-
+    
     it('Create conenction to test dApp website', async function() {
         let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
         await helpers.sendConnectRequest(driver, connection, false)
-        await helpers.approvePopup(driver, 2, 1)
+        await helpers.approvePopup(driver, 2, 1, true, {show: false})
         let response = await helpers.getWalletResponse(driver)
         assert.equal(response.errors, null);
     });
@@ -69,5 +69,5 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
         assert.equal(response.locked, true)
         assert.equal(response.walletVersion.length > 0, true)
         assert.equal(response.wallets.length === 0, true)
-    });   
+    }); 
 })

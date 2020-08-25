@@ -102,7 +102,8 @@
     <div class="flex-column flow-content-left">
         <h6 class="text-primary">Create a Password</h6>
         <div class="flow-text-box text-body1 text-primary">
-            No username required. This password never changes so use a strong one that you'll remember. We recommend <a class="outside-link" href="https://www.lastpass.com/"> LastPass</a>.
+            No username required. This password never changes so use a strong one that you'll remember. We recommend 
+            <a class="outside-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a>.
         </div>
 
         <StrongPW password={pwd} charLength={10}/>
