@@ -3,17 +3,20 @@
     import { currentNetwork } from '../../js/stores/stores.js';
 
     //Images
-    import lamden_logo from '../../img/defaultIcons/lamden_logo_white.png';
+    import charm_default from '../../img/misc/charm_default.svg';
 
     //Props
     export let charmInfo;
     export let dappInfo;
     export let contractName;
 
+
     const formats = {
         'number': {default: 0},
         'string': {default: 'None'}
     }
+
+    let brokenCharmLogo = false
 
     $: vk = dappInfo.vk;
     $: appURL = dappInfo.url;
@@ -49,29 +52,30 @@
         min-width: fit-content;
         border-radius: 4px;
     }
-    .charm-item > div{
-        display: flex;
-        align-items: center;
-    }
-    .charm-item > img{
+    .charm-icon{
         width: 60px;
-        margin-top: -30px;
+        margin: -30px auto 0;        
     }
-    p{ 
+    p.text-body2{
         margin: 0;
     }
 </style>
 
 <div class="charm-item flex-column">
     {#if iconPath}
-        <img src={`${appURL}${iconPath}`} alt="charm item" />
+        {#if !brokenCharmLogo}
+            <img class="charm-icon" src={`${appURL}${iconPath}`} alt="charm item" on:error={() => brokenCharmLogo = true}/>
+        {:else}
+            <div class="charm-icon">{@html charm_default}</div>
+        {/if}
+        
     {:else}
-        <img src={lamden_logo} alt="charm item" />
+        <div class="charm-icon">{@html charm_default}</div>
     {/if}
     <p class="text-body1">{charmInfo.name}</p>
     {#await value}
-        <div class="text-body2">{defaultValue}</div>
+        <p class="text-body2">{defaultValue}</p>
     {:then response}
-        <div class="text-body2">{response || defaultValue}</div>
+        <p class="text-body2">{response || defaultValue}</p>
     {/await}
 </div>

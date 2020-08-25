@@ -30,6 +30,7 @@
 .message{
     align-items: center;
     padding-top: 65px;
+    margin: 1rem 0 2rem;
 }
 
 .icon{
@@ -44,6 +45,9 @@
 .buttons{
     padding: 42px 0;
     align-items: center;
+}
+h2{
+    margin: 0;
 }
 </style>
 

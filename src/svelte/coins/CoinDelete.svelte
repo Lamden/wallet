@@ -16,7 +16,7 @@
 
 	//Context
     const { switchPage } = getContext('app_functions');
-    const { home, setPage, getDappInfo, getSelectedAccount } = getContext('coinmodify_functions');
+    const { home, setPage, getDappInfo, getSelectedAccount, setHash } = getContext('coinmodify_functions');
 
     //DOM Nodes
     let formObj, passwordObj;
@@ -32,6 +32,7 @@
                 setPage(4);
             }
         }else{
+            setHash(hashStringValue(passwordObj.value))
             chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(passwordObj.value)}, (valid) => {
                 if (!valid || chrome.runtime.lastError){
                     setValidity(passwordObj, "Incorrect Password")

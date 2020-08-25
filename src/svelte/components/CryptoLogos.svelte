@@ -4,7 +4,7 @@
     import ETH from '../../img/coin_logos/ethereum.svg';
 
     //Props
-    export let coin;
+    export let coin = {};
     export let styles;
     export let dark = true;
 

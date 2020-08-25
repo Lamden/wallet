@@ -176,7 +176,7 @@ export const accountsController = (utils) => {
         accountStore.forEach((account, index) => {
             if (account.vk === accountInfo.vk) accountStore.splice(index, 1);
         })
-        if (accountStore.length < before){
+        if (accountStore.length < before){  
             refreshAccountStore();
             return true
         }else{

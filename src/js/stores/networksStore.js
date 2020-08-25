@@ -22,7 +22,7 @@ let mainnet = {
 }
 let testnet = {
     name: 'Lamden Testnet', 
-    hosts: ['http://167.172.126.5:18080'], 
+    hosts: ['https://testnet-master-1.lamden.io:443'], 
     type:'testnet', 
     lamden: true, 
     currencySymbol: 'dTAU',

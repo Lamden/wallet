@@ -12,6 +12,7 @@
         nextPage: () => currentStep = currentStep + 1,
         setPage: (num) => currentStep = num,
         setSelectedCoin: (coin) => selectedCoin = coin,
+        setHash: (value) => hash = value,
         getSelectedAccount: () => {return selectedCoin},
         setDappInfo: (value) => dappInfo = value,
         getDappInfo: () => {return dappInfo},
@@ -24,6 +25,7 @@
     
     let resultInfo = {}
     let message = '';
+    let hash = '';
     let selectedCoin;
     let dappInfo = undefined;
     let steps = [
@@ -36,8 +38,8 @@
     ]
     let currentStep = 1;
 
-    const deleteCoin = (resolve) => {
-        chrome.runtime.sendMessage({type: 'coinStoreDelete', data: selectedCoin}, (result) => {
+    const deleteCoin = (resolve, string) => {
+        chrome.runtime.sendMessage({type: 'coinStoreDelete', data: {account: selectedCoin, string: hash}}, (result) => {
             if (!result || chrome.runtime.lastError) {
                 resolve(false)
             }

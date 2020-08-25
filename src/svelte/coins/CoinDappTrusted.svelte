@@ -13,6 +13,7 @@
     import arrow_right from '../../img/menu_icons/icon_arrow-right.svg'
     import smart_contract from '../../img/menu_icons/icon_smartcontract.svg'    
     import click from '../../img/menu_icons/icon_click.svg' 
+    import lamden_logo_white_linked from '../../img/misc/lamden_logo_white_linked.svg'
 
 	//Context
     const { setMessage, setPage, home } = getContext('coinDappOptions_functions');
@@ -22,6 +23,7 @@
 
     let trusted = dappInfo[$currentNetwork.type].trustedApp;
     let sending = false;
+    let brokenLogoLink = false;
 
     const buttons = [
         {id: 'back-btn', name: 'Back', click: () => home(), class: 'button__solid button__purple'}
@@ -107,12 +109,16 @@
     <p class="text-body2">
         Since <strong>{dappInfo.appName}</strong> is locked to only sending transactions through its smart contract, it cannot spend your <strong>{$currentNetwork.currencySymbol}</strong> directly.
         The Apps will however spend your <strong>{$currentNetwork.currencySymbol}</strong>, a bit at a time, as it makes transactions. For added security
-        it is advised that you only transfer over as much <strong>{$currentNetwork.currencySymbol}</strong> to this account as the Apps needs to operate.
+        it is advised that you only transfer over as much <strong>{$currentNetwork.currencySymbol}</strong> to this account as the app needs to operate.
     </p>
     <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn more about automatic transactions</a>
     <div class="flex-row flow1">
         <div class="icon" >
-            <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />
+            {#if !brokenLogoLink}
+                <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" on:error={() => brokenLogoLink = true}/>
+            {:else}
+                {@html lamden_logo_white_linked}
+            {/if}
         </div>
         <div class="icon-arrows" >
             {@html arrow_right}

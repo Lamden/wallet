@@ -16,8 +16,10 @@
     import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
     const { Button } = Components;
     
+    
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import lightning_bg from '../../img/backgrounds/lightning_bg.jpeg';
     import verified_app from '../../img/menu_icons/icon_verified_app.svg'
     import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
@@ -32,6 +34,8 @@
     const { switchPage, openModal, closeModal } = getContext('app_functions');
 
     let refreshing = false;
+    let brokenLogoLink = false;
+    let brokenBGLink = false;
     let currentNetworkKey = networkKey($currentNetwork)
 
     let sendPages = {
@@ -45,7 +49,7 @@
     $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
-    $: background = dappInfo ? dappInfo.background ? `${dappInfo.url}${dappInfo.background}` : squares_bg : squares_bg
+    $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  lightning_bg : `${dappInfo.url}${dappInfo.background}` : lightning_bg : squares_bg
     $: symbol = coin.symbol;
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
     $: sendPage = sendPages[coin.network]
@@ -61,11 +65,20 @@
     $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
     $: stampRatio = 1
 
+    
+
 
 	onMount(() => {
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
-
+        if (background.includes('http')){
+            fetch(background)
+                .then(res => {
+                    if (res.status !== 200) brokenBGLink = true
+                    console.log(brokenBGLink)
+                })
+                .catch((err) => brokenBGLink = true)
+        }
     });
 
 
@@ -233,9 +246,9 @@ p{
                 
             </div>
             {#if thisNetworkApproved && dappLogo }
-                <div>
-                    <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp-logo" />
-                </div>
+                {#if !brokenLogoLink}
+                    <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp-logo" on:error={() => brokenLogoLink = true} />
+                {/if}
             {/if}
         </div>
 
