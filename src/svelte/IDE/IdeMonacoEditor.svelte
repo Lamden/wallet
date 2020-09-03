@@ -139,7 +139,7 @@
 			if (Array.isArray(lintErrors.violations)){
 				lintErrors.violations.map(error =>{
 					let errorInfo = parseErrorString(error)
-					if (errorInfo.lineNo !== 0) {
+					if (errorInfo.lineNo !== 0 && !isNaN(errorInfo.lineNo)) {
 						errorList.push({
 							range: new monaco.Range(errorInfo.lineNo,1,errorInfo.lineNo,10), 
 							options: { 

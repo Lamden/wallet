@@ -21,7 +21,7 @@
 	let editorIsLoaded = false;  
 	let monaco;
 	let monacoComponent;
-	let CONTRACTING_API = "http://167.99.173.97/contracting"
+	let CONTRACTING_API = "https://testnet.lamden.io/contracting"
 
 	onMount(() =>{
 		Monaco.then(mod => {
