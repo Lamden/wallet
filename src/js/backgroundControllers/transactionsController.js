@@ -7,7 +7,7 @@ export const transactionsController = (utils, actions) => {
     let lastSentDate = new Date();
     let checkingTransactions = false;
 
-    const sendLamdenTx = (txBuilder, sk, sentFrom = false) => {
+    const sendLamdenTx = (txBuilder, sentFrom = false) => {
         lastSentDate = new Date()
         //Get current nonce from the masternode
         txBuilder.getNonce()
@@ -37,7 +37,7 @@ export const transactionsController = (utils, actions) => {
                             //Try and send again after waiting
                             setTimeout(() => {
                                 //Resend it after waiting
-                                sendLamdenTx(txBuilder, sk, sentFrom)
+                                sendLamdenTx(txBuilder, sentFrom)
                             }, nonceRetryWaitTime);
                             //Exit method
                             return
@@ -60,7 +60,8 @@ export const transactionsController = (utils, actions) => {
                 console.log(e)
             }
             if (txBuilder.transactionSigned){
-                txBuilder.send(undefined, () => {
+                txBuilder.send(undefined, undefined, () => {
+                    console.log(txBuilder.getAllInfo())
                     txBuilder.sentFrom = sentFrom;
                     processSendResponse(txBuilder);
                     if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
@@ -77,13 +78,13 @@ export const transactionsController = (utils, actions) => {
             methodName: "transfer",
             kwargs: {
                 "to": to,
-                "amount": parseFloat(amount)
+                "amount": utils.Lamden.Encoder('float', amount)
             },
             stampLimit: 10000
         }
         
         let txBuilder = new utils.Lamden.TransactionBuilder(networkInfo, txInfo)
-        sendLamdenTx(txBuilder, account.sk)
+        sendLamdenTx(txBuilder)
     }
     
     const processSendResponse = (txBuilder) => {
@@ -105,6 +106,7 @@ export const transactionsController = (utils, actions) => {
                 const txBuilder = new utils.Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
                 await txBuilder.checkForTransactionResult()
                 .then(() => {
+                    console.log(txBuilder.getAllInfo())
                     transactionsChecked = transactionsChecked + 1
                     if (tx.sentFrom) utils.sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
                     if (transactionsChecked >= transactionsToCheck){

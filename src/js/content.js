@@ -56,7 +56,6 @@ const lamdenWalletSendTx = (detail) => {
 }
 
 const returnTxStatusToPage = (txResult) => {
-    
     if (typeof txResult.data === 'undefined' && typeof txResult.errors !== 'undefined'){
         txResult = { status: "error", errors: txResult.errors}
     }else{

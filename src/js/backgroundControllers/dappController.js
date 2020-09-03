@@ -143,9 +143,8 @@ export const dappController = (utils, actions) => {
         const confirmData = txToConfirm[getSenderHash(sender)]
         if (!actions.walletIsLocked()){
             const txData = confirmData.messageData.txData;
-            const account = actions.getAccountByVK(confirmData.messageData.wallet.vk)
             const txBuilder = new utils.Lamden.TransactionBuilder(txData.networkInfo, txData.txInfo, txData)
-            actions.sendLamdenTx(txBuilder, account.sk, confirmData.url)    
+            actions.sendLamdenTx(txBuilder, confirmData.url)    
         }else{
             const errors = ['Tried to send transaction app but wallet was locked']
             utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})

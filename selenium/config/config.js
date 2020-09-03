@@ -45,6 +45,6 @@ const config = {
     metamaskAddress: "0x00eB12f5C96B15001bf8f32bEEd970d178719AcC", //ETH address of the seed phrase
     metamaskPassword: "Testing0!2", //Required during install
     port: 5656,
-    testnetMasternode: "167.172.126.5:18080"
+    testnetMasternode: "https://testnet-master-1.lamden.io:443"
 }
 module.exports = config

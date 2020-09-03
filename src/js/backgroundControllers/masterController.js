@@ -90,12 +90,10 @@ export const masterController = () => {
         let response = {status: ""};
         let userConfirm = confirm('Send Transaction?')
         if (userConfirm){
-            let wallet = accounts.getAccountByVK(txInfo.senderVk);
-            if (!wallet) return `Error: Did not find Sender Key (${txInfo.senderVk}) in Lamden Wallet`;
             try{
                 txInfo.uid = utils.hashStringValue(new Date().toISOString());
                 let txBuilder = new utils.Lamden.TransactionBuilder(utils.networks.getCurrent(), txInfo)
-                transactions.sendLamdenTx(txBuilder, wallet.sk, sender.origin)
+                transactions.sendLamdenTx(txBuilder, sender.origin)
                 response.status = "Transaction Sent, Awaiting Response"
             }catch (err){
                 console.log(err)
@@ -170,7 +168,7 @@ export const masterController = () => {
                     promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
                 }else {
                     if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
-                        transactions.sendLamdenTx(txBuilder, wallet.sk, dappInfo.url)
+                        transactions.sendLamdenTx(txBuilder, dappInfo.url)
                     }else{
                         promptApproveTransaction(sender, {txData, wallet, dappInfo: info, network})
                     }

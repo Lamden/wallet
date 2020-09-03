@@ -61,7 +61,6 @@
     }
 
     const handleBrokenCharmIcon = (index) => {
-        console.log("broken")
         brokenCharmIconLink[index] = true; 
     }
     
