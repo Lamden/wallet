@@ -4,6 +4,7 @@ const server = require('./server')
 const path = require('path')
 const config = require('../config/config')
 const http = require('http')
+const https = require('https')
 const { CryptoJS } = nodeCryptoJs;
 
 const { testnetMasternode } = config;
@@ -178,7 +179,7 @@ const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) 
             window.resolver(response.detail)
         });
         document.dispatchEvent( new CustomEvent('lamdenWalletConnect', {detail: '${JSON.stringify(connectionInfo)}'} ));
-        ${awaitResponse ? "return await window.walletInfoResponse" : ""}
+        ${awaitResponse ? "console.log(await window.walletInfoResponse); return await window.walletInfoResponse" : ""}
     `);
 }
 
@@ -192,12 +193,13 @@ const sendGetInfoRequest = async (driver, awaitResponse = true) => {
         }
         document.addEventListener('lamdenWalletInfo', resolveDetail);
         document.dispatchEvent( new CustomEvent('lamdenWalletGetInfo'));
-        ${awaitResponse ? "return await window.walletInfoResponse" : ""}
+        ${awaitResponse ? "console.log(await window.walletInfoResponse); return await window.walletInfoResponse" : ""}
     `);
 }
 
 const getWalletResponse = async (driver) => {
     return driver.executeScript(`
+        console.log(await window.walletInfoResponse);
         return await window.walletInfoResponse
     `);
 }
@@ -209,12 +211,13 @@ const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
             window.txResolver(response.detail)
         });
         document.dispatchEvent( new CustomEvent('lamdenWalletSendTx', {detail: '${JSON.stringify(transactionInfo)}'} ));
-        ${awaitResponse ? "return await window.walletTxResult" : ""}
+        ${awaitResponse ? "console.log(await window.walletTxResult); return await window.walletTxResult" : ""}
     `);
 }
 
 const getTxResult = async (driver) => {
     return driver.executeScript(`
+        console.log(await window.walletTxResult);
         return await window.walletTxResult
     `);
 }
@@ -224,7 +227,9 @@ const startServer = (port) => {return server.startServer(port)}
 
 
 const makeHttpRequest = (url, callback) => {
-    http.get(url, (resp) => {
+    let protocol = http;
+    if(url.includes('https://')) protocol = https;
+    protocol.get(url, (resp) => {
         let data = '';
     
         // A chunk of data has been recieved.
@@ -244,20 +249,24 @@ const makeHttpRequest = (url, callback) => {
 const getAccountBalance = (vk) => {
     return new Promise(resolver => {
         const resolveRequest = (data) => {
-            if (!data.value) resolver(0)
-            else resolver(parseInt(data.value)) 
+            if (typeof data.value === 'undefined') return resolver(0)
+            if (!data.value) return resolver(0)
+            if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
+            else return resolver(parseInt(data.value)) 
         }
-        makeHttpRequest(`http://${testnetMasternode}/contracts/currency/balances?key=${vk}`, resolveRequest)
+        makeHttpRequest(`${testnetMasternode}/contracts/currency/balances?key=${vk}`, resolveRequest)
     })
 }
 
 const getApprovalAmount = (sender, to) => {
     return new Promise(resolver => {
         const resolveRequest = (data) => {
-            if (!data.value) resolver(0)
-            else resolver(parseInt(data.value))  
+            if (typeof data.value === 'undefined') return resolver(0)
+            if (!data.value) return resolver(0)
+            if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
+            else return resolver(parseInt(data.value))  
         }
-        makeHttpRequest(`http://${testnetMasternode}/contracts/currency/balances?key=${sender}:${to}`, resolveRequest)
+        makeHttpRequest(`${testnetMasternode}/contracts/currency/balances?key=${sender}:${to}`, resolveRequest)
     })
 }
 

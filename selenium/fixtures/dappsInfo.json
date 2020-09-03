@@ -1,7 +1,6 @@
 {
     "basicConnectionInfo": {
         "appName": "Dapp Testing",
-        "description": "This is a Unit Test of the Dapp connection API. This has more than 60 characters.",
         "contractName": "con_wallet_testing",
         "networkType": "testnet",
         "logo": "/images/logo.png"
@@ -21,7 +20,7 @@
             "key_name": "wallet_testing",
             "key_value" : ""
         },
-        "stampLimit": 10000
+        "stampLimit": 20
     },
     "approvalTransaction": {
         "contractName": "currency",
@@ -31,6 +30,6 @@
             "to": "con_wallet_testing",
             "amount" : 1
         },
-        "stampLimit": 10000
+        "stampLimit": 20
     }
 }

@@ -55,7 +55,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.errors[0].includes('You must be an authorized dApp'), true)
         });
         it('Create conenction with wallet to our teset dApp website ', async function() {
-            let funding = {show: true, amount: 1};
+            let funding = {show: true, amount: 5};
             this.timeout(30000);
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
@@ -154,14 +154,16 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(afterApprovalAmount, currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount);
         });
         it('sends a transactions successfully after Trusted App', async function() {
-            this.timeout(30000);
+            //this.timeout(30000);
             await helpers.switchWindow(driver, 0)
             await helpers.setAsTrustedDapp(driver)
             await helpers.switchWindow(driver, 1)
 
             //Send a transaction with pre-approval
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
+
             let txResponse = await helpers.sendTx(driver, transaction, true)
+
             assert.equal(txResponse.status, "success");
             let result = txResponse.data
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);

@@ -28,7 +28,7 @@
     $: currencySymbol = $currentNetwork.currencySymbol || ''
 
     const openHashLink = () => {
-        if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transaction/${txData.hash}`, '_blank');
+        if ($currentNetwork.blockExplorer) window.open(`${$currentNetwork.blockExplorer}/transactions/${txData.hash}`, '_blank');
         else window.open(`${$currentNetwork.host}/tx?hash=${txData.hash}`, '_blank');
     }
 
@@ -37,6 +37,12 @@
             return `Not enough ${currencySymbol} to complete this transaction`
         }
         else return err
+    }
+
+    const formatBalance = (value) => {
+        if (!value.amount) return 0
+        if (value.amount.__fixed__) return parseFloat(value.amount.__fixed__)
+        return value.amount
     }
 
 </script>
@@ -142,7 +148,7 @@
                     <div class="item-margin" 
                          class:text-red={vk === txData.sender} 
                          class:text-green={vk !== txData.sender} >
-                        {`${txData.transaction.payload.kwargs.amount || 0}`}
+                        {`${formatBalance(txData.transaction.payload.kwargs)}`}
                     </div>
                     <div class="text-primary-dark item-margin">
                         {`${currencySymbol}`}

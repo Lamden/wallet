@@ -75,7 +75,6 @@
             fetch(background)
                 .then(res => {
                     if (res.status !== 200) brokenBGLink = true
-                    console.log(brokenBGLink)
                 })
                 .catch((err) => brokenBGLink = true)
         }

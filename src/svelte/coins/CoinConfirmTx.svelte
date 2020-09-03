@@ -86,7 +86,7 @@ h3{
                     </div>
                 {:else}
                     <div class="values text-body1">
-                        {detail.value}
+                        {Object.keys(detail.value).includes("__fixed__") ? detail.value.__fixed__ :  detail.value}
                     </div>
                 {/if}
             {/each}
