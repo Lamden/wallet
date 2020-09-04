@@ -61,7 +61,7 @@ export const transactionsController = (utils, actions) => {
             }
             if (txBuilder.transactionSigned){
                 txBuilder.send(undefined, undefined, () => {
-                    console.log(txBuilder.getAllInfo())
+                    //console.log(txBuilder.getAllInfo())
                     txBuilder.sentFrom = sentFrom;
                     processSendResponse(txBuilder);
                     if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
@@ -106,7 +106,7 @@ export const transactionsController = (utils, actions) => {
                 const txBuilder = new utils.Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
                 await txBuilder.checkForTransactionResult()
                 .then(() => {
-                    console.log(txBuilder.getAllInfo())
+                    //console.log(txBuilder.getAllInfo())
                     transactionsChecked = transactionsChecked + 1
                     if (tx.sentFrom) utils.sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
                     if (transactionsChecked >= transactionsToCheck){

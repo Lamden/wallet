@@ -141,7 +141,7 @@
 
 <style>
     .send-lamden{
-        width: 500px;
+        width: 525px;
     }
     .coin-info{
         align-self: flex-end;

@@ -1,5 +1,6 @@
 <script>
     import { setContext, getContext } from 'svelte';
+    import { Encoder } from 'lamden-js'
     //Stores
     import { currentPage } from '../Router.svelte'
     //Components
@@ -54,7 +55,9 @@
             {name:'Stamp Limit', value: txData.txInfo.stampLimit}
         ]
         Object.keys(txData.txInfo.kwargs).forEach(arg => {
+            
             let argValue = txData.txInfo.kwargs[arg]
+            //let argType = txData.txInfo.kwargs[arg]
             txDetails.push({name: arg, value: argValue})
         })
         return txDetails

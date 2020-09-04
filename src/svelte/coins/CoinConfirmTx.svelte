@@ -66,9 +66,7 @@
 p{
     margin: 0;
 }
-h3{
 
-}
 </style>
 
 <div class="confirm-tx flex-column">
@@ -86,7 +84,7 @@ h3{
                     </div>
                 {:else}
                     <div class="values text-body1">
-                        {Object.keys(detail.value).includes("__fixed__") ? detail.value.__fixed__ :  detail.value}
+                        {detail.value}
                     </div>
                 {/if}
             {/each}
