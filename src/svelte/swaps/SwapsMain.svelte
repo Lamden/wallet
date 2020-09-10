@@ -6,6 +6,9 @@
     const { Steps, Step } = Components;
     import NavLogo from '../nav/NavLogo.svelte';
 
+    //Stores
+    import { SwapsStore, currentNetwork, networkKey } from '../../js/stores/stores.js'
+
     //Context
     const { switchPage } = getContext('app_functions');
 
@@ -17,11 +20,14 @@
         },
         setSwapInfo: (info) => {swapInfo = info},
         getSwapInfo: () => { return swapInfo },
-        setMetamaskTxResponse: (txResponse) => {metamaskTxResponse = txResponse},
+        setMetamaskApprovalResponse: (txResponse) => {metamaskApprovalResponse = txResponse},
+        setMetamaskTxResponse: (txResponse) => {metamaskSwapTxResponse = txResponse; createSwap()},
         setSwapStatus: (info) => {swapStatus = info},
         getSwapStatus: () => { return swapStatus },
-        setSwapResult: (info) => {swapResult = info},
+        setSwapResult: (info) => {swapResult = info; updateSwap()},
         getSwapResult: () => { return swapResult },
+        setAnswers: (value) => answers = value,
+        getAnswers: () => {return answers},
         setLamdenWallet: (wallet) => lamdenWallet = wallet,
         getLamdenWallet: () => { return lamdenWallet },
         getLamdenAddress: () => { return lamdenWallet.vk },
@@ -29,22 +35,29 @@
         getTokenBalance: () => { return swapInfo.tokenBalance.value },
         getApprovalAmount: () => { return getApprovalAmount() },
         getChainInfo: () => { return swapInfo.chainInfo},
-        getTxHash: () => { return metamaskTxResponse.transactionHash} 
+        getTxHash: (type) => { return getTxHash(type)},
+        createSwap: () => createSwap()
+
     });
 
     let currentStep = 0;
     let swapInfo = {};
     let lamdenWallet = {}
-    let metamaskTxResponse = {};
+    let metamaskApprovalResponse = {};
+    let metamaskSwapTxResponse = {};
     let swapStatus = {};
     let swapResult = {};
+    let answers = [];
 
     let steps = [
+        {page: 'SwapsDisclaimer_Questions', hideSteps: false, back: 0},
+        {page: 'SwapsDisclaimer_TokensExchange', hideSteps: false, back: 0},
+        {page: 'SwapsDisclaimer_ExchangeTerms', hideSteps: false, back: 0},
         {page: 'SwapsChooseLamden', hideSteps: false, back: 0},
-        {page: 'SwapsConnectMetamask', hideSteps: false, back: 0},
-        {page: 'SwapsSendApproval', hideSteps: false, back: 1},
-        {page: 'SwapsCheckStatus', hideSteps: false, back: 2},
-        {page: 'SwapsPerformSwap', hideSteps: false, back: 0}
+        {page: 'SwapsConnectMetamask', hideSteps: false, back: 1},
+        {page: 'SwapsSendApproval', hideSteps: false, back: 2},
+        {page: 'SwapsSendEthTx', hideSteps: false},
+        {page: 'SwapsPerformSwap', hideSteps: false}
     ]
 
     $: currentPage = steps[currentStep].page;
@@ -52,12 +65,34 @@
     $: back = steps[currentStep].back;
     $: hideBack = steps[currentStep].hideBack ? false : true;
 
+    const getTxHash = (type) => {
+        if (type === "approval") return metamaskApprovalResponse.transactionHash
+        if (type === "swapTx") return metamaskSwapTxResponse.transactionHash
+    }
+
     const getApprovalAmount = () => {
         try{
-            return metamaskTxResponse.events.Approval.returnValues.value / Math.pow(10, 18)
+            return (metamaskApprovalResponse.events.Approval.returnValues.value  / Math.pow(10, 18)).toFixed(8)
         }catch (e){
             return 0
         }
+    }
+
+    const createSwap = () => {
+        SwapsStore.createSwap(
+            networkKey($currentNetwork),
+            swapInfo,
+            getTxHash("swapTx"), 
+            getTxHash("approval"),
+            lamdenWallet.vk, 
+            getApprovalAmount(), 
+            answers
+            )
+    }
+
+    const updateSwap = () => {
+        if (swapResult.success) SwapsStore.updateLamdenTxHash(networkKey($currentNetwork), getTxHash("swapTx"), swapResult.success)
+        if (swapResult.error) SwapsStore.updateStatus(networkKey($currentNetwork), getTxHash("swapTx"), "error", swapResult.error)
     }
     
 </script>

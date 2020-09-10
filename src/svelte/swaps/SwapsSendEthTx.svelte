@@ -15,20 +15,22 @@
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
     //Context
-    const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse } = getContext('functions');
+    const { changeStep, getTokenBalance, getEthAddress, getLamdenAddress, getApprovalAmount, setMetamaskTxResponse } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
-    //DOM Nodes
-    let inputNode
+    const swapContractLink = {
+        "TAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"},
+        "dTAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"}
+    }
 
-    $: metamaskTxResponse = null;
+
+    $: metamaskSwapTxResponse = null;
     $: sending = false;
-    $: sent = metamaskTxResponse && !sending
+    $: sent = metamaskSwapTxResponse && !sending
     $: errorMsg = ''
 
     const nextPage = () => {
-        setMetamaskApprovalResponse(metamaskTxResponse)
-        changeStep(6)
+        changeStep(7)
     }
 
     onMount(() => {
@@ -38,14 +40,15 @@
         })
     })
 
-    const sendTokenApproval = () => {
+    const sendEthSwapTransaction = () => {
         if (!sent){
             sending = true
             errorMsg = ''
-            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value}}, (response) => {
+            chrome.runtime.sendMessage({type: 'sendEthSwapTransaction', data: { ethAddress: getEthAddress(), amount: getApprovalAmount(), lamdenAddress: getLamdenAddress() }}, (response) => {
                 sending = false
                 if (typeof response.error === 'undefined') {
-                    metamaskTxResponse = response
+                    metamaskSwapTxResponse = response
+                    setMetamaskTxResponse(metamaskSwapTxResponse)
                 } else {
                     errorMsg = response.error
                 }
@@ -53,75 +56,46 @@
         }
     }
 
-    const handleChanged = () => {
-        if (isNaN(inputNode.value)) {
-            inputNode.value = "0"
-            return
-        } 
-        if (!inputNode.value.includes(".")) return
-        let intPart = inputNode.value.split(".")[0]
-        let decimalPart = inputNode.value.split(".")[1]
-        if (!decimalPart && !intPart) {
-            inputNode.value = "0"
-            return
-        }
-        if (!decimalPart) {
-            inputNode.value = intPart
-            return
-        }
-        if (parseInt(decimalPart) === 0) {
-            inputNode.value = intPart
-            return
-        }
-        if (decimalPart.length > 8) inputNode.value = intPart + "." + decimalPart.substring(0, 8)
-    }
-
 </script>
 
 <style>
+h2{
+    margin:0;
+}
+a{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .result{
     align-items: center;
+    margin-top: 2rem;
 }
 .circle-checkmark{
-    width: 190px;
+    width: 75px;
 }
 .circle-error{
-    width: 100px;
+    width: 75;
     margin-bottom: 1rem;
 }
-p.text-body2{
-    font-weight: 300;
-    line-height: 1.3;
+.swap-details > p{
+    margin: 1rem 0 0rem;
+    font-size: 1.2em;
+    font-weight: 500;
 }
-strong{
-    color: cyan;
+.swap-details{
+    text-align: left;
 }
 </style>
 
 <div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
-        <h6>Send Token Approval</h6>
+        <h6>Ethereum Token Swap Transaction</h6>
     
         <p class="flow-text-box text-body1">
-            {`Lamden requires access to your tokens to complete the swap process.`}
+            {`Send your ${$currentNetwork.currencySymbol} tokens to our `}
+            <a class="text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" >Ethereum Token Swap Contract</a>
         </p>
-
-        <p class="text-body2 ">
-            <strong>Ethereum {$currentNetwork.currencySymbol} Balance:</strong><br>
-            {`${getTokenBalance().toFixed(8)} ${getChainInfo().tauSymbol}`}
-        </p>
-
-        {#if !sent}
-            <InputBox 
-                bind:thisInput={inputNode}
-                on:changed={handleChanged}
-                label={`Approve Amount`}
-                inputType={'number'}
-                value={`${getTokenBalance().toFixed(8)}`}
-                placeholder={`${getChainInfo().tauSymbol} Amount`}
-                disabled={sending}
-            />
-        {/if}
 
         <div class="flex-column buttons">
             {#if sent}
@@ -136,9 +110,9 @@ strong{
                     classes={`button__solid button__purple`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name={sent ? "Approved" : sending ? "Sending" : "Send Approval"}
+                    name={sent ? "Approved" : sending ? "Sending" : "Send Transaction"}
                     disabled={sending}
-                    click={sendTokenApproval} />
+                    click={sendEthSwapTransaction} />
             {/if}
 
 
@@ -159,15 +133,21 @@ strong{
          </div>
     </div>
     <div class="flex-column flow-content-right">
+        <div class="swap-details">
+            <h3>Swap Details</h3>
+            <p>Amount:</p> {`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}
+            <p>Lamden Address:</p> {getLamdenAddress()}
+        </div>
+
         {#if sending}
             <Loading message="Waiting for response from MetaMask..."
                      subMessage="Check your MetaMask to confirm the transaction"
             />
         {/if}
         {#if sent}
-            <div class="flex-column result" >
+            <div class="flex-row result" >
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-                <h3>{'Approved!'}</h3>
+                <h2 class="text-green">{'Success!'}</h2>
             </div>
         {/if}
         {#if errorMsg !== ''}

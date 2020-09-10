@@ -8,14 +8,14 @@ var web3;
 const ethNetworks = {
     '1': {
         tauContract: '0xc27a2f05fa577a83ba0fdb4c38443c0718356501',
-        controller: '0x00000C8e84545a5aF04a308D4c1F2e42Ff1B6C05',
+        swapContract: '0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07',
         chainName: 'Main Network',
         tauSymbol: 'TAU',
         blockExplorer: 'https://etherscan.io'
     },
     '42': {
-        tauContract: '0x3e26ae9e0ad08de30f28f1f12a73e776729131bd',
-        controller: '0x00000C8e84545a5aF04a308D4c1F2e42Ff1B6C05',
+        tauContract: '0x4ffc081f1538b40ba5086a742fb8a46e31117f0e',
+        swapContract: '0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07',
         chainName: 'Kovan Network',
         tauSymbol: 'dTAU',
         blockExplorer: 'https://kovan.etherscan.io'
@@ -57,6 +57,7 @@ const getChainInfo = async () => {
 
 
 const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) => {
+    
     let web3 = getWeb3();
     let amountToWei;
 
@@ -67,31 +68,73 @@ const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) 
     //Convert Amount to WEI
     try{
         amountToWei = web3.utils.toWei(amount.toString(), 'ether')
+        alert("SWAP TX: " + JSON.stringify({amount, amountToWei}))
     } catch (e) {
         return {error: 'Invalid Amount provided'}
     }
 
     // Get ERC20 Token contract instance
     let contract = new web3.eth.Contract(ABIs.ERC20, tokenContract);
+
     //Create Approve Transactions
     let approvalTx = contract.methods.approve(approvalTo, amountToWei)
 
     //Send Transfer
     try{
-        let response =  await approvalTx.send({from: approvalFrom})
+        let response =  await approvalTx.send({from: approvalFrom}).then(res => {console.log(res); return res})
         return response
     }catch (e) {
         return {error: e.message}
     }
 }
 
-const sendControllerApproval = async (userEthAddress, amount) => {
+const sendSwapContractApproval = async (userEthAddress, amount) => {
+    
     let chainInfo = await getChainInfo()
     if (typeof chainInfo.error !== 'undefined') return chainInfo
     if (chainInfo.chainID !== 42) return {error: 'Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.'}
     let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
-    return await sendApprovalTx(userEthAddress, ethNetwork.controller, ethNetwork.tauContract, amount)
+    return await sendApprovalTx(userEthAddress, ethNetwork.swapContract, ethNetwork.tauContract, amount)
 }
+
+const sendSwapTx = async (ethSenderAddress, tokenContract, amount, lamdenAddress ) => {
+    let web3 = getWeb3();
+    let amountToWei;
+
+    if (!web3.utils.isAddress(ethSenderAddress)) return {error: "'Approval From' ETH address is invalid"}
+    if (!web3.utils.isAddress(tokenContract)) return {error: 'Not an ERC20 contract address'}
+
+    //Convert Amount to WEI
+    try{
+        amountToWei = web3.utils.toWei(amount.toString(), 'ether')
+        alert("SWAP TX: " + JSON.stringify({amount, amountToWei}))
+    } catch (e) {
+        return {error: 'Invalid Amount provided'}
+    }
+
+    // Get SwapContract ABI
+    let contract = new web3.eth.Contract(ABIs.swapContract, tokenContract);
+    //Create Approve Transactions
+    let swap = contract.methods.swap(lamdenAddress, amountToWei)
+
+    //Send Transfer
+    try{
+        let response =  await swap.send({from: ethSenderAddress})
+        return response
+    }catch (e) {
+        return {error: e.message}
+    }
+}
+
+const sendSwapContractTx = async (ethAddress, amount, lamdenAddress) => {
+    let chainInfo = await getChainInfo()
+    if (typeof chainInfo.error !== 'undefined') return chainInfo
+    if (chainInfo.chainID !== 42) return {error: 'Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.'}
+    let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
+    let res = await sendSwapTx(ethAddress, ethNetwork.swapContract, amount, lamdenAddress)
+    return res
+}
+
 
 const balanceOfToken = async (ethAddress, contractAddress) => {
     let web3 = getWeb3();
@@ -128,7 +171,8 @@ const checkTxStatus = async (txHash) => {
 module.exports = {
     requestAccount,
     sendApprovalTx,
-    sendControllerApproval,
+    sendSwapContractTx,
+    sendSwapContractApproval,
     getChainInfo,
     getWeb3,
     balanceOfToken,

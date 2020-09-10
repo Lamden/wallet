@@ -37,7 +37,7 @@
     const checkEthTxStatus = () => {
         if (!success){
             checking = true
-            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash() }}, (response) => {
+            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash("approval") }}, (response) => {
                 if (typeof response.status !== 'undefined'){
                     if (response.status){
                         success = true;
@@ -49,7 +49,7 @@
     }
 
     const nextPage = () => {
-        changeStep(4)
+        changeStep(5)
     }
 
     const startChecking = () => {

@@ -262,6 +262,7 @@ export const masterController = () => {
         "transactions":{
             requestEthereumAccount: transactions.requestEthereumAccount,
             sendEthereumTokenApproval: transactions.sendEthereumTokenApproval,
+            sendEthereumSwapTransaction: transactions.sendEthereumSwapTransaction,
             checkEthereumTxStatus: transactions.checkEthereumTxStatus
         },
         balances,

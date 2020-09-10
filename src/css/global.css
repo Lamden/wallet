@@ -39,6 +39,17 @@ body{
     color: var(--font-primary)
 }
 
+a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visited{
+    color: #7344ff;
+    outline: none;
+    text-decoration: none;
+}
+
+a{
+    text-decoration: none;
+    color: var(--font-accent);
+}
+
 .flex-column{
     display: flex;
     flex-direction: column;

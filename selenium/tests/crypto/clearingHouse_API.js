@@ -76,7 +76,7 @@ describe('Testing Clearinghouse API Handler', function () {
         this.timeout(30000);
         await driver.executeScript(`
             backpage = chrome.extension.getBackgroundPage();
-            window.txResult = backpage.walletEthereum.sendControllerApproval('${config.metamaskAddress}','${swapInfo.swapAmount}')
+            window.txResult = backpage.walletEthereum.sendSwapContractApproval('${config.metamaskAddress}','${swapInfo.swapAmount}')
         `)
         await helpers.sleep(5000, true)
         await helpers.switchWindow(driver, 2) 

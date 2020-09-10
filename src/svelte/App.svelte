@@ -20,7 +20,7 @@
 	let showModal = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain']
+	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap']
 
 	$: walletIsLocked = true;
 	$: firstRun = undefined;

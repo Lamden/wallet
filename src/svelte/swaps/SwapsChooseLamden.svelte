@@ -16,16 +16,10 @@
     let selectedWallet;
 
     onMount(() => {
-        steps.set({
-            currentStep: 1,
-            stepList: [
-                {number: 1, name: 'Lamden Account', desc: ''},
-                {number: 2, name: 'Connect MetaMask', desc: ''},
-                {number: 3, name: `Ethereum ${$currentNetwork.currencySymbol} Approval`, desc: ''},
-                {number: 4, name: 'Validate & Comfirm', desc: ''},
-                {number: 5, name: 'Perform Swap', desc: ''},
-            ]
-        });
+        steps.update(stepsStore => {
+            stepsStore.currentStep = 2;
+            return stepsStore
+        })
     })
 
     const handleSelectedWallet = (e) => {
@@ -34,7 +28,7 @@
 
     const nextPage = () => {
         setLamdenWallet(selectedWallet)
-        changeStep(1)
+        changeStep(4)
     }
     
 </script>

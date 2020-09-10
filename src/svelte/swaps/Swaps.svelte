@@ -6,7 +6,7 @@
 
     //Components
 	import { Components }  from '../Router.svelte'
-    const { Button } = Components;
+    const { Button, SwapsStatus } = Components;
     
     //Images
     import squares_bg from '../../img/backgrounds/squares_bg.png';
@@ -82,9 +82,10 @@
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('SwapsMain')}
                 icon={plus}
-                disabled={/*$currentNetwork.type === "mainnet" && $currentNetwork.lamden*/ true}
+                disabled={/*$currentNetwork.type === "mainnet" && $currentNetwork.lamden*/true}
                 iconWidth={'19px'}
             />
         </div>
 	</div>
+    <SwapsStatus />
 </div>
