@@ -9,7 +9,7 @@ version: 0.16.0
 git clone https://github.com/Lamden/wallet.git
 cd wallet
 ```
-### Install package dependancies
+### Install package dependencies
 ```
 sudo npm install
 ```
