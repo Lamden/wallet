@@ -39,7 +39,7 @@ body{
     color: var(--font-primary)
 }
 
-a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visited{
+a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visited, a:-webkit-any-link:hover{
     color: #7344ff;
     outline: none;
     text-decoration: none;
@@ -578,7 +578,7 @@ button {
     justify-content: center;  
 }
 
-@media (min-width: 900px) {
+@media (min-width: 950px) {
     .flow-content-left{
         padding: 0px 24px 0 242px;
         min-width: 498px;
@@ -647,6 +647,10 @@ button {
     position: absolute;
     display: none;
   }
+
+  .chk-container input:disabled ~ .chk-checkmark {
+    background-color: var(--font-primary-dark);
+}
   
 
   .chk-container input:checked ~ .chk-checkmark:after {

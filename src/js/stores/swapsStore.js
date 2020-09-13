@@ -84,6 +84,7 @@ const createSwapsStore = () => {
                     if (swapStore[netKey][eth_swap_txHash].status !== "success"){
                         swapStore[netKey][eth_swap_txHash].lamden_swap_txHash = lamden_swap_txHash
                         swapStore[netKey][eth_swap_txHash].status = 'success'
+                        swapStore[netKey][eth_swap_txHash].errorMsg = ""
                     }
                 }
                 return swapStore;
@@ -96,7 +97,7 @@ const listFromStore = (swapsStore) => {
     if (!swapsStore) return {}
     let swapListObject = {}
     Object.keys(swapsStore).forEach(networkKey => {
-        swapListObject[networkKey] = Object.keys(swapsStore[networkKey]).map(s => swapsStore[networkKey][s]).sort((a, b) => a.created - b.created)
+        swapListObject[networkKey] = Object.keys(swapsStore[networkKey]).map(s => swapsStore[networkKey][s]).sort((a, b) => new Date(b.created) - new Date(a.created))
     })
     return swapListObject
 }

@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount, onDestroy } from 'svelte';
+    import { getContext, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     
     //Stores
@@ -15,7 +15,7 @@
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
     //Context
-    const { changeStep, getTokenBalance, getEthAddress, getLamdenAddress, getApprovalAmount, setMetamaskTxResponse } = getContext('functions');
+    const { changeStep, getTokenBalance, getEthAddress, getLamdenAddress, getApprovalAmount, setMetamaskTxResponse, getChainInfo } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
     const swapContractLink = {
@@ -32,13 +32,6 @@
     const nextPage = () => {
         changeStep(7)
     }
-
-    onMount(() => {
-        steps.update(stepsStore => {
-            stepsStore.currentStep = 3;
-            return stepsStore
-        })
-    })
 
     const sendEthSwapTransaction = () => {
         if (!sent){
@@ -62,6 +55,9 @@
 h2{
     margin:0;
 }
+.flow-content-right{
+    position: relative;
+}
 a{
     white-space: nowrap;
     overflow: hidden;
@@ -75,8 +71,7 @@ a{
     width: 75px;
 }
 .circle-error{
-    width: 75;
-    margin-bottom: 1rem;
+    width: 40px;
 }
 .swap-details > p{
     margin: 1rem 0 0rem;
@@ -85,6 +80,18 @@ a{
 }
 .swap-details{
     text-align: left;
+    width: 100%;
+}
+.swap-details.grey{
+    color: var(--font-primary-darker)
+}
+.text-cyan{
+    margin-left: 5px;
+}
+.swap-details > p{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>
 
@@ -133,21 +140,43 @@ a{
          </div>
     </div>
     <div class="flex-column flow-content-right">
-        <div class="swap-details">
-            <h3>Swap Details</h3>
-            <p>Amount:</p> {`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}
-            <p>Lamden Address:</p> {getLamdenAddress()}
+        <div class="swap-details" class:grey={sending}>
+            <h3>Transaction Details</h3>
+            <p><strong>Contract:</strong><br>
+                {`Ethereum ${getChainInfo().chainName}:`}
+                {#if sending} {getChainInfo().swapContract}
+                {:else}
+                    <a href={`${$currentNetwork.blockexplorer}/address/${getChainInfo().swapContract}`} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                        {getChainInfo().swapContract}
+                    </a>
+                {/if}
+            </p> 
+            <p><strong>Function:</strong><br>
+                swap
+            </p> 
+            <p><strong>Amount:</strong><br>
+                {`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}
+            </p> 
+            <p><strong>Lamden Address:</strong><br>
+                {#if sending} {getLamdenAddress()}
+                {:else}
+                    <a href={`${getChainInfo().blockExplorer}/addresses/${getLamdenAddress()}`} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                        {getLamdenAddress()}
+                    </a>
+                {/if}
+            </p> 
         </div>
 
         {#if sending}
             <Loading message="Waiting for response from MetaMask..."
                      subMessage="Check your MetaMask to confirm the transaction"
+                     mainStyle="justify-content: flex-start; position: absolute;"
             />
         {/if}
         {#if sent}
             <div class="flex-row result" >
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-                <h2 class="text-green">{'Success!'}</h2>
+                <h2 class="text-cyan">{'Success!'}</h2>
             </div>
         {/if}
         {#if errorMsg !== ''}

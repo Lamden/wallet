@@ -158,7 +158,6 @@ export const transactionsController = (utils, actions) => {
 
     const sendEthereumSwapTransaction = (data, callback = undefined) => {
         const {ethAddress, amount, lamdenAddress } = data;
-        console.log({ethAddress, amount, lamdenAddress })
         utils.Ethereum.sendSwapContractTx(ethAddress, amount, lamdenAddress).then(res => callback(res))   
         return true;
     }

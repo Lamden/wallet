@@ -16,7 +16,7 @@ module.exports = class ClearingHouse_API{
             options.headers = headers;
             options.body = JSON.stringify(data);
         }
-        console.log(`${this.url}${path}`)
+        
         return fetch(`${this.url}${path}`, options)
             .then((res) => {
                 const contentType = res.headers.get('Content-Type')
@@ -27,7 +27,6 @@ module.exports = class ClearingHouse_API{
                 }
             })
             .then(data => {
-                    console.log(data)
                     return callback(data, undefined)
             })
             .catch(err => {

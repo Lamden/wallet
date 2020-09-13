@@ -8,7 +8,7 @@ var web3;
 const ethNetworks = {
     '1': {
         tauContract: '0xc27a2f05fa577a83ba0fdb4c38443c0718356501',
-        swapContract: '0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07',
+        swapContract: '0x78FC2eB9Dd55eb175c6145860385f84F8cbEE639',
         chainName: 'Main Network',
         tauSymbol: 'TAU',
         blockExplorer: 'https://etherscan.io'
@@ -68,7 +68,6 @@ const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) 
     //Convert Amount to WEI
     try{
         amountToWei = web3.utils.toWei(amount.toString(), 'ether')
-        alert("SWAP TX: " + JSON.stringify({amount, amountToWei}))
     } catch (e) {
         return {error: 'Invalid Amount provided'}
     }
@@ -81,7 +80,7 @@ const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) 
 
     //Send Transfer
     try{
-        let response =  await approvalTx.send({from: approvalFrom}).then(res => {console.log(res); return res})
+        let response =  await approvalTx.send({from: approvalFrom})
         return response
     }catch (e) {
         return {error: e.message}
@@ -107,7 +106,6 @@ const sendSwapTx = async (ethSenderAddress, tokenContract, amount, lamdenAddress
     //Convert Amount to WEI
     try{
         amountToWei = web3.utils.toWei(amount.toString(), 'ether')
-        alert("SWAP TX: " + JSON.stringify({amount, amountToWei}))
     } catch (e) {
         return {error: 'Invalid Amount provided'}
     }

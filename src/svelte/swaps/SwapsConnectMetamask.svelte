@@ -34,7 +34,7 @@
     
     onMount(() => {
         steps.update(stepsStore => {
-            stepsStore.currentStep = 2;
+            stepsStore.currentStep = 3;
             return stepsStore
         })
     })
@@ -124,6 +124,9 @@ strong{
     font-weight: normal;
     font-size: 16px;
     letter-spacing: 0.44px;
+}
+.flow-content-right{
+    text-align: center;
 }
 
 </style>

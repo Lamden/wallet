@@ -33,7 +33,7 @@
 
     onMount(() => {
         steps.update(stepsStore => {
-            stepsStore.currentStep = 3;
+            stepsStore.currentStep = 4;
             return stepsStore
         })
     })
@@ -79,6 +79,9 @@
 </script>
 
 <style>
+.flow-content-right{
+    justify-content: flex-start;
+}
 .result{
     align-items: center;
 }
@@ -162,6 +165,8 @@ strong{
         {#if sending}
             <Loading message="Waiting for response from MetaMask..."
                      subMessage="Check your MetaMask to confirm the transaction"
+                     mainStyle="justify-content: flex-start;"
+                     
             />
         {/if}
         {#if sent}

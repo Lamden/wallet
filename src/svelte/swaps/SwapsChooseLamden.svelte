@@ -36,6 +36,7 @@
 <style>
 .flow-content-right{
     max-width: 80%;
+    align-items: flex-start;
 }
 </style>
 

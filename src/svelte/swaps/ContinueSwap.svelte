@@ -19,14 +19,24 @@
         getEthAddress: () => swap.swapInfo.address,
         setSwapResult: (info) => updateSwap(info),
         getAnswers: () => swap.answers,
-        getTxHash: () => swap.eth_swap_txHash
+        getTxHash: () => swap.eth_swap_txHash,
+        getStepList: () => progressSteps,
+        isContinue: true,
     });
 
     let currentStep = 0;
 
     let steps = [
-        {page: 'SwapsPerformSwap', hideSteps: true}
+        {page: 'SwapsPerformSwap', hideSteps: false, back: false}
     ]
+
+    let progressSteps = [
+            {number: 1, name: 'Disclaimers', desc: 'accept'},
+            {number: 2, name: 'Lamden Account', desc: 'choose'},
+            {number: 3, name: 'Connect MetaMask', desc: 'connect'},
+            {number: 4, name: `Ethereum ${$currentNetwork.currencySymbol}`, desc: 'approve & send'},
+            {number: 5, name: `Lamden ${$currentNetwork.currencySymbol}`, desc: 'receive'}
+        ]
 
     $: swap = $SettingsStore.currentPage.data || undefined
 
@@ -37,8 +47,7 @@
 
 
     onMount(() => {
-        //if (!swap || swap.status === "success") switchPage("Swaps", undefined)
-        //switchPage("ContinueSwap", undefined)
+        if (!swap) switchPage("Swaps", undefined)
     })
 
     const getApprovalAmount = () => {

@@ -17,7 +17,7 @@ window.addEventListener('load', (event) => {
 
 const app = new App({
 	target: document.body,
-	props: {loaded}
+	props: {loaded, refreshed: true}
 });
 
 window.app = app;

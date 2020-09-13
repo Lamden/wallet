@@ -7,46 +7,43 @@
 
 	//Components
 	import { Components }  from '../Router.svelte'
-    const { Button, DropDown } = Components;
+    const { Button, DropDown, InputBox } = Components;
 
     //Context
     const { changeStep, setLamdenWallet } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
-    let checked = false;
+    let notScrolled = true;
+    let read_and_confirmed = false;
+    let inputElm;
 
-    onMount(() => {
-        steps.set({
-            currentStep: 1,
-            stepList: [
-                {number: 1, name: 'Disclaimer', desc: ''},
-                {number: 2, name: 'Lamden Account', desc: ''},
-                {number: 3, name: 'Connect MetaMask', desc: ''},
-                {number: 4, name: `Ethereum ${$currentNetwork.currencySymbol} Tx`, desc: ''},
-                {number: 5, name: 'Validate & Comfirm', desc: ''},
-                {number: 6, name: 'Perform Swap', desc: ''},
-            ]
-        });
-    })
+    const legalText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla id cursus leo, dictum sollicitudin mauris. Nunc hendrerit odio eu blandit facilisis. Praesent venenatis eget nisl sed egestas. Cras quis purus ut enim malesuada posuere. Nulla posuere, quam quis dapibus tincidunt, felis quam accumsan augue, vel euismod nibh nulla nec nulla. In rhoncus dui eget faucibus ullamcorper. Morbi quis elit vestibulum nunc maximus posuere ac quis nisi. Aliquam erat volutpat. Duis elit turpis, pellentesque bibendum mollis ac, iaculis nec tellus.
 
+Nunc id nisi elementum, molestie orci vel, venenatis mi. Curabitur sit amet tempor lacus, eu sodales erat. Nullam sodales, mauris at venenatis varius, augue orci maximus urna, eget iaculis sapien mauris nec ipsum. In aliquam lectus vel molestie pharetra. Nullam quam odio, rhoncus nec purus vel, vulputate lobortis lectus. Donec ut augue odio. Suspendisse consectetur lectus non enim sodales convallis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur rhoncus libero sit amet pellentesque mollis. Pellentesque leo ipsum, pulvinar ac est non, auctor tempus ex. Vivamus dignissim mi augue, et ullamcorper justo varius vitae.
+
+Nam pretium ultrices tempor. Maecenas eu dictum sapien. Integer aliquam eget ante id rutrum. Pellentesque vehicula egestas mi id feugiat. Sed aliquet elit et tellus laoreet malesuada. Fusce rutrum posuere diam quis maximus. Nunc id turpis finibus, molestie orci non, dictum dui.
+
+Nunc non sagittis enim. Mauris non diam lacinia, mollis felis ut, vehicula sapien. Morbi egestas, urna eget luctus pellentesque, quam sapien vestibulum lacus, at egestas augue quam et sem. Sed ut est sed magna suscipit fermentum. Morbi vitae odio nec tortor pharetra vulputate. Sed neque lacus, accumsan non faucibus id, mollis et turpis. Morbi vitae eleifend nunc. Fusce dapibus eu lectus at interdum.
+
+Morbi a orci sem. In tincidunt pellentesque tellus. Aliquam ac congue neque, et vehicula massa. Aliquam sed tempus lacus, eu imperdiet magna. Quisque sed neque ac ante interdum imperdiet a at ligula. Nullam efficitur urna diam, in porta quam tristique ac. Duis facilisis interdum sapien et luctus. Fusce hendrerit risus turpis. Mauris suscipit rutrum felis, in pharetra dui pulvinar in. Pellentesque tempor libero purus, non mollis lectus aliquet eu. Sed molestie lacinia nibh a vestibulum. Pellentesque quis quam a odio dignissim consectetur. Proin sodales sem in ultricies blandit.`
 
     const nextPage = () => changeStep(3)
+
+    const handleScroll = (e) => {
+        if (inputElm.scrollHeight - inputElm.scrollTop === inputElm.clientHeight) notScrolled = false
+    }
 
     
 </script>
 
 <style>
+h3{
+    margin: 0 0 1rem;
+}
 .flow-content-right{
     max-width: 80%;
     align-items: flex-start;
     
-}
-ul{
-    list-style-type: none
-}
-li {
-    margin: 0 0 1rem;
-    font-size: 13px;
 }
 .accepted{
     color: var(--font-success)
@@ -64,19 +61,19 @@ li {
 
 <div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
-        <h6>Accept Swap Disclaimer</h6>
+        <h6>Exchange Terms and Conditions</h6>
     
-        <div class="flow-text-box text-body1 text-primary">
-            {`Please read and accept the swap disclaminer to begin the process.`}
-        </div>
+        <p class="flow-text-box text-body1 text-primary">
+            Please read and <strong class="text-cyan">scroll text all the way to the bottom</strong>, check the box to accept terms and click the button to proceed.
+        </p>
 
         <div class="flex-column flow-buttons">
             <Button id={'continue-btn'}
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name={"Accept Terms"}
-                    disabled={!checked}
+                    name={"Proceed"}
+                    disabled={!read_and_confirmed}
                     click={nextPage} />
             <Button id={'back-btn'}
                     classes={'button__solid'} 
@@ -87,20 +84,25 @@ li {
          </div>
     </div>
     <div class="flex-column flow-content-right" in:fade="{{delay: 0, duration: 200}}">
-        <h3>
-            By accessing this section of the website, you confirm that
-        </h3>    
-            <ul>
-                <li><strong>(i)</strong> You currently own TAU Lamden token(s) for your own account.</li>
-                <li><strong>(ii)</strong> You were neither a Swiss resident nor physically present in Switzerland at the time you purchased your Lamden TAU tokens nor are you at the time of the exchange of your TAU Lamden tokens a Swiss resident or physically present in Switzerland.</li>
-                <li><strong>(iii)</strong> You are not residing nor are you physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements.</li>
-            </ul>
-        
+        <h3>Exchange terms and conditions</h3> 
+        <InputBox 
+            inputType="textarea"
+            bind:thisInput={inputElm}
+            value={legalText}
+            margin="-1rem 0 2rem"
+            rows="19"
+            on:scroll={handleScroll}
+            readonly={true}
+        />
         <div class="checkbox-box">
-            <label class="chk-container" id="chk-all" class:not-accepted={!checked} class:accepted={checked}>
-                <input  type="checkbox" bind:checked={checked} >
+            <label  class="chk-container" 
+                    id="chk-all" 
+                    class:text-primary-dark={notScrolled} 
+                    class:not-accepted={!read_and_confirmed && !notScrolled} 
+                    class:accepted={read_and_confirmed && !notScrolled}>
+                <input  type="checkbox" bind:checked={read_and_confirmed} disabled={notScrolled}>
                 <span class="chk-checkmark"></span>
-                I confirm that I have read the ablove statements and they are all true.
+                I accept Exchange Terms and Conditions and am willing to proceed and make an exchange offer
             </label>
         </div>
     </div>

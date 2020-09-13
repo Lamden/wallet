@@ -20,6 +20,8 @@
 
     //Context
     const { 
+        isContinue,
+        getStepList,
         getEthAddress,
         getAnswers,
         getTxHash,
@@ -40,10 +42,17 @@
     $: success = undefined;
 
     onMount(() => {
-        steps.update(stepsStore => {
-            stepsStore.currentStep = 6;
-            return stepsStore
-        })
+        if (isContinue){
+            steps.set({
+                currentStep: 5,
+                stepList: getStepList()
+            });
+        }else{
+            steps.update(stepsStore => {
+                stepsStore.currentStep = 5;
+                return stepsStore
+            })
+        }
         try{
             clearingHouseAPI = new ClearingHouse_API()
             sendSwapInfo();
@@ -76,6 +85,11 @@
                 errorMsg = res.error;
                 success = false
             }
+
+            steps.update(stepsStore => {
+                stepsStore.currentStep = 6;
+                return stepsStore
+             })
         })
         .catch(err => {
             console.log(err); 
@@ -154,9 +168,6 @@
                 {`DO NOT CLOSE THIS PAGE`}
             </div>
         {/if}
-        {#if success}
-            <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-        {/if}
         <div class="flex-column buttons">
             <Button id={'home-btn'}
                     classes={'button__solid button__purple'} 
@@ -169,7 +180,8 @@
     </div>
     <div class="flex-column flow-content-right">
         {#if success}
-            <h2 class="text-green" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
+            <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
+            <h2 class="text-cyan" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
         {/if}
         {#if errorMsg !== ''}
             <p class="text-body1 text-red" >{errorMsg}</p>

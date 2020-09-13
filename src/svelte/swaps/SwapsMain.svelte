@@ -36,7 +36,9 @@
         getApprovalAmount: () => { return getApprovalAmount() },
         getChainInfo: () => { return swapInfo.chainInfo},
         getTxHash: (type) => { return getTxHash(type)},
-        createSwap: () => createSwap()
+        createSwap: () => createSwap(),
+        isContinue: false,
+        getStepList: () => progressSteps
 
     });
 
@@ -57,8 +59,16 @@
         {page: 'SwapsConnectMetamask', hideSteps: false, back: 1},
         {page: 'SwapsSendApproval', hideSteps: false, back: 2},
         {page: 'SwapsSendEthTx', hideSteps: false},
-        {page: 'SwapsPerformSwap', hideSteps: false}
+        {page: 'SwapsPerformSwap', hideSteps: false, back: false}
     ]
+
+    let progressSteps = [
+                {number: 1, name: 'Disclaimers', desc: 'accept'},
+                {number: 2, name: 'Lamden Account', desc: 'choose'},
+                {number: 3, name: 'Connect MetaMask', desc: 'connect'},
+                {number: 4, name: `Ethereum ${$currentNetwork.currencySymbol}`, desc: 'approve & send'},
+                {number: 5, name: `Lamden ${$currentNetwork.currencySymbol}`, desc: 'receive'}
+            ]
 
     $: currentPage = steps[currentStep].page;
     $: hideSteps = steps[currentStep].hideSteps;

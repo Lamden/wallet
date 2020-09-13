@@ -56,22 +56,11 @@
             {`Swap your Ethereum ${$currentNetwork.currencySymbol} Tokens for Lamden ${$currentNetwork.currencySymbol}`}
         </h2>
         
-        <div class="subtext text-body1" class:text-warning={/*$currentNetwork.type === "mainnet" && $currentNetwork.lamden*/ true}>
-            {#if $currentNetwork.type === "mainnet" && $currentNetwork.lamden }
-                {`
-                    Swaps are currently unavailable for Lamden Mainnet and will be enabled in a future wallet release.
-                `}
-            {:else}
-                {`
-                    Testing Swaps has been disabled in this wallet release and will be re-enabled in a future release.
-                `}
-            <!--
-                {`
-                    During this process you will give Lamden access to spend your Ethereum tokens.  
-                    Lamden will burn them and send you the equivalent number of Lamden ${$currentNetwork.currencySymbol} Tokens.
-                `}
-            -->
-            {/if}
+        <div class="subtext text-body1">
+            {`
+                During this process you will send your Ethereum ${$currentNetwork.currencySymbol} tokens to an Ethereum Swap Contract and 
+                Lamden will send you the equivalent number of Lamden ${$currentNetwork.currencySymbol} Tokens on ${$currentNetwork.name}.
+            `}
         </div>
         
         <div class="buttons">
@@ -82,7 +71,6 @@
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('SwapsMain')}
                 icon={plus}
-                disabled={/*$currentNetwork.type === "mainnet" && $currentNetwork.lamden*/true}
                 iconWidth={'19px'}
             />
         </div>

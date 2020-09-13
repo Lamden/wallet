@@ -9,10 +9,13 @@ const ClearingHouse_API = require('../../../src/js/crypto/clearingHouseAPI')
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath},${config.metamaskPath}`);
 
+/*********************
+MUST BE RUNNING CLearingHouse2 server locally!
+*/
+
 describe('Testing Clearinghouse API Handler', function () {
     let driver;
     let CH_API;
-    let CH_Response;
     before(async function() {
         driver = await new Builder()
                 .forBrowser('chrome')
@@ -102,70 +105,34 @@ describe('Testing Clearinghouse API Handler', function () {
         assert.equal(CH_API.constructor.name, "ClearingHouse_API");
     })
 
-    it('startSwap(): Rejects swapObject paramater with no ethAddress property', async function() {
+    it('startSwap(): Rejects swapObject paramater with no tx property.', async function() {
         let error;
         try{
-            await CH_API.startSwap({lamdenAddress: swapInfo.lamdenAddress})
+            await CH_API.startSwap({answers: [1,2,3]})
         }catch (e) {
             error = e.message
         }
-        assert.equal(error, "Cannot Start Swap: Missing paramater Ethereum Address <string>.");
+        assert.equal(error, "Cannot Start Swap: Missing paramater Ethereum Tx Hash <string>.");
     })
 
-    it('startSwap(): Rejects swapObject paramater with no lamdenAddress property', async function() {
+    it('startSwap(): Rejects swapObject paramater with no answers property.', async function() {
         let error;
         try{
-            await CH_API.startSwap({ethAddress: config.metamaskAddress})
+            await CH_API.startSwap({tx: "eth_tx_hahsh"})
         }catch (e) {
             error = e.message
         }
-        assert.equal(error, "Cannot Start Swap: Missing paramater Lamden Address <string>.");
+        assert.equal(error, "Cannot Start Swap: Missing paramater Answers <array>.");
     })
     it('startSwap(): Can pass information correctly to the clearinghouse and return the swap information respose', async function() {
         this.timeout(30000);
         let error;
         let response;
         try{
-            response = await CH_API.startSwap({ethAddress: config.metamaskAddress, lamdenAddress: swapInfo.lamdenAddress})
+            response = await CH_API.startSwap({tx: "etx_tx_hash", answers: [1,2,3]})
         }catch (e) {
             error = e.message
         }
-        assert.equal(error, undefined);
-        assert.equal(response.status, "success");
-        CH_Response = response
-    })
-    it('checkSwapStatus(): Rejects if no UUID string provided', async function() {
-        let error;
-        try{
-            await CH_API.checkSwapStatus()
-        }catch (e) {
-            error = e.message
-        }
-        assert.equal(error, "Missing paramater UUID <string>.");
-    })
-    it('checkSwapStatus(): Can fetch and return the status of a swap', async function() {
-        this.timeout(120000);
-        let swapCompleted = await new Promise((resolve, reject) => {
-            let maxTries = 40;
-            let tries = 0;
-            const getStatus = async () => {
-                let error;
-                let response;
-                try{
-                    tries = tries + 1
-                    response = await CH_API.checkSwapStatus(CH_Response.uuid_receipt)
-                }catch (e) {
-                    error = e.message
-                }
-                assert.equal(error, undefined);
-                if (response.status === 'Swap is completed.') resolve(true)
-                else {
-                    if (tries >= maxTries) resolve(false)
-                    else setTimeout(getStatus, 1000)
-                }
-            }
-            getStatus();
-        })
-        assert.equal(swapCompleted, true);
+        assert.equal(typeof response.error !== 'undefined', true);
     })
 })
