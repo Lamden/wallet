@@ -101,7 +101,7 @@ strong{
 }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+<div id="swap_approval" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
         <h6>Send Token Approval</h6>
     

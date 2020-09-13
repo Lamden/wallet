@@ -50,12 +50,12 @@ const createSwapsStore = () => {
                 if (!swapStore[netKey]) swapStore[netKey] = {}
                 //Set name and data in Settings store
                 if (!swapStore[netKey][eth_swap_txHash]) swapStore[netKey][eth_swap_txHash] = {
-                    created: new Date().toLocaleString(), swapInfo, eth_swap_txHash, eth_approval_txHash, lamdenAddress, amount, answers, status: 'created', errorMsg: ""
+                    created: new Date().toLocaleString(), swapInfo, eth_swap_txHash, eth_approval_txHash, lamdenAddress, amount, answers, status: 'started', errorMsg: ""
                 }
                 return swapStore;
             })
         },
-        updateStatus: (netKey, eth_swap_txHash, status, errorMsg = undefined) => {
+        updateStatus: (netKey, eth_swap_txHash, status, errorMsg = undefined, hash = undefined) => {
             if (!validateTypes.isStringWithValue(netKey)) return;
             if (!validateTypes.isStringWithValue(eth_swap_txHash)) return;
             if (!validateTypes.isStringWithValue(status)) return;
@@ -67,6 +67,8 @@ const createSwapsStore = () => {
                     if (swapStore[netKey][eth_swap_txHash].status !== "success"){
                         swapStore[netKey][eth_swap_txHash].status = status
                         if(errorMsg) swapStore[netKey][eth_swap_txHash].errorMsg = errorMsg
+                        if(hash) swapStore[netKey][eth_swap_txHash].lamden_swap_txHash = hash
+
                     }
                 }
                 return swapStore;

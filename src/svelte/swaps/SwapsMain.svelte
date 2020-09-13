@@ -102,7 +102,7 @@
 
     const updateSwap = () => {
         if (swapResult.success) SwapsStore.updateLamdenTxHash(networkKey($currentNetwork), getTxHash("swapTx"), swapResult.success)
-        if (swapResult.error) SwapsStore.updateStatus(networkKey($currentNetwork), getTxHash("swapTx"), "error", swapResult.error)
+        if (swapResult.error) SwapsStore.updateStatus(networkKey($currentNetwork), getTxHash("swapTx"), "error", swapResult.error, swapResult.hash)
     }
     
 </script>

@@ -60,6 +60,29 @@ describe('Token Swap Negative Tests', function () {
         })
         await startSwap_Button.click()
     });
+    it('Renders SwapsDisclaimer_Questions.svelte', async function() {
+        await driver.findElement(By.id('swap_questions'))
+        await driver.executeScript(`document.getElementById('read_and_confirmed').click()`)
+        await helpers.sleep(300, true)
+        await driver.executeScript(`document.getElementById('yourself_or_company_0').click()`)
+        await driver.executeScript(`document.getElementById('domiciled_or_usually_staying_0').click()`)
+        await driver.findElement(By.id('accept-terms-btn')).click()
+    });
+    it('Renders SwapsDisclaimer_TokenExchange.svelte', async function() {
+        await driver.findElement(By.id('swap_exchangeOffer'))
+        await driver.executeScript(`document.getElementById('exchange_offer').scroll(0,99999)`)
+        await helpers.sleep(300, true)
+        await driver.executeScript(`document.getElementById('accept-offer-chk').click()`)
+        await driver.findElement(By.id('proceed-btn')).click()
+
+    });
+    it('Renders SwapsDisclaimer_ExchangeTerms.svelte', async function() {
+        await driver.findElement(By.id('swap_exchangeTerms'))
+        await driver.executeScript(`document.getElementById('exchange_terms').scroll(0,99999)`)
+        await helpers.sleep(300, true)
+        await driver.executeScript(`document.getElementById('accept-terms-chk').click()`)
+        await driver.findElement(By.id('proceed-btn')).click()
+    });
     it('Renders SwapsChooseLamden.svelte', async function() {
         let continue_Button = await driver.findElement(By.id('continue-btn'))
         await continue_Button.getAttribute('disabled').then(disabled => {

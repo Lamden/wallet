@@ -99,7 +99,7 @@ label{
 }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+<div id="swap_questions" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
         <h6>Accept Swap Disclaimer</h6>
     
@@ -108,7 +108,7 @@ label{
         </div>
 
         <div class="flex-column flow-buttons">
-            <Button id={'continue-btn'}
+            <Button id={'accept-terms-btn'}
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
@@ -129,14 +129,14 @@ label{
                 <h3 class="first">
                     By accessing this section of the wallet, you confirm that
                 </h3>    
-                    <ul>
-                        <li><strong>(i)</strong> you currently own TAU Lamden token(s) for your own account and</li>
-                        <li><strong>(ii)</strong> you are not residing nor are you physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements.</li>
-                        </ul>
+                <ul>
+                    <li><strong>(i)</strong> you currently own TAU Lamden token(s) for your own account and</li>
+                    <li><strong>(ii)</strong> you are not residing nor are you physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements.</li>
+                </ul>
                 
                 <div class="checkbox-box">
-                    <label class="chk-container" id="chk-all" class:not-accepted={!read_and_confirmed} class:accepted={read_and_confirmed}>
-                        <input  type="checkbox" bind:checked={read_and_confirmed} on:change={resetAnswers}>
+                    <label id="read_and_confirmed" class="chk-container" class:not-accepted={!read_and_confirmed} class:accepted={read_and_confirmed}>
+                        <input type="checkbox" bind:checked={read_and_confirmed} on:change={resetAnswers}>
                         <span class="chk-checkmark"></span>
                         I have read and confirm the above statements are all true.
                     </label>
@@ -144,27 +144,25 @@ label{
             </div>
             {#if read_and_confirmed}
                 <div in:fade="{{delay: 0, duration: 200}}">
-                    <h3>
-                        Are you acting:
-                    </h3>
-                    <div class="flex-column padding text-body2">
+                    <h3>Are you acting:</h3>
+                    <div  class="flex-column padding text-body2">
                         <label>
-                            <input id="trusted" type="radio" bind:group={yourself_or_company} value={true} on:change={() => {permanent_establishment_in_switzerland = null}}>
+                            <input id="yourself_or_company_0" type="radio" bind:group={yourself_or_company} value={true} on:change={() => {permanent_establishment_in_switzerland = null}}>
                             <strong>A.</strong> for yourself as a natural person holding TAU tokens?
                         </label>
                         <label>
-                            <input id="trusted" type="radio" bind:group={yourself_or_company} value={false} on:change={() => {domiciled_or_usually_staying = null}}>
+                            <input id="yourself_or_company_1" type="radio" bind:group={yourself_or_company} value={false} on:change={() => {domiciled_or_usually_staying = null}}>
                             <strong>B.</strong> on behalf of a company or a business which is holding TAU tokens?
                         </label>
                         {#if yourself_or_company === true}
                             <div class="sub-question">
                                 <h3>Are you domiciled or usually staying in Switzerland or Lichtenstein?</h3>
                                 <label>
-                                    <input id="trusted" type="radio" bind:group={domiciled_or_usually_staying} value={true}}>
+                                    <input id="domiciled_or_usually_staying_0" type="radio" bind:group={domiciled_or_usually_staying} value={true}}>
                                     <strong>Yes</strong>
                                 </label>
                                 <label>
-                                    <input id="trusted" type="radio" bind:group={domiciled_or_usually_staying} value={false}}>
+                                    <input id="domiciled_or_usually_staying_1" type="radio" bind:group={domiciled_or_usually_staying} value={false}}>
                                     <strong>No</strong>
                                 </label>
                             </div>
@@ -173,11 +171,11 @@ label{
                             <div class="sub-question">
                                 <h3>Do you have your place of business or a permanent establishment in Switzerland or Liechtenstein?</h3>
                                 <label>
-                                    <input id="trusted" type="radio" bind:group={permanent_establishment_in_switzerland} value={true}}>
+                                    <input id="permanent_establishment_in_switzerland_0" type="radio" bind:group={permanent_establishment_in_switzerland} value={true}}>
                                     <strong>Yes</strong>
                                 </label>
                                 <label>
-                                    <input id="trusted" type="radio" bind:group={permanent_establishment_in_switzerland} value={false}}>
+                                    <input id="permanent_establishment_in_switzerland_1" type="radio" bind:group={permanent_establishment_in_switzerland} value={false}}>
                                     <strong>No</strong>
                                 </label>
                             </div>

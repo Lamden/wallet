@@ -78,12 +78,14 @@ import {getContext} from 'svelte'
             {swap.lamdenAddress}
         </a>
     </p>
-    <p>
-        <strong>Lamden {currencySymbol} Send Tx</strong>
-        <a href={blockexplorer.lamden + '/transactions/' + swap.lamden_swap_txHash} rel="noopener noreferrer" target="_blank">
-            {swap.eth_swap_txHash}
-        </a>
-    </p>
+    {#if swap.lamden_swap_txHash}
+        <p>
+            <strong>Lamden {currencySymbol} Send Tx</strong>
+            <a href={blockexplorer.lamden + '/transactions/' + swap.lamden_swap_txHash} rel="noopener noreferrer" target="_blank">
+                {swap.lamden_swap_txHash}
+            </a>
+        </p>
+    {/if}
     {#if swap.errorMsg !== ""}
         <p><strong>Error:</strong></p>
         <p class="text-red">{swap.errorMsg}</p>

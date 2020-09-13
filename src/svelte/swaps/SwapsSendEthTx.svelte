@@ -95,7 +95,7 @@ a{
 }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+<div id="swap_sendSwapTx" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
         <h6>Ethereum Token Swap Transaction</h6>
     
@@ -113,7 +113,7 @@ a{
                         name="Continue" 
                         click={nextPage} />
             {:else}
-                <Button id={'send-approval-btn'}
+                <Button id={'send-tx-btn'}
                     classes={`button__solid button__purple`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
