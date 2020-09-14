@@ -16,16 +16,10 @@
     let selectedWallet;
 
     onMount(() => {
-        steps.set({
-            currentStep: 1,
-            stepList: [
-                {number: 1, name: 'Lamden Account', desc: ''},
-                {number: 2, name: 'Connect MetaMask', desc: ''},
-                {number: 3, name: `Ethereum ${$currentNetwork.currencySymbol} Approval`, desc: ''},
-                {number: 4, name: 'Validate & Comfirm', desc: ''},
-                {number: 5, name: 'Perform Swap', desc: ''},
-            ]
-        });
+        steps.update(stepsStore => {
+            stepsStore.currentStep = 2;
+            return stepsStore
+        })
     })
 
     const handleSelectedWallet = (e) => {
@@ -34,7 +28,7 @@
 
     const nextPage = () => {
         setLamdenWallet(selectedWallet)
-        changeStep(1)
+        changeStep(4)
     }
     
 </script>
@@ -42,10 +36,11 @@
 <style>
 .flow-content-right{
     max-width: 80%;
+    align-items: flex-start;
 }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+<div id="swap_chooseLamden" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
         <h6>Choose Lamden Account</h6>
     
@@ -69,7 +64,7 @@
                     click={() => switchPage('Swaps')} />  
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ

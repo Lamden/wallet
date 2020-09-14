@@ -177,10 +177,17 @@ const encodeLocaleTimeDelta = (value) => {
     return [days, seconds]
 }
 
+const displayBalance = (value) => {
+    if (!value) return '0'
+    if (!Encoder.BigNumber.isBigNumber(value)) value = Encoder('bigNumber', value)
+    return value.toFormat({  decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject, hashStringValue,
     formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
-    Encoder, encodeLocaleDateTime, encodeLocaleTimeDelta
+    Encoder, encodeLocaleDateTime, encodeLocaleTimeDelta, 
+    displayBalance
   }

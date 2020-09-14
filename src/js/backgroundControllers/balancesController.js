@@ -11,6 +11,10 @@ export const balancesController = (utils) => {
         }
     });
 
+    chrome.runtime.onInstalled.addListener(function(details) {
+        if (details.reason === "update") clearAllNetworks()
+    });
+
     const updateOne = (account, network) => {
         if (updatingBalances.status === "waiting"){
             updatingBalances = {status: "updating", time: new Date()};
@@ -55,8 +59,7 @@ export const balancesController = (utils) => {
     const getUpdate = async (account, network) => {
         const vk = account.vk;
         const watchOnly = account.sk === "watchOnly"
-        let response = await network.API.getCurrencyBalance(vk)
-        let newBalance = parseFloat(parseFloat(response).toFixed(8))
+        let newBalance = await network.API.getCurrencyBalance(vk).then(res => utils.removeTrailingZeros(res.toFixed(8)))   
         let netKey = network.networkKey
         if (!balancesStore[netKey]) balancesStore[netKey] = {}
         if (!balancesStore[netKey][vk]){
@@ -65,7 +68,7 @@ export const balancesController = (utils) => {
             balancesStore[netKey][vk].watchOnly = watchOnly
             return true;
         }else{
-            const currentBalance = parseFloat(parseFloat(balancesStore[netKey][vk].balance).toFixed(8))
+            const currentBalance = balancesStore[netKey][vk].balance
             if (currentBalance !== newBalance){
                 balancesStore[netKey][vk].balance = newBalance
                 balancesStore[netKey][vk].watchOnly = watchOnly
@@ -100,9 +103,9 @@ export const balancesController = (utils) => {
     }
 
     const getBalance = (vk, networkKey) => {
-        if (!balancesStore[networkKey]) return 0
-        if (!balancesStore[networkKey][vk]) return 0
-        if (!balancesStore[networkKey][vk].balance) return 0
+        if (!balancesStore[networkKey]) return '0'
+        if (!balancesStore[networkKey][vk]) return '0'
+        if (!balancesStore[networkKey][vk].balance) return '0'
         return  balancesStore[networkKey][vk].balance
     }
 

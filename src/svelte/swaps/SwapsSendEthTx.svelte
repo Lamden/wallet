@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount, onDestroy } from 'svelte';
+    import { getContext, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     
     //Stores
@@ -14,75 +14,39 @@
     import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
-	//Utils
-	import { displayBalance } from '../../js/utils.js';
-
-
     //Context
-    const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse } = getContext('functions');
+    const { changeStep, getTokenBalance, getEthAddress, getLamdenAddress, getApprovalAmount, setMetamaskTxResponse, getChainInfo } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
-    //DOM Nodes
-    let inputNode
-
-    let amount = 0;
-
-    $: metamaskTxResponse = null;
-    $: sending = false;
-    $: sent = metamaskTxResponse && !sending
-    $: errorMsg = ''
-
-
-    const nextPage = () => {
-        setMetamaskApprovalResponse(metamaskTxResponse)
-        changeStep(6)
+    const swapContractLink = {
+        "TAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"},
+        "dTAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"}
     }
 
-    onMount(() => {
-        steps.update(stepsStore => {
-            stepsStore.currentStep = 4;
-            return stepsStore
-        })
-        inputNode.value = getTokenBalance().toFixed(8)
-        amount = getTokenBalance().toFixed(8)
-    })
 
-    const sendTokenApproval = () => {
+    $: metamaskSwapTxResponse = null;
+    $: sending = false;
+    $: sent = metamaskSwapTxResponse && !sending
+    $: errorMsg = ''
+
+    const nextPage = () => {
+        changeStep(7)
+    }
+
+    const sendEthSwapTransaction = () => {
         if (!sent){
             sending = true
             errorMsg = ''
-            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value}}, (response) => {
+            chrome.runtime.sendMessage({type: 'sendEthSwapTransaction', data: { ethAddress: getEthAddress(), amount: getApprovalAmount(), lamdenAddress: getLamdenAddress() }}, (response) => {
                 sending = false
                 if (typeof response.error === 'undefined') {
-                    metamaskTxResponse = response
+                    metamaskSwapTxResponse = response
+                    setMetamaskTxResponse(metamaskSwapTxResponse)
                 } else {
                     errorMsg = response.error
                 }
             })
         }
-    }
-
-    const handleChanged = () => {
-        if (isNaN(inputNode.value)) {
-            inputNode.value = "0"
-            return
-        } 
-        if (!inputNode.value.includes(".")) return
-        let intPart = inputNode.value.split(".")[0]
-        let decimalPart = inputNode.value.split(".")[1]
-        if (!decimalPart && !intPart) {
-            inputNode.value = "0"
-            return
-        }
-        if (!decimalPart) {
-            inputNode.value = intPart
-            return
-        }
-        if (parseInt(decimalPart) === 0) {
-            inputNode.value = intPart
-            return
-        }
-        if (decimalPart.length > 8) inputNode.value = intPart + "." + decimalPart.substring(0, 8)
     }
 
 </script>
@@ -92,7 +56,12 @@ h3{
     margin-top: 0;
 }
 .flow-content-right{
-    justify-content: flex-start;
+    position: relative;
+}
+a{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .result{
     align-items: center;
@@ -102,12 +71,7 @@ h3{
     width: 190px;
 }
 .circle-error{
-    width: 100px;
-    margin-bottom: 1rem;
-}
-p.text-body2{
-    font-weight: 300;
-    line-height: 1.3;
+    width: 40px;
 }
 .swap-details{
     text-align: left;
@@ -127,39 +91,20 @@ p.text-body2{
 .swap-details > p > strong{
     font-weight: 500;
 }
-.text-body2 > strong{
-    color: var(--font-accent);
-}
 .text-warning{
     margin: 2rem 0 -0.5rem;
     text-align: center;
 }
 </style>
 
-<div id="swap_approval" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+<div id="swap_sendSwapTx" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
-        <h6>Send Token Approval</h6>
+        <h6>Ethereum Token Swap Transaction</h6>
     
         <p class="flow-text-box text-body1">
-            {`Lamden requires access to your tokens to complete the swap process.`}
+            {`Send your ${$currentNetwork.currencySymbol} tokens to our `}
+            <a class="text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" rel="noopener noreferrer" target="_blank">Ethereum Token Swap Contract</a>
         </p>
-
-        <p class="text-body2">
-            <strong>Ethereum {$currentNetwork.currencySymbol} Balance:</strong><br>
-            {`${getTokenBalance().toFixed(8)} ${getChainInfo().tauSymbol}`}
-        </p>
-
-        {#if !sent}
-            <InputBox 
-                bind:thisInput={inputNode}
-                on:changed={handleChanged}
-                label={`Approve Amount`}
-                inputType={'number'}
-                bind:value={amount}
-                placeholder={`${getChainInfo().tauSymbol} Amount`}
-                disabled={sending}
-            />
-        {/if}
 
         <div class="flex-column buttons">
             {#if sent}
@@ -170,13 +115,13 @@ p.text-body2{
                         name="Continue" 
                         click={nextPage} />
             {:else}
-                <Button id={'send-approval-btn'}
+                <Button id={'send-tx-btn'}
                     classes={`button__solid button__purple`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name={sent ? "Approved" : sending ? "Sending" : "Send Approval"}
+                    name={sent ? "Approved" : sending ? "Sending" : "Send Transaction"}
                     disabled={sending}
-                    click={sendTokenApproval} />
+                    click={sendEthSwapTransaction} />
             {/if}
 
 
@@ -201,20 +146,29 @@ p.text-body2{
             <h3>Transaction Details</h3>
             <p><strong>Contract:</strong><br>
                 {`Ethereum ${getChainInfo().chainName}:`}
-                {#if sending || sent || errorMsg !== ''} {getChainInfo().tauContract}
+                {#if sending || sent || errorMsg !== ''} {getChainInfo().swapContract}
                 {:else}
-                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
-                        {getChainInfo().tauContract}
+                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().swapContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                        {getChainInfo().swapContract}
                     </a>
                 {/if}
             </p> 
             <p><strong>Function:</strong><br>
-                approve
+                swap
             </p> 
             <p><strong>Amount:</strong><br>
-                {displayBalance(amount)}
+                {`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}
+            </p> 
+            <p><strong>Lamden Address:</strong><br>
+                {#if sending || sent || errorMsg !== ''} {getLamdenAddress()}
+                {:else}
+                    <a href={$currentNetwork.blockExplorer + '/addresses/' + getLamdenAddress()} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                        {getLamdenAddress()}
+                    </a>
+                {/if}
             </p> 
         </div>
+
         {#if sending}
             <div style="position: absolute;">
                 <Loading message="Waiting for transaction to complete..."
@@ -228,7 +182,7 @@ p.text-body2{
         {#if sent}
             <div class="flex-column result" >
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-                <h3>{'Approved!'}</h3>
+                <h3>{'Transaction Successful!'}</h3>
             </div>
         {/if}
         {#if errorMsg !== ''}

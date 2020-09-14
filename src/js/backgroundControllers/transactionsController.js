@@ -152,7 +152,13 @@ export const transactionsController = (utils, actions) => {
 
     const sendEthereumTokenApproval = (data, callback = undefined) => {
         const {address, amount } = data;
-        utils.Ethereum.sendControllerApproval(address, amount).then(res => callback(res))   
+        utils.Ethereum.sendSwapContractApproval(address, amount).then(res => callback(res))   
+        return true;
+    }
+
+    const sendEthereumSwapTransaction = (data, callback = undefined) => {
+        const {ethAddress, amount, lamdenAddress } = data;
+        utils.Ethereum.sendSwapContractTx(ethAddress, amount, lamdenAddress).then(res => callback(res))   
         return true;
     }
 
@@ -166,6 +172,7 @@ export const transactionsController = (utils, actions) => {
         sendLamdenTx,
         requestEthereumAccount,
         sendEthereumTokenApproval,
+        sendEthereumSwapTransaction,
         checkEthereumTxStatus,
         sendCurrencyTransaction
     }

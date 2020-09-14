@@ -188,7 +188,7 @@ p{
                     {:else}
                         <h4 class="detail-name no-bottom-margin">{detail.name}{detail.type ? ` (${detail.type})` : ''}</h4>
                         <div class="values text-body1">
-                            {detail.name.includes('fixedPoint') ? parseFloat(detail.value).toFixed(8).toString() : detail.value}
+                            {detail.value}
                         </div>
                     {/if}
                 {/each}

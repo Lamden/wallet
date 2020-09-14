@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     //Utils
-    import { copyToClipboard } from '../../js/utils.js'
+    import { copyToClipboard, displayBalance } from '../../js/utils.js'
 
 	//Stores
     import { CoinStore, currentNetwork, BalancesStore, dappsDropDown } from '../../js/stores/stores.js';
@@ -36,7 +36,7 @@
     $: coin = getModalData();
     $: nickname = coin.nickname;
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'
+    $: balance = !selectedWallet ? '0' : displayBalance(BalancesStore.getBalance($currentNetwork, selectedWallet.vk)) || '0'
     $: dAppList = makeDappList($dappsDropDown)
     $: dAppInfo = undefined;
 

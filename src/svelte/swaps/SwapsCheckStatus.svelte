@@ -37,7 +37,7 @@
     const checkEthTxStatus = () => {
         if (!success){
             checking = true
-            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash() }}, (response) => {
+            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash("approval") }}, (response) => {
                 if (typeof response.status !== 'undefined'){
                     if (response.status){
                         success = true;
@@ -49,7 +49,7 @@
     }
 
     const nextPage = () => {
-        changeStep(4)
+        changeStep(5)
     }
 
     const startChecking = () => {
@@ -158,7 +158,7 @@
        
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ
@@ -190,7 +190,7 @@
                 <div class="flex-column" in:fade="{{delay: 400, duration: 250}}">
                     <div class="logo">{@html lamdenLogoNew}</div>
                     <p class="text-body2 text-primary-dark">lamden</p>
-                    <a href={`https://explorer.lamden.io/address/${getLamdenAddress()}`} 
+                    <a href={`https://explorer.lamden.io/addresses/${getLamdenAddress()}`} 
                        class="outside-link text-subtitle2"
                        target="_blank" 
                        rel="noopener noreferrer">

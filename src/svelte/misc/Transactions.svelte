@@ -17,7 +17,7 @@
     $: txList = [...transactionsList]
 
     const openLink = () => {
-        window.open(`${$currentNetwork.blockExplorer}/address/${vk}`, '_blank');
+        window.open(`${$currentNetwork.blockExplorer}/addresses/${vk}`, '_blank');
     }
 
     const refreshHistory = () => {

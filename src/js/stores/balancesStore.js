@@ -4,6 +4,7 @@ import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
 import { networkKey } from './stores.js'
+import { Encoder } from '../utils.js'
 
 export const createBalancesStore = () => {
     const getStore = () => {
@@ -44,12 +45,12 @@ export const createBalancesStore = () => {
 
             if (validateTypes.isStringWithValue(netkey) && validateTypes.isStringWithValue(vk)){
                 const balanceStore = get(BalancesStore)
-                if (!balanceStore[netkey]) return 0
-                if (!balanceStore[netkey][vk]) return 0
-                if (!balanceStore[netkey][vk].balance) return 0
-                return balanceStore[netkey][vk].balance
+                if (!balanceStore[netkey]) return Encoder('bigNumber', '0')
+                if (!balanceStore[netkey][vk]) return Encoder('bigNumber', '0')
+                if (!balanceStore[netkey][vk].balance) return Encoder('bigNumber', '0')
+                return Encoder('bigNumber', balanceStore[netkey][vk].balance)
             }else{
-                return 0;
+                return Encoder('bigNumber', '0');
             }
         },
         isWatchOnly: (networkObj, vk) => {
@@ -83,11 +84,12 @@ export const BalancesStore = createBalancesStore();
 export const balanceTotal = derived(BalancesStore, ($BalancesStore) => {
     let totals = {};
     Object.keys($BalancesStore).forEach(network =>{
-        totals[network] = 0;
+        totals[network] = Encoder('bigNumber', '0');
         Object.keys($BalancesStore[network]).forEach(vk => {
             if (!$BalancesStore[network][vk].watchOnly){
-                totals[network] = totals[network] + $BalancesStore[network][vk].balance;
-            }  
+                totals[network] = Encoder.BigNumber.sum($BalancesStore[network][vk].balance, totals[network]);
+                totals[network] = Encoder('bigNumber', totals[network].toFixed(8))
+            }
         })
     })
     return totals;

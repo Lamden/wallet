@@ -6,6 +6,7 @@
     export let message = '';
     export let subMessage = '';
     export let width = '89px';
+    export let mainStyle = ";"
 
 </script>
 
@@ -14,8 +15,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
     justify-content: center;
+    height: 100%;
     flex-grow: 1;
 }
 
@@ -38,7 +39,7 @@
 
 </style>
 
-<div class="loading">
+<div class="loading" style={mainStyle}>
     <div class="spinner" style={`width: ${width}; height: ${width};`}>{@html spinner}</div>
     {#if message !== ''}<h3 class="message text-primary">{message}</h3>{/if}
     {#if subMessage !== ''}<p class="text-primary text-subtitle2">{subMessage}</p>{/if}

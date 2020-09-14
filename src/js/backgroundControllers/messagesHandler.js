@@ -121,6 +121,11 @@ export const messagesHandler = (masterController) => {
                         masterController.transactions.sendEthereumTokenApproval(message.data, sendResponse)
                         return true
                     } 
+                    //Send ETH Tokens
+                    if (message.type === 'sendEthSwapTransaction') {
+                        masterController.transactions.sendEthereumSwapTransaction(message.data, sendResponse)
+                        return true
+                    } 
                     //Check an ETH transaction Status
                     if (message.type === 'checkEthTxStatus') {
                         masterController.transactions.checkEthereumTxStatus(message.data, sendResponse)

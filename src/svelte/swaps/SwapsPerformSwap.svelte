@@ -3,7 +3,7 @@
     import { fade } from 'svelte/transition';
 
     //Stores
-    import { steps, currentNetwork } from '../../js/stores/stores.js';
+    import { steps, currentNetwork, SwapsStore } from '../../js/stores/stores.js';
 
     //Image
     import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
@@ -20,35 +20,39 @@
 
     //Context
     const { 
-        changeStep, 
-        getEthAddress, 
+        isContinue,
+        getStepList,
+        getEthAddress,
+        getAnswers,
+        getTxHash,
         getLamdenAddress, 
-        setSwapStatus, 
         setSwapResult, 
-        getTxHash, 
         getApprovalAmount, 
         getChainInfo } = getContext('functions');
 
     const { switchPage } = getContext('app_functions');
 
-    let attempts = 0;
-    let maxAttempts = 100;
     let clearingHouseAPI;
     let swapStatus;
     let swapResult;
+    let swappingMessage = ''
     let errorMsg = '';
-    let swappingMessage  = '';
 
     $: sending = false;
-    $: checking = false;
     $: success = undefined;
 
     onMount(() => {
-        steps.update(stepsStore => {
-            stepsStore.currentStep = 5;
-            return stepsStore
-        })
-        startChecking();
+        if (isContinue){
+            steps.set({
+                currentStep: 5,
+                stepList: getStepList()
+            });
+        }else{
+            steps.update(stepsStore => {
+                stepsStore.currentStep = 5;
+                return stepsStore
+            })
+        }
         try{
             clearingHouseAPI = new ClearingHouse_API()
             sendSwapInfo();
@@ -59,27 +63,32 @@
         let sending = true;
         swappingMessage = "sending swap information"
         clearingHouseAPI.startSwap({
-            ethAddress: getEthAddress(), 
-            lamdenAddress: getLamdenAddress()
+            tx: getTxHash("swapTx"), 
+            answers: getAnswers()
         })
         .then(res => {
-            swapStatus = res
-            setSwapStatus(swapStatus)
-            
             sending = false
 
-            if (swapStatus.error){
-                errorMsg = swapStatus.error;
+            if(!res){
+                errorMsg = 'Error completing swap.';
                 success = false
                 return
             }
-            if (swapStatus.status){
-                if (swapStatus.status = 'success'){
-                    swappingMessage = "swap accepted, checking status"
-                    startChecking()
-                }
+            setSwapResult(res)
+
+            if (res.success){
+                success = true
             }
 
+            if (res.error){
+                errorMsg = res.error;
+                success = false
+            }
+
+            steps.update(stepsStore => {
+                stepsStore.currentStep = 6;
+                return stepsStore
+             })
         })
         .catch(err => {
             console.log(err); 
@@ -88,59 +97,6 @@
         })
     }
 
-    const getSwapStatus = async () => {
-        let sending = true;
-        if (!swapStatus) return;
-        return clearingHouseAPI.checkSwapStatus(swapStatus.uuid_receipt)
-        .then(res => {
-            swapResult = res
-            setSwapResult(swapResult)
-            sending = false
-
-            if (swapResult.error){
-                errorMsg = swapResult.error;
-                success = false
-                return
-            }
-            if (swapResult.status){
-                swappingMessage = swapResult.status
-                if (swapResult.status === "Swap is completed."){
-                    success = true;
-                    steps.update(stepsStore => {
-                        stepsStore.currentStep = 6;
-                        return stepsStore
-                    })
-                }
-            }
-        })
-        .catch(err => {
-            console.log(err); 
-            errorMsg = err;
-            sending = false; 
-        })
-    }
-    
-    const startChecking = () => {
-        attempts = 0;
-        new Promise(function(resolve, reject) {
-            let timerId = setTimeout(async function checkStatus() {
-                if (attempts >= maxAttempts){
-                    resolve(false)
-                }else{
-                    if (errorMsg === ''){
-                        attempts = attempts + 1;
-                        await getSwapStatus();
-                        if (success) resolve(true)
-                        else timerId = setTimeout(checkStatus, 1000);
-                    }
-                }              
-            }, 1500);
-        })
-    }
-
-    const nextPage = () => {
-        changeStep(5)
-    }
 </script>
 
 <style>
@@ -177,36 +133,12 @@
 .swap-deatils > div {
     align-items: center;
 }
-span, a {
-    margin-left: 10px;
-}
-span.info-title{
-    min-width: 110px;
-}
-.flex-row.items{
-    max-width: 100%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-.detail-value{
-    max-width: 100%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    margin-top: 1rem;
-    padding: 20px;
-    border-top: 1px solid var(--divider-color);
-    border-bottom: 1px solid var(--divider-color);
-    border-radius: 5px;
-    height: 153px;
-    justify-content: space-between;
-}
 .outside-link{
     font-weight: 300;
-}
-h3{
-    color: var(--font-warning);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 250px;
 }
 @media (min-width: 1024px) {
     .swap-details{
@@ -223,7 +155,7 @@ h3{
 }
 </style>
 
-<div class="flex-row flow-page">
+<div id="swap_perform" class="flex-row flow-page">
     <div class="flex-column flow-content-left">
         <h6>Swapping</h6>
     
@@ -235,9 +167,6 @@ h3{
                 {`DO NOT CLOSE THIS PAGE`}
             </div>
         {/if}
-        {#if success}
-            <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-        {/if}
         <div class="flex-column buttons">
             <Button id={'home-btn'}
                     classes={'button__solid button__purple'} 
@@ -245,12 +174,13 @@ h3{
                     width={'100%'}
                     name="Home"
                     disabled={typeof success === 'undefined' && errorMsg === ''}
-                    click={() => switchPage('CoinsMain')} />  
+                    click={() => switchPage('Swaps')} />  
         </div>
     </div>
     <div class="flex-column flow-content-right">
         {#if success}
-            <h2 class="text-green" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
+            <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
+            <h2 class="text-cyan" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
         {/if}
         {#if errorMsg !== ''}
             <p class="text-body1 text-red" >{errorMsg}</p>
@@ -264,7 +194,7 @@ h3{
                         class="outside-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">
-                        {`${getEthAddress().slice(0, 25)}...`}
+                        {getEthAddress()}
                     </a>
                 </div>
                 <div class="loading-column flex-column">
@@ -277,52 +207,14 @@ h3{
                 </div>
                 <div class="flex-column">
                     <div class="logo">{@html lamdenLogoNew}</div>
-                    <a href={`https://explorer.lamden.io/address/${getLamdenAddress()}`} 
+                    <a href={`https://explorer.lamden.io/addresses/${getLamdenAddress()}`} 
                         class="outside-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">
-                        {`${getLamdenAddress().slice(0, 25)}...`}
+                        {getLamdenAddress()}
                     </a>
                 </div>
             </div>
-        {/if}
-        {#if swapResult}
-            {#if swapResult.details}
-                <div class="flex-column detail-value">
-                    {#each Object.keys(swapResult.details) as detail}
-                        <div class="flex-row items"> 
-                            <span class="info-title text-body2">{detail === 'uuid' ? 'swap_id' : detail}</span>
-                            {#if detail === 'uuid'}
-                                <a href={`${ClearingHouse_API.url}/lookup?uuid=${swapResult.details[detail]}`}
-                                   class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>
-                            {/if}
-                            {#if detail === 'eth_address'}
-                                <a href={`${getChainInfo().blockExplorer}/address/${swapResult.details[detail]}`} 
-                                   class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>
-                            {/if}
-                            {#if detail === 'eth_tx_hash'}
-                                <a href={`${getChainInfo().blockExplorer}/tx/${swapResult.details[detail]}`} 
-                                   class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>
-                            {/if}
-                            {#if detail === 'lamden_address'}
-                                <a href={`https://explorer.lamden.io/address/${swapResult.details[detail]}`} 
-                                   class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>
-                            {/if}
-                            {#if detail === 'lamden_tx_hash'}
-                                <a href={`https://explorer.lamden.io/transaction/${swapResult.details[detail]}`} 
-                                   class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{swapResult.details[detail]}</a>
-                            {/if}
-                            {#if detail === 'status'}
-                                <span class="text-body2 text-primary-dark">{swapResult.details[detail]}</span>
-                            {/if}
-                            {#if detail === 'amount'}
-                                <span class="text-body2 text-primary-dark">{`${swapResult.details[detail]} ${$currentNetwork.currencySymbol}`}</span>
-                            {/if}
-                        </div>
-                    {/each}
-                </div>
-                <h3>{'SAVE THIS INFORMATION FOR YOUR RECORDS'}</h3>
-            {/if}
         {/if}
     </div>
 </div>

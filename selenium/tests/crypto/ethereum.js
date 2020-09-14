@@ -19,7 +19,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    after(() => driver && driver.quit());
+    after(() => {driver && driver.quit()});
 
     it('Setup Metamask Extention', async function() {
       await helpers.sleep(500)
@@ -182,12 +182,13 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     })
   });
 
-  it('sendControllerApproval(): Can detect when the user closes the popup', async function() {
+  it('sendSwapContractApproval(): Can detect when the user closes the popup', async function() {
     this.timeout(30000);
-    await driver.executeScript(`
-        backpage = chrome.extension.getBackgroundPage();
-        window.txResult = backpage.walletEthereum.sendControllerApproval('${config.metamaskAddress}','${swapInfo.swapAmount}')
-    `)
+
+    await driver.executeScript(' \
+        backpage = chrome.extension.getBackgroundPage(); \
+        console.log(backpage); \
+        window.txResult = backpage.walletEthereum.sendSwapContractApproval("' + config.metamaskAddress + '", "'+swapInfo.swapAmount+'");')
 
     await helpers.sleep(5000, true)
     await helpers.switchWindow(driver, 2) 
@@ -199,17 +200,39 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     await helpers.switchWindow(driver, 0) 
 
     let txInfo = await driver.executeScript(`
+      console.log(await window.txResult);
       return await window.txResult;
     `)
     assert.equal(txInfo.error.includes('User denied transaction signature'), true);
   });
 
-  it('sendControllerApproval(): Sends an allowance transaction', async function() {
+  it('sendSwapContractApproval(): Sends an allowance transaction', async function() {
     this.timeout(30000);
-    await driver.executeScript(`
-        backpage = chrome.extension.getBackgroundPage();
-        window.txResult = backpage.walletEthereum.sendControllerApproval('${config.metamaskAddress}','${swapInfo.swapAmount}')
+    await driver.executeScript('\
+        backpage = chrome.extension.getBackgroundPage();\
+        window.txResult = backpage.walletEthereum.sendSwapContractApproval("' + config.metamaskAddress + '", "' + swapInfo.swapAmount + '")')
+    await helpers.sleep(5000, true)
+    await helpers.switchWindow(driver, 2) 
+
+    let popupConfim_Button = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Confirm')]")), 10000);
+    await popupConfim_Button.click()
+
+    await helpers.sleep(2000) 
+    await helpers.switchWindow(driver, 0) 
+    console.log('        o WAITING FOR METAMASK TO COMPLETE TX')
+    let txInfo = await driver.executeScript(`
+      return await window.txResult;
     `)
+    assert.equal(txInfo.status, true);
+  })
+
+  it('sendSwapContractTx(): Sends a swap contract transaction', async function() {
+    this.timeout(30000);
+    let script = '\
+    backpage = chrome.extension.getBackgroundPage();\
+    window.txResult = backpage.walletEthereum.sendSwapContractTx(\
+    "'  + config.metamaskAddress + '", "' + swapInfo.swapAmount + '", "' + swapInfo.lamdenAddress + '")'
+    await driver.executeScript(script)
     await helpers.sleep(5000, true)
     await helpers.switchWindow(driver, 2) 
 

@@ -4,69 +4,44 @@ const fetch = require('node-fetch');
 
 module.exports = class ClearingHouse_API{
     constructor(){
-        this.url = 'http://167.99.173.97/swap'
+        this.url = 'https://tokenswap.lamden.io'
     }
 
     //This will throw an error if the protocol wasn't included in the host string
     send(method, path, data, callback){
-        let parms = '';
-        if (Object.keys(data).includes('parms')) {
-            parms = this.createParms(data.parms)
-        }
-
         let options = {}
         if (method === 'POST'){
             let headers = {'Content-Type': 'application/json'}
             options.method = method
             options.headers = headers;
-            options.body = data;
+            options.body = JSON.stringify(data);
         }
-        return fetch(`${this.url}${path}${parms}`, options)
-            .then(res => {
-                return res.json()
-            } )
-            .then(json => {
-                    return callback(json, undefined)
+        
+        return fetch(`${this.url}${path}`, options)
+            .then((res) => {
+                const contentType = res.headers.get('Content-Type')
+                if (contentType.includes('application/json')) {
+                    return res.json()
+                }else{
+                    return res.text()
+                }
+            })
+            .then(data => {
+                    return callback(data, undefined)
             })
             .catch(err => {
-                    console.log(err)
-                    return callback(undefined, err.toString())
+                console.log(err)
+                return callback(undefined, err)
                 })
     }
 
-    createParms(parms){
-        if (Object.keys(parms).length === 0) return ''
-        let parmString = '?'
-        Object.keys(parms).forEach(key => {
-            parmString = `${parmString}${key}=${parms[key]}&`
-        });
-        return parmString.slice(0, -1);
-    }
-
     async startSwap(swapObject){
-        if (!validateTypes.isStringWithValue(swapObject.ethAddress)) throw new Error('Cannot Start Swap: Missing paramater Ethereum Address <string>.')
-        if (!validateTypes.isStringWithValue(swapObject.lamdenAddress)) throw new Error('Cannot Start Swap: Missing paramater Lamden Address <string>.')
+        if (!validateTypes.isStringWithValue(swapObject.tx)) throw new Error('Cannot Start Swap: Missing paramater Ethereum Tx Hash <string>.')
+        if (!validateTypes.isArrayWithValues(swapObject.answers)) throw new Error('Cannot Start Swap: Missing paramater Answers <array>.')
 
-        let parms = {};
-        parms.eth = swapObject.ethAddress
-        parms.tau = swapObject.lamdenAddress
-
-        let path = `/start`
-        return this.send('POST', path, {parms}, (res, err) => {
-            try{
-                if (res) return res
-            } catch (e){throw new Error(e)}
-            throw new Error(err)
+        return this.send('POST', '/swap', swapObject, (res, err) => {
+            if (err) return err;
+            else return res;
         })
-    }
-    async checkSwapStatus(uuid){
-        if (!validateTypes.isStringWithValue(uuid)) throw new Error('Missing paramater UUID <string>.')
-        const parms = {uuid};
-        return this.send('GET', '/lookup', {parms}, (res, err) => {
-            try{
-                if (res) return res
-            } catch (e){throw new Error(e)}
-            throw new Error(err)
-        })  
     }
 }

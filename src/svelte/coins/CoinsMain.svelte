@@ -19,7 +19,7 @@
 	import plus from '../../img/menu_icons/icon_plus.svg';
 
 	//Utils
-	import { decryptObject } from '../../js/utils.js';
+	import { displayBalance } from '../../js/utils.js';
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
@@ -27,7 +27,7 @@
 	//Props
 	export let name
 
-	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : 0;
+	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : '0';
 
 	let refreshing = false;
 
@@ -123,7 +123,7 @@ p{
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
 		<div class="flex-row balance-total">
-			<p class="text-huge">{`${totalBalance.toLocaleString('en')}`}</p>
+			<p class="text-huge">{`${displayBalance(totalBalance)}`}</p>
 			<div on:click={handleRefresh} 
 				id="refresh-icon"
 				class="flex-col refresh-icon" 

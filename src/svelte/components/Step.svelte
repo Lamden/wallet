@@ -92,8 +92,8 @@
     background: #3fa23f
 }
 div.text-body1, div.text-body2{
-    word-break: break-word;
     text-align: center;
+    width: 100%;
 }
 
 </style>

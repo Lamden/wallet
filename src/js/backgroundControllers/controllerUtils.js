@@ -61,6 +61,8 @@ export const controllerUtils = (() => {
         });
     }
 
+    const removeTrailingZeros = (value) => value.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')
+
     return {
         isJSON, 
         stripRef, 
@@ -77,6 +79,7 @@ export const controllerUtils = (() => {
         Lamden,
         Ethereum,
         sendMessageToApp,
-        sendMessageToTab
+        sendMessageToTab,
+        removeTrailingZeros
     }
 })()

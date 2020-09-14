@@ -61,6 +61,7 @@ const createSettingsStore = () => {
         subscribe,
         set,
         update,
+        initialized: () => initialized,
         //Change the current page of the app
         //an also accept a data package the new page may need;
         changePage: (pageInfoObj) => {

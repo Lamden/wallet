@@ -8,6 +8,9 @@
 	import { Components }  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
+	//Utils
+	import { displayBalance } from '../../js/utils.js';    
+
     //Context
     const { appHome } = getContext('app_functions');
     const { home, setMessage, setPage } = getContext('coinmodify_functions');
@@ -18,7 +21,7 @@
     //Props
     export let coin;
     
-    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
+    $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk)) || '0'
 
     let returnMessage = {};
     

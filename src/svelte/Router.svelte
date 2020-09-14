@@ -88,6 +88,8 @@ import Transaction from './components/Transaction.svelte';
 import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
 import Countdown from './components/Countdown.svelte';
+import SwapsStatus from './components/SwapsStatus.svelte';
+import SwapStatus from './components/SwapStatus.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -114,8 +116,13 @@ import SwapsMain from './swaps/SwapsMain.svelte';
 import SwapsConnectMetamask from './swaps/SwapsConnectMetamask.svelte';
 import SwapsChooseLamden from './swaps/SwapsChooseLamden.svelte';
 import SwapsSendApproval from './swaps/SwapsSendApproval.svelte';
+import SwapsSendEthTx from './swaps/SwapsSendEthTx.svelte';
 import SwapsCheckStatus from './swaps/SwapsCheckStatus.svelte';
 import SwapsPerformSwap from './swaps/SwapsPerformSwap.svelte';
+import SwapsDisclaimer_Questions from './swaps/SwapsDisclaimer_Questions.svelte';
+import SwapsDisclaimer_TokensExchange from './swaps/SwapsDisclaimer_TokensExchange.svelte';
+import SwapsDisclaimer_ExchangeTerms from './swaps/SwapsDisclaimer_ExchangeTerms.svelte';
+import ContinueSwap from './swaps/ContinueSwap.svelte';
 
 export const RestorePages = {
     RestoreMain, 
@@ -149,7 +156,14 @@ export const FirstRun = {
 };
 
 export const SwapsPages = { 
-    SwapsConnectMetamask, SwapsChooseLamden, SwapsSendApproval, SwapsCheckStatus, SwapsPerformSwap
+    SwapsDisclaimer_Questions, SwapsDisclaimer_TokensExchange, SwapsDisclaimer_ExchangeTerms,
+    SwapsConnectMetamask, 
+    SwapsChooseLamden, 
+    SwapsSendApproval, 
+    SwapsCheckStatus, 
+    SwapsPerformSwap, 
+    SwapsSendEthTx,
+    ContinueSwap
 };
 
 export const Pages = { 
@@ -159,7 +173,7 @@ export const Pages = {
     SwapsMain, 
     Restore,
     Backup,
-    Swaps,
+    Swaps, ContinueSwap,
     DevToolsMain, 
     About, 
     IdeMain,
@@ -181,7 +195,8 @@ export const Components = {
     StrongPW,
     Transaction,
     Kwargs, Kwarg,
-    Countdown
+    Countdown,
+    SwapsStatus, SwapStatus
 };
 
 export const Modals = {

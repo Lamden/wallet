@@ -34,14 +34,14 @@
     
     onMount(() => {
         steps.update(stepsStore => {
-            stepsStore.currentStep = 2;
+            stepsStore.currentStep = 3;
             return stepsStore
         })
     })
 
     const nextPage = () => {
         setSwapInfo(metamaskInfo)
-        changeStep(2)
+        changeStep(5)
     }
 
     const connectMetaMask = () => {
@@ -125,10 +125,13 @@ strong{
     font-size: 16px;
     letter-spacing: 0.44px;
 }
+.flow-content-right{
+    text-align: center;
+}
 
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
+<div id="swap_connectMetamask" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
         <h6>Connect To Metamask</h6>
     
@@ -167,7 +170,7 @@ strong{
                     click={() => switchPage('Swaps')} />  
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ

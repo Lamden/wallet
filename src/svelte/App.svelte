@@ -1,5 +1,5 @@
 <script>
-	import { onMount, onDestroy, setContext } from 'svelte';
+	import { onMount, onDestroy, setContext, beforeUpdate } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	//Utils
@@ -16,11 +16,19 @@
 	import heart from '../img/menu_icons/icon_heart.svg';
 
 	export let loaded;
+	export let refreshed;
 
 	let showModal = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain']
+	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap']
+	const redirect = {
+		'ContinueSwap': 'Swaps',
+		'SwapsMain': 'Swaps',
+		'BackupMain': 'Backup',
+		'RestoreMain': 'Restore',
+		'FirstRunRestoreMain': 'FirstRunMain'
+	}
 
 	$: walletIsLocked = true;
 	$: firstRun = undefined;
@@ -42,6 +50,15 @@
 		})
 		checkFirstRun();
 	});
+
+	beforeUpdate(() => {
+		if (SettingsStore.initialized() && refreshed){
+			if (typeof redirect[$currentPage.name] !== 'undefined' && refreshed) {
+				switchPage(redirect[$currentPage.name])
+			}
+			refreshed = false;
+		}
+	})
 
 	onDestroy(() =>{
         chrome.runtime.onMessage.removeListener(walletIsLockedListener)
@@ -150,6 +167,7 @@
 	.menu-pane{
 		width: 83px;
 		min-width: 83px;
+		z-index: 29;
 	}
 
 	.content-pane{

@@ -146,7 +146,7 @@ span{
                     click={() => nextPage()} />
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ
