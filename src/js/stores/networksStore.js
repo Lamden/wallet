@@ -118,6 +118,7 @@ export const createNetworksStore = () => {
         update,
         mainnetNetwork,
         testnetNetwork,
+        mainnetLaunched: () => new Date() > launchDate,
         //Make a network the current selected network
         //This sets the value of the derived "currentNetwork" store
         setCurrentNetwork: (networkInfo) => {

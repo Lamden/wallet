@@ -91,7 +91,6 @@ const sendSwapContractApproval = async (userEthAddress, amount) => {
     
     let chainInfo = await getChainInfo()
     if (typeof chainInfo.error !== 'undefined') return chainInfo
-    if (chainInfo.chainID !== 42) return {error: 'Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.'}
     let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
     return await sendApprovalTx(userEthAddress, ethNetwork.swapContract, ethNetwork.tauContract, amount)
 }
@@ -127,7 +126,6 @@ const sendSwapTx = async (ethSenderAddress, tokenContract, amount, lamdenAddress
 const sendSwapContractTx = async (ethAddress, amount, lamdenAddress) => {
     let chainInfo = await getChainInfo()
     if (typeof chainInfo.error !== 'undefined') return chainInfo
-    if (chainInfo.chainID !== 42) return {error: 'Swaps only supported on Kovan network.  Please swich you network in Metamask to Kovan.'}
     let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
     let res = await sendSwapTx(ethAddress, ethNetwork.swapContract, amount, lamdenAddress)
     return res

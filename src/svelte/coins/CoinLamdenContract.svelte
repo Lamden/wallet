@@ -14,7 +14,7 @@
     const { DropDown, InputBox, Button, Kwargs } = Components;
 
     //Utils
-    import { formatKwargs } from '../../js/utils.js'
+    import { formatKwargs, displayBalance } from '../../js/utils.js'
     import * as validators from 'types-validate-assert'
     const { validateTypes } = validators;
 
@@ -36,7 +36,7 @@
     $: contractName = 'currency'
     $: methodName  = ''
     $: argValueTracker = {};
-    $: balance = !selectedWallet ? 0 : BalancesStore.getBalance($currentNetwork, selectedWallet.vk).toLocaleString('en') || '0'
+    $: balance = !selectedWallet ? '0' : displayBalance(BalancesStore.getBalance($currentNetwork, selectedWallet.vk)) || '0'
     $: stampLimit = 0
 
     onMount(() => {
@@ -89,7 +89,7 @@
     const saveArgValue = (arg, e) => {
         if (arg.type === 'bool')  argValueTracker[contractName][methodName][arg.name].value = e.detail.target;
         if (arg.type === 'int') argValueTracker[contractName][methodName][arg.name].value = parseInt(e.detail.target.value)
-        if (arg.type === 'float') argValueTracker[contractName][methodName][arg.name].value = parseFloat(e.detail.target.value)
+        if (arg.type === 'float') argValueTracker[contractName][methodName][arg.name].value = e.detail.target.value.toString()
         else argValueTracker[contractName][methodName][arg.name].value = e.detail.target.value
     }
 

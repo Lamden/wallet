@@ -3,7 +3,7 @@
     import { blur } from 'svelte/transition';
 
     //Stores
-    import { SettingsStore, NetworksStore } from '../../js/stores/stores.js';
+    import { SettingsStore, NetworksStore, currentNetwork } from '../../js/stores/stores.js';
 
     let days = 0;
     let hours = 0;
@@ -40,6 +40,10 @@
     }
 
     let timerId = setInterval(timeBetween, 1000)
+
+    const handleNetworkChange = () => {
+        NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
+    }
 </script>
 
 <style>
@@ -69,18 +73,29 @@
     .text-body2{
         font-weight: 200;
     }
+    h2.underline{
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 1.6em;
+        color: var(--font-warning);
+        bottom: 54px;
+    }
 </style>
 
-{#if !launched}
-    <h2 in:blur="{{duration: 1000, amount: 25}}">MAINNET LAUNCH</h2>
-    <div class="container" in:blur="{{duration: 1000, amount: 25}}">
-        <p class="text-body2">Days</p>
-        <p class="text-body2">Hours</p>
-        <p class="text-body2">Minutes</p>
-        <p class="text-body2">Seconds</p>
-        <p class="text-body3">{days}</p>
-        <p class="text-body3">{hours}</p>
-        <p class="text-body3">{minutes}</p>
-        <p class="text-body3">{seconds}</p>
-    </div>
+{#if NetworksStore.mainnetLaunched() && $currentNetwork.type !== 'mainnet'}
+    <h2 class="underline" on:click={handleNetworkChange}>SWITCH TO MAINNET</h2>
+{:else}
+    {#if !launched && !NetworksStore.mainnetLaunched()}
+        <h2 in:blur="{{duration: 1000, amount: 25}}">MAINNET LAUNCH</h2>
+        <div class="container" in:blur="{{duration: 1000, amount: 25}}">
+            <p class="text-body2">Days</p>
+            <p class="text-body2">Hours</p>
+            <p class="text-body2">Minutes</p>
+            <p class="text-body2">Seconds</p>
+            <p class="text-body3">{days}</p>
+            <p class="text-body3">{hours}</p>
+            <p class="text-body3">{minutes}</p>
+            <p class="text-body3">{seconds}</p>
+        </div>
+    {/if}
 {/if}

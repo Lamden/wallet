@@ -56,16 +56,16 @@
         {page: 'SwapsDisclaimer_TokensExchange', hideSteps: false, back: 0},
         {page: 'SwapsDisclaimer_ExchangeTerms', hideSteps: false, back: 0},
         {page: 'SwapsChooseLamden', hideSteps: false, back: 0},
-        {page: 'SwapsConnectMetamask', hideSteps: false, back: 1},
-        {page: 'SwapsSendApproval', hideSteps: false, back: 2},
-        {page: 'SwapsSendEthTx', hideSteps: false},
-        {page: 'SwapsPerformSwap', hideSteps: false, back: false}
+        {page: 'SwapsConnectMetamask', hideSteps: false, back: 3},
+        {page: 'SwapsSendApproval', hideSteps: false, back: 4},
+        {page: 'SwapsSendEthTx', hideSteps: false, back: 0, hideBack: true},
+        {page: 'SwapsPerformSwap', hideSteps: false, back: 0, hideBack: true}
     ]
 
     let progressSteps = [
                 {number: 1, name: 'Disclaimers', desc: 'accept'},
                 {number: 2, name: 'Lamden Account', desc: 'choose'},
-                {number: 3, name: 'Connect MetaMask', desc: 'connect'},
+                {number: 3, name: 'MetaMask', desc: 'connect'},
                 {number: 4, name: `Ethereum ${$currentNetwork.currencySymbol}`, desc: 'approve & send'},
                 {number: 5, name: `Lamden ${$currentNetwork.currencySymbol}`, desc: 'receive'}
             ]

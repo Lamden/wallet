@@ -52,8 +52,8 @@
 </script>
 
 <style>
-h2{
-    margin:0;
+h3{
+    margin-top: 0;
 }
 .flow-content-right{
     position: relative;
@@ -65,18 +65,13 @@ a{
 }
 .result{
     align-items: center;
-    margin-top: 2rem;
+    position: absolute;
 }
 .circle-checkmark{
-    width: 75px;
+    width: 190px;
 }
 .circle-error{
     width: 40px;
-}
-.swap-details > p{
-    margin: 1rem 0 0rem;
-    font-size: 1.2em;
-    font-weight: 500;
 }
 .swap-details{
     text-align: left;
@@ -85,13 +80,20 @@ a{
 .swap-details.grey{
     color: var(--font-primary-darker)
 }
-.text-cyan{
-    margin-left: 5px;
-}
 .swap-details > p{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 1rem 0 0rem;
+    font-size: 1.2em;
+    font-weight: 400;
+}
+.swap-details > p > strong{
+    font-weight: 500;
+}
+.text-warning{
+    margin: 2rem 0 -0.5rem;
+    text-align: center;
 }
 </style>
 
@@ -101,7 +103,7 @@ a{
     
         <p class="flow-text-box text-body1">
             {`Send your ${$currentNetwork.currencySymbol} tokens to our `}
-            <a class="text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" >Ethereum Token Swap Contract</a>
+            <a class="text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" rel="noopener noreferrer" target="_blank">Ethereum Token Swap Contract</a>
         </p>
 
         <div class="flex-column buttons">
@@ -132,7 +134,7 @@ a{
        
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ
@@ -140,13 +142,13 @@ a{
          </div>
     </div>
     <div class="flex-column flow-content-right">
-        <div class="swap-details" class:grey={sending}>
+        <div class="swap-details" class:grey={sending || sent || errorMsg !== ''}>
             <h3>Transaction Details</h3>
             <p><strong>Contract:</strong><br>
                 {`Ethereum ${getChainInfo().chainName}:`}
-                {#if sending} {getChainInfo().swapContract}
+                {#if sending || sent || errorMsg !== ''} {getChainInfo().swapContract}
                 {:else}
-                    <a href={`${$currentNetwork.blockexplorer}/address/${getChainInfo().swapContract}`} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().swapContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
                         {getChainInfo().swapContract}
                     </a>
                 {/if}
@@ -158,9 +160,9 @@ a{
                 {`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}
             </p> 
             <p><strong>Lamden Address:</strong><br>
-                {#if sending} {getLamdenAddress()}
+                {#if sending || sent || errorMsg !== ''} {getLamdenAddress()}
                 {:else}
-                    <a href={`${getChainInfo().blockExplorer}/addresses/${getLamdenAddress()}`} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                    <a href={$currentNetwork.blockExplorer + '/addresses/' + getLamdenAddress()} class:grey={sending} rel="noopener noreferrer" target="_blank">
                         {getLamdenAddress()}
                     </a>
                 {/if}
@@ -168,15 +170,19 @@ a{
         </div>
 
         {#if sending}
-            <Loading message="Waiting for response from MetaMask..."
-                     subMessage="Check your MetaMask to confirm the transaction"
-                     mainStyle="justify-content: flex-start; position: absolute;"
-            />
+            <div style="position: absolute;">
+                <Loading message="Waiting for transaction to complete..."
+                     subMessage="check your MetaMask to confirm the transaction"
+                     mainStyle="justify-content: flex-start;"
+                />
+                <p class="text-warning text-body1">DO NOT CLOSE THE WALLET</p>
+                <p class="text-body2">Depending on the congestion of the Ethereum network, and gas used, this could take a while.</p>
+            </div>
         {/if}
         {#if sent}
-            <div class="flex-row result" >
+            <div class="flex-column result" >
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-                <h2 class="text-cyan">{'Success!'}</h2>
+                <h3>{'Transaction Successful!'}</h3>
             </div>
         {/if}
         {#if errorMsg !== ''}

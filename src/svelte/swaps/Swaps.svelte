@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     //Stores
-    import { currentNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork, NetworksStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -14,6 +14,10 @@
 
 	//Context
     const { switchPage } = getContext('app_functions');
+
+    const handleNetworkChange = () => {
+        NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
+    }
 
 </script>
 
@@ -46,22 +50,37 @@
 .subtext{
     max-width: 601px;
     line-height: 1.4;
-    /*color: var(--font-primary-dark)*/
+}
+.text-warning{
+    margin-top: 1rem;
+}
+strong{
+    color: var(--font-accent);
+    font-weight: 400;
+    cursor: pointer;
 }
 </style>
 
 <div class="swaps text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
         <h2 class="heading">
-            {`Swap your Ethereum ${$currentNetwork.currencySymbol} Tokens for Lamden ${$currentNetwork.currencySymbol}`}
+            {`Swap your Ethereum ERC-20 TAU Tokens for Lamden Mainnet TAU`}
         </h2>
         
         <div class="subtext text-body1">
-            {`
-                During this process you will send your Ethereum ${$currentNetwork.currencySymbol} tokens to an Ethereum Swap Contract and 
-                Lamden will send you the equivalent number of Lamden ${$currentNetwork.currencySymbol} Tokens on ${$currentNetwork.name}.
-            `}
+                {`
+                    During this process you will send your Ethereum ERC-20 TAU tokens to an Ethereum Swap Contract and 
+                    Lamden will send you the equivalent number of Lamden TAU Tokens on Lamden Mainnet.
+                `}
         </div>
+        {#if $currentNetwork.type !== 'mainnet' && $currentNetwork.lamden}
+            <div class="subtext text-body1 text-warning" >
+                The Token Swap process is only available on Lamden Mainnet. <br> 
+                {#if NetworksStore.mainnetLaunched()}
+                <strong on:click={handleNetworkChange}>Click here to change network.</strong>
+                {/if}
+            </div>
+        {/if}
         
         <div class="buttons">
         	<Button
@@ -71,6 +90,7 @@
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('SwapsMain')}
                 icon={plus}
+                disabled={$currentNetwork.type !== 'mainnet'}
                 iconWidth={'19px'}
             />
         </div>

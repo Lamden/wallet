@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Utils
-    import { copyToClipboard } from '../../js/utils.js'
+    import { copyToClipboard, displayBalance } from '../../js/utils.js'
 
 	//Stores
     import { currentNetwork, BalancesStore } from '../../js/stores/stores.js';
@@ -31,10 +31,10 @@
 
 
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
+    $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en'))
     $: trustedApp = dappInfo[$currentNetwork.type].trustedApp;
     $: ratio = 0;
-    $: addressLink = `${$currentNetwork.blockExplorer}/address/${coin.vk}`
+    $: addressLink = `${$currentNetwork.blockExplorer}/addresses/${coin.vk}`
     $: options = [
         {id: 'preapproval-btn', name: 'Automatic Transactions', desc: `get rid of popups`, icon: verified_app, color: 'purple', click: () => showPreApprove() },
         {id: 'revoke-btn', name: 'Revoke Access', desc: `remove access to ${$currentNetwork.type}`, icon: deleteIcon, color: 'grey', click: () => showRevokeAccess() }

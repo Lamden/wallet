@@ -158,7 +158,7 @@
        
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ
@@ -190,7 +190,7 @@
                 <div class="flex-column" in:fade="{{delay: 400, duration: 250}}">
                     <div class="logo">{@html lamdenLogoNew}</div>
                     <p class="text-body2 text-primary-dark">lamden</p>
-                    <a href={`https://explorer.lamden.io/address/${getLamdenAddress()}`} 
+                    <a href={`https://explorer.lamden.io/addresses/${getLamdenAddress()}`} 
                        class="outside-link text-subtitle2"
                        target="_blank" 
                        rel="noopener noreferrer">

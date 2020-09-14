@@ -9,6 +9,9 @@
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
+    //Utils
+    import { displayBalance } from '../../js/utils.js'    
+
     //Images
     import lamden_logo_white_linked from '../../img/misc/lamden_logo_white_linked.svg'
     import charm_default from '../../img/misc/charm_default.svg';
@@ -30,7 +33,7 @@
     
     $: watching = coin.sk === "watchOnly"
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
-    $: balanceStr = balance ? balance.toLocaleString('en') : '0'
+    $: balanceStr = balance ? displayBalance(balance) : '0'
     $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined

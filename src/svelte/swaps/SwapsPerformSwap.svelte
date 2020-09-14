@@ -67,7 +67,6 @@
             answers: getAnswers()
         })
         .then(res => {
-            console.log(res)
             sending = false
 
             if(!res){
@@ -208,7 +207,7 @@
                 </div>
                 <div class="flex-column">
                     <div class="logo">{@html lamdenLogoNew}</div>
-                    <a href={`https://explorer.lamden.io/address/${getLamdenAddress()}`} 
+                    <a href={`https://explorer.lamden.io/addresses/${getLamdenAddress()}`} 
                         class="outside-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">

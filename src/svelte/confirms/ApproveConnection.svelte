@@ -15,7 +15,7 @@
 
     export let confirmData;
 
-    confirmData.messageData.accounts = confirmData.messageData.accounts.filter(account => account.balance > 0)
+    confirmData.messageData.accounts = confirmData.messageData.accounts.filter(account => parseFloat(account.balance) > 0)
 
     let step = 1
 

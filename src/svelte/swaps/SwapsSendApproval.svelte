@@ -14,6 +14,10 @@
     import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
+	//Utils
+	import { displayBalance } from '../../js/utils.js';
+
+
     //Context
     const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse } = getContext('functions');
     const { switchPage } = getContext('app_functions');
@@ -21,10 +25,13 @@
     //DOM Nodes
     let inputNode
 
+    let amount = 0;
+
     $: metamaskTxResponse = null;
     $: sending = false;
     $: sent = metamaskTxResponse && !sending
     $: errorMsg = ''
+
 
     const nextPage = () => {
         setMetamaskApprovalResponse(metamaskTxResponse)
@@ -36,6 +43,8 @@
             stepsStore.currentStep = 4;
             return stepsStore
         })
+        inputNode.value = getTokenBalance().toFixed(8)
+        amount = getTokenBalance().toFixed(8)
     })
 
     const sendTokenApproval = () => {
@@ -79,11 +88,15 @@
 </script>
 
 <style>
+h3{
+    margin-top: 0;
+}
 .flow-content-right{
     justify-content: flex-start;
 }
 .result{
     align-items: center;
+    position: absolute;
 }
 .circle-checkmark{
     width: 190px;
@@ -96,8 +109,30 @@ p.text-body2{
     font-weight: 300;
     line-height: 1.3;
 }
-strong{
-    color: cyan;
+.swap-details{
+    text-align: left;
+    width: 100%;
+}
+.swap-details.grey{
+    color: var(--font-primary-darker)
+}
+.swap-details > p{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 1rem 0 0rem;
+    font-size: 1.2em;
+    font-weight: 400;
+}
+.swap-details > p > strong{
+    font-weight: 500;
+}
+.text-body2 > strong{
+    color: var(--font-accent);
+}
+.text-warning{
+    margin: 2rem 0 -0.5rem;
+    text-align: center;
 }
 </style>
 
@@ -109,7 +144,7 @@ strong{
             {`Lamden requires access to your tokens to complete the swap process.`}
         </p>
 
-        <p class="text-body2 ">
+        <p class="text-body2">
             <strong>Ethereum {$currentNetwork.currencySymbol} Balance:</strong><br>
             {`${getTokenBalance().toFixed(8)} ${getChainInfo().tauSymbol}`}
         </p>
@@ -120,7 +155,7 @@ strong{
                 on:changed={handleChanged}
                 label={`Approve Amount`}
                 inputType={'number'}
-                value={`${getTokenBalance().toFixed(8)}`}
+                bind:value={amount}
                 placeholder={`${getChainInfo().tauSymbol} Amount`}
                 disabled={sending}
             />
@@ -154,7 +189,7 @@ strong{
        
 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ
@@ -162,12 +197,33 @@ strong{
          </div>
     </div>
     <div class="flex-column flow-content-right">
+        <div class="swap-details" class:grey={sending || sent || errorMsg !== ''}>
+            <h3>Transaction Details</h3>
+            <p><strong>Contract:</strong><br>
+                {`Ethereum ${getChainInfo().chainName}:`}
+                {#if sending || sent || errorMsg !== ''} {getChainInfo().tauContract}
+                {:else}
+                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                        {getChainInfo().tauContract}
+                    </a>
+                {/if}
+            </p> 
+            <p><strong>Function:</strong><br>
+                approve
+            </p> 
+            <p><strong>Amount:</strong><br>
+                {displayBalance(amount)}
+            </p> 
+        </div>
         {#if sending}
-            <Loading message="Waiting for response from MetaMask..."
-                     subMessage="Check your MetaMask to confirm the transaction"
+            <div style="position: absolute;">
+                <Loading message="Waiting for transaction to complete..."
+                     subMessage="check your MetaMask to confirm the transaction"
                      mainStyle="justify-content: flex-start;"
-                     
-            />
+                />
+                <p class="text-warning text-body1">DO NOT CLOSE THE WALLET</p>
+                <p class="text-body2">Depending on the congestion of the Ethereum network, and gas used, this could take a while.</p>
+            </div>
         {/if}
         {#if sent}
             <div class="flex-column result" >

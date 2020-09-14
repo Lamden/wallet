@@ -10,6 +10,9 @@
 	import { Components }  from '../Router.svelte'
     const { Button } = Components;
 
+    //Utils
+    import { displayBalance } from '../../js/utils.js'
+
     //images
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';
     import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
@@ -41,8 +44,8 @@
 
     const formatBalance = (value) => {
         if (!value.amount) return 0
-        if (value.amount.__fixed__) return parseFloat(value.amount.__fixed__)
-        return value.amount
+        if (value.amount.__fixed__) return displayBalance(value.amount.__fixed__)
+        return displayBalance(value.amount)
     }
 
 </script>

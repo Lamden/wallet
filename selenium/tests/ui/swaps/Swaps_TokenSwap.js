@@ -75,7 +75,6 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('Renders SwapsDisclaimer_Questions.svelte', async function() {
         let pageID = await driver.findElement(By.id('swap_questions'))
-        console.log(typeof pageID)
         assert.equal(typeof pageID !== 'undefined', true);
         await driver.findElement(By.id('accept-terms-btn')).getAttribute('disabled').then(disabled => {
             assert.equal(disabled, 'true');
@@ -106,7 +105,6 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('Renders SwapsDisclaimer_TokenExchange.svelte', async function() {
         let pageID = await driver.findElement(By.id('swap_exchangeOffer'))
-        console.log(typeof pageID)
         assert.equal(typeof pageID !== 'undefined', true);
         await driver.findElement(By.id('proceed-btn')).getAttribute('disabled').then(disabled => {
             assert.equal(disabled, 'true');
@@ -127,7 +125,6 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('Renders SwapsDisclaimer_ExchangeTerms.svelte', async function() {
         let pageID = await driver.findElement(By.id('swap_exchangeTerms'))
-        console.log(typeof pageID)
         assert.equal(typeof pageID !== 'undefined', true);
         await driver.findElement(By.id('proceed-btn')).getAttribute('disabled').then(disabled => {
             assert.equal(disabled, 'true');
@@ -207,7 +204,6 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('Renders SwapsSendEthTx.svelte', async function() {
         let pageID = await driver.findElement(By.id('swap_sendSwapTx'))
-        console.log(typeof pageID)
         assert.equal(typeof pageID !== 'undefined', true);
     });
     it('SwapsSendEthTx.svelte: Triggers Metamask popup for approval', async function() {

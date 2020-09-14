@@ -28,7 +28,7 @@
     import refresh from '../../img/menu_icons/icon_refresh.svg';
     
     //Utils
-    import { copyToClipboard } from '../../js/utils.js'
+    import { copyToClipboard, displayBalance } from '../../js/utils.js'
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
@@ -51,7 +51,7 @@
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  lightning_bg : `${dappInfo.url}${dappInfo.background}` : lightning_bg : squares_bg
     $: symbol = coin.symbol;
-    $: balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
+    $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk)) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
     $: pendingTxList = () => {
@@ -119,7 +119,7 @@
 		refreshing = true
 		setTimeout(() => {
             refreshing = false
-            balance = BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en') || '0'
+            balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk))
 		}, 2000);
     }
     

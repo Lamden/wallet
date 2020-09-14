@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 module.exports = class ClearingHouse_API{
     constructor(){
-        this.url = 'http://localhost:8080'
+        this.url = 'https://tokenswap.lamden.io'
     }
 
     //This will throw an error if the protocol wasn't included in the host string

@@ -127,7 +127,7 @@
                     class="button__solid button__purple submit submit-button submit-button-text" 
                     type="submit" > 
             <a  class="text-caption text-secondary" 
-                href="https://www.lamden.io" 
+                href="https://docs.lamden.io/wallet/" 
                 target="_blank" 
                 rel="noopener noreferrer" >
                 Help & FAQ
