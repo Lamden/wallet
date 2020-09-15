@@ -252,14 +252,16 @@ p{
         </div>
 
         <div class="buttons">
-        	<Button
-                id={'send-coin-btn'} 
-                classes={'button__transparent button__blue'}
-				name="Send Tx"
-                padding={"12px"}
-                margin={'0 15px 15px 0'}
-		 		click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
-				icon={arrowUp}/>
+            {#if coin.sk !== "watchOnly"}
+                <Button
+                    id={'send-coin-btn'} 
+                    classes={'button__transparent button__blue'}
+                    name="Send Tx"
+                    padding={"12px"}
+                    margin={'0 15px 15px 0'}
+                    click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
+                    icon={arrowUp}/>
+            {/if}
             <Button
                 id={'send-coin-btn'} 
                 classes={'button__transparent button__blue'}
