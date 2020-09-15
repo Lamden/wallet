@@ -17,6 +17,7 @@
     const { changeStep, setAnswers, getStepList } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
+    let privacy_policy = false;
     let read_and_confirmed = false;
     let yourself_or_company = null;
     let permanent_establishment_in_switzerland = null;
@@ -43,7 +44,7 @@
             ? "Acting for yourself as a natural person holding TAU tokens"
             : "Acting on behalf of a company or a business which is holding TAU tokens.",
             yourself_or_company 
-            ? `Are you domiciled or usually staying in Switzerland or Lichtenstein? ${domiciled_or_usually_staying ? "YES" : "NO"}`
+            ? `Are you domiciled or usually staying in Switzerland or Liechtenstein? ${domiciled_or_usually_staying ? "YES" : "NO"}`
             : `Do you have your place of business or a permanent establishment in Switzerland or Liechtenstein? ${permanent_establishment_in_switzerland ? "YES" : "NO"}`
         ]
     }
@@ -58,7 +59,7 @@
 
 <style>
 h3{
-    margin-top: 2rem;
+    margin-top: 0;
 }
 .flow-content-right{
     max-width: 80%;
@@ -90,12 +91,15 @@ input[type="radio"]{
 }
 .question-box{
     overflow-y: auto;
-}
-.first{
-   margin-top: 0;
+    padding-top: 0.25rem;
 }
 label{
     margin: 0 0 0.5rem;   
+}
+.divider{
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--divider-color);
+    margin-bottom: 1.5rem;
 }
 </style>
 
@@ -112,7 +116,7 @@ label{
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name={"Accept Terms"}
+                    name={"Accept & Proceed"}
                     disabled={!answeredAll}
                     click={nextPage} />
             <Button id={'back-btn'}
@@ -125,23 +129,35 @@ label{
     </div>
     <div class="flow-content-right" >
         <div class="question-box flex-column">
-            <div in:fade="{{delay: 0, duration: 200}}">
-                <h3 class="first">
-                    By accessing this section of the wallet, you confirm that
-                </h3>    
-                <ul>
-                    <li><strong>(i)</strong> you currently own TAU Lamden token(s) for your own account and</li>
-                    <li><strong>(ii)</strong> you are not residing nor are you physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements.</li>
-                </ul>
-                
+            <div class="divider" in:fade="{{delay: 0, duration: 200}}">   
                 <div class="checkbox-box">
-                    <label id="read_and_confirmed" class="chk-container" class:not-accepted={!read_and_confirmed} class:accepted={read_and_confirmed}>
-                        <input type="checkbox" bind:checked={read_and_confirmed} on:change={resetAnswers}>
+                    <label id="privacy_policy" class="chk-container" class:not-accepted={!privacy_policy} class:accepted={privacy_policy}>
+                        <input type="checkbox" bind:checked={privacy_policy}>
                         <span class="chk-checkmark"></span>
-                        I have read and confirm the above statements are all true.
+                        I hereby consent to the processing of my personal data pursuant to Lamden Sàrl’s
+                        <a href="https://www.lamden.io/privacy" target="_blank" rel="noopener noreferrer"> privacy policy </a> which I confirm to have read.
                     </label>
                 </div>
             </div>
+            {#if privacy_policy}
+                <div class="divider" in:fade="{{delay: 0, duration: 200}}">
+                    <h3 class="first">
+                        By accessing this section of the wallet, you confirm that
+                    </h3>    
+                    <ul>
+                        <li><strong>(i)</strong> you currently own TAU Lamden token(s) for your own account, and</li>
+                        <li><strong>(ii)</strong> you are not residing nor are you physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements.</li>
+                    </ul>
+                    
+                    <div class="checkbox-box">
+                        <label id="read_and_confirmed" class="chk-container" class:not-accepted={!read_and_confirmed} class:accepted={read_and_confirmed}>
+                            <input type="checkbox" bind:checked={read_and_confirmed} on:change={resetAnswers}>
+                            <span class="chk-checkmark"></span>
+                            I have read and confirm the above statements are all true.
+                        </label>
+                    </div>
+                </div>
+            {/if}
             {#if read_and_confirmed}
                 <div in:fade="{{delay: 0, duration: 200}}">
                     <h3>Are you acting:</h3>
@@ -156,7 +172,7 @@ label{
                         </label>
                         {#if yourself_or_company === true}
                             <div class="sub-question">
-                                <h3>Are you domiciled or usually staying in Switzerland or Lichtenstein?</h3>
+                                <h3>Are you domiciled or usually staying in Switzerland or Liechtenstein?</h3>
                                 <label>
                                     <input id="domiciled_or_usually_staying_0" type="radio" bind:group={domiciled_or_usually_staying} value={true}}>
                                     <strong>Yes</strong>

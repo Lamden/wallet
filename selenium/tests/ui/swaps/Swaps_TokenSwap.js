@@ -82,6 +82,8 @@ describe('Complete A Lamden Wallet Token Swap', function () {
     });
     it('SwapsDisclaimer_Questions: Can navigate all disclaimers ', async function() {
         await helpers.sleep(300, true)
+        await driver.executeScript(`document.getElementById('privacy_policy').click()`)
+        await helpers.sleep(300, true)
         await driver.executeScript(`document.getElementById('read_and_confirmed').click()`)
         await helpers.sleep(300, true)
         await driver.executeScript(`document.getElementById('yourself_or_company_0').click()`)

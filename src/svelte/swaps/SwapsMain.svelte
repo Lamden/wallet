@@ -63,7 +63,7 @@
     ]
 
     let progressSteps = [
-                {number: 1, name: 'Disclaimers', desc: 'accept'},
+                {number: 1, name: 'Disclaimer & Questionnaire', desc: 'accept'},
                 {number: 2, name: 'Lamden Account', desc: 'choose'},
                 {number: 3, name: 'MetaMask', desc: 'connect'},
                 {number: 4, name: `Ethereum ${$currentNetwork.currencySymbol}`, desc: 'approve & send'},

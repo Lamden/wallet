@@ -17,42 +17,40 @@
     let read_and_confirmed = false;
     let inputElm;
 
-    const legalText = `TOKENS EXCHANGE
-invitation to present an offer for exchange 
+    const legalText = `TOKENS EXCHANGE invitation to present an offer for exchange  
 
-IMPORTANT INFORMATION 
-
-This invitation to present an offer for exchange is strictly restricted to current holders of Lamden TAU ERC-20. The information contained herein, as well as the exchange of tokens as such, are not intended for, and must not be accessed by, persons resident or physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements. Nothing in this website shall be understood as constituting an offer to sell, a solicitation of an offer to buy, or a recommendation in respect of any security. Please read carefully the exchange terms and conditions before offering your Lamden TAU ERC-20 for exchange. 
+IMPORTANT INFORMATION  
+This invitation to present an offer for exchange is strictly restricted to current holders of Lamden TAU ERC-20. The information contained herein, as well as the exchange of tokens as such, are not intended for, and must not be accessed by, persons resident or physically present in any jurisdiction where participating in an exchange of tokens is not permitted or is subject to specific registration or licensing requirements. Nothing in this website/app shall be understood as constituting an offer to sell, a solicitation of an offer to buy, or a recommendation in respect of any security. Please read carefully the exchange terms and conditions before offering your Lamden TAU ERC-20 for exchange.  
 
 FROM THE LAMDEN TAU ERC-20 TO THE LAMDEN TAU MAINNET 
 
 Lamden Sàrl, a limited liability company incorporated under the laws of Switzerland, issued tokens called Lamden TAU ERC-20 (based on ERC-20 technology). 
 
-The purpose of this token distributing event was to raise funds in order to finance the development of the Lamden Platform.
+The purpose of this token distributing event was to raise funds in order to finance the development of the Lamden Platform.  
 
-The Lamden Platform that has been developed since then allows users to build blockchain applications easily with the Python programming language. Blockchain applications are in the form of small programs called ‘smart contracts’ and are deployed directly to the Lamden Platform.
+The Lamden Platform that has been developed since then allows users to build blockchain applications easily with the Python programming language. Blockchain applications are in the form of small programs called ‘smart contracts’ and are deployed directly to the Lamden Platform. 
 
-In its White Paper dated September 4th, 2017, Lamden has undertaken to make Lamden TAU ERC-20 available for exchange on the Lamden chain upon achievement of the Lamden Platform. 
+In its White Paper dated September 4th, 2017, Lamden has undertaken to make Lamden TAU ERC-20 available for exchange on the Lamden chain upon achievement of the Lamden Platform.  
 
-The Python-native modular blockchain, a complete new blockchain technology, is now available for use. For that purpose, Lamden has developed a new generation of utility tokens, the Lamden TAU Mainnet, which are based on the new blockchain technology that was developed. These new tokens grant the community access to the tools and the technology provided by the Lamden Platform. 
+The Python-native modular blockchain, a complete new blockchain technology, is now available for use. For that purpose, Lamden has developed a new generation of utility tokens, the Lamden TAU Mainnet, which are based on the new blockchain technology that was developed. These new tokens grant the community access to the tools and the technology provided by the Lamden Platform.  
 
-For the time being, the Lamden Platform is only accessible to the community of token holders who have converted their existing Lamden TAU ERC-20 into Lamden TAU Mainnet.
+The Lamden Platform is only accessible to the community of token holders who have converted their existing Lamden TAU ERC-20 into Lamden TAU Mainnet. Indeed, Lamden TAU ERC-20 remain of no use if they are not exchanged for Lamden TAU Mainnet, as they do not provide any access to the Platform.  
 
-Indeed, Lamden TAU ERC-20 have been issued for the sole purpose of offering their holders the expectation of accessing the Lamden Platform by way of the new tokens to be issued (i.e. the Lamden TAU Mainnet). 
+Therefore, as a holder of Lamden TAU ERC-20, you are entitled to apply to Lamden Sàrl for converting your tokens into Lamden TAU Mainnet.  
 
-Therefore, as a holder of Lamden TAU ERC-20, you are entitled to apply to Lamden Sàrl for converting your tokens into Lamden TAU Mainnet. 
+The exchange ratio is 1:1.  
 
-The exchange ratio is 1:1. 
+The Lamden TAU Mainnet which you will receive in exchange of your Lamden TAU ERC-20 will exclusively serve the purpose of accessing and using the Lamden Platform, which is fully decentralized and is hosted by a community of members. Lamden does not and will not provide any services to you through the Platform, as the latter will be operated by the community of TAU Mainnet holders, on a decentralized basis. 
 
-The Lamden TAU Mainnet which you will receive in exchange of your Lamden TAU ERC-20 will exclusively serve the purpose of accessing and using the Lamden Platform. For more information on the Lamden Platform, visit www.lamden.io.
+For more information on the Lamden Platform, visit www.lamden.io. 
 
-In order to initiate the exchange process, you might be required to access our application from this website. Before processing the exchange by way of our application, you will be asked to agree with the Exchange Terms and Conditions. 
+In order to initiate the exchange process, you might be required to access our application from this website/app. Before processing the exchange by way of our application, you will be asked to agree with the Exchange Terms and Conditions.  
 
-Your agreement with the Exchange Terms and Conditions and the tender of your Lamden TAU ERC-20 for exchange will formalize your offer, which will be binding on you. Your offer will be considered accepted if Lamden Sàrl sends the Lamden TAU Mainnet to you in exchange of your Lamden TAU ERC-20. Lamden Sàrl remains free to reject your exchange offer, in the event it considers that the Exchange Terms and Conditions are not met or for any technical reason.
+Your agreement with the Exchange Terms and Conditions and the tender of your Lamden TAU ERC-20 for exchange will formalize your offer, which will be binding on you. Your offer will be considered accepted if Lamden Sàrl sends the Lamden TAU Mainnet to you in exchange of your Lamden TAU ERC-20. Lamden Sàrl remains free to reject your exchange offer, in the event it considers that the Exchange Terms and Conditions are not met or for any technical reason. 
 
-Once you will be in possession of your Lamden TAU Mainnet, your Lamden TAU ERC-20 will be irrevocably cancelled and the exchange will be definitively completed.
+Once you will be in possession of your Lamden TAU Mainnet, your Lamden TAU ERC-20 will be irrevocably cancelled and the exchange will be definitively completed. 
 
-We invite you to request the exchange of your Lamden TAU ERC-20 to Lamden Sàrl, by clicking here: 
+We invite you to request the exchange of your Lamden TAU ERC-20 to Lamden Sàrl, by clicking ‘Accept & Proceed’ button.  
 `
 
     const nextPage = () => changeStep(2)
@@ -100,7 +98,7 @@ h3{
                     classes={'button__solid button__purple'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name={"Proceed"}
+                    name={"Accept & Proceed"}
                     disabled={!read_and_confirmed}
                     click={nextPage} />
             <Button id={'back-btn'}
