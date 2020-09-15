@@ -62,6 +62,8 @@ describe('Token Swap Negative Tests', function () {
     });
     it('Renders SwapsDisclaimer_Questions.svelte', async function() {
         await driver.findElement(By.id('swap_questions'))
+        await driver.executeScript(`document.getElementById('privacy_policy').click()`)
+        await helpers.sleep(300, true)
         await driver.executeScript(`document.getElementById('read_and_confirmed').click()`)
         await helpers.sleep(300, true)
         await driver.executeScript(`document.getElementById('yourself_or_company_0').click()`)
