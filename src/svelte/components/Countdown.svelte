@@ -73,17 +73,21 @@
     .text-body2{
         font-weight: 200;
     }
-    h2.underline{
+    h2.swtich-to{
+        cursor: pointer;
+        font-size: 1.6em;
+        bottom: 54px;
+    }
+    h2.swtich-to:hover{
         text-decoration: underline;
         cursor: pointer;
         font-size: 1.6em;
-        color: var(--font-warning);
         bottom: 54px;
     }
 </style>
 
 {#if NetworksStore.mainnetLaunched() && $currentNetwork.type !== 'mainnet'}
-    <h2 class="underline" on:click={handleNetworkChange}>SWITCH TO MAINNET</h2>
+    <h2 class="swtich-to" on:click={handleNetworkChange}>SWITCH TO MAINNET</h2>
 {:else}
     {#if !launched && !NetworksStore.mainnetLaunched()}
         <h2 in:blur="{{duration: 1000, amount: 25}}">MAINNET LAUNCH</h2>
