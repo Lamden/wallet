@@ -83,6 +83,7 @@
             return
         }
         if (decimalPart.length > 8) inputNode.value = intPart + "." + decimalPart.substring(0, 8)
+        amount = inputNode.value
     }
 
 </script>
