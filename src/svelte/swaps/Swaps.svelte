@@ -76,9 +76,7 @@ strong{
         {#if $currentNetwork.type !== 'mainnet' && $currentNetwork.lamden}
             <div class="subtext text-body1 text-warning" >
                 The Token Swap process is only available on Lamden Mainnet. <br> 
-                {#if NetworksStore.mainnetLaunched()}
                 <strong on:click={handleNetworkChange}>Click here to change network.</strong>
-                {/if}
             </div>
         {/if}
         

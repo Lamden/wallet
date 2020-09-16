@@ -87,7 +87,6 @@ import StrongPW from './components/StrongPW.svelte';
 import Transaction from './components/Transaction.svelte';
 import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
-import Countdown from './components/Countdown.svelte';
 import SwapsStatus from './components/SwapsStatus.svelte';
 import SwapStatus from './components/SwapStatus.svelte';
 
@@ -195,7 +194,6 @@ export const Components = {
     StrongPW,
     Transaction,
     Kwargs, Kwarg,
-    Countdown,
     SwapsStatus, SwapStatus
 };
 
