@@ -11,7 +11,7 @@
 
 	//Components
 	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
-	const { Button, Countdown } = Components;
+	const { Button } = Components;
 
 	//Images
 	import squares_bg from '../../img/backgrounds/squares_bg.png';
@@ -118,7 +118,6 @@ p{
 
 <div class="coinsmain text-primary">
 	<div class="hero-rec" style="background-image: url({squares_bg});">
-		<Countdown />
 		<div class="balance-words text-body1">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>

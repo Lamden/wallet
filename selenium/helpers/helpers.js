@@ -40,6 +40,8 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
     await driver.findElement(By.id('i-understand')).click()
     await sleep(5000)
     await changeToTestnet(driver)
+    await driver.findElement(By.id('refresh-icon')).click()
+    await sleep(3000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -62,8 +64,10 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.findElement(By.id('restore-btn')).click()
     await sleep(1000)
     await driver.findElement(By.id('home-btn')).click()
-    await sleep(10000)
+    await sleep(8000)
     await changeToTestnet(driver)
+    await driver.findElement(By.id('refresh-icon')).click()
+    await sleep(3000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -90,13 +94,20 @@ const changeToTestnet = async (driver) => {
 }
 
 const setAsTrustedDapp = async (driver) => {
+    await sleep(500, true)
     await driver.findElement(By.id("coin-row-1")).click()
+    await sleep(500, true)
     await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]")).click()
+    await sleep(500, true)
     await driver.findElement(By.id("preapproval-btn")).click()
+    await sleep(500, true)
     let trusted_Radio = await driver.wait(until.elementLocated(By.id("trusted")), 5000);
     await trusted_Radio.click()
+    await sleep(500, true)
     await driver.findElement(By.id("back-btn")).click() 
+    await sleep(500, true)
     await driver.findElement(By.id("cancel-modal-btn")).click()
+    await sleep(500, true)
     await driver.findElement(By.id("accounts")).click()
     await sleep(1000, true)
 

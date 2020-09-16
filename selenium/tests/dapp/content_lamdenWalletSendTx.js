@@ -154,7 +154,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(afterApprovalAmount, currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount);
         });
         it('sends a transactions successfully after Trusted App', async function() {
-            //this.timeout(30000);
+            this.timeout(30000);
             await helpers.switchWindow(driver, 0)
             await helpers.setAsTrustedDapp(driver)
             await helpers.switchWindow(driver, 1)

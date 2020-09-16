@@ -32,7 +32,6 @@
     $: sent = metamaskTxResponse && !sending
     $: errorMsg = ''
 
-
     const nextPage = () => {
         setMetamaskApprovalResponse(metamaskTxResponse)
         changeStep(6)
@@ -43,8 +42,10 @@
             stepsStore.currentStep = 4;
             return stepsStore
         })
-        inputNode.value = getTokenBalance().toFixed(8)
-        amount = getTokenBalance().toFixed(8)
+
+        inputNode.value = getTokenBalance()
+        handleChanged()
+
     })
 
     const sendTokenApproval = () => {

@@ -8,9 +8,6 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 
 import Lamden from 'lamden-js'
 
-const launchDate = new Date("2020-09-16T16:00:00.000Z")
-const today = new Date()
-let lamdenNetworks;
 
 let mainnet = {
     name: 'Lamden Mainnet', 
@@ -28,24 +25,14 @@ let testnet = {
     currencySymbol: 'dTAU',
     blockExplorer: 'https://testnet.lamden.io'
 }
-
-if (today >  launchDate){
-    lamdenNetworks = [mainnet, testnet]
-}else{
-    lamdenNetworks = [testnet]
-}
+let lamdenNetworks = [mainnet, testnet]
 
 let defualtNetworksStore = {
-    lamden: [],
+    lamden: lamdenNetworks,
     user : [],
     current: 'Lamden Mainnet|mainnet|lamden'
 }
 
-if (today >  launchDate){
-    lamdenNetworks = [mainnet, testnet]
-}else{
-    lamdenNetworks = [testnet]
-}
 
 const makeList = (networkStore) => {
     return [...networkStore.user, ...networkStore.lamden];
@@ -65,17 +52,12 @@ export const testnetNetwork = new Lamden.Network(testnet);
 export const createNetworksStore = () => {
     let initialized = false;
     let startValue = defualtNetworksStore;
-    startValue.lamden = lamdenNetworks;
 
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"networks": startValue}, function(getValue) {
+            console.log(getValue)
             initialized = true;
-            if (today < launchDate){
-                if (getValue.networks.current === networkKey(mainnet)){
-                    getValue.networks.current = networkKey(testnet)
-                }
-            }
             NetworksStore.set(getValue.networks)
         });
     }
@@ -118,7 +100,6 @@ export const createNetworksStore = () => {
         update,
         mainnetNetwork,
         testnetNetwork,
-        mainnetLaunched: () => new Date() > launchDate,
         //Make a network the current selected network
         //This sets the value of the derived "currentNetwork" store
         setCurrentNetwork: (networkInfo) => {
