@@ -19,7 +19,7 @@
     const { switchPage } = getContext('app_functions');
 
     const swapContractLink = {
-        "TAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"},
+        "TAU": {address: "0x78FC2eB9Dd55eb175c6145860385f84F8cbEE639", url: "https://www.etherscan.io/address/0x78FC2eB9Dd55eb175c6145860385f84F8cbEE639"},
         "dTAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"}
     }
 

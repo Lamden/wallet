@@ -12,6 +12,7 @@
 
     $: complete = $steps.currentStep > stepInfo.number;
     $: current = $steps.currentStep === stepInfo.number;
+    $: display = complete ? checkmark : stepInfo.number;
 </script>
 
 <style>
@@ -80,7 +81,7 @@
 }
 
 .checkmark{
-    margin-top: 3px;
+    margin-top: 5px;
     width: 16px;
 }
 
@@ -100,10 +101,8 @@ div.text-body1, div.text-body2{
 
 <div class="step" class:middle={!first && !last} class:first={first} class:last={last}>
     <div class="number-box" class:current={current || complete} class:done={complete}>
-        <div class="number text-subtitle2 text-black">
-            {#if complete}<div class="checkmark">{@html checkmark}</div>
-            {:else}{stepInfo.number}
-            {/if}
+        <div class="number text-subtitle2 text-black" class:checkmark={complete}>
+            {@html display}
         </div>
     </div>
     <div class="text-body1" 
