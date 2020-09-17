@@ -31,6 +31,7 @@
     $: sending = false;
     $: sent = metamaskTxResponse && !sending
     $: errorMsg = ''
+    $: chinese = document.documentElement.lang.includes('zh-')
 
     const nextPage = () => {
         setMetamaskApprovalResponse(metamaskTxResponse)
@@ -50,43 +51,62 @@
 
     const sendTokenApproval = () => {
         if (!sent){
-            sending = true
-            errorMsg = ''
-            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value}}, (response) => {
-                sending = false
-                if (typeof response.error === 'undefined') {
-                    metamaskTxResponse = response
-                } else {
-                    errorMsg = response.error
-                }
-            })
+            if (getTokenBalance() < inputNode.value){
+                inputNode.setCustomValidity('cannot be higher than balance')
+                inputNode.reportValidity()
+            }else{
+                sending = true
+                errorMsg = ''
+                chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value}}, (response) => {
+                    sending = false
+                    if (typeof response.error === 'undefined') {
+                        metamaskTxResponse = response
+                    } else {
+                        errorMsg = response.error
+                    }
+                })
+            }
         }
     }
 
     const handleChanged = () => {
+        inputNode.setCustomValidity('')
+        inputNode.reportValidity()
+        const updateAmounts = (val) => {
+            amount = String(val)
+            inputNode.value = val
+        }
+        const updateAmount = () => amount = String(inputNode.value)
         if (isNaN(inputNode.value)) {
-            inputNode.value = "0"
+            updateAmount("0")
             return
         } 
-        if (!inputNode.value.includes(".")) return
+        if (!inputNode.value.includes(".")) {
+            updateAmount()
+            return
+        }
         let intPart = inputNode.value.split(".")[0]
         let decimalPart = inputNode.value.split(".")[1]
         if (!decimalPart && !intPart) {
-            inputNode.value = "0"
+            updateAmounts("0")
             return
         }
         if (!decimalPart) {
-            inputNode.value = intPart
+            updateAmounts(intPart)
             return
         }
         if (parseInt(decimalPart) === 0) {
-            inputNode.value = intPart
+            updateAmounts(intPart)
             return
         }
-        if (decimalPart.length > 8) inputNode.value = intPart + "." + decimalPart.substring(0, 8)
-        amount = inputNode.value
+        if (decimalPart.length > 8) {
+            updateAmounts(intPart + "." + decimalPart.substring(0, 8))
+        }
     }
 
+    const isChinese = () => {
+        let html = document.getElementsByTagName('html').item.lan
+    }
 </script>
 
 <style>
@@ -115,7 +135,7 @@ p.text-body2{
     text-align: left;
     width: 100%;
 }
-.swap-details.grey{
+.grey{
     color: var(--font-primary-darker)
 }
 .swap-details > p{
@@ -203,9 +223,9 @@ p.text-body2{
             <h3>Transaction Details</h3>
             <p><strong>Contract:</strong><br>
                 {`Ethereum ${getChainInfo().chainName}:`}
-                {#if sending || sent || errorMsg !== ''} {getChainInfo().tauContract}
+                {#if (sending || sent || errorMsg !== '') && !chinese} {getChainInfo().tauContract}
                 {:else}
-                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} rel="noopener noreferrer" target="_blank">
                         {getChainInfo().tauContract}
                     </a>
                 {/if}
@@ -213,9 +233,12 @@ p.text-body2{
             <p><strong>Function:</strong><br>
                 approve
             </p> 
-            <p><strong>Amount:</strong><br>
-                {displayBalance(amount)}
-            </p> 
+            {#if !chinese}
+                <p><strong>Amount:</strong><br>
+                    {amount}
+                </p> 
+            {/if}
+            <p class:text-warning={!sending && !sent && errorMsg === ''}>Please deal with all pending Metamask transactions before clicking the "Send Approval" button.</p>
         </div>
         {#if sending}
             <div style="position: absolute;">

@@ -97,7 +97,7 @@
             lamdenWallet.vk, 
             getApprovalAmount(), 
             answers
-            )
+        )
     }
 
     const updateSwap = () => {

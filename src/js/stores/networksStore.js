@@ -56,7 +56,6 @@ export const createNetworksStore = () => {
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"networks": startValue}, function(getValue) {
-            console.log(getValue)
             initialized = true;
             NetworksStore.set(getValue.networks)
         });
