@@ -5,6 +5,9 @@
     //Images
     import charm_default from '../../img/misc/charm_default.svg';
 
+    //Utils
+    import { getKeyValue, createCharmKey } from '../../js/utils.js'
+
     //Props
     export let charmInfo;
     export let dappInfo;
@@ -20,22 +23,15 @@
 
     $: vk = dappInfo.vk;
     $: appURL = dappInfo.url;
-    $: value = getItemValue(charmInfo)
     $: format = charmInfo.formatAs || 'number'
+    $: value = getItemValue(charmInfo)
     $: defaultValue = formats[format].default
     $: iconPath = charmInfo.iconPath || false
     
-
-    
-
     const getItemValue = async (info) => {
-        let key = ''
-        if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
-            key = info.key.replace("<wallet vk>", vk)
-        }
-        let response = await $currentNetwork.API.getVariable(contractName, info.variableName, key)
-        return response
+        return await getKeyValue($currentNetwork, contractName, info.variableName, createCharmKey(info, vk), format)
     }
+    const refreshValue = () => value = getItemValue(charmInfo)
 </script>
 
 <style>
@@ -51,10 +47,12 @@
         justify-content: center;
         min-width: fit-content;
         border-radius: 4px;
+        
     }
     .charm-icon{
         width: 60px;
-        margin: -30px auto 0;        
+        margin: -30px auto 0;   
+        cursor: pointer;     
     }
     p.text-body2{
         margin: 0;
@@ -64,7 +62,7 @@
 <div class="charm-item flex-column">
     {#if iconPath}
         {#if !brokenCharmLogo}
-            <img class="charm-icon" src={`${appURL}${iconPath}`} alt="charm item" on:error={() => brokenCharmLogo = true}/>
+            <img class="charm-icon" src={`${appURL}${iconPath}`} alt="charm item" on:error={() => brokenCharmLogo = true} on:click={refreshValue}/>
         {:else}
             <div class="charm-icon">{@html charm_default}</div>
         {/if}

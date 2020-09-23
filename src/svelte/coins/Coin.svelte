@@ -10,7 +10,7 @@
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
     //Utils
-    import { displayBalance } from '../../js/utils.js'    
+    import { displayBalance, getKeyValue, createCharmKey } from '../../js/utils.js'  
 
     //Images
     import lamden_logo_white_linked from '../../img/misc/lamden_logo_white_linked.svg'
@@ -55,12 +55,7 @@
     }
 
     const getItemValue = async (info) => {
-        let key = ''
-        if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
-            key = info.key.replace("<wallet vk>", coin.vk)
-        }
-        let response = await $currentNetwork.API.getVariable(dappNetworkInfo.contractName, info.variableName, key)
-        return response
+        return await getKeyValue($currentNetwork, dappNetworkInfo.contractName, info.variableName, createCharmKey(info, coin.vk), info.formatAs || 'number')
     }
 
     const handleBrokenCharmIcon = (index) => {
@@ -146,6 +141,7 @@ p > a {
 .charm-row{
     align-items: center;
     padding-left: 100px;
+    margin-bottom: 5px;
 }
 .name-box{
     line-height: 1.5;
@@ -204,7 +200,7 @@ p > a {
             {/if}
             <label class="text-body2" style={"margin-right: 10px;"}>{charm.name}: </label>
             {#await getItemValue(charm) then response}
-                <label class="text-body2 text-primary-dark">{response || formats[charm.formatAs].default}</label>
+                <label class="text-body2 text-primary-dark">{response}</label>
             {/await}
         </div>
     {/each}

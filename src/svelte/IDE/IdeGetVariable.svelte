@@ -56,8 +56,8 @@
     />
     <InputBox 
         on:changed={(e) => {key = e.detail.target.value}}
-        label={'keys (comma separated)'}
-        placeholder={'key1,key2.. etc'}
+        label={'key(s)'}
+        placeholder={'key1:key2:key3.. etc'}
         width={'100%'}
         styles={'max-width: 600px; min-width: 200px;'}
     />

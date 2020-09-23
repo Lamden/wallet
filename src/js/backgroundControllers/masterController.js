@@ -61,6 +61,7 @@ export const masterController = () => {
             Object.keys(dappInfo).forEach(key => {
                 if(utils.networks.LamdenNetworkTypes.includes(key)) {
                     approvals[key] = dappInfo[key]
+                    if (!approvals[key].version) approvals[key].version = "0.0.1"
                 }
             })
             walletInfo.approvals = approvals
@@ -156,6 +157,7 @@ export const masterController = () => {
                 //Allow approval requests to be submitted without hardcoding the approved smart contract
                 if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
                     approvalRequest = true;
+                    txInfo.kwargs.to = dappInfo[txInfo.networkType].contractName;
                 }else{
                     //Set the contract name to the one approved by the user for the dApp
                     txInfo.contractName = dappInfo[txInfo.networkType].contractName
@@ -165,6 +167,7 @@ export const masterController = () => {
                 const info = (({ appName, url, logo  }) => ({ appName, url, logo }))(dappInfo);
                 const txData = txBuilder.getAllInfo()
                 if (approvalRequest) {
+
                     promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
                 }else {
                     if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
@@ -181,7 +184,7 @@ export const masterController = () => {
         }        
     }
 
-    const promptApproveDapp = async (sender, messageData) => {
+    const promptApproveDapp = async (sender, messageData, reapprove = false, dappInfo = undefined) => {
         let exists = await utils.networks.contractExists(messageData.networkType, messageData.contractName)
         if (!exists) {
             const errors = [`contractName: '${messageData.contractName}' does not exists on '${messageData.networkType}' network.`]
@@ -190,6 +193,11 @@ export const masterController = () => {
             const windowId = utils.createUID()
             messageData.network = utils.networks.getLamdenNetwork(messageData.networkType)
             messageData.accounts = balances.addBalances(accounts.getSanatizedAccounts(), messageData.network.networkKey)
+            if (reapprove) {
+                messageData.reapprove = reapprove
+                messageData.oldConnection = dappInfo
+            }
+            
             dapps.setTxToConfirm(windowId, {
                 type: 'ApproveConnection',
                 messageData,
@@ -253,6 +261,8 @@ export const masterController = () => {
             reassignLink: dapps.reassignLink,
             getConfirmInfo: dapps.getConfirmInfo,
             approveDapp: dapps.approveDapp,
+            reapproveDapp: dapps.reapproveDapp,
+            updateDapp: dapps.updateDapp,
             rejectDapp: dapps.rejectDapp,
             rejectTx: dapps.rejectTx,
             approveTransaction: dapps.approveTransaction,
