@@ -163,6 +163,15 @@ const approveTxPopup = async (driver, popupWindow, switchback) => {
     //await sleep(1000, true)
 }
 
+const approveReApprovePopup = async (driver, popupWindow, switchback) => {
+    await sleep(2000, true)
+    await switchWindow(driver, popupWindow)
+    let approve_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 500);
+    await approve_Button.click()
+    await sleep(500, true)
+    await switchWindow(driver, switchback)
+}
+
 const approveApprovalPopup = async (driver, popupWindow, switchback) => {
     await sleep(2000, true)
     await switchWindow(driver, popupWindow)
@@ -170,17 +179,13 @@ const approveApprovalPopup = async (driver, popupWindow, switchback) => {
     await approve_Button.click()
     await sleep(500, true)
     await switchWindow(driver, switchback)
-    //await sleep(1000, true)
 }
 
 const denyPopup = async (driver, popupWindow, switchback) => {
-    //await sleep(1000, true)
     await switchWindow(driver, popupWindow)
     let popupDeny_Button = await driver.wait(until.elementLocated(By.id("deny-btn")), 5000);
     await popupDeny_Button.click()
-    //await sleep(1000, true)
     await switchWindow(driver, switchback)
-    //await sleep(2000, true)
 }
 
 const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) => {
@@ -287,7 +292,7 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
         return await httpServer.close()
     }
     await stop().catch((err) => reject(err))
-    driver && driver.quit();
+    //driver && driver.quit();
     await sleep(1000, true)
     resolve()
 })}
@@ -300,7 +305,7 @@ module.exports = {
     hashStringValue,
     unlockWallet, lockWallet,
     sendConnectRequest, sendGetInfoRequest,
-    approvePopup, approveTxPopup, approveApprovalPopup, denyPopup,
+    approvePopup, approveTxPopup, approveApprovalPopup, denyPopup, approveReApprovePopup,
     getWalletResponse,
     startServer, closeTest,
     sendTx, getTxResult,

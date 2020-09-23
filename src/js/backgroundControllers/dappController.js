@@ -44,30 +44,17 @@ export const dappController = (utils, actions) => {
             if (!validateTypes.isStringWithValue(messageData.background)) {
                 errors.push("'background' <string> was provided but invalid.")
             }
-        }
-        if (typeof messageData.reapprove !== 'undefined'){
-            if (!validateTypes.isBoolean(messageData.reapprove)) {
-                errors.push(`'reapprove' <boolean> can not be ${typeof messageData.reapprove}`)
-            }else{
-                if (typeof messageData.newKeypair !== 'undefined'){
-                    if (!validateTypes.isBoolean(messageData.newKeypair)) {
-                        errors.push(`'newKeypair' <boolean> can not be ${typeof messageData.newKeypair}`)
-                    }
-                }else{
-                    messageData.newKeypair = false;
-                }
-            }
-        }else{
-            messageData.reapprove = false;
-            messageData.newKeypair = false;
-        }
-    
+        }    
         if (validateTypes.isStringWithValue(messageData.networkType)){
             if (!utils.networks.isAcceptedNetwork(messageData.networkType)){
                 errors.push(`'networkType' <string> '${messageData.networkType}' is not a valid network type.`)
             }
         }else{
             errors.push("'networkType' <string> required to process connect request")
+        }
+
+        if (!validateTypes.isStringWithValue(messageData.version)) {
+            errors.push("'version' <string> required to process connect request")
         }
         if (typeof messageData.charms !== 'undefined') {
             if (validateTypes.isArrayWithValues(messageData.charms)){
@@ -99,6 +86,13 @@ export const dappController = (utils, actions) => {
     
     const approveDapp = (sender, approveInfo) => {
         const confirmData = txToConfirm[getSenderHash(sender)]
+        if (confirmData.messageData.reapprove) {
+            reapproveDapp(confirmData.messageData)
+            utils.sendMessageToTab(confirmData.url, 'sendWalletInfo')
+            delete txToConfirm[getSenderHash(sender)]
+            return
+        }
+
         if (!actions.walletIsLocked()){
             const dappInfo = getDappInfoByURL(confirmData.url)
             const messageData = confirmData.messageData
@@ -124,6 +118,11 @@ export const dappController = (utils, actions) => {
             utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
         }
         delete txToConfirm[getSenderHash(sender)]
+    }
+
+    const reapproveDapp = (messageData) => {
+        updateDapp(messageData.oldConnection, messageData)
+        updateSmartContract(messageData.oldConnection, messageData)
     }
     
     const rejectDapp = (sender) => {
@@ -158,6 +157,7 @@ export const dappController = (utils, actions) => {
         if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
         dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
         dappsStore[appUrl][messageData.networkType].trustedApp = trustedApp;
+        dappsStore[appUrl][messageData.networkType].version = messageData.version;
         //Remove slashes at start of icon paths
         if (utils.validateTypes.isArrayWithValues(messageData.charms)){
             messageData.charms.forEach(charm => {
@@ -172,6 +172,28 @@ export const dappController = (utils, actions) => {
         }
         dappsStore[appUrl].url = appUrl
         dappsStore[appUrl].vk = vk
+        chrome.storage.local.set({"dapps": dappsStore});
+    }
+
+    const updateDapp = (dappInfo, connectionInfo, reapprove = false) => {
+        dappsStore[dappInfo.url].appName = connectionInfo.appName
+        if (utils.validateTypes.isStringWithValue(connectionInfo.background)){
+            dappsStore[dappInfo.url].background = utils.addCharAtStart(connectionInfo.background, '/')
+        }else{
+            delete dappsStore[dappInfo.url].background
+        }
+        dappsStore[dappInfo.url].logo = utils.addCharAtStart(connectionInfo.logo, '/')
+        dappsStore[dappInfo.url][connectionInfo.networkType].version = connectionInfo.version
+        if (typeof connectionInfo.charms !== 'undefined') {
+            dappsStore[dappInfo.url][connectionInfo.networkType].charms = connectionInfo.charms
+        }else{
+            delete dappsStore[dappInfo.url][connectionInfo.networkType].charms
+        }
+        if (!reapprove) chrome.storage.local.set({"dapps": dappsStore});
+    }
+
+    const updateSmartContract = (dappInfo, connectionInfo) => {
+        dappsStore[dappInfo.url][connectionInfo.networkType].contractName = connectionInfo.contractName
         chrome.storage.local.set({"dapps": dappsStore});
     }
     
@@ -282,7 +304,7 @@ export const dappController = (utils, actions) => {
 
     return {
         validateConnectionMessage,
-        approveDapp,
+        approveDapp, reapproveDapp,
         rejectDapp,
         rejectTx,
         approveTransaction,
@@ -297,6 +319,7 @@ export const dappController = (utils, actions) => {
         getSenderHash,
         setTrusted,
         getConfirmInfo,
-        setTxToConfirm
+        setTxToConfirm,
+        updateDapp
     }
 }

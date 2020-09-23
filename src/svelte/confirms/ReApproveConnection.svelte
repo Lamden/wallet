@@ -14,15 +14,15 @@
 
     const dispatch = createEventDispatcher();
     const next = () => {
-        let nextStep = 2;
-        if (confirmData.messageData.accounts.length === 0) nextStep = 3;
-        dispatch('setStep', nextStep)
+        dispatch('setStep', 4)
     }
         
     //Context
     const { close, openNewTab } = getContext('confirm_functions');
 
     export let confirmData;
+
+    let oldSmartContract = confirmData.messageData.oldConnection[confirmData.messageData.networkType].contractName
 
 </script>
 
@@ -40,11 +40,6 @@
         align-content: space-around;
         width: 100%;
     }
-    .description{
-        font-weight: 600;
-        font-size: 1.2em;
-        text-align: center;
-    }
     .buttons{
         margin-bottom: 0.5rem;
     }
@@ -52,7 +47,7 @@
         text-align: center;
     }
     .item{
-        width: 265px;
+        width: 300px;
         margin: 0.25rem auto;
     }
     .item_icon{
@@ -79,17 +74,25 @@
         text-align: center;
         line-height: 1.5;
     }
+    p > strong {
+        color: var(--font-warning);
+        font-weight: 400;
+    }
+    .outside-link{
+        text-decoration: underline;
+    }
+    .outside-link, .outside-link:visited, .outside-link:focus{
+        color: var(--font-warning);
+    }
 </style>
 
 <div class="flex-column detail"
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
     
     <p class="intro">
-        To interact with {confirmData.messageData.appName}, you need to create a 
-        <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a>. 
-        Let us help you through the process.
-    </p>
-    
+        <a class="outside-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{confirmData.messageData.oldConnection.appName}</a>
+        <strong>has requested a change the smart contract name for this Linked Account. </strong> 
+    </p>    
 
     <div class="approve-items flex-col">
         <div class="item flex-row">
@@ -97,7 +100,9 @@
                 {@html smartContract}
             </div>
             <div class="item_info flex-column">
-                <p class="text-body1 text-primary-dark">Smart Contract Name</p>
+                <p class="text-body2 text-primary-dark">OLD Smart Contract</p>
+                <p class="item_value" style="margin-bottom: 0.25rem;">{oldSmartContract}</p>
+                <p class="text-body2 text-primary-dark">NEW Smart Contract</p>
                 <p class="item_value">{confirmData.messageData.contractName}</p>
             </div>
         </div>
@@ -106,37 +111,33 @@
                 {@html network}
             </div>
             <div class="item_info flex-column">
-                <p class="text-body1 text-primary-dark">Network</p>
+                <p class="text-body2 text-primary-dark">Network</p>
                 <p class="item_value">{confirmData.messageData.network.name}</p>
             </div>
         </div>
     </div>
 
     <p class="intro">
-        Click next to proceed
+        Before accepting, it is recommended that you contact the owner of the DAPP to understand why.
     </p>
-
     <div class="flex-column">
         <div class="buttons flex-row">
             <Button 
                 id={'deny-btn'}
                 classes={'button__solid '}
-                name="Not Now"
+                name="Close"
                 width={'175px'}
                 height={'42px'}
                 margin={'0 20px 0 0'}
                 click={close} />
 
             <Button 
-                id={'info-next-btn'}
+                id={'approve-btn'}
                 classes={'button__solid button__purple'}
-                name="Next"
+                name="Accept Change"
                 width={'175px'}
                 height={'42px'}
                 click={next} />
-        </div>
-        <div class="help-link">
-            <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create" rel="noopener noreferrer" target="_blank">learn about linked accounts</a>
-        </div>   
+        </div> 
     </div>
 </div>

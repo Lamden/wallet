@@ -1,6 +1,7 @@
 {
     "basicConnectionInfo": {
         "appName": "Dapp Testing",
+        "version": "1.0.0",
         "contractName": "con_wallet_testing",
         "networkType": "testnet",
         "logo": "/images/logo.png"
@@ -12,6 +13,22 @@
         "key": "wallet_testing",
         "name": "Testing Value"
     }],
+    "updatedConnectionInfo_basic": {
+        "appName": "Dapp Testing Updating",
+        "version": "1.0.1",
+        "contractName": "con_wallet_testing",
+        "networkType": "testnet",
+        "logo": "/images/logo2.png",
+        "backgound": "/images/background2.png"
+    },
+    "updatedConnectionInfo_smartcontract": {
+        "appName": "Dapp Testing Updating",
+        "version": "1.0.2",
+        "contractName": "con_wallet_testing_2",
+        "networkType": "testnet",
+        "logo": "/images/logo2.png",
+        "backgound": "/images/background2.png"
+    },
     "background": "/images/background.png",
     "basicTransactionInfo":{
         "methodName": "set_value",

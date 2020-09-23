@@ -146,13 +146,18 @@
     </div>
 
     <div class="flex-column padding">
-        <p class="message">Do you want to authorize <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">automatic transactions</a> for this wallet?</p>
+        <p class="message">
+            Do you want to authorize 
+            <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">automatic transactions</a> 
+            for this wallet?
+        </p>
         <label>
             <input id="trusted" type=radio bind:group={trusted} value={true}>
             <strong>Yes</strong> 
             <p class="choice">
                 Automatically approve transactions from {confirmData.messageData.appName} to its smart contract. 
-                Does not include transactions to send {confirmData.messageData.network.currencySymbol}. However, will generate <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">transaction costs</a>.
+                Does not include transactions to send {confirmData.messageData.network.currencySymbol}. However, will generate 
+                <a class="outside-link" href="https://docs.lamden.io/docs" rel="noopener noreferrer" target="_blank">transaction costs</a>.
             </p>
         </label>
 
@@ -186,7 +191,7 @@
                 click={setChoice} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn about automatic transactions</a>
+            <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create" rel="noopener noreferrer" target="_blank">learn about automatic transactions</a>
         </div>  
     </div>
 </div>    

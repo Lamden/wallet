@@ -183,11 +183,32 @@ const displayBalance = (value) => {
     return value.toFormat({  decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
 }
 
+const createCharmKey = (info, vk) => {
+    let key = ''
+    if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
+        key = info.key.replace("<wallet vk>", vk)
+    }
+    return key;
+}
+
+const getKeyValue = async (networkObj, contractName, variableName, key, format = 'string') => {
+    const defaults = {
+        'number': 0,
+        'string': 'None'
+    }
+    let response = await networkObj.API.getVariable(contractName, variableName, key)
+    if (!response) return defaults[format];
+    if (response.__fixed__) return response.__fixed__
+    return response
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject, hashStringValue,
     formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
     Encoder, encodeLocaleDateTime, encodeLocaleTimeDelta, 
-    displayBalance
+    displayBalance,
+    getKeyValue, 
+    createCharmKey
   }

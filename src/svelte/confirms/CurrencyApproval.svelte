@@ -91,7 +91,7 @@ p > strong {
             {@html approve}
         </div>
         <p class="message">
-            Give <strong> {dappInfo.appName}</strong> access to <strong>{txData.txInfo.kwargs.amount} {currencySymbol}</strong> ?
+            Give <strong> {txData.txInfo.kwargs.to}</strong> access to <strong>{txData.txInfo.kwargs.amount} {currencySymbol}</strong> ?
         </p>
 
     </div>
@@ -124,7 +124,7 @@ p > strong {
                 click={approveTx} />
         </div>
         <div>
-            <a class="text-subtitle4 copy-link" href="www.lamden.io">what is this?</a>
+            <a class="text-subtitle4 copy-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_approval">what is this?</a>
         </div>   
     </div>
 </div>

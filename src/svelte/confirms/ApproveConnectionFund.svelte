@@ -120,7 +120,7 @@
 
     <p>
         You can send {confirmData.messageData.network.currencySymbol} to your 
-        {confirmData.messageData.appName} <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">linked account</a> 
+        {confirmData.messageData.appName} <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a> 
         to start using it right away.
 
     </p>
@@ -169,7 +169,7 @@
                 click={set} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="www.lamden.io" rel="noopener noreferrer" target="_blank">learn more</a>
+            <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#fund-linked-account" rel="noopener noreferrer" target="_blank">learn more</a>
         </div>  
     </div>
 </div>
