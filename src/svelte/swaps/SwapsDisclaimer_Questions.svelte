@@ -33,8 +33,6 @@
     })
 
     const nextPage = () => {
-        console.log({privacy_policy, read_and_confirmed, yourself_or_company, permanent_establishment_in_switzerland, domiciled_or_usually_staying})
-        console.log(constructAnswers())
         setAnswers(constructAnswers())
         changeStep(1)
     }
