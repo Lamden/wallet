@@ -277,11 +277,14 @@ courts in Geneva, Switzerland.
 
 Lamden Sàrl / Geneva
 `
-
+    onMount(() => {
+        if (inputElm.scrollHeight - inputElm.scrollTop < inputElm.clientHeight / 0.90 ) notScrolled = false
+    })
+    
     const nextPage = () => changeStep(3)
 
     const handleScroll = (e) => {
-        if (inputElm.scrollHeight - inputElm.scrollTop === inputElm.clientHeight) notScrolled = false
+        if (inputElm.scrollHeight - inputElm.scrollTop < inputElm.clientHeight / 0.90 ) notScrolled = false
     }
 
     
@@ -344,6 +347,7 @@ h3{
             margin="-1rem 0 2rem"
             rows="19"
             on:scroll={handleScroll}
+            on:mouseup={handleScroll}
             readonly={true}
         />
         <div class="checkbox-box">

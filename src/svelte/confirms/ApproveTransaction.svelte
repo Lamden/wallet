@@ -33,7 +33,7 @@ p{
     align-items: center;
     flex-grow: 1;
     justify-content: space-between;
-    padding: 20px;
+    padding: 20px 30px;
 }
 
 .hero-rec{
@@ -121,6 +121,9 @@ a.help{
     position: relative;
     top: 1px;
 }
+.outside-link, .outside-link:visited, .outside-link:focus{
+    color: var(--font-warning);
+}
 
 </style>
 
@@ -140,7 +143,7 @@ a.help{
             </div>
             <div class="item_info flex-column">
                 <p class="text-body2 text-primary-dark">{`Smart Contract`}</p>
-                <p class="item_value">{txData.txInfo.contractName}</p>
+                <p class="item_value text-body2">{txData.txInfo.contractName}</p>
             </div>
         </div>
         <div class="item flex-row">
@@ -149,7 +152,7 @@ a.help{
             </div>
             <div class="item_info flex-column">
                 <p class="text-body2 text-primary-dark">{`Network`}</p>
-                <p class="item_value">{confirmData.messageData.network.name}</p>
+                <p class="item_value text-body2">{confirmData.messageData.network.name}</p>
             </div>
         </div>
     </div>
@@ -167,7 +170,7 @@ a.help{
         {#each Object.keys(txData.txInfo.kwargs) as kwarg }
         <div class="flex-row">
             <div class="kwarg_icon">{@html arrow_right}</div>
-            <p class="text-subtitle2">{kwarg}</p>
+            <p class="text-subtitle2 text-body2">{kwarg}</p>
         </div>
         <div class="kwarg-value text-subtitle4 text-primary-dark">{txData.txInfo.kwargs[kwarg]}</div>
         {/each}

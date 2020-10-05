@@ -177,6 +177,27 @@ const encodeLocaleTimeDelta = (value) => {
     return [days, seconds]
 }
 
+const stripTrailingZero = (value) => {
+    const removeZeros = (v) => {
+        const numParts = v.split(".")
+        let formatted = numParts[1]
+        for (i = numParts[1].length - 1; numParts[1][i] === '0' && typeof numParts[1][i] !== "undefined"; i-- ){
+            formatted = formatted.slice(0, -1)
+        }
+        if (formatted === '') return numParts[0]
+        return numParts[0] + '.' + formatted
+    }
+    const isDecmailString = (v) => {
+        if (v.includes(".")) return true
+        return false
+    }
+    if (isDecmailString(value)) {
+        return removeZeros(value)
+    }else{
+        return value
+    }
+}
+
 const displayBalance = (value) => {
     if (!value) return '0'
     if (!Encoder.BigNumber.isBigNumber(value)) value = Encoder('bigNumber', value)
@@ -189,6 +210,12 @@ const createCharmKey = (info, vk) => {
         key = info.key.replace("<wallet vk>", vk)
     }
     return key;
+}
+
+const formatValue = (value, format = undefined) => {
+    if (!format) return value
+    if (format === 'number' && typeof value === 'string') return stripTrailingZero(value)
+    else return value
 }
 
 const getKeyValue = async (networkObj, contractName, variableName, key, format = 'string') => {
@@ -210,5 +237,6 @@ module.exports = {
     Encoder, encodeLocaleDateTime, encodeLocaleTimeDelta, 
     displayBalance,
     getKeyValue, 
-    createCharmKey
+    createCharmKey,
+    formatValue
   }

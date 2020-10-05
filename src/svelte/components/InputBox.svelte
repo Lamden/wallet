@@ -37,6 +37,10 @@
         dispatch('scroll', e);
     }
 
+        const dispatchMouseUp = (e) => {
+        dispatch('mouseup', e);
+    }
+
 </script>
 
 <div class="inputbox" style={`margin: ${margin}; width: ${width};`}>
@@ -88,6 +92,7 @@
             on:change={(e) => dispatchChanged(e)}
             on:keyup={(e) => dispatchKeyUp(e)}
             on:scroll={(e) => dispatchScroll(e)}
+            on:mouseup={(e) => dispatchMouseUp(e)}
             class="mainbox textarea:required:invalid textarea:focus:invalid"
             style={`width: 100%; min-width: 100%; max-width: 100%; height: ${height}; font-family: 'Roboto', sans-serif; ${styles}`}
             pattern={pattern}
