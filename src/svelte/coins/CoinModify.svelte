@@ -4,7 +4,8 @@
     //Components
     import { Modals, Components } from '../Router.svelte';
     const { Button } = Components;
-
+    //Stores 
+    import { BalancesStore } from '../../js/stores/stores'
 	//Context
     const { closeModal } = getContext('app_functions');
 
@@ -43,6 +44,7 @@
             if (!result || chrome.runtime.lastError) {
                 resolve(false)
             }
+            BalancesStore.refreshAllCache()
             resolve(result)
         })
     }

@@ -11,7 +11,7 @@ const createFilesStore = () => {
 
     //Default File Content that will be created
     const defaultFile = {
-        name: 'New Contract',
+        name: 'con_new_contract',
         code: defaultFileCode,
         type: 'local',
         selected: true

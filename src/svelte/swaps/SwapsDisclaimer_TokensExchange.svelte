@@ -52,11 +52,13 @@ Once you will be in possession of your Lamden TAU Mainnet, your Lamden TAU ERC-2
 
 We invite you to request the exchange of your Lamden TAU ERC-20 to Lamden Sàrl, by clicking ‘Accept & Proceed’ button.  
 `
-
+    onMount(() => {
+        if (inputElm.scrollHeight - inputElm.scrollTop < inputElm.clientHeight / 0.90 ) notScrolled = false
+    })
     const nextPage = () => changeStep(2)
 
     const handleScroll = (e) => {
-        if (inputElm.scrollHeight - inputElm.scrollTop === inputElm.clientHeight) notScrolled = false
+        if (inputElm.scrollHeight - inputElm.scrollTop < inputElm.clientHeight / 0.90 ) notScrolled = false
     }
 
     
@@ -119,6 +121,7 @@ h3{
             margin="-1rem 0 2rem"
             rows="19"
             on:scroll={handleScroll}
+            on:mouseup={handleScroll}
             readonly={true}
         />
         <div class="checkbox-box">
@@ -134,4 +137,3 @@ h3{
         </div>
     </div>
 </div>
-

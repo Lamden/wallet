@@ -6,7 +6,7 @@
     import charm_default from '../../img/misc/charm_default.svg';
 
     //Utils
-    import { getKeyValue, createCharmKey } from '../../js/utils.js'
+    import { getKeyValue, createCharmKey, formatValue } from '../../js/utils.js'
 
     //Props
     export let charmInfo;
@@ -29,7 +29,8 @@
     $: iconPath = charmInfo.iconPath || false
     
     const getItemValue = async (info) => {
-        return await getKeyValue($currentNetwork, contractName, info.variableName, createCharmKey(info, vk), format)
+        let res = await getKeyValue($currentNetwork, contractName, info.variableName, createCharmKey(info, vk), format)
+        return formatValue(res, charmInfo.formatAs)
     }
     const refreshValue = () => value = getItemValue(charmInfo)
 </script>

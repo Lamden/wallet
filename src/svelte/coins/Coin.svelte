@@ -10,7 +10,7 @@
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
     //Utils
-    import { displayBalance, getKeyValue, createCharmKey } from '../../js/utils.js'  
+    import { displayBalance, getKeyValue, createCharmKey, formatValue } from '../../js/utils.js'  
 
     //Images
     import lamden_logo_white_linked from '../../img/misc/lamden_logo_white_linked.svg'
@@ -55,7 +55,8 @@
     }
 
     const getItemValue = async (info) => {
-        return await getKeyValue($currentNetwork, dappNetworkInfo.contractName, info.variableName, createCharmKey(info, coin.vk), info.formatAs || 'number')
+        let res = await getKeyValue($currentNetwork, dappNetworkInfo.contractName, info.variableName, createCharmKey(info, coin.vk), info.formatAs || 'number')
+        return  formatValue(res, info.formatAs)
     }
 
     const handleBrokenCharmIcon = (index) => {
@@ -200,7 +201,7 @@ p > a {
             {/if}
             <label class="text-body2" style={"margin-right: 10px;"}>{charm.name}: </label>
             {#await getItemValue(charm) then response}
-                <label class="text-body2 text-primary-dark">{response}</label>
+                <label class="text-body2 text-primary-dark">{formatValue(response)}</label>
             {/await}
         </div>
     {/each}

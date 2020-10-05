@@ -33,6 +33,8 @@
     })
 
     const nextPage = () => {
+        console.log({privacy_policy, read_and_confirmed, yourself_or_company, permanent_establishment_in_switzerland, domiciled_or_usually_staying})
+        console.log(constructAnswers())
         setAnswers(constructAnswers())
         changeStep(1)
     }
@@ -101,6 +103,9 @@ label{
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 1.5rem;
 }
+.sub-question{
+    margin-top: 1rem;
+}
 </style>
 
 <div id="swap_questions" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
@@ -163,22 +168,22 @@ label{
                     <h3>Are you acting:</h3>
                     <div  class="flex-column padding text-body2">
                         <label>
-                            <input id="yourself_or_company_0" type="radio" bind:group={yourself_or_company} value={true} on:change={() => {permanent_establishment_in_switzerland = null}}>
+                            <input id="yourself_or_company_0" type="radio" bind:group={yourself_or_company} value={true} on:change={() => permanent_establishment_in_switzerland = null}>
                             <strong>A.</strong> for yourself as a natural person holding TAU tokens?
                         </label>
                         <label>
-                            <input id="yourself_or_company_1" type="radio" bind:group={yourself_or_company} value={false} on:change={() => {domiciled_or_usually_staying = null}}>
+                            <input id="yourself_or_company_1" type="radio" bind:group={yourself_or_company} value={false} on:change={() => domiciled_or_usually_staying = null}>
                             <strong>B.</strong> on behalf of a company or a business which is holding TAU tokens?
                         </label>
                         {#if yourself_or_company === true}
                             <div class="sub-question">
                                 <h3>Are you domiciled or usually staying in Switzerland or Liechtenstein?</h3>
                                 <label>
-                                    <input id="domiciled_or_usually_staying_0" type="radio" bind:group={domiciled_or_usually_staying} value={true}}>
+                                    <input id="domiciled_or_usually_staying_0" type="radio" bind:group={domiciled_or_usually_staying} value={true}>
                                     <strong>Yes</strong>
                                 </label>
                                 <label>
-                                    <input id="domiciled_or_usually_staying_1" type="radio" bind:group={domiciled_or_usually_staying} value={false}}>
+                                    <input id="domiciled_or_usually_staying_1" type="radio" bind:group={domiciled_or_usually_staying} value={false}>
                                     <strong>No</strong>
                                 </label>
                             </div>
@@ -187,11 +192,11 @@ label{
                             <div class="sub-question">
                                 <h3>Do you have your place of business or a permanent establishment in Switzerland or Liechtenstein?</h3>
                                 <label>
-                                    <input id="permanent_establishment_in_switzerland_0" type="radio" bind:group={permanent_establishment_in_switzerland} value={true}}>
+                                    <input id="permanent_establishment_in_switzerland_0" type="radio" bind:group={permanent_establishment_in_switzerland} value={true}>
                                     <strong>Yes</strong>
                                 </label>
                                 <label>
-                                    <input id="permanent_establishment_in_switzerland_1" type="radio" bind:group={permanent_establishment_in_switzerland} value={false}}>
+                                    <input id="permanent_establishment_in_switzerland_1" type="radio" bind:group={permanent_establishment_in_switzerland} value={false}>
                                     <strong>No</strong>
                                 </label>
                             </div>
