@@ -161,7 +161,7 @@ export const messagesHandler = (masterController) => {
 
                 if (message.type === 'denyPopup'){
                     if (message.data === 'ApproveConnection') masterController.dapps.rejectDapp(sender)
-                    if (message.data === 'ApproveTransaction') masterController.dapps.rejectTx(sender)
+                    if (message.data === 'ApproveTransaction' || message.data === 'CurrencyApproval') masterController.dapps.rejectTx(sender)
                 }
 
                 if (message.type === 'approveTransaction') masterController.dapps.approveTransaction(sender)
