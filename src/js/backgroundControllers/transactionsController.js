@@ -80,7 +80,7 @@ export const transactionsController = (utils, actions) => {
                 "to": to,
                 "amount": utils.Lamden.Encoder('float', amount)
             },
-            stampLimit: 10000
+            stampLimit: 33
         }
         
         let txBuilder = new utils.Lamden.TransactionBuilder(networkInfo, txInfo)
