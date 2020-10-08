@@ -11,7 +11,7 @@ import Lamden from 'lamden-js'
 
 let mainnet = {
     name: 'Lamden Mainnet', 
-    hosts: ['https://masternode-01.lamden.io:443', 'https://masternode-02.lamden.io:443'],
+    hosts: ['https://masternode-01.lamden.io'],
     type:'mainnet', 
     lamden: true, 
     currencySymbol: 'TAU',
@@ -19,7 +19,7 @@ let mainnet = {
 }
 let testnet = {
     name: 'Lamden Testnet', 
-    hosts: ['https://testnet-master-1.lamden.io:443'], 
+    hosts: ['https://testnet-master-1.lamden.io'], 
     type:'testnet', 
     lamden: true, 
     currencySymbol: 'dTAU',

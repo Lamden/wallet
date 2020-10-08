@@ -46,7 +46,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
-    "lamden-js": "^1.20.6",
+    "lamden-js": "^1.21.0",
     "metamask-extension-provider": "^1.1.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",
