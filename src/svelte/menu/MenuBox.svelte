@@ -5,6 +5,7 @@
     //Props
     export let menuItems;
     export let heading;
+    export let iconLookup
 
 </script>
 
@@ -12,7 +13,7 @@
 .box{
     display: flex;
     flex-direction: column;
-    background: #262626;
+    background: var(--bg-secondary);
     box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
     border-radius: 4px;
     margin-bottom: 7px;
@@ -39,6 +40,8 @@
     </div>
     
     {#each menuItems as menuItem}
-        <MenuItem {menuItem} />
+        {#if menuItem.show}
+            <MenuItem {menuItem} {iconLookup}/>
+        {/if}
     {/each}
 </div>

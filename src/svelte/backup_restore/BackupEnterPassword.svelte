@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -51,12 +53,9 @@
 </script>
 
 <style>
-a{
-    text-decoration: unset;
-}
-input{
-    margin-bottom: 1rem;
-}
+    input{
+        margin-bottom: 1rem;
+    }
 </style>
 
 <div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
@@ -64,7 +63,7 @@ input{
         <h6>Verify Your Password</h6>
         
         <div class="flow-text-box text-body1 text-primary">
-            Enter your Lamden wallet password to continue.
+            Enter your {whitelabel.companyName} wallet password to continue.
         </div>
 
         <form id="password_from" on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
@@ -81,15 +80,17 @@ input{
         </form>
         <div class="flex-column flow-buttons">
             <input  form="password_from"
-                    class="button__solid button__purple submit submit-button submit-button-text submit-button-size"
+                    class="button__solid button__primary submit submit-button submit-button-text submit-button-size"
                     type="submit" 
                     value={"Confirm Password"} />
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>        
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if}        
         </div>
     </div>
     <div class="flex-column flow-content-right" > </div>

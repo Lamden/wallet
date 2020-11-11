@@ -133,7 +133,7 @@
 .swap-deatils > div {
     align-items: center;
 }
-.outside-link{
+.text-link{
     font-weight: 300;
     white-space: nowrap;
     overflow: hidden;
@@ -169,7 +169,7 @@
         {/if}
         <div class="flex-column buttons">
             <Button id={'home-btn'}
-                    classes={'button__solid button__purple'} 
+                    classes={'button__solid button__primary'} 
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Home"
@@ -180,7 +180,7 @@
     <div class="flex-column flow-content-right">
         {#if success}
             <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
-            <h2 class="text-cyan" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
+            <h2 class="text-accent" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
         {/if}
         {#if errorMsg !== ''}
             <p class="text-body1 text-red" >{errorMsg}</p>
@@ -191,7 +191,7 @@
                 <div class="flex-column">
                     <div class="logo">{@html lamdenLogoOld}</div>
                     <a href={`${getChainInfo().blockExplorer}/address/${getEthAddress()}`} 
-                        class="outside-link text-subtitle2"
+                        class="text-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">
                         {getEthAddress()}
@@ -208,7 +208,7 @@
                 <div class="flex-column">
                     <div class="logo">{@html lamdenLogoNew}</div>
                     <a href={`https://explorer.lamden.io/addresses/${getLamdenAddress()}`} 
-                        class="outside-link text-subtitle2"
+                        class="text-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">
                         {getLamdenAddress()}

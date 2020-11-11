@@ -53,6 +53,7 @@
 <style>
 .coin-modify{
     width: 550px;
+    background: inherit;
 }
 .cancel-button{
     display: flex;

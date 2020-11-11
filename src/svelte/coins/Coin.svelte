@@ -1,7 +1,9 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext, setContext, afterUpdate } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+    import { quintOut } from 'svelte/easing';
 
     //Stores
     import { currentNetwork, BalancesStore, balanceTotal, DappStore, networkKey } from '../../js/stores/stores.js';
@@ -13,7 +15,8 @@
     import { displayBalance, getKeyValue, createCharmKey, formatValue } from '../../js/utils.js'  
 
     //Images
-    import lamden_logo_white_linked from '../../img/misc/lamden_logo_white_linked.svg'
+    import linkedAccount from '../../img/misc/linked_account.svg'
+    import logo from '../../img/logo.svg'
     import charm_default from '../../img/misc/charm_default.svg';
 
     // Props
@@ -75,7 +78,7 @@
 }
 
 .coin-box:hover{
-    background-color: var(--bg-color-grey)
+    background-color: var(--bg-secondary)
 }
 
 .text{
@@ -115,8 +118,15 @@
     align-items: center;
 }
 .dapp-logo{
+    position: relative;
     width: 32px;
     margin: 0 36px 0 16px;
+}
+.dapp-linked-account-logo{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
 }
 .dapp-info{
     display: flex;
@@ -127,7 +137,7 @@
     color: var(--text-primary);
     max-width: fit-content;
     border-radius: 9px;
-    background: rgba(38, 38, 38, 0.64);
+    background: var(--bg-secondary);
     box-shadow: 0px 1px 2px rgba(8, 35, 48, 0.24), 0px 2px 6px rgba(8, 35, 48, 0.16);
     margin-top: 5px;
     padding: 6px 14px;
@@ -155,40 +165,53 @@ p > a {
     on:click={ () => switchPage('CoinDetails', coin)}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
     >
-    <div class="logo flex-column">
-        {#if dappInfo}
-            {#if dappLogo && !brokenIconLink}
-                <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo" on:error={() => brokenIconLink = true}>
-            {:else}
-                <div class="dapp-logo">{@html lamden_logo_white_linked}</div>
-            {/if}
-        {:else}
-            <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 16px;`}/>
-        {/if}
-        
-    </div>
-    <div class="name text text-body1">
-        <div class="name-box">
-            <div class="text-body1">
-                {#if dappInfo}
-                    {`${dappInfo.appName}`}
+    {#if whitelabel.mainPage.logo.show}
+        <div class="logo flex-column">
+            {#if dappInfo}
+                {#if dappLogo && !brokenIconLink}
+                    <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo" on:error={() => brokenIconLink = true}>
                 {:else}
-                    {`${coin.nickname}`}
+                    <div class="dapp-logo">
+                        {@html logo}
+                        <div class="dapp-linked-account-logo"> 
+                            {@html linkedAccount}
+                        </div>
+                    </div>
+                {/if}
+            {:else}
+                <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 16px;`}/>
+            {/if}
+        </div>
+    {/if}
+    {#if whitelabel.mainPage.account_info.show}
+        <div class="name text text-body1">
+            <div class="name-box">
+                <div class="text-body1">
+                    {#if dappInfo}
+                        {`${dappInfo.appName}`}
+                    {:else}
+                        {`${coin.nickname}`}
+                    {/if}
+                </div>
+                {#if whitelabel.mainPage.account_info.show_network_name}
+                    <div id={`coin-nickname-${id}`} class="text-body2 text-secondary nickname">
+                        {`${coin.name}`} 
+                    </div>
                 {/if}
             </div>
-            <div id={`coin-nickname-${id}`} class="text-body2 text-primary-dark nickname">
-                {`${coin.name}`} 
-            </div>
         </div>
-    </div>
-
-    <div class="amount flex-column">
-        <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
-    </div>
-    {#if watching}
-        <div class="text-body2 text-primary-dark watching-text percent">{"watching"}</div>
-    {:else}
-        <div class="percent text text-body1"> {`${percent}`}</div>
+    {/if}
+    {#if whitelabel.mainPage.amount.show}
+        <div class="amount flex-column">
+            <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
+        </div>
+    {/if}
+    {#if whitelabel.mainPage.portfolio.show}
+        {#if watching}
+            <div class="text-body2 text-secondary watching-text percent">{"watching"}</div>
+        {:else}
+            <div class="percent text text-body1"> {`${percent}`}</div>
+        {/if}
     {/if}
 </div>
 {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
@@ -201,13 +224,13 @@ p > a {
             {/if}
             <label class="text-body2" style={"margin-right: 10px;"}>{charm.name}: </label>
             {#await getItemValue(charm) then response}
-                <label class="text-body2 text-primary-dark">{formatValue(response)}</label>
+                <label class="text-body2 text-secondary">{formatValue(response)}</label>
             {/await}
         </div>
     {/each}
     <div class="dapp-info">
         <p>{`linked to `}
-            <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
+            <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
         </p>
     </div>
 {/if}

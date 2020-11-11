@@ -10,8 +10,17 @@ Then validate metamask version's folder is correct as per the config item below
 
 Seed Phrase:
 The seed phrase will restore wallet which will be used to swap test dTAU from.  
-This wallet 0x00eB12f5C96B15001bf8f32bEEd970d178719AcC needs to be funded with KOVAN dTAU before testing is run (the test swaps 10 dTAU).
 
+This ETH wallet 0x00eB12f5C96B15001bf8f32bEEd970d178719AcC needs to be funded with KOVAN dTAU before testing is run (the test swaps 10 dTAU).
+
+These TAU Wallets needs funding:
+    - 2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9 
+    - 6a91a9a65eb80829a360efc0555cad8841af64c78375bbf394f6ecb89d5644ee
+    - 960c002a36c30c3aec8bc670e9b8b40eebcfd545f4e9237579fd7395a21ccebb
+
+These smart contract needs to exist and it's content doesn't matter 
+    - con_wallet_testing
+    - con_wallet_testing_2
 */
 
 const process = require('process');
@@ -37,7 +46,7 @@ const config = {
     walletExtentionID: "hiknponkciemeacgombejeookoebjdoe",
     metamaskExtentionID: "nkbihfbeogaeaoehlefnkodbefgpgknn",
     metamaskFolder: `${getMetaMaskLocation()}`, //Path to where metamask is installed on your computer
-    metamaskVersion: "8.0.10_0", //version of metamask (appends to metamaskFolder to create full plugin path)
+    metamaskVersion: "8.1.3_0", //version of metamask (appends to metamaskFolder to create full plugin path)
     get metamaskPath() {
         return path.join(this.metamaskFolder, this.metamaskExtentionID, this.metamaskVersion)
     },

@@ -41,6 +41,7 @@
 
 <style>
 .coin-dapp-options{
+    background: inherit;
     width: 750px;
 }
 .cancel-button{

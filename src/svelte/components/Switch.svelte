@@ -33,7 +33,7 @@
   bottom: 0;
   height: 14px;
   width: 34px;
-  background-color: #461BC2;
+  background-color: var(--primary-color);
   transition: .4s;
 }
 
@@ -45,7 +45,7 @@
     width: 20px;
     height: 20px;
     border-radius: 20px;
-    background-color: #848484;
+    background-color: var(--bg-secondary);
     transition: .4s;
 }
 
@@ -55,7 +55,7 @@ input:checked + .slider {
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px var(--color-accent);
 }
 
 input:checked + .slider:before {

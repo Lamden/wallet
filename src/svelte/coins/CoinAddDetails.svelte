@@ -25,14 +25,14 @@
     let addType = 1;
 
     const returnMessageButtons = [
-            {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
+            {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
             {id: "another-btn", name: 'Add Another', click: () => detailsPage(), class: 'button__solid'}
         ]
 
     $: buttonGroup = [
-            {id:"create-new-btn", name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__purple buttonGroup__left' : 'buttonGroup__left' },
-            {id:"add-existing-btn", name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__purple buttonGroup__center' : 'buttonGroup__center' },
-            {id:"track-address-btn", name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__purple buttonGroup__right' : 'buttonGroup__right' }
+            {id:"create-new-btn", name: 'Create New', click: () => addType = 1, class: addType === 1 ? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
+            {id:"add-existing-btn", name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__primary buttonGroup__center' : 'buttonGroup__center' },
+            {id:"track-address-btn", name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' }
         ]
 
     $: supportedCoinsList = createCoinList();
@@ -99,6 +99,7 @@
         chrome.runtime.sendMessage({type: 'accountsAddOne', data: coinInfo}, (result) => {
             if (result.added){
                 returnMessage = {type:'success', text: result.reason}
+                SettingsStore.setLastCoinAddedDate();
                 //mintTestCoins(coinInfo)
             }
 
@@ -145,6 +146,7 @@
 <style>
 .coin-add-details{
     width: 500px;
+    background: inherit;
 }
 
 .header{
@@ -233,7 +235,7 @@
         />
 
         <div class={"submit-button-box flex-column"}>
-            <input class="button__solid button__purple submit submit-button submit-button-text submit-button-size" type="submit" value="Save">
+            <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" type="submit" value="Save">
         </div>
     {/if}
 </form>

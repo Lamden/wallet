@@ -1,7 +1,7 @@
 <svg width="13" height="12" viewBox="0 0 13 12" fill="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <style>
     path.heartColor {
-        fill: #838383;
+        fill: var(--font-primary);
     }
     path.heartColor:hover {
         fill: #d65e5e;

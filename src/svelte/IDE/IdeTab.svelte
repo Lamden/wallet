@@ -51,7 +51,7 @@
     padding: 10px;
     margin: 2px;
     border-radius: 10px;
-    background-color: var(--bg-color-grey);
+    background-color: var(--bg-secondary);
     align-items: center;
     border: 1px solid transparent;
     cursor: pointer;
@@ -76,7 +76,7 @@
     margin-left: 0;
 }
 .rename{
-    background-color: #00000000;
+    background-color: var(--bg-secondary);
     border: 1px solid var(--font-accent);
     color: var(--font-primary);
 }

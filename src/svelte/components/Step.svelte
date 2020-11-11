@@ -3,7 +3,7 @@
     import { steps } from '../../js/stores/stores.js';
 
     //Images
-    import checkmark from '../../img/menu_icons/icon_checkmark.svg';
+    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg';
 
     //Props
     export let stepInfo
@@ -12,7 +12,7 @@
 
     $: complete = $steps.currentStep > stepInfo.number;
     $: current = $steps.currentStep === stepInfo.number;
-    $: display = complete ? checkmark : stepInfo.number;
+    $: display = complete ? checkmarkWhite : stepInfo.number;
 </script>
 
 <style>
@@ -27,7 +27,7 @@
 .middle:before {
     content: "";
     width: 50px;
-    border-bottom: 1px solid #848484;
+    border-bottom: 1px solid var(--outline);
     position: absolute;
     top: 16px;
     left: 0px;
@@ -37,7 +37,7 @@
 .middle:after {
     content: "";
     width: 50px;
-    border-bottom: 1px solid #848484;
+    border-bottom: 1px solid var(--outline);
     position: absolute;
     top: 16px;
     left: 80px;
@@ -47,7 +47,7 @@
 .last:before {
     content: "";
     width: 50px;
-    border-bottom: 1px solid #848484;
+    border-bottom: 1px solid var(--outline);
     position: absolute;
     top: 16px;
     left: 0px;
@@ -57,7 +57,7 @@
 .first:after {
     content: "";
     width: 50px;
-    border-bottom: 1px solid #848484;
+    border-bottom: 1px solid var(--outline);
     position: absolute;
     top: 16px;
     left: 80px;
@@ -69,14 +69,14 @@
     text-align: center;
     height: 24px;
     width: 24px;
-    border: 4px solid black;
-    background: #848484;
+    border: 4px solid var(--black-color);
+    background: var(--bg-secondary);
     border-radius: 20px;
     margin-bottom: 4px;
 }
 
 .number{
-    color: black;
+    color: var(--font-secondary);
     margin: auto;
 }
 
@@ -86,11 +86,11 @@
 }
 
 .current{
-    background: #E0E0E0;
+    filter: brightness(175%)
 }
 
 .done{
-    background: #3fa23f
+    background: var(--success-color)
 }
 div.text-body1, div.text-body2{
     text-align: center;
@@ -106,9 +106,9 @@ div.text-body1, div.text-body2{
         </div>
     </div>
     <div class="text-body1" 
-        class:text-primary-dark={!complete && !current}
+        class:text-secondary={!complete && !current}
         class:text-primary={complete || current}>
         {stepInfo.name}
     </div>
-    <div class="text-body2 text-primary-dark">{stepInfo.desc}</div>
+    <div class="text-body2 text-secondary">{stepInfo.desc}</div>
 </div>

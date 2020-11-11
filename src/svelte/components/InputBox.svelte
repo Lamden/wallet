@@ -14,7 +14,6 @@
     export let width = '100%';
     export let height = 'unset';
     export let margin = 'unset';
-    export let backgroundColor = label === '' ? 'transparent' : '';
     export let spellcheck = false;
     export let rows = '1'
     export let readonly = false
@@ -22,6 +21,7 @@
     export let numberMin = "0.00000001"
     export let numberStep = "any"
     export let disabled = false;
+    export let bgStyle = "primary"
 
     export let thisInput;
 
@@ -43,9 +43,11 @@
 
 </script>
 
-<div class="inputbox" style={`margin: ${margin}; width: ${width};`}>
-
-    <label class="inputbox-label" style={`background: ${backgroundColor || 'var(--bg-color)'};`}> {label} </label>
+<div class="inputbox" style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle})`}>
+    {#if label !== ""}
+        <label class="inputbox-label"> {label} </label>
+    {/if}
+    
     {#if inputType === "password"}
         <!-- svelte-ignore a11y-autofocus -->
         <input

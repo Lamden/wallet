@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
 	import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
     
@@ -64,7 +66,7 @@
     bottom: 0%;
     right: 0;
     height: 97px;
-    border-bottom: 1px solid #3D3D3D;
+    border-bottom: 1px solid var(--divider-light);
 }
 
 .heading{
@@ -102,7 +104,7 @@ form{
         <div class="lockscreen" in:fly="{{delay: 100, duration: 300, x: -200, y: 0, opacity: 0, easing: quintOut}}">
             <h6 class="heading">Sign In</h6>
             <div class="flow-text-box text-body1">  
-                Access your Lamden Wallet.
+                Access your {whitelabel.companyName} Wallet.
             </div>
         
             <form on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
@@ -120,7 +122,7 @@ form{
                 </div>
                 <input  id="login-btn"
                         value="Login"
-                        class="button__solid button__purple submit submit-button submit-button-text" 
+                        class="button__solid button__primary submit submit-button submit-button-text" 
                         type="submit" >
             </form>
         </div>

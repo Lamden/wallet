@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onMount, getContext } from 'svelte';
     
     //Stores
@@ -42,7 +44,7 @@
     }
 
     const createStartingWallet = (resolve) => {
-        chrome.runtime.sendMessage({type: 'accountsAddNewLamden', data: 'My Lamden Account'}, (result) => {
+        chrome.runtime.sendMessage({type: 'accountsAddNewLamden', data: `My ${whitelabel.companyName} Account`}, (result) => {
             if (result.error){
                 message = result.error
             }else{

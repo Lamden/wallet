@@ -1,6 +1,8 @@
 <script>
-	import { onMount, getContext } from 'svelte';
+	import whitelabel from '../../../whitelabel.json'
 
+	import { onMount, getContext } from 'svelte';
+	
 	//Stores
 	import { 
 			CoinStore,
@@ -14,9 +16,10 @@
 	const { Button } = Components;
 
 	//Images
-	import squares_bg from '../../img/backgrounds/squares_bg.png';
-	import refresh from '../../img/menu_icons/icon_refresh.svg';
+	import hero_bg from '../../img/backgrounds/hero_bg.png';
 	import plus from '../../img/menu_icons/icon_plus.svg';
+
+	import RefreshIcon from '../icons/RefreshIcon.svelte'
 
 	//Utils
 	import { displayBalance } from '../../js/utils.js';
@@ -79,7 +82,7 @@
 }
 
 .divider{
-	border-bottom: 1px solid rgba(224, 224, 224, 0.16);
+	border-bottom: 1px solid var(--divider-light);
 }
 
 .header-text{
@@ -91,7 +94,6 @@
 
 .header-name{
     width: 234px;
-    margin-left: 84px;
 }
 
 .header-amount{
@@ -106,6 +108,10 @@
 }
 .balance-total{
 	align-items: center;
+	color: var(--font-overlay);
+}
+.balance-words{
+	color: var(--font-overlay);
 }
 p{
     margin: 0;
@@ -114,10 +120,13 @@ p{
 	align-items: flex-end;
 	flex-grow: 1;
 }
+.logo-space{
+	margin-left: 84px;
+}
 </style>
 
 <div class="coinsmain text-primary">
-	<div class="hero-rec" style="background-image: url({squares_bg});">
+	<div class="hero-rec" style="background-image: url({hero_bg});">
 		<div class="balance-words text-body1">
 			{`${$currentNetwork.currencySymbol}`}
 		</div>
@@ -127,20 +136,22 @@ p{
 				id="refresh-icon"
 				class="flex-col refresh-icon" 
 				class:spinner={refreshing}>
-				{@html refresh} 
+				<RefreshIcon />
 			</div>
 
 		</div>
 		<div class="flex-row buttons">
-			<Button id={'add-btn'}
-				classes={'button__transparent button__blue'}
-				name="Add Account"
-				width={'155px'}
-				margin={'0 20px 0 0'}
-		 		click={() => openModal('CoinAdd')} 
-				icon={plus}
-				iconWidth={'19px'}
-			/>
+			{#if whitelabel.mainPage.buttons.add_account.show}
+				<Button id={'add-btn'}
+					classes={'button__transparent button__overlay'}
+					name={whitelabel.mainPage.buttons.add_account.name}
+					width={'155px'}
+					margin={'0 20px 0 0'}
+					click={() => openModal('CoinAdd')} 
+					icon={plus}
+					iconWidth={'19px'}
+				/>
+			{/if}
 		</div>
 
 	</div>
@@ -149,9 +160,15 @@ p{
 			<CoinEmpty />
 		{:else}
 			<div class="header header-text divider">
-				<div class="header-name header-text">Account Name</div>
-				<div class="header-amount header-text">Amount</div>
-				<div class="header-percent header-text">Portfolio %</div>
+				{#if whitelabel.mainPage.account_info.show}
+					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
+				{/if}
+				{#if whitelabel.mainPage.amount.show}
+					<div class="header-amount header-text">{whitelabel.mainPage.amount.title}</div>
+				{/if}
+				{#if whitelabel.mainPage.portfolio.show}
+					<div class="header-percent header-text">{whitelabel.mainPage.portfolio.title}</div>
+				{/if}
 			</div>
 			{#each $CoinStore as coin, id}
 				<Coin {coin} {id} />

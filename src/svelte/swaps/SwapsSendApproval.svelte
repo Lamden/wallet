@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext, onMount, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -11,7 +13,6 @@
 
     //Images
     import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
-    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
 	//Utils
@@ -136,7 +137,7 @@ p.text-body2{
     width: 100%;
 }
 .grey{
-    color: var(--font-primary-darker)
+    color: var(--font-secondary)
 }
 .swap-details > p{
     white-space: nowrap;
@@ -186,14 +187,14 @@ p.text-body2{
         <div class="flex-column buttons">
             {#if sent}
                 <Button id={'continue-btn'}
-                        classes={'button__solid button__purple'}
+                        classes={'button__solid button__primary'}
                         styles={'margin-bottom: 16px;'}
                         width={'100%'}
                         name="Continue" 
                         click={nextPage} />
             {:else}
                 <Button id={'send-approval-btn'}
-                    classes={`button__solid button__purple`}
+                    classes={`button__solid button__primary`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={sent ? "Approved" : sending ? "Sending" : "Send Approval"}
@@ -209,13 +210,14 @@ p.text-body2{
                     name="Cancel" 
                     click={() => switchPage('Swaps')} />  
        
-
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
          </div>
     </div>
     <div class="flex-column flow-content-right">
@@ -225,7 +227,7 @@ p.text-body2{
                 {`Ethereum ${getChainInfo().chainName}:`}
                 {#if (sending || sent || errorMsg !== '') && !chinese} {getChainInfo().tauContract}
                 {:else}
-                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} rel="noopener noreferrer" target="_blank">
+                    <a class="text-link" href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} rel="noopener noreferrer" target="_blank">
                         {getChainInfo().tauContract}
                     </a>
                 {/if}

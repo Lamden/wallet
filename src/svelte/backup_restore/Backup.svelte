@@ -1,4 +1,6 @@
 <script> 
+    import whitelabel from '../../../whitelabel.json'
+    
     import { getContext } from 'svelte';
 
     //Stores
@@ -9,9 +11,10 @@
     const { Button } = Components;
     
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
     import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
-    import warningIcon from '../../img/menu_icons/icon_warning.svg'
+    import cautionIcon from '../../img/menu_icons/icon_caution.svg'
+    import successCircle from '../../img/menu_icons/icon_success_circle.svg';
     import iconClose from '../../img/menu_icons/icon_close.svg'
 
 
@@ -69,11 +72,11 @@
 </style>
 
 <div class="backup text-primary">
-	<div class="hero-rec" style="background-image: url({squares_bg});">
+	<div class="hero-rec" style="background-image: url({hero_bg});">
         <h2 class="heading">
-            Backing Up Your Lamden Wallet is Very Important
+            Backing Up Your {whitelabel.companyName} Wallet is Very Important
         </h2>
-        <div class="subtext text-body1 text-primary-dark">
+        <div class="subtext text-body1">
             All of the information for your Accounts is stored in this browser. 
             We highly recommend creating a KeyStore file so that you can recover 
             your accounts if anythign happens to this computer.
@@ -81,16 +84,19 @@
         <div class="buttons">
         	<Button
                 id={'backup-btn'} 
-                classes={'button__transparent button__blue'}
+                classes={'button__transparent button__accent'}
 				name="Backup Wallet"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('BackupMain')} 
 				icon={arrowRight}
                 iconPosition='after'/>
         </div>
+        <div>
+        
+        </div>
         {#if $needsBackup}
             <div class="flex-row backup-warning">
-                <div class="warning-icon">{@html warningIcon}</div>
+                <div class="warning-icon">{@html cautionIcon}</div>
                 <div class="warning-text text-body4">
                     You have added Accounts since your last backup so it is HIGHLY recommended that you create another backup.
                 </div>
@@ -101,7 +107,6 @@
                     padding={'0'}
                     click={dismissWarning} 
                     icon={iconClose}
-                    iconInvert={true}
                     iconPosition='after'/>
             </div>
         {/if}

@@ -9,7 +9,7 @@
     import ApproveConnectionFund from './ApproveConnectionFund.svelte'
 
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
 
     //Context
     const { approveApp, logoFormat } = getContext('confirm_functions');
@@ -58,13 +58,13 @@
             width: 37px;
             margin-right: 10px;
     }
-    .outside-link:visited{
+    .text-link:visited{
         color: var(--font-accent);
     }
 </style>
 
 <div class="approve-conection flex-column">
-    <div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
+    <div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
         {#if reapprove}
             <h2>Smart Contract Update</h2>
         {:else}
@@ -79,7 +79,7 @@
             {/if}
             
         </div>
-        <a class="outside-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{`source ${confirmData.url}`}</a>
+        <a class="text-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{`source ${confirmData.url}`}</a>
     </div>
     {#if step == 1}
         {#if reapprove}

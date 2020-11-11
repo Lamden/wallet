@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
 
@@ -36,15 +38,19 @@ strong{
 </style>
 <div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
-        <h6 class="text-primary">Remember</h6>
+        <h6 class="text-primary">{whitelabel.firstRun_setup.terms_of_service.title}</h6>
         
         <div class="flow-text-box text-body1 text-primary">
-            Storing your password and backing up your wallet is <strong>YOUR RESPONSIBILITY</strong>. This is important to keeping your cryptocurrency safe.
+            {#if whitelabel.firstRun_setup.terms_of_service.message = "lamden_default"}
+                Storing your password and backing up your wallet is <strong>YOUR RESPONSIBILITY</strong>. This is important to keeping your cryptocurrency safe.
+            {:else}
+                {whitelabel.firstRun_setup.terms_of_service.message}
+            {/if}
         </div>
         <div class="flex-column flow-buttons">
             <Button
                 id={"i-understand"} 
-                classes={'button__solid button__purple'}
+                classes={'button__solid button__primary'}
                 styles={'margin-bottom: 16px;'}
                 name="I understand" 
                 click={() => accept()} />

@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { beforeUpdate, afterUpdate } from 'svelte';
     
     //Stores
@@ -7,9 +9,6 @@
 	//Components
     import { Transactions, PendingTransactions }  from '../Router.svelte'
 
-    //Images
-    import refresh from '../../img/menu_icons/icon_refresh.svg';
-    
     //Props
     export let coin;
     export let all = false;
@@ -28,18 +27,19 @@
 
 
 <div class="history text-primary">
-    <div class="flex-row">
-        <h3>Pending</h3>
-        <div>{@html refresh}</div>
-    </div>
-    
-    <PendingTransactions pendingTransactions={pendingTxList} />
-
-    {#if $currentNetwork.blockExplorer}
-        {#if transactionsList.length > 0}
-            <Transactions {transactionsList} vk={coin.vk} {fetchTransactions} />
+    {#if whitelabel.accountDetails.transactions.pending.show}
+        <div class="flex-row">
+            <h3>{whitelabel.accountDetails.transactions.pending.title}</h3>
+        </div>
+        <PendingTransactions pendingTransactions={pendingTxList} />
+    {/if}
+    {#if whitelabel.accountDetails.transactions.history.show}
+        {#if $currentNetwork.blockExplorer}
+            {#if transactionsList.length > 0}
+                <Transactions {transactionsList} vk={coin.vk} {fetchTransactions} />
+            {/if}
+        {:else}
+            <p>This network does not have a Block Explorer to pull a transaction history from.</p>
         {/if}
-    {:else}
-        <p>This network does not have a Block Explorer to pull a transaction history from.</p>
     {/if}
 </div>

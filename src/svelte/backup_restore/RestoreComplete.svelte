@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -10,8 +12,7 @@
     const { Button } = Components;
 
     //Images
-    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg';
-    import errorIcon from '../../img/menu_icons/icon_error.svg';
+    import errorIcon from '../../img/menu_icons/icon_error-circle.svg';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -48,7 +49,7 @@
 
 .header{
     margin-left: 53px;
-    border-bottom: 2px solid var(--font-primary-darker);
+    border-bottom: 2px solid var(--divider-light);
     width: calc(100% - 53px);
 }
 
@@ -62,7 +63,7 @@
 
 .result-box{
     height: 88px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     flex-grow: 1;
     padding-right: 20px;
     justify-content: center;
@@ -74,10 +75,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.error{
-    color: red;
 }
 
 .message{
@@ -94,7 +91,7 @@
     width: 141px;
     height: 88px;
     margin-right: 16px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     align-items: center;
     word-break: break-all;
     justify-content: center;
@@ -114,12 +111,6 @@
 
 .chk-checkmark{
     top: -13px;
-}
-
-
-a{
-    text-decoration: unset;
-    color: #ffffff99;
 }
 
 p{
@@ -142,22 +133,24 @@ p{
         </div>
         <div class="flex-column flow-buttons">
             <Button id={'home-btn'}
-                    classes={`button__solid button__purple`}
+                    classes={`button__solid button__primary`}
                     styles={'margin-bottom: 16px;'}
                     name={restore ? "Finish" : "Back to Home"}
                     disabled={false}
                     click={() => done()} />
 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if}  
         </div>
     </div>
     <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
-        <div class="flex-row header text-subtitle2 text-primary-light">
+        <div class="flex-row header text-subtitle2 text-primary">
             <p class="header-name">{'Name'}</p>
             <p class="header-address">{'Address'}</p>
         </div>
@@ -180,7 +173,7 @@ p{
                         </div>
                         <div class="flex-column key-info text-body3 ">
                             <p>{`${key.name} (${key.symbol})`}</p>
-                            <p class="nickname text-primary-dark">{`${key.nickname}`}</p>
+                            <p class="nickname text-secondary">{`${key.nickname}`}</p>
                         </div>
                         <div class="flex-column result-box text-body3 text-secondary">
                             <p>{`${key.vk}`}</p>
@@ -194,7 +187,7 @@ p{
                         </div>
                         <div class="flex-column key-info text-body3 ">
                             <p>{`${key.name} (${key.symbol})`}</p>
-                            <p class="nickname text-primary-dark">{`${key.nickname}`}</p>
+                            <p class="nickname text-secondary">{`${key.nickname}`}</p>
                         </div>
                         <div class="flex-column result-box text-body3 text-secondary">
                             <p>{key.vk}</p>

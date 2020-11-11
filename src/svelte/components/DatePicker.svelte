@@ -13,7 +13,7 @@
 	export let label = '';
 	export let margin = '';
 	export let placeholder;
-	export let backgroundColor = label === '' ? 'transparent' : '';
+	export let bgStyle = "primary";
 
 	let datePickerElm;
 	let showLocale = true;
@@ -31,8 +31,6 @@
 	let timeZone = currDate.substring(currDate.lastIndexOf("(") + 1, currDate.lastIndexOf(")"));
 
 	$: dateValues = showLocale ? encodeLocaleDateTime(new Date(dateFormated)) : Encoder('datetime', dateFormated)
-
-
 
 	const options = {
 		enableTime: true,
@@ -79,22 +77,25 @@
 	position: relative;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid #e0e0e03d;;
+	border: 1px solid var(--outline);
 	padding: 0px 5px 10px 10px;
 	border-radius: 4px;
 	z-index: 0;
 	cursor: pointer;
+	background-color: inherit;
 }
 
 .mainbox{
 	text-align: center;
 	padding: 6px;
+	background-color: inherit;
 }
 .inputbox{
 	width: 8%;
     z-index: 1;
 	min-width: 50px;
 	padding: 0 5px;
+	background-color: inherit;
 }
 div > strong{
 	position: relative;
@@ -104,24 +105,23 @@ div > strong{
 label > strong:hover{
 	position: relative;
 	top: -1;
-	color: aqua;
+	color: var(--text-accent);
 }
 .inputbox-label{
 	z-index: 1;
-	cursor: pointer;
+	background-color: inherit;
+	width: fit-content;
 }
 </style>
 
-<label  class="inputbox-label" 
-		style={`background: ${backgroundColor || 'var(--bg-color)'};`}
-		on:click={handleTimezonClick}
-		> 
-		{label} <strong class="outside-link">{`(${showLocale ? timeZone : 'UTC'})`}</strong>
+<label  class="inputbox-label text-link" 
+		on:click={handleTimezonClick}> 
+		{label} <strong>{`(${showLocale ? timeZone : 'UTC'})`}</strong>
 </label>
 
 <div class="flex-row date-picker"
-	id={id}
-	 style={margin ? `margin: ${margin};` : ''}
+	 id={id}
+	 style={`${margin ? `margin: ${margin};` : ''} background: var(--bg-${bgStyle})`}
 	 on:click={handleTimezonClick}
 	 bind:this={datePickerElm}
 	 > 
@@ -130,7 +130,7 @@ label > strong:hover{
 		on:change={handleChange} />
 	{#each dateValues as value, index}
 		<div class="inputbox">
-			<label class="inputbox-label" style={`background: ${backgroundColor || 'var(--bg-color)'};`}> {labels[index]} </label>
+			<label class="inputbox-label"> {labels[index]} </label>
 			<input  class="mainbox input:required:invalid input:focus:invalid"
 					type="number" 
 					bind:value={dateValues[index]}
@@ -140,6 +140,6 @@ label > strong:hover{
 					placeholder={placeholder} 
 					on:change={(e) => handleInputChange(e, index)}/>
 		</div>
-		{#if index === 2} <strong class="text-primary-dark">/</strong> {/if}
+		{#if index === 2} <strong class="text-secondary">/</strong> {/if}
 	{/each}
  </div>

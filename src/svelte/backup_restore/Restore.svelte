@@ -1,4 +1,6 @@
 <script> 
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext } from 'svelte';
 
     //Components
@@ -6,7 +8,7 @@
     const { Button } = Components;
     
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
     import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
 
 	//Context
@@ -49,18 +51,18 @@
 </style>
 
 <div class="restore text-primary">
-	<div class="hero-rec" style="background-image: url({squares_bg});">
+	<div class="hero-rec" style="background-image: url({hero_bg});">
         <h2 class="heading">
-            Restoring Accounts to Your Lamden Wallet is Quick & Easy
+            Restoring Accounts to Your {whitelabel.companyName} Wallet is Quick & Easy
         </h2>
-        <div class="subtext text-body1 text-primary-dark">
+        <div class="subtext text-body1">
             It only takes a few minutes, please have your original Keystore file ready,
             and be prepared to provide the password for it.
         </div>
         <div class="buttons">
         	<Button
                 id={'restore-btn'} 
-                classes={'button__transparent button__blue'}
+                classes={'button__transparent button__accent'}
 				name="Restore Now"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('RestoreMain')} 

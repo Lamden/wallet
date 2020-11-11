@@ -20,7 +20,7 @@
 <div id="coin-empty" class="buttons">
     <Button 
             id={"empty-add-btn"}
-            classes={'button__solid button__purple'}
+            classes={'button__solid button__primary'}
             styles={'margin-right: 23px;'}
             width={'232px'}
             name="Create A Wallet" 

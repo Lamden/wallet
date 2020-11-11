@@ -26,7 +26,7 @@
     let returnMessage = {};
     
     returnMessage.buttons = [
-        {id: "home-btn", name: 'Home', click: () => appHome(), class: 'button__solid button__purple'},
+        {id: "home-btn", name: 'Home', click: () => appHome(), class: 'button__solid button__primary'},
         {id: "back-btn", name: 'Back', click: () => setPage(1), class: 'button__solid'}
     ]
 
@@ -51,7 +51,9 @@
 </script>
 
 <style>
-
+.edit-nickname{
+    background: inherit;
+}
 .buttons{
     align-items: center;
     margin: 14px 0;
@@ -78,7 +80,7 @@ p{
     <div class="buttons flex-column">
         <Button
             id={"save-btn"}
-            classes={'button__solid button__purple'} 
+            classes={'button__solid button__primary'} 
             width={'232px'}
             margin={'0 0 9px 0'}
             name="Save" 

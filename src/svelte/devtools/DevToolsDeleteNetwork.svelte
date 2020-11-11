@@ -21,6 +21,7 @@
 <style>
 .network-delete{
     width: 400px;
+    background: inherit;
 }
 .buttons{
     justify-content: center;

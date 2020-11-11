@@ -66,7 +66,10 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.findElement(By.id('home-btn')).click()
     await sleep(8000)
     await changeToTestnet(driver)
-    await driver.findElement(By.id('refresh-icon')).click()
+    let refreshIcon = await driver.findElement(By.id('refresh-icon'))
+    await refreshIcon.click()
+    await sleep(3000, true)
+    await refreshIcon.click()
     await sleep(3000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
@@ -97,7 +100,8 @@ const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
     await driver.findElement(By.id("coin-row-1")).click()
     await sleep(500, true)
-    await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]")).click()
+    let btn = await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]"))
+    await driver.executeScript("arguments[0].click();", btn);
     await sleep(500, true)
     await driver.findElement(By.id("preapproval-btn")).click()
     await sleep(500, true)

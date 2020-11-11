@@ -12,7 +12,7 @@
     //Props
     export let coin;
     const buttons = [
-        {id: 'home-btn', name: 'Home', click: () => appHome(), class: 'button__solid button__purple'}
+        {id: 'home-btn', name: 'Home', click: () => appHome(), class: 'button__solid button__primary'}
     ]
 
     const successResult= {
@@ -51,6 +51,7 @@
     height: 224px;
     justify-content: center;
     align-items: center;
+    background: inherit;
 }
 </style>
 

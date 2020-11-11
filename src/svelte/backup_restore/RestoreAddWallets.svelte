@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -57,7 +59,7 @@
 
 .header{
     margin-left: 53px;
-    border-bottom: 2px solid var(--font-primary-darker);
+    border-bottom: 2px solid var(--divider-light);
     width: calc(100% - 53px);
 }
 
@@ -72,7 +74,7 @@
 .name{
     width: 141px;
     height: 88px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     margin-right: 16px;
     display: flex;
     align-items: center;
@@ -81,7 +83,7 @@
 .address{
     display: flex;
     height: 88px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     align-items: center;
     flex-grow: 1;
     overflow: hidden;
@@ -96,7 +98,7 @@
     width: 141px;
     height: 88px;
     margin-right: 16px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     align-items: center;
     word-break: break-all;
     justify-content: center;
@@ -121,11 +123,6 @@
     margin-bottom: 158px;
 }
 
-a{
-    text-decoration: unset;
-    color: #ffffff99;
-}
-
 p{
     margin: 0;
 }
@@ -147,7 +144,7 @@ p{
         </div>
         <div class="flex-column flow-buttons">
             <Button id={'restore-btn'}
-                    classes={`button__solid button__purple`}
+                    classes={`button__solid button__primary`}
                     width="100%"
                     styles={'margin-bottom: 16px;'}
                     name="Restore Accounts"
@@ -160,16 +157,18 @@ p{
                     name="Cancel"
                     click={() => cancel()} />
 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if}  
         </div>
     </div>
     <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
-        <div class="flex-row header text-subtitle2 text-primary-light">
+        <div class="flex-row header text-subtitle2 text-primary">
             <p class="header-name">{'Name'}</p>
             <p class="header-address">{'Address'}</p>
         </div>
@@ -193,7 +192,7 @@ p{
                 </div>
                 <div class="flex-column key-info text-body3 ">
                     <p>{`${key.name} (${key.symbol})`}</p>
-                    <p class="nickname text-primary-dark">{`${key.nickname}`}</p>
+                    <p class="nickname text-secondary">{`${key.nickname}`}</p>
                 </div>
                 <div id={`div-address-${i}`} class="address">
                     <p>{`${key.vk}`}</p>

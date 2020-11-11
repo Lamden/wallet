@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     import { onMount} from 'svelte';
     import { writable } from 'svelte/store';
     import { Encoder } from 'lamden-js'
@@ -11,7 +13,7 @@
 
     //Components
     import { Components }  from '../Router.svelte'
-    const { DropDown, InputBox, Button, Kwargs } = Components;
+    const { DropDown, InputBox, Button, Kwargs, DatePicker, TimeDelta } = Components;
 
     //Utils
     import { formatKwargs, displayBalance } from '../../js/utils.js'
@@ -142,6 +144,7 @@
 <style>
     .send-lamden{
         width: 525px;
+        background: inherit;
     }
     .coin-info{
         align-self: flex-end;
@@ -150,7 +153,8 @@
     .contract-details{
         padding: 0 4rem 0 0;
         margin-right: 1rem;
-        border-right: 1px solid var(--font-primary-darker)
+        border-right: 1px solid var(--divider-light);
+        background: inherit;
     }
 
     .buttons{
@@ -169,7 +173,7 @@
 </style>
 
 <div class="send-lamden flex-column" class:hide={currentPage !== 'CoinLamdenContract'}>
-    <h2> Make A Lamden Transaction</h2>
+    <h2> Make a {whitelabel.companyName} Transaction</h2>
     <DropDown  
         items={coinList()} 
         id={'mycoins'} 
@@ -226,9 +230,10 @@
             
         {/if}
     </div>
+
     <div class="buttons">
         <Button id="lamden-tx-next-btn"
-                classes={'button__solid button__purple'} 
+                classes={'button__solid button__primary'} 
                 width={'232px'}
                 margin={'0 0 17px 0'}
                 name="Next" 

@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     import { getContext } from 'svelte'
     import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
@@ -6,11 +8,12 @@
     //Components
     import Button from '../components/Button.svelte'
     import InputBox from '../components/InputBox.svelte'
+    
     import { createEventDispatcher } from 'svelte';
     
     //Icons
-    import smartContract from '../../img/menu_icons/icon_smartcontract.svg'
-    import network from '../../img/menu_icons/icon_network.svg'
+    import NetworkIcon from '../icons/NetworkIcon.svelte'
+    import SmartContractIcon from '../icons/SmartContractIcon.svelte'
 
     const dispatch = createEventDispatcher();
     const next = () => {
@@ -86,7 +89,7 @@
     
     <p class="intro">
         To interact with {confirmData.messageData.appName}, you need to create a 
-        <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a>. 
+        <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a>. 
         Let us help you through the process.
     </p>
     
@@ -94,19 +97,19 @@
     <div class="approve-items flex-col">
         <div class="item flex-row">
             <div class="item_icon">
-                {@html smartContract}
+                <SmartContractIcon />
             </div>
             <div class="item_info flex-column">
-                <p class="text-body1 text-primary-dark">Smart Contract Name</p>
+                <p class="text-body1 text-secondary">Smart Contract Name</p>
                 <p class="item_value">{confirmData.messageData.contractName}</p>
             </div>
         </div>
         <div class="item flex-row">
             <div class="item_icon">
-                {@html network}
+                <NetworkIcon />
             </div>
             <div class="item_info flex-column">
-                <p class="text-body1 text-primary-dark">Network</p>
+                <p class="text-body1 text-secondary">Network</p>
                 <p class="item_value">{confirmData.messageData.network.name}</p>
             </div>
         </div>
@@ -129,14 +132,21 @@
 
             <Button 
                 id={'info-next-btn'}
-                classes={'button__solid button__purple'}
+                classes={'button__solid button__primary'}
                 name="Next"
                 width={'175px'}
                 height={'42px'}
                 click={next} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create" rel="noopener noreferrer" target="_blank">learn about linked accounts</a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/accounts_linked_create"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    learn about linked accounts
+                </a>
+            {/if} 
         </div>   
     </div>
 </div>

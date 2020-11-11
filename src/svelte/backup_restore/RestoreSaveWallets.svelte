@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { CoinStore } from '../../js/stores/stores.js';
+    import { CoinStore, SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -50,8 +50,10 @@
     const addKeys = (resolve) => {
         let checkedKeys = keys.keyList.filter(key => key.checked)
         chrome.runtime.sendMessage({type: 'accountsAddMany', data: checkedKeys}, (result) => {
-            if (!result.error)keys.keyList = result
-            else keys.error = result.error
+            if (!result.error) {
+                keys.keyList = result
+                SettingsStore.setLastCoinAddedDate();
+            } else keys.error = result.error
             done = true;
         })
 

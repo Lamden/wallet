@@ -1,7 +1,5 @@
 <script>    
-    //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
-    import github_bg from '../../img/backgrounds/github_bg.png';
+    import whitelabel from '../../../whitelabel.json'
 
     //Social Icons
     import twitter from '../../img/menu_icons/icon_twitter.svg';
@@ -21,47 +19,7 @@
         window.open(url, '_blank');
     }
     
-    const aboutLinks = [
-        {
-            name:'Visit Our Website',
-            desc:'Write smart contracts in Python',
-            url:'https://www.lamden.io/',
-            image: squares_bg
-        },
-        {
-            name: 'Email Us',
-            desc: "What's on your mind?",
-            url: 'mailto:team@lamden.io',
-            image: squares_bg
-        }
-    ]
-
-    const socials = [
-        {   name: 'Twitter',
-            link: 'https://twitter.com/lamdentau',
-            image: twitter
-        },
-        {   name: 'Facebook',
-            link: 'https://www.facebook.com/LamdenTau/?ref=py_c',
-            image: facebook
-        },
-        {   name: 'Medium',
-            link: 'https://blog.lamden.io/',
-            image: medium
-        },
-        {   name: 'Telegram',
-            link: 'https://t.me/lamdenchat',
-            image: telegram
-        },
-        {   name: 'Reddit',
-            link: 'https://www.reddit.com/r/lamden/',
-            image: reddit
-        },
-        {   name: 'Github',
-            link: 'https://github.com/Lamden/',
-            image: github
-        },
-    ]
+    const icons = {twitter, facebook, medium, telegram, reddit,github}
 
 </script>
 
@@ -72,9 +30,6 @@
 }
 
 .about-box{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
     margin-top: 1rem;
 }
 
@@ -97,13 +52,13 @@
 <div class="box text-primary">
     <p class="text-body3"><strong>Version</strong> {version}</p>
     <div class="about-box"> 
-        {#each aboutLinks as cardInfo}
-            <Card {cardInfo} width={'45%'} />
+        {#each whitelabel.aboutPage.links as cardInfo}
+            <Card {cardInfo} width={'100%'} noPic={true}/>
         {/each}
     </div>
     <div class="social-box">
-        {#each socials as social}
-            <div class="social-icon" class:facebook={social.name === 'Facebook'} on:click={() => openLink(social.link)}>{@html social.image}</div>
+        {#each whitelabel.aboutPage.socials as social}
+            <div class="social-icon" class:facebook={social.name === 'Facebook'} on:click={() => openLink(social.link)}>{@html icons[social.icon]}</div>
         {/each}
     </div>
 </div>

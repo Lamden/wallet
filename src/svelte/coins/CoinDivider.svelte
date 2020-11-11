@@ -5,8 +5,7 @@
 .divider-box{
     display: flex;
     flex-direction: row;
-    height: 3px;
-    margin: 1px 0;
+    margin: 0;
 }
 
 .divider{
@@ -21,7 +20,7 @@
     content: "";
     margin-left: 63px;
     width: 100%;
-    border-bottom: 1px dashed var(--divider-color);
+    border-bottom: 1px dashed var(--divider-dark);
 }
 
 .amount{
@@ -32,7 +31,7 @@
     content: "";
     padding-left: 1px;
     width: 100%;
-    border-bottom: 1px dashed var(--divider-color);
+    border-bottom: 1px dashed var(--divider-dark);
 }
 
 .percent{
@@ -43,7 +42,7 @@
 .percent:after {
     content: "";
     width: 100%;
-    border-bottom: 1px dashed var(--divider-color);
+    border-bottom: 1px dashed var(--divider-dark);
 }
 </style>
 

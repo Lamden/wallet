@@ -1,6 +1,6 @@
 <script>
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
     import github_bg from '../../img/backgrounds/github_bg.png';
 
 	//Components
@@ -18,7 +18,7 @@
             name:'Contracting',
             desc:'Write smart contracts in Python',
             url:'https://contracting.lamden.io/',
-            image: squares_bg
+            image: hero_bg
         },
         {
             name: 'Mockchain',

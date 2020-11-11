@@ -318,12 +318,12 @@ h3{
         <h6>Exchange Terms and Conditions</h6>
     
         <p class="flow-text-box text-body1 text-primary">
-            Please read and <strong class="text-cyan">scroll text all the way to the bottom</strong>, check the box to accept terms and click the button to proceed.
+            Please read and <strong class="text-accent">scroll text all the way to the bottom</strong>, check the box to accept terms and click the button to proceed.
         </p>
 
         <div class="flex-column flow-buttons">
             <Button id={'proceed-btn'}
-                    classes={'button__solid button__purple'}
+                    classes={'button__solid button__primary'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={"Accept & Proceed"}
@@ -353,7 +353,7 @@ h3{
         <div class="checkbox-box">
             <label  class="chk-container" 
                     id="accept-terms-chk" 
-                    class:text-primary-dark={notScrolled} 
+                    class:text-secondary={notScrolled} 
                     class:not-accepted={!read_and_confirmed && !notScrolled} 
                     class:accepted={read_and_confirmed && !notScrolled}>
                 <input  type="checkbox" bind:checked={read_and_confirmed} disabled={notScrolled}>

@@ -35,7 +35,7 @@
 }
 
 .divider{
-    border-bottom: 1px dashed var(--divider-color);
+    border-bottom: 1px dashed var(--divider-dark);
 }
 
 .info{
@@ -61,19 +61,19 @@
 <div class='pending-transaction flex-row' class:padding-top={first} class:padding-bottom={last} class:divider={!last}>
     <div class="info flex-column">
         <div class="text-subtitle3"> {coinNickname}</div>
-        <div class="hash-link purple"> {hash}</div>
+        <div class="text-link clickable primary"> {hash}</div>
         <div class="items flex-row">
             <div>{`contract :`}</div>
-            <div class="item text-primary-dark">{txInfo.contractName}</div>
+            <div class="item text-secondary">{txInfo.contractName}</div>
             <div class="item-spacing">{`method :`}</div>
-            <div class="item text-primary-dark">{txInfo.methodName}</div>
+            <div class="item text-secondary">{txInfo.methodName}</div>
             <div class="item-spacing">{`kwargs :`}</div>
-            <div class="item text-primary-dark">{Object.keys(txInfo.kwargs).length}</div>
+            <div class="item text-secondary">{Object.keys(txInfo.kwargs).length}</div>
         </div>
     </div>
     <div class="time-date flex-column">
         <div class="text-subtitle2"> {`Sent ${timestamp}`} </div>
-        <div class="text-primary-dark text-body2"> {`${networkType}`} </div>
-        <div class="text-subtitle1 text-primary-dark"> {`${url}`} </div>
+        <div class="text-secondary text-body2"> {`${networkType}`} </div>
+        <div class="text-subtitle1 text-secondary"> {`${url}`} </div>
     </div>
 </div>

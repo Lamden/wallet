@@ -6,14 +6,14 @@
     //Images
     import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';
-    import warning from '../../img/menu_icons/icon_warning.svg';
+    import caution from '../../img/menu_icons/icon_caution.svg';
 
     //Props
     export let result;
 
     let typeIcons = {
         'error': errorCircle,
-        warning,
+        caution,
         'success': successCircle
     }
 
@@ -30,6 +30,7 @@ h2{
 .results-box{
     align-items: center;
     min-width: 550px; 
+    background: inherit;
 }
 
 .icon{

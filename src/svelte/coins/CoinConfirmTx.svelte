@@ -7,7 +7,7 @@
     const { Button } = Components;
 
     //Images
-    import warning from '../../img/menu_icons/icon_warning.svg';
+    import caution from '../../img/menu_icons/icon_caution.svg';
 
     //Context
     const { nextPage, back } = getContext('tx_functions');
@@ -25,13 +25,14 @@
 <style>
 .confirm-tx{
     width: 500px;
+    background: inherit;
 }
 
 .details{
     padding: 1rem 0 1rem 4rem;
     margin-top: 17px;
     margin-left: 2rem;
-    border-left: 1px solid var(--font-primary-darker)
+    border-left: 1px solid var(--font-secondary)
 }
 .sender-key {
     white-space: nowrap;
@@ -54,11 +55,11 @@
     align-items: center;
 }
 
-.warning{
-    color: var(--font-warning);
+.caution{
+    color: var(--font-caution);
 }
 
-.warning-icon{
+.caution-icon{
     width: 15px;
     margin-right: 8px;
 }
@@ -78,8 +79,8 @@ p{
             {#each txDetails as detail}
                 <h3 class="detail-name no-bottom-margin">{detail.name}</h3>
                 {#if detail.value === ''}
-                    <div class="values text-body1 warning flex-row">
-                        <div class="warning-icon text-body1" >{@html warning}</div>
+                    <div class="values text-body1 caution flex-row">
+                        <div class="caution-icon text-body1" >{@html caution}</div>
                         {'Empty Field'}
                     </div>
                 {:else}
@@ -93,7 +94,7 @@ p{
     <div class="buttons flex-column">
         <Button 
             id="confirm-tx-btn"
-            classes={'button__solid button__purple'} 
+            classes={'button__solid button__primary'} 
             width={'232px'}
             margin={'0 0 17px 0'}
             name="Confirm Transaction" 

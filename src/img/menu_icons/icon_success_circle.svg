@@ -31,10 +31,12 @@
        cy="123.51192"
        cx="20.382862"
        id="path822"
-       style="opacity:1;fill:#89ed5b;fill-opacity:1;stroke:none;stroke-width:2.35256839;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       class="fill-success"
+       style="opacity:1;stroke:none;stroke-width:2.35256839;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
        id="path1391"
        d="m 4.2086767,124.89103 3.1070099,-3.10701 8.0347934,8.03479 17.188771,-17.18877 3.190529,3.19053 -20.295782,20.29578 z"
-       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       class="fill-black"
+       style="fill-opacity:0.6;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>

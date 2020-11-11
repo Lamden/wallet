@@ -27,7 +27,7 @@
         {page: 'ResultBox', back: -1, cancelButton: false}
     ]
     let buttons = [
-            {name: 'Home', click: () => closeModal(), class: 'button__solid button__purple'},
+            {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
             {name: 'New Transaction', click: () => currentStep = 1, class: 'button__solid'}
         ]
     let currentStep = 1;

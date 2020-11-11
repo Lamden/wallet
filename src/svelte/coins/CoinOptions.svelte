@@ -24,12 +24,12 @@
     let selectedWallet;
     let copySuccessful;
     let options = [
-        {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', icon: copyWhite, color: 'purple', click: () => copyWalletAddress() },
-        {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', icon: edit, color: 'purple', click: () => showEdit() },
+        {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', icon: copyWhite, color: 'primary', click: () => copyWalletAddress() },
+        {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', icon: edit, color: 'primary', click: () => showEdit() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
     ]
     const buttons = [
-        {id: 'close-btn', name: 'Close', click: () => close(), class: 'button__solid button__purple'}
+        {id: 'close-btn', name: 'Close', click: () => close(), class: 'button__solid button__primary'}
     ]
     let message = {buttons}
 
@@ -116,9 +116,13 @@
 </script>
 
 <style>
+#coin-options{
+    background: inherit;
+}
 .options-box{
     justify-content: space-evenly;
     margin-top: 1rem;
+    background: inherit;
 }
 .options{
     cursor: pointer;
@@ -145,20 +149,20 @@ p, a{
     margin-top: 7px;
     height: 32px;
 }
-.purple{
+.primary{
     background-color: var(--primary-color);
 }
 
-.purple:hover{
-    background-color: #5121de;
+.primary:hover{
+    filter: brightness(125%);
 }
 
 .grey{
-    background-color: var(--bg-color-grey);
+    background-color: var(--bg-secondary);
 }
 
 .grey:hover{
-    background-color: #444444;
+    filter: brightness(125%);
 }
 
 .buttons{
@@ -171,9 +175,7 @@ p, a{
 .icon{
     width: 20px;
 }
-.relationship{
-    margin-top: 0;
-}
+
 h3{
     margin: 1rem 0 0;
 }
@@ -204,7 +206,7 @@ h2{
         <h3>Currenty Linked Account</h3>
         <div class="flex-row linked-account">
             <img class="app-icon" src="{dAppInfo.url + dAppInfo.logo}" alt="{dAppInfo.appName} logo"/>
-            <a href="{dAppInfo.url}" class="outside-link text-body1" rel="noopener noreferrer">{`${dAppInfo.appName}`}</a>
+            <a href="{dAppInfo.url}" class="text-link text-body1" target="_blank" rel="noopener noreferrer">{`${dAppInfo.appName}`}</a>
         </div>
         
     {/if}
@@ -224,7 +226,7 @@ h2{
         {#each options as option}
             <div id={option.id} class="options flex-column"
                 class:grey={ option.color === 'grey'}
-                class:purple={ option.color === 'purple'}
+                class:primary={ option.color === 'primary'}
                 on:click={option.click}>
                 <div class="icon" >{@html option.icon}</div>
                 <div class="option-name text-subtitle2">{option.name}</div>

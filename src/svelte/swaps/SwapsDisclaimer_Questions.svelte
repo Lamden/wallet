@@ -98,7 +98,7 @@ label{
 }
 .divider{
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--divider-color);
+    border-bottom: 1px solid var(--divider-dark);
     margin-bottom: 1.5rem;
 }
 .sub-question{
@@ -116,7 +116,7 @@ label{
 
         <div class="flex-column flow-buttons">
             <Button id={'accept-terms-btn'}
-                    classes={'button__solid button__purple'}
+                    classes={'button__solid button__primary'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={"Accept & Proceed"}
@@ -138,7 +138,7 @@ label{
                         <input type="checkbox" bind:checked={privacy_policy}>
                         <span class="chk-checkmark"></span>
                         I hereby consent to the processing of my personal data pursuant to Lamden Sàrl’s
-                        <a href="https://www.lamden.io/privacy" target="_blank" rel="noopener noreferrer"> privacy policy </a> which I confirm to have read.
+                        <a class="text-link" href="https://www.lamden.io/privacy" target="_blank" rel="noopener noreferrer"> privacy policy </a> which I confirm to have read.
                     </label>
                 </div>
             </div>

@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -11,7 +13,6 @@
 
     //Images
     import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
-    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
     //Context
@@ -78,7 +79,7 @@ a{
     width: 100%;
 }
 .swap-details.grey{
-    color: var(--font-primary-darker)
+    color: var(--font-secondary)
 }
 .swap-details > p{
     white-space: nowrap;
@@ -103,20 +104,20 @@ a{
     
         <p class="flow-text-box text-body1">
             {`Send your ${$currentNetwork.currencySymbol} tokens to our `}
-            <a class="text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" rel="noopener noreferrer" target="_blank">Ethereum Token Swap Contract</a>
+            <a class="text-link text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" rel="noopener noreferrer" target="_blank">Ethereum Token Swap Contract</a>
         </p>
 
         <div class="flex-column buttons">
             {#if sent}
                 <Button id={'continue-btn'}
-                        classes={'button__solid button__purple'}
+                        classes={'button__solid button__primary'}
                         styles={'margin-bottom: 16px;'}
                         width={'100%'}
                         name="Continue" 
                         click={nextPage} />
             {:else}
                 <Button id={'send-tx-btn'}
-                    classes={`button__solid button__purple`}
+                    classes={`button__solid button__primary`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={sent ? "Approved" : sending ? "Sending" : "Send Transaction"}
@@ -132,13 +133,14 @@ a{
                     name="Cancel" 
                     click={() => switchPage('Swaps')} />  
        
-
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
          </div>
     </div>
     <div class="flex-column flow-content-right">
@@ -148,7 +150,7 @@ a{
                 {`Ethereum ${getChainInfo().chainName}:`}
                 {#if sending || sent || errorMsg !== ''} {getChainInfo().swapContract}
                 {:else}
-                    <a href={getChainInfo().blockExplorer + '/address/' + getChainInfo().swapContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                    <a class="text-link" href={getChainInfo().blockExplorer + '/address/' + getChainInfo().swapContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
                         {getChainInfo().swapContract}
                     </a>
                 {/if}
@@ -162,7 +164,7 @@ a{
             <p><strong>Lamden Address:</strong><br>
                 {#if sending || sent || errorMsg !== ''} {getLamdenAddress()}
                 {:else}
-                    <a href={$currentNetwork.blockExplorer + '/addresses/' + getLamdenAddress()} class:grey={sending} rel="noopener noreferrer" target="_blank">
+                    <a class="text-link" href={$currentNetwork.blockExplorer + '/addresses/' + getLamdenAddress()} class:grey={sending} rel="noopener noreferrer" target="_blank">
                         {getLamdenAddress()}
                     </a>
                 {/if}

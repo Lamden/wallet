@@ -1,11 +1,13 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext } from 'svelte'
 
     //Components
     import Button from '../components/Button.svelte'
 
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
     import approve from '../../img/menu_icons/icon_approve.svg';
     import caution from '../../img/menu_icons/icon_caution.svg';
 
@@ -47,7 +49,7 @@
     box-sizing: border-box;
 }
 
-.text-subtitle4.copy-link{
+.text-subtitle4.text-link{
     margin-top: 1rem;
 }
 
@@ -81,9 +83,9 @@ p > strong {
 
 </style>
 
-<div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
+<div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
     <h2>{dappInfo.appName} wants to spend your {currencySymbol}</h2>
-    <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
+    <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>
 <div class="details flex-column">
     <div class="info flex-column">
@@ -117,14 +119,21 @@ p > strong {
 
             <Button 
                 id={'approve-btn'}
-                classes={'button__solid button__purple'}
+                classes={'button__solid button__primary'}
                 name="Approve"
                 width={'175px'}
                 height={'42px'}
                 click={approveTx} />
         </div>
         <div>
-            <a class="text-subtitle4 copy-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_approval">what is this?</a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-subtitle4" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/accounts_linked_approval"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    what is this?
+                </a>
+            {/if} 
         </div>   
     </div>
 </div>

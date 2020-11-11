@@ -40,9 +40,9 @@
         <Button 
             name={'run'} 
             height={'22px'} 
-            margin={'0 0 0 10px'}
+            margin={'1rem 0 2rem 10px'}
             padding={'0 8px'}
-            classes={'button__solid button__purple'}
+            classes={'button__solid button__primary'}
             click={() => handleRun()}
         />
     </div>

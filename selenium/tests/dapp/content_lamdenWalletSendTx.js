@@ -1,3 +1,5 @@
+const whitelabel = require('../../../whitelabel.json')
+
 const assert = require('assert');
 const {Builder, By, until} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
@@ -54,7 +56,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors[0].includes('You must be an authorized dApp'), true)
         });
-        it('Create conenction with wallet to our teset dApp website ', async function() {
+        it('Create wallet connection to our test dApp website ', async function() {
             let funding = {show: true, amount: 5};
             this.timeout(30000);
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
@@ -99,7 +101,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
 
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 2);
-            assert.equal(response.data.errors[0].includes("Unable to Build Lamden Transaction"), true);
+            assert.equal(response.data.errors[0].includes(`Unable to Build ${whitelabel.companyName} Transaction`), true);
             assert.equal(response.data.errors[1].includes("Method Required (Type: String)"), true);
         });
         it('POPUP: Reports the user denying the transaction', async function() {
