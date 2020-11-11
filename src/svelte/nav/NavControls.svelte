@@ -8,7 +8,7 @@
     import { NavStatus }  from '../Router.svelte'
 
     //Images
-    import mainnet from '../../img/menu_icons/icon_network.svg'
+    import NetworkIcon from '../icons/NetworkIcon.svelte'
     import network from '../../img/menu_icons/icon_network-testnet.svg'
 
     //Context
@@ -46,22 +46,18 @@
     padding: 0 20px 0 20px;
     min-width: fit-content;
     cursor: pointer;
-    border: 1px solid var(--divider-color);
+    border: 1px solid var(--divider-dark);
     margin: 0.8rem 61px 0.8rem 0;
     border-radius: 4px;
 }
 .box:hover{
-    background: #262626;
+    background: var(--bg-secondary);
     box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
 }
 p{
     margin: 0;
 }
 p.mainnet:hover{
-    text-decoration: underline;
-    color: var(--font-accent);
-}
-p.testnet:hover{
     text-decoration: underline;
     color: var(--font-accent);
 }
@@ -80,15 +76,19 @@ p.testnet:hover{
 <div id="nav-network-info" class="box  flex-row" on:click={handleClick}>
     <div class="flex-column text-body2">
         <p>Current Network</p>
-        <p  class="network-name text-primary-dark"
+        <p  class="network-name text-secondary"
             class:mainnet={$currentNetwork.type === 'mainnet'}
-            class:text-primary-dark={$currentNetwork.type === 'testnet' || $currentNetwork.type === 'custom'}
+            class:text-secondary={$currentNetwork.type === 'testnet' || $currentNetwork.type === 'custom'}
             class:custom={$currentNetwork.type === 'custom'}>
         {$currentNetwork.name}
         </p>
         <NavStatus {status} />
     </div>
     <div class="icon">
-        {@html $currentNetwork.type === 'mainnet' ? mainnet : network}
+        {#if $currentNetwork.type === 'mainnet'}
+            <NetworkIcon />
+        {:else}
+            {@html network}
+        {/if}
     </div>
 </div>

@@ -1,7 +1,8 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
 	//Components
     import { NavLogo, NavControls }  from '../Router.svelte'
-
 </script>
 
 <style>
@@ -15,9 +16,9 @@
     bottom: 0%;
     right: 0;
     height: 97px;
-    background-color: var(--bg-color);
+    background-color: var(--bg-primary);
     z-index: 25;
-    border-bottom: 1px solid #3D3D3D;
+    border-bottom: 1px solid var(--divider-light);
 }
 .spacer{
     flex-grow: 1;
@@ -27,5 +28,7 @@
 <div class="nav text-primary">
     <NavLogo />
     <div class="spacer" />
-    <NavControls />
+    {#if whitelabel.nav.showNetworkBox}
+        <NavControls />
+    {/if}
 </div>

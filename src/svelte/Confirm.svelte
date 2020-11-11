@@ -2,8 +2,7 @@
 	import { onMount, onDestroy, setContext } from 'svelte';
 
     //Images
-    import lamden_logo from '../img/coin_logos/lamden_logo_white.svg';
-    import lamden_words from '../img/nav/lamden_words.svg';
+    import logo_full from '../img/logo_full.svg';
 
 	//Components
 	import ApproveConnection from './confirms/ApproveConnection.svelte'
@@ -117,8 +116,7 @@
 {#if confirmData}
 	<div class="flex-column container">
 		<div class="box flex-row">
-			<div class="logo" >{@html lamden_logo}</div>
-			<div class="words">{@html lamden_words}</div>
+			<div class="logo" >{@html logo_full}</div>
 		</div>
 		<svelte:component this={componentMap[confirmData.type]} {confirmData}/>
 	</div>

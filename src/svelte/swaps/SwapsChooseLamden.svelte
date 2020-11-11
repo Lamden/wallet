@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
 
@@ -50,7 +52,7 @@
 
         <div class="flex-column flow-buttons">
             <Button id={'continue-btn'}
-                    classes={'button__solid button__purple'}
+                    classes={'button__solid button__primary'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={"Select Account"}
@@ -63,12 +65,14 @@
                     name="Cancel" 
                     click={() => switchPage('Swaps')} />  
 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
          </div>
     </div>
     <div class="flex-column flow-content-right" in:fade="{{delay: 0, duration: 200}}">

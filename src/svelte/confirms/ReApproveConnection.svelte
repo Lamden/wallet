@@ -9,9 +9,9 @@
     import { createEventDispatcher } from 'svelte';
     
     //Icons
-    import smartContract from '../../img/menu_icons/icon_smartcontract.svg'
-    import network from '../../img/menu_icons/icon_network.svg'
-
+    import SmartContractIcon from '../icons/SmartContractIcon.svelte'
+    import NetworkIcon from '../icons/NetworkIcon.svelte'
+    
     const dispatch = createEventDispatcher();
     const next = () => {
         dispatch('setStep', 4)
@@ -78,10 +78,10 @@
         color: var(--font-warning);
         font-weight: 400;
     }
-    .outside-link{
+    .text-link{
         text-decoration: underline;
     }
-    .outside-link, .outside-link:visited, .outside-link:focus{
+    .text-link, .text-link:visited, .text-link:focus{
         color: var(--font-warning);
     }
 </style>
@@ -90,28 +90,28 @@
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
     
     <p class="intro">
-        <a class="outside-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{confirmData.messageData.oldConnection.appName}</a>
+        <a class="text-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{confirmData.messageData.oldConnection.appName}</a>
         <strong>has requested a change the smart contract name for this Linked Account. </strong> 
     </p>    
 
     <div class="approve-items flex-col">
         <div class="item flex-row">
             <div class="item_icon">
-                {@html smartContract}
+                <SmartContractIcon />
             </div>
             <div class="item_info flex-column">
-                <p class="text-body2 text-primary-dark">OLD Smart Contract</p>
+                <p class="text-body2 text-secondary">OLD Smart Contract</p>
                 <p class="item_value" style="margin-bottom: 0.25rem;">{oldSmartContract}</p>
-                <p class="text-body2 text-primary-dark">NEW Smart Contract</p>
+                <p class="text-body2 text-secondary">NEW Smart Contract</p>
                 <p class="item_value">{confirmData.messageData.contractName}</p>
             </div>
         </div>
         <div class="item flex-row">
             <div class="item_icon">
-                {@html network}
+                <NetworkIcon />
             </div>
             <div class="item_info flex-column">
-                <p class="text-body2 text-primary-dark">Network</p>
+                <p class="text-body2 text-secondary">Network</p>
                 <p class="item_value">{confirmData.messageData.network.name}</p>
             </div>
         </div>
@@ -133,7 +133,7 @@
 
             <Button 
                 id={'approve-btn'}
-                classes={'button__solid button__purple'}
+                classes={'button__solid button__primary'}
                 name="Accept Change"
                 width={'175px'}
                 height={'42px'}

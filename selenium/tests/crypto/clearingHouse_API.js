@@ -43,7 +43,12 @@ describe('Testing Clearinghouse API Handler', function () {
         await helpers.sleep(500)
         await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
         await helpers.sleep(500)
-        await driver.findElement(By.xpath("//div[@title='Main Ethereum Network']")).click()
+
+        try {
+            await driver.findElement(By.className("popover-header__button")).click()
+        }catch(e){}
+        
+        await driver.findElement(By.xpath("//div[@title='Ethereum Mainnet']")).click()
         await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
         assert.equal(true, true);
     });

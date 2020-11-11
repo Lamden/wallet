@@ -30,23 +30,23 @@
 </style>
 
 <div class="strong-pw text-body2">
-    <div class={`${!length ? 'text-primary-dark' : 'flex-row'}`}>
+    <div class={`${!length ? 'text-secondary' : 'flex-row'}`}>
         {#if length}<div class="icon">{@html successCircle}</div>{/if}
         {`${charLength} or more characters`}
     </div>
-    <div class={`${!lower ? 'text-primary-dark' : 'flex-row'}`}>
+    <div class={`${!lower ? 'text-secondary' : 'flex-row'}`}>
         {#if lower}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Lowercase Letter'}
     </div>
-    <div class={`${!capital ? 'text-primary-dark' : 'flex-row'}`}>
+    <div class={`${!capital ? 'text-secondary' : 'flex-row'}`}>
         {#if capital}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Capital Letter'}
     </div>
-    <div class={`${!number ? 'text-primary-dark' : 'flex-row'}`}>
+    <div class={`${!number ? 'text-secondary' : 'flex-row'}`}>
         {#if number}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Number'}
     </div>
-    <div class={`${!symbol ? 'text-primary-dark' : 'flex-row'}`}>
+    <div class={`${!symbol ? 'text-secondary' : 'flex-row'}`}>
         {#if symbol}<div class="icon">{@html successCircle}</div>{/if}
         {'1 Special Character'}
     </div> 

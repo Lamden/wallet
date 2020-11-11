@@ -37,7 +37,7 @@
 
 <style>
     .charm-item{
-        background: var(--bg-color-grey);
+        background: var(--bg-secondary);
         border: 1px solid rgba(38, 38, 38, 0.64);
         width: fit-content;
         margin: 1rem;

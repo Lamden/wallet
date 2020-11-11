@@ -1,0 +1,239 @@
+{
+    "companyName": "Lamden",
+    "helpLinks":{
+        "show": true,
+        "masterURL": "https://www.google.ca"
+    },
+    "networks": [
+        {
+            "name": "Lamden Mainnet", 
+            "hosts": ["https://masternode-01.lamden.io"],
+            "type": "mainnet", 
+            "lamden": true, 
+            "currencySymbol": "TAU",
+            "blockExplorer": "https://mainnet.lamden.io"
+        },
+        {
+            "name": "Lamden Testnet", 
+            "hosts": ["https://testnet-master-1.lamden.io"], 
+            "type": "testnet", 
+            "lamden": true, 
+            "currencySymbol": "dTAU",
+            "blockExplorer": "https://testnet.lamden.io"
+        }
+    ],
+    "firstRun_setup":{
+        "intro":{
+            "title": "Welcome!",
+            "message": "Creating a wallet is easy and secure. All accounts are encrypted locally in your browser, not on remote servers."
+        },
+        "create_pw": {
+            "title": "Create a Password",
+            "message": "default_lamden"
+        },
+        "terms_of_service": {
+            "title": "Remember",
+            "message": "default_lamden"
+        }
+    },
+    "nav": {
+        "showNetworkBox" : true
+    },
+    "menu":[
+        {
+            "heading": "Wallet",
+            "show": true,
+            "items":[
+                {
+                    "id": "accounts", 
+                    "show": true,
+                    "logo": "holdings", 
+                    "name": "Accounts", 
+                    "page": {
+                        "name": "CoinsMain"
+                    }
+                },
+                {
+                    "id": "smart-contracts", 
+                    "show": true,
+                    "logo": "ide", 
+                    "name": "Smart Contracts", 
+                    "page": {
+                        "name": "IdeMain"
+                    }
+                },
+                {
+                    "id": "token-swap", 
+                    "show": true,
+                    "logo": "swap", 
+                    "name": "Token Swap", 
+                    "page": {
+                        "name": "Swaps"
+                    }
+                },
+                {
+                    "id": "devtools", 
+                    "show": true,
+                    "logo": "devtools", 
+                    "name": "Developer Tools", 
+                    "page": {
+                        "name": "DevToolsMain"
+                    }
+                }
+            ]
+        },
+        {
+            "heading": "Safety & Security",
+            "show": true,
+            "items":[
+                {
+                    "id": "backup", 
+                    "show": true,
+                    "logo": "backup", 
+                    "name": "Backup Wallet", 
+                    "page": {
+                        "name": "Backup"
+                    }
+                },
+                {
+                    "id": "restore", 
+                    "show": true,
+                    "logo": "restore", 
+                    "name": "Restore Wallet", 
+                    "page": {
+                        "name": "Restore"
+                    }
+                },
+                {
+                    "id": "lock", 
+                    "show": true,
+                    "logo": "signout", 
+                    "name": "Sign out & Lock", 
+                    "page": {
+                        "name": "LockScreen"
+                    }   
+                }
+            ]
+        },
+        {
+            "heading": "About & Info",
+            "show": true,
+            "items":[
+                {
+                    "id": "about", 
+                    "show": true,
+                    "logo": "about", 
+                    "name": "About", 
+                    "page": {
+                        "name": "About"
+                    }
+                },
+                {
+                    "id": "feedback", 
+                    "show": true,
+                    "logo": "feedback", 
+                    "name": "Give Feedback", 
+                    "page": {
+                        "name": "Feedback"
+                    }
+                }
+            ]
+        }
+    ],
+    "mainPage": {
+        "buttons":{
+            "add_account":{
+                "name": "ADD ACCOUNT",
+                "show": true
+            }
+        },
+        "logo": {
+            "show": true
+        },
+        "account_info":{
+            "title": "Account Name",
+            "show" : true,
+            "show_network_name": true
+        },
+        "amount":{
+            "title": "Amount",
+            "show" : true
+        },
+        "portfolio":{
+            "title": "Portfolio %",
+            "show" : true
+        }
+    },
+    "accountDetails": {
+        "buttons":{
+            "send":{
+                "name": "SEND TX",
+                "show": true
+            },
+            "copy":{
+                "name": "COPY ADDRESS",
+                "show": true
+            },
+            "options":{
+                "name": "OPTIONS",
+                "show": true
+            }
+        },
+        "transactions":{
+            "pending":{
+                "title": "Pending",
+                "show": true
+            },
+            "history":{
+                "title": "Transaction History",
+                "show": true,
+                "show_refresh": true,
+                "amount": 10
+            }
+        }
+    },
+    "footer":{
+        "show": true,
+        "text": "lamden_default"
+    },
+    "aboutPage":{
+        "socials": [
+            {   "name": "Twitter",
+                "link": "https://twitter.com/lamdentau",
+                "icon": "twitter"
+            },
+            {   "name": "Facebook",
+                "link": "https://www.facebook.com/LamdenTau/?ref=py_c",
+                "icon": "facebook"
+            },
+            {   "name": "Medium",
+                "link": "https://blog.lamden.io/",
+                "icon": "medium"
+            },
+            {   "name": "Telegram",
+                "link": "https://t.me/lamdenchat",
+                "icon": "telegram"
+            },
+            {   "name": "Reddit",
+                "link": "https://www.reddit.com/r/lamden/",
+                "icon": "reddit"
+            },
+            {   "name": "Github",
+                "link": "https://github.com/Lamden/",
+                "icon": "github"
+            }
+        ],
+        "links": [
+            {
+                "name":"Visit Our Website",
+                "desc":"Learn All about Lamden",
+                "url":"https://www.lamden.io/"
+            },
+            {
+                "name": "Email Us",
+                "desc": "What's on your mind?",
+                "url": "mailto:team@lamden.io"
+            }
+        ]
+    }
+}

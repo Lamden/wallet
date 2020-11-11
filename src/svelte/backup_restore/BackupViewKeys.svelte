@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
         
@@ -55,7 +57,7 @@
 
 .header{
     margin-left: 53px;
-    border-bottom: 2px solid var(--font-primary-darker);
+    border-bottom: 2px solid var(--divider-light);
     width: calc(100% - 53px);
 }
 
@@ -70,7 +72,7 @@
 .name{
     width: 141px;
     height: 88px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     margin-right: 16px;
     display: flex;
     align-items: center;
@@ -81,7 +83,7 @@
     width: 141px;
     height: 88px;
     margin-right: 16px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     align-items: center;
     word-break: break-all;
     justify-content: center;
@@ -91,7 +93,7 @@
 
 .result-box{
     height: 88px;
-    border-bottom: 1px dashed var(--font-primary-darker);
+    border-bottom: 1px dashed var(--divider-dark);
     flex-grow: 1;
     padding-right: 20px;
     justify-content: center;
@@ -106,12 +108,6 @@
 
 .key-row{
     align-items: center;
-}
-
-
-a{
-    text-decoration: unset;
-    color: #ffffff99;
 }
 
 p.text-red{
@@ -130,10 +126,10 @@ p{
         <h6>Decrypted Account Addresses</h6>
     
         <div class="flow-text-box text-body1 text-primary">
-            These are all the Secret Keys stored in your Lamden Wallet
+            These are all the Secret Keys stored in your {whitelabel.companyName} Wallet
         </div>
         <div class="flex-column flow-buttons">
-            <Button classes={`button__solid button__purple`}
+            <Button classes={`button__solid button__primary`}
                     margin="0 0 1rem"
                     name="Backup Keys"
                     disabled={typeof coins === 'undefined'}
@@ -143,17 +139,18 @@ p{
                     margin="0 0 1rem"
                     name="Back To Home"
                     click={() => appHome()} />
-
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if}  
         </div>
     </div>
     <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
-        <div class="flex-row header text-subtitle2 text-primary-light">
+        <div class="flex-row header text-subtitle2 text-primary">
             <p class="header-name">{'Name'}</p>
             <p class="header-address">{'Address'}</p>
         </div>
@@ -165,11 +162,11 @@ p{
                     </div>
                     <div class="flex-column key-info text-body3 ">
                         <p>{`${coin.name} (${coin.symbol})`}</p>
-                        <p class="nickname text-primary-dark">{`${coin.nickname}`}</p>
+                        <p class="nickname text-secondary">{`${coin.nickname}`}</p>
                     </div>
                     <div class="flex-column result-box text-body3 text-secondary">
                         <p>{`Account Address: ${coin.vk}`}</p>
-                        <p class=" text-primary-dark">{`Private Key: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</p>
+                        <p class=" text-secondary">{`Private Key: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</p>
                     </div>
                 </div>
             {/each}

@@ -15,7 +15,7 @@ import {getContext} from 'svelte'
 <style>
     .swap-side{
         width: 100%;
-        border-bottom: 1px solid var(--divider-color);
+        border-bottom: 1px solid var(--divider-dark);
         padding-bottom: 1rem;
         margin-bottom: 1rem;
     }
@@ -56,32 +56,32 @@ import {getContext} from 'svelte'
 <div class="swap-side">
     <p>
         <strong>ETH Approval Tx</strong>
-        <a href={blockexplorer.ethereum + '/tx/' + swap.eth_approval_txHash} rel="noopener noreferrer" target="_blank">
+        <a class="text-link" href={blockexplorer.ethereum + '/tx/' + swap.eth_approval_txHash} rel="noopener noreferrer" target="_blank">
             {swap.eth_approval_txHash}
         </a>
     </p>
     <p>
         <strong>ETH Swap Contract Tx</strong>
-        <a href={blockexplorer.ethereum + '/tx/' + swap.eth_swap_txHash} rel="noopener noreferrer" target="_blank">
+        <a class="text-link" href={blockexplorer.ethereum + '/tx/' + swap.eth_swap_txHash} rel="noopener noreferrer" target="_blank">
             {swap.eth_swap_txHash}
         </a>
     </p>
         <p>
         <strong>ETH Address</strong>
-        <a href={blockexplorer.ethereum + '/address/' + swap.swapInfo.address} rel="noopener noreferrer" target="_blank">
+        <a class="text-link" href={blockexplorer.ethereum + '/address/' + swap.swapInfo.address} rel="noopener noreferrer" target="_blank">
             {swap.swapInfo.address}
         </a>
     </p>
     
     <p><strong>Lamden Address</strong>
-            <a href={blockexplorer.lamden + '/addresses/' + swap.lamdenAddress} rel="noopener noreferrer" target="_blank">
+            <a class="text-link" href={blockexplorer.lamden + '/addresses/' + swap.lamdenAddress} rel="noopener noreferrer" target="_blank">
             {swap.lamdenAddress}
         </a>
     </p>
     {#if swap.lamden_swap_txHash}
         <p>
             <strong>Lamden {currencySymbol} Send Tx</strong>
-            <a href={blockexplorer.lamden + '/transactions/' + swap.lamden_swap_txHash} rel="noopener noreferrer" target="_blank">
+            <a class="text-link" href={blockexplorer.lamden + '/transactions/' + swap.lamden_swap_txHash} rel="noopener noreferrer" target="_blank">
                 {swap.lamden_swap_txHash}
             </a>
         </p>
@@ -93,7 +93,7 @@ import {getContext} from 'svelte'
     {#if swap.status !== "success"}
         <Button 
             name={swap.status === 'error' ? 'retry' : "continue"}
-            classes="button__transparent button__blue"
+            classes="button__transparent button__accent"
             padding={'5px 10px'}
             height={'30px'}
             margin={'0.5rem 0 0 0'}

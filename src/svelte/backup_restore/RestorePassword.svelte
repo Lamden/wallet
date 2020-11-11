@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -59,10 +61,6 @@
     margin-bottom: 16px;
 }
 
-a{
-    text-decoration: unset;
-}
-
 .submit{
     width: 100%;
     height: 40px;
@@ -89,12 +87,12 @@ a{
 
         <div class="caption-box text-caption text-secondary">
             <strong>last modified date:</strong> 
-            <div id="last-modified" class="text-primary-dark">{file.lastModifiedDate} </div>
+            <div id="last-modified" class="text-secondary">{file.lastModifiedDate} </div>
         </div>
 
         <div class="caption-box text-caption text-secondary" class:hide={pwdHint === ""}>
             <div><strong>Password Hint</strong></div>
-            <div id="pwd-hint" class="text-primary-dark">{pwdHint}</div>
+            <div id="pwd-hint" class="text-secondary">{pwdHint}</div>
         </div>
         
         <form id="password-form" on:submit|preventDefault={() => handleSubmit() } target="_self" bind:this={formObj}>
@@ -114,16 +112,18 @@ a{
             <input  id={'pwd-btn'}
                     form="password-form"
                     value="Confirm Password"
-                    class="button__solid button__purple submit-button submit-button-text submit" 
+                    class="button__solid button__primary submit-button submit-button-text submit" 
                     type="submit" >
 
 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
         </div>
     </div>
     <div class="flex-column flow-content-right"> </div>

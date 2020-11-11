@@ -1,3 +1,5 @@
+const whitelabel = require('../../../whitelabel.json')
+
 const assert = require('assert');
 const fs = require('fs');
 const {Builder, By, until} = require('selenium-webdriver');
@@ -91,7 +93,7 @@ describe('Token Swap Negative Tests', function () {
             assert.equal(disabled, 'true');
         })
         await driver.findElement(By.className('custom-select')).click()
-        await driver.findElement(By.xpath("//div[contains(text(),'My Lamden Account')]")).click()
+        await driver.findElement(By.xpath(`//div[contains(text(),'My ${whitelabel.companyName} Account')]`)).click()
         
         await continue_Button.getAttribute('disabled').then(disabled => assert.equal(disabled, null))
         await continue_Button.click();

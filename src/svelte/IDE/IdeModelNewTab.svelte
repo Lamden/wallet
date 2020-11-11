@@ -70,8 +70,9 @@
 </script>
 
 <style>
-.container{
+.ide-new-tab{
     min-width: 600px;
+    background: inherit;
 }
 
 .new-row{
@@ -88,7 +89,7 @@
 }
 </style>
 
-<div class="container flex-column">
+<div class="ide-new-tab flex-column">
     <div class="flex-column">
         <h2>Open Contract</h2>
         <div class="text-subtitle3">
@@ -127,7 +128,7 @@
         />
         <Button 
             id={'contractTab-btn'} 
-            classes={'button__solid button__purple'}
+            classes={'button__solid button__primary'}
             name="Open"
             width={'30%'}
             height={'42px'}

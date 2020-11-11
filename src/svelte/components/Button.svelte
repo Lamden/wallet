@@ -58,11 +58,11 @@ button{
 .disabled{
     color: grey;
 }
-.disabled.button__purple:hover{
-    background: #461bc233;
+.disabled.button__primary:hover{
+    filter: brightness(75%);
 }
-.disabled.button__purple{
-    background: #461bc233;
+.disabled.button__primary{
+    filter: brightness(75%);
 }
 
 </style>
@@ -86,5 +86,5 @@ button{
             class:icon-invert={iconInvert}>{@html icon}</div>
     {/if}
 
-    <div class="text-button" class:lable-left={iconAfter} class:lable-right={!iconAfter}> {name} </div>
+    <div class="text-button" class:label-left={iconAfter} class:label-right={!iconAfter}> {name} </div>
  </button>

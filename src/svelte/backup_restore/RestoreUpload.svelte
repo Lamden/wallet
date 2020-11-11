@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -16,7 +18,7 @@
     export let restore = false;
 
     let disabledButton = true;
-    $: activeButton = disabledButton ? '' : ' button__purple'
+    $: activeButton = disabledButton ? '' : ' button__primary'
     $: dragover = '';
 
 	onMount(() => {
@@ -86,11 +88,7 @@
     text-align: left;
 }
 
-a{
-    text-decoration: unset;
-}
-
-.text-purple:hover{
+.text-primary:hover{
     text-decoration: underline;
     color: var(--font-accent);
 }
@@ -100,7 +98,7 @@ span{
 }
 
 .dropzone{
-    border: dashed 2px var(--font-primary-dark);
+    border: dashed 2px var(--font-secondary);
     height: 96px;
     margin-bottom: 50px;
     justify-items: center;
@@ -122,12 +120,12 @@ span{
             To restore your accounts, please upload the keystore file created during your backup.
         </div>
         
-        <div class="caption-box text-caption text-secondary">
-            <span class="text-purple" on:click={() => openPicker()}>Click here to choose a file</span>
+        <div class="caption-box text-caption">
+            <span class="text-accent" on:click={() => openPicker()}>Click here to choose a file</span>
             or drag and drop your file below.
         </div>
 
-        <div class={`dropzone flex-column text-primary-dark ${dragover}`}
+        <div class={`dropzone flex-column ${dragover}`}
             class:dragover={dragover} 
             on:dragover|preventDefault={(e) => handleDragover(e)}
             on:dragleave|preventDefault={(e) => handleDragleave(e)}
@@ -145,12 +143,14 @@ span{
                     disabled={disabledButton}
                     click={() => nextPage()} />
 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
         </div>
     </div>
     <div class="flex-column flow-content-right"> </div>

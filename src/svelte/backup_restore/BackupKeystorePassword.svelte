@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -62,10 +64,6 @@
     input{
         margin-bottom: 1rem;
     }
-
-    a{
-        text-decoration: unset;
-    }
     .flow-content-right{
         display: flex;
         justify-content: center;
@@ -84,7 +82,7 @@
         <div class="flow-text-box text-body1 text-primary">
             For maximun security we suggest creating a complex password
             and storing it in a password manager such as
-            <a class="outside-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass </a>
+            <a class="text-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass </a>
         </div>
 
         <StrongPW password={pwd} charLength={15}/>
@@ -124,18 +122,20 @@
                     form="password-form"
                     on:click={() => formValidation()}
                     value="Create Keystore"
-                    class="button__solid button__purple submit submit-button submit-button-text" 
+                    class="button__solid button__primary submit submit-button submit-button-text" 
                     type="submit" > 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if}  
         </div>
     </div>
     <div class="flow-content-right" in:fade="{{delay: 0, duration: 200}}">
-        <h3>Lamden is not responsible for lost or stolen passwords </h3>
+        <h3>{whitelabel.companyName} is not responsible for lost or stolen passwords </h3>
     </div>
 </div>
 

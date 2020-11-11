@@ -54,7 +54,7 @@
 <style>
 .tx-container{
     margin-bottom: 3rem;
-    background-color: rgba(38, 38, 38, 0.64);
+    background-color: var(--bg-secondary);
     border-radius: 4px;
 }
 
@@ -77,10 +77,6 @@
 
 .time{
     margin-right: 20px;
-}
-
-.error{
-    color: red;
 }
 
 .nickname{
@@ -129,7 +125,7 @@
 
 <div class='tx-container flex-column' in:fly="{{delay: 0, duration: 250, x: 0, y: 25, opacity: 0.0, easing: quintOut}}">
     <div class="hash-box flex-row">
-        <div class="hash-link text-subtitle2 " on:click={openHashLink}>{txData.hash}</div>
+        <div class="hash-link clickable text-link-secondary text-subtitle2" on:click={openHashLink}>{txData.hash}</div>
         <div class="time-icon flex-row"> 
             <div class="time text-body1"> {new Date(txData.timestamp).toLocaleTimeString()} </div>
             <div class="icon-size">{@html failed ? errorCircle : successCircle}</div>
@@ -139,11 +135,11 @@
         <div class="details flex-row text-body1">
             <div class="flex-row">
                 <div>{`contract : `}</div>
-                <div class="text-primary-dark item-margin">{` ${txData.contractName}`}</div>
+                <div class="text-secondary item-margin">{` ${txData.contractName}`}</div>
             </div>
             <div class="flex-row">
                 <div>{`method : `}</div>
-                <div class="text-primary-dark item-margin">{` ${txData.functionName}`}</div>
+                <div class="text-secondary item-margin">{` ${txData.functionName}`}</div>
             </div>
             {#if txData.contractName === 'currency' && txData.functionName === 'transfer'}
                 <div class="flex-row">
@@ -153,7 +149,7 @@
                          class:text-green={vk !== txData.sender} >
                         {`${formatBalance(txData.transaction.payload.kwargs)}`}
                     </div>
-                    <div class="text-primary-dark item-margin">
+                    <div class="text-secondary item-margin">
                         {`${currencySymbol}`}
                     </div>
                 </div>
@@ -163,7 +159,7 @@
         <div class="flex-row name-button">
             <Button 
                 name={"tx details"}
-                classes="button__transparent button__blue"
+                classes="button__transparent button__accent"
                 padding={'5px 10px'}
                 height={'30px'}
                 margin={'0 0 0 10px'}

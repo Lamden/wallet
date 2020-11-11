@@ -11,7 +11,7 @@
 	export let label = '';
 	export let margin = '';
 	export let placeholder;
-	export let backgroundColor = label === '' ? 'transparent' : '';
+	export let bgStyle;
 
 	let timePickerElm;
 	let timeBoxes = [
@@ -42,7 +42,7 @@
 	position: relative;
 	justify-content: space-around;
 	align-items: center;
-	border: 1px solid #e0e0e03d;;
+	border: 1px solid var(--outline);
 	padding: 0px 10px 10px 10px;
 	border-radius: 4px;
 	background: none;
@@ -67,15 +67,13 @@
 }
 </style>
 
-<label  class="inputbox-label" 
-		style={`background: ${backgroundColor || 'var(--bg-color)'};`}
-		> 
+<label  class="inputbox-label" > 
 		{label}
 </label>
 
 <div class="flex-row date-picker"
 	id={id}
-	 style={margin ? `margin: ${margin};` : ''}
+	 style={`${margin ? `margin: ${margin};` : ''} background: var(--bg-${bgStyle})`}
 	 bind:this={timePickerElm}
 	 > 
     <div class="icon">
@@ -83,7 +81,7 @@
     </div>
 	{#each timeBoxes as value, index}
 		<div class="inputbox">
-			<label class="inputbox-label" style={`background: ${backgroundColor || 'var(--bg-color)'};`}> {timeBoxes[index].label} </label>
+			<label class="inputbox-label"> {timeBoxes[index].label} </label>
 			<input  class="mainbox input:required:invalid input:focus:invalid"
 					type="number" 
 					bind:value={timeBoxes[index].value}

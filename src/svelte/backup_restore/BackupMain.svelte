@@ -67,7 +67,7 @@
     bottom: 0%;
     right: 0;
     height: 97px;
-    border-bottom: 1px solid #3D3D3D;
+    border-bottom: 1px solid var(--divider-light);
 }
 
 .steps{

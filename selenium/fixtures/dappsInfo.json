@@ -34,7 +34,7 @@
         "methodName": "set_value",
         "networkType": "testnet",
         "kwargs":{
-            "key_name": "wallet_testing",
+            "key_name": "con_wallet_testing",
             "key_value" : ""
         },
         "stampLimit": 20

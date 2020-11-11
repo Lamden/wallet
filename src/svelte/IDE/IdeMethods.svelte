@@ -55,14 +55,14 @@
     align-items: center;
 }
 .method{
-    border: 1px solid #e0e0e017;
+    border: 1px solid var(--color-secondary);
     border-radius: 4px;
     padding: 1rem;
     margin: 1rem 1rem 0 0;
     max-width: calc(100% / 2.18);
     min-width: 435px;
     width: 100%;
-    background: #262626;
+    background: var(--bg-secondary);
     box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
 }
 .heading{
@@ -82,12 +82,12 @@
                     height={'22px'} 
                     margin={'0 0 0 10px'}
                     padding={'0 5px'}
-                    classes={'button__solid button__purple'}
+                    classes={'button__solid button__primary'}
                     click={() => handleRun(methodIndex)}/>
             </div>
 
             {#if method.arguments}
-                <Kwargs argumentList={method.arguments} on:newArgValues={handleNewArgValues} {methodIndex} backgroundColor="#262626"/>
+                <Kwargs argumentList={method.arguments} on:newArgValues={handleNewArgValues} {methodIndex} bgStyle="secondary"/>
             {:else}
                 <p>This function takes no arguments</p>
             {/if}

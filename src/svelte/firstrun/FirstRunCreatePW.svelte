@@ -1,4 +1,6 @@
 <script> 
+    import whitelabel from '../../../whitelabel.json'
+    
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
 
@@ -93,17 +95,18 @@
         display: flex;
         flex-direction: column;
     }
-    form > input {
-        margin-top: 2rem;
-    }
 </style>
 
 <div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
-        <h6 class="text-primary">Create a Password</h6>
+        <h6 class="text-primary">{whitelabel.firstRun_setup.create_pw.title}</h6>
         <div class="flow-text-box text-body1 text-primary">
-            No username required. This password never changes so use a strong one that you'll remember. We recommend 
-            <a class="outside-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a>.
+            {#if whitelabel.firstRun_setup.create_pw.message === "lamden_default"}
+                No username required. This password never changes so use a strong one that you'll remember. We recommend 
+                <a class="text-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a>.
+            {:else}
+                {whitelabel.firstRun_setup.create_pw.message}
+            {/if}
         </div>
 
         <StrongPW password={pwd} charLength={10}/>
@@ -138,7 +141,7 @@
                 form="password_form"
                 on:click={() => formValidation()}
                 value="Save Password"
-                class="button__solid button__purple submit submit-button submit-button-text" 
+                class="button__solid button__primary submit submit-button submit-button-text" 
                 type="submit" >
         </div>
     </div>

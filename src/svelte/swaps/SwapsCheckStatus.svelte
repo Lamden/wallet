@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { onDestroy, onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
 
@@ -10,7 +12,7 @@
     const { Button, Loading } = Components;
 
     //Images
-    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
+    import checkmark from '../../img/menu_icons/icon_checkmark.svg'
     import arrowRight2Color from '../../img/menu_icons/icon_arrow-right-2color.svg'
     import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
     import lamdenLogoNew from '../../img/coin_logos/lamden_logo_white.svg'
@@ -132,18 +134,18 @@
         <div class="flex-column buttons">
             {#if !success}
                 <Button id={'checking-btn'}
-                        classes={'button__solid button__purple'}
+                        classes={'button__solid button__primary'}
                         styles={'margin-bottom: 16px;'}
                         width={'100%'}
                         name={success ? "Success" : "Check again"}
-                        icon={success ? checkmarkWhite : ''}
+                        icon={success ? checkmark : ''}
                         iconPosition={'after'}
                         iconWidth={'19px'}
                         disabled={!success && attempts < maxAttempts}
                         click={startChecking} />
             {/if}
             <Button id={'initiate-btn'}
-                    classes={`button__solid ${success ? 'button__green' : ''}`}
+                    classes={`button__solid ${success ? 'button__success' : ''}`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Initate Swap" 
@@ -155,14 +157,14 @@
                     width={'100%'}
                     name="Cancel" 
                     click={() => switchPage('Swaps')} />  
-       
-
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
          </div>
     </div>
     <div class="flex-column flow-content-right">
@@ -175,9 +177,9 @@
             <div class="swap-details">
                 <div class="flex-column" in:fade="{{delay: 0, duration: 250}}">
                     <div class="logo">{@html lamdenLogoOld}</div>
-                    <p class="text-body2 text-primary-dark">ethereum</p>
+                    <p class="text-body2 text-secondary">ethereum</p>
                     <a href={`${getChainInfo().blockExplorer}/address/${getEthAddress()}`} 
-                       class="outside-link text-subtitle2"
+                       class="text-link text-subtitle2"
                         target="_blank" 
                        rel="noopener noreferrer">
                         {`${getEthAddress().slice(0, 25)}...`}
@@ -189,9 +191,9 @@
                 </div>
                 <div class="flex-column" in:fade="{{delay: 400, duration: 250}}">
                     <div class="logo">{@html lamdenLogoNew}</div>
-                    <p class="text-body2 text-primary-dark">lamden</p>
+                    <p class="text-body2 text-secondary">lamden</p>
                     <a href={`https://explorer.lamden.io/addresses/${getLamdenAddress()}`} 
-                       class="outside-link text-subtitle2"
+                       class="text-link text-subtitle2"
                        target="_blank" 
                        rel="noopener noreferrer">
                         {`${getLamdenAddress().slice(0, 25)}...`}

@@ -8,7 +8,7 @@
     //Images
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';
     import errorCircle from '../../img/menu_icons/icon_error-circle.svg';
-    import warning from '../../img/menu_icons/icon_warning.svg';
+    import caution from '../../img/menu_icons/icon_caution.svg';
 
     //Context
     const { getModalData } = getContext('app_functions');
@@ -25,6 +25,7 @@
 .message-box{
     align-items: center;
     min-width: 500px;
+    background: inherit;
 }
 
 .message{
@@ -54,7 +55,7 @@ h2{
 <div class="message-box flex-column">
     <div class="message flex-row">
         {#if type === 'error'}<div id={"error"} class="icon">{@html errorCircle}</div>{/if}  
-        {#if type === 'warning'}<div id={"warning"} class="icon">{@html warning}</div>{/if}
+        {#if type === 'caution'}<div id={"caution"} class="icon">{@html caution}</div>{/if}
         {#if type === 'success'}<div id={"success"} class="icon checkmark">{@html successCircle}</div>{/if}
         <h2 id={'message-text'}>{text}</h2>
     </div>

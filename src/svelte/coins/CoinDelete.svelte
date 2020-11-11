@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext } from 'svelte';
 
     //Stores
@@ -12,7 +14,7 @@
     import { hashStringValue } from '../../js/utils.js'
 
     //Images
-    import warning from '../../img/menu_icons/icon_warning.svg';
+    import caution from '../../img/menu_icons/icon_caution.svg';
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -55,6 +57,9 @@
 </script>
 
 <style>
+.coin-delete{
+    background: inherit;
+}
 form{
     width: 260px;
     margin: 1rem auto;
@@ -64,19 +69,8 @@ form{
     margin: 2rem 0 1rem;
 }
 
-.button-red{
-    color: #FFFFFF;
-    background: red;
-}
-
-.button-purple{
-    color: #FFFFFF;
-    background: var(--primary-color);
-}
-
 .back-it-up{
     cursor: pointer;
-    color: cyan;
 }
 .icon{
     margin-right: 22px;
@@ -86,11 +80,11 @@ form{
 .submit{
     width: 260px;
 }
-.warning{
+.caution{
     color: var(--font-warning);
 }
 
-.dapp-warning{
+.dapp-caution{
     align-items: center;
     justify-content: center;
     margin: 1rem 0;
@@ -110,15 +104,14 @@ form{
 <div class="coin-delete">
     <h2> Delete Account </h2>
     <div class="text-body2">
-        Deleting this Account will remove it from your Lamden Wallet.
-        If you have currency on it, remember to
-        <span class="back-it-up" on:click={() => switchPage('Backup')}> back it up</span> 
+        {`Deleting this Account will remove it from your ${whitelabel.companyName} Wallet. If you have currency on it, remember to`}
+        <span class="text-accent back-it-up" on:click={() => switchPage('Backup')}> back it up</span> 
     </div>
 
     {#if tauBalance > 0}
-        <div class="flex-row dapp-warning">
-            <div class="icon">{@html warning}</div>
-            <p class="warning text-body2">
+        <div class="flex-row dapp-caution">
+            <div class="icon">{@html caution}</div>
+            <p class="caution text-body2">
                 This account has a <strong>MainNet</strong> balance of <strong class="underline">{tauBalance.toLocaleString('en')} TAU</strong>.
                 After deleting this account you  <strong >WILL</strong> lose access to this TAU.
                 Createing a backup of your account first is <strong class="underline linked" on:click={() => switchPage('Backup')}>STRONGLY RECOMMENDED.</strong>
@@ -127,12 +120,12 @@ form{
     {/if}
 
     {#if dappInfo}
-        <div class="flex-row dapp-warning">
-            <div class="icon">{@html warning}</div>
-            <p class="warning text-body2">
+        <div class="flex-row dapp-caution">
+            <div class="icon">{@html caution}</div>
+            <p class="caution text-body2">
                 This account is linked to 
                 <strong>{dappInfo.appName}</strong> 
-                (<a href="{dappInfo.url}">{dappInfo.url}</a>).
+                (<a class="text-link" href="{dappInfo.url}">{dappInfo.url}</a>).
                 You <strong >WILL</strong> lose all assocations with its smart contract.
                 Createing a backup of your account first is <strong class="underline linked" on:click={() => switchPage('Backup')}>STRONGLY RECOMMENDED.</strong>
             </p>
@@ -145,7 +138,7 @@ form{
                 id={'pwd-input'}
                 bind:thisInput={passwordObj}
                 label={"Password"}
-                placeholder={`Enter Lamden Wallet Password`}
+                placeholder={`Enter ${whitelabel.companyName} Wallet Password`}
                 margin="0 0 2rem 0"
                 on:changed={() => setValidity(passwordObj, '')}
                 on:keyup={refreshValidityKeyup}
@@ -155,13 +148,13 @@ form{
         <div class="buttons flex-column">
             <input  id={"validate-btn"}
                     class="button__solid submit submit-button submit-button-text submit"
-                    class:button-red={passwordOkay}
-                    class:button-purple={!passwordOkay}
+                    class:button__red={passwordOkay}
+                    class:button__primary={!passwordOkay}
                     type="submit" 
                     value={passwordOkay ? "DELETE ACCOUNT" : "Validate Wallet Password"}>
             <Button 
                     id={"back-btn"}
-                    classes={'button__solid buttom__purple'} 
+                    classes={'button__solid buttom__primary'} 
                     width={'260px'}
                     margin={'10px 0 0 0'}
                     name="Back" 

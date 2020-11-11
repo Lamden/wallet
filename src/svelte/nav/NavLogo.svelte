@@ -2,8 +2,7 @@
     import { getContext } from 'svelte';
 
     //Images
-    import lamden_logo from '../../img/coin_logos/lamden_logo_white.svg';
-    import lamden_words from '../../img/nav/lamden_words.svg';
+    import logo_full from '../../img/logo_full.svg';
 
 	//Context
     const { switchPage, firstRun } = getContext('app_functions');
@@ -31,20 +30,14 @@
 }
 
 .logo {
-    width: 32px;
+    width: 125px;
     margin-right: 15.5px;
     margin-left: 51px;
 }
-
-.words {
-    width: 90px;
-}
-
 </style>
 
 <div class="box flex-column">
-    <div class="brand flex-row" class:clickable={clickable} on:click={() => goHome()}>
-        <div class="logo">{@html lamden_logo}</div>
-        <div class="words">{@html lamden_words}</div>
+    <div class="brand" class:clickable={clickable} on:click={() => goHome()}>
+        <div class="logo">{@html logo_full}</div>
     </div>
 </div>

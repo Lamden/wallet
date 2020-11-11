@@ -7,7 +7,7 @@
 
 <style>
 .pending-box{
-    border-bottom: 1px solid #383838;
+    border-bottom: 1px solid var(--divider-dark);
     padding: 0px 0px 2rem;
 }
 
@@ -19,6 +19,6 @@
             <PendingTransaction {pendingTransaction} first={index === 0} last={(index + 1) === pendingTransactions.length}/>
         {/each}
     {:else}
-        <div class="text-primary-dark text-body2">No pending transactions</div>
+        <div class="text-secondary text-body2">No pending transactions</div>
     {/if}
 </div>

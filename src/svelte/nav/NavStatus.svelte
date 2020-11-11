@@ -4,7 +4,7 @@
 
 <style>
 .checking{
-    color: var(--font-primary-darker);
+    color: var(--font-secondary);
 }
 .online{
     color:green;

@@ -96,7 +96,7 @@
 
 <style>
 .buttons{
-    background: var(--bg-color-grey);
+    background: var(--bg-secondary);
     padding: 10px 17px;
 }
 
@@ -122,7 +122,7 @@
 					{#if $activeTab.type === 'local'}
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent button__blue'}
+							classes={'button__transparent button__accent'}
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
 							height={'42px'}
@@ -130,7 +130,7 @@
 						/>
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent button__blue'}
+							classes={'button__transparent button__accent'}
 							name="Submit to Network"
 							height={'42px'}
 							click={() => lint(submit)}

@@ -9,7 +9,7 @@
     const { Button, SwapsStatus } = Components;
     
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
     import plus from '../../img/menu_icons/icon_plus.svg';
 
 	//Context
@@ -62,7 +62,7 @@ strong{
 </style>
 
 <div class="swaps text-primary">
-	<div class="hero-rec" style="background-image: url({squares_bg});">
+	<div class="hero-rec" style="background-image: url({hero_bg});">
         <h2 class="heading">
             {`Swap your Ethereum ERC-20 TAU Tokens for Lamden Mainnet TAU`}
         </h2>
@@ -83,7 +83,7 @@ strong{
         <div class="buttons">
         	<Button
                 id={'start-swap-btn'} 
-                classes={'button__transparent button__blue'}
+                classes={'button__transparent button__accent'}
 				name="Start Swap"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('SwapsMain')}

@@ -22,7 +22,7 @@
     let checking = false;
     let added = false;
 
-    $: addButtonColor = checking ? '' : 'button__purple';
+    $: addButtonColor = checking ? '' : 'button__primary';
     $: buttonName = checking ? 'Checking For Network' : added ? 'Added!' : 'Add Network';
     $: network = {name, hosts: [`${host}:${port}`], currencySymbol, type, lamden: false, selected: false}
 
@@ -81,7 +81,7 @@
 }
 .current-network{
     justify-content: space-between;
-    border-right: 1px solid #313131;
+    border-right: 1px solid var(--divider-light);
     padding-right: 46px;
 }
 .add-network{

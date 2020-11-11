@@ -31,7 +31,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: url(./squares_bg.png);
+	background: url(./hero_bg.png);
 	opacity: 0.8;
 	z-index: 30;
 }
@@ -48,7 +48,7 @@
 	transform: translate(-50%, 0px);
 	padding: 30px 55px;
 	margin: 20px 0;
-	background: var(--bg-color);
+	background: var(--bg-primary);
 	box-shadow: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
 	border-radius: 4px;
 	z-index: 60;

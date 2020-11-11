@@ -5,10 +5,11 @@
     import Button from '../components/Button.svelte'
 
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
+
     //Icons
-    import smartContract from '../../img/menu_icons/icon_smartcontract.svg'
-    import network from '../../img/menu_icons/icon_network.svg'
+    import SmartContractIcon from '../icons/SmartContractIcon.svelte'
+    import NetworkIcon from '../icons/NetworkIcon.svelte'
     import process from '../../img/menu_icons/icon_process.svg'
     import arrow_right from '../../img/menu_icons/icon_arrow-right-2color.svg'
 
@@ -121,37 +122,37 @@ a.help{
     position: relative;
     top: 1px;
 }
-.outside-link, .outside-link:visited, .outside-link:focus{
+.text-link, .text-link:visited, .text-link:focus{
     color: var(--font-warning);
 }
 
 </style>
 
-<div class="flex-column hero-rec" style="background-image: url({squares_bg})" >
+<div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
     <h2>{`Confirm Transaction From`}</h2>
     <div class="flex-row dapp-name">
         <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />
         <p class="dapp-name-text">{`${dappInfo.appName}`}</p>
     </div>
-    <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
+    <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>
 <div class="details flex-column">
     <div class="approve-items flex-row">
         <div class="item flex-row">
             <div class="item_icon">
-                {@html smartContract}
+                <SmartContractIcon />
             </div>
             <div class="item_info flex-column">
-                <p class="text-body2 text-primary-dark">{`Smart Contract`}</p>
+                <p class="text-body2 text-secondary">{`Smart Contract`}</p>
                 <p class="item_value text-body2">{txData.txInfo.contractName}</p>
             </div>
         </div>
         <div class="item flex-row">
             <div class="item_icon">
-                {@html network}
+                <NetworkIcon />
             </div>
             <div class="item_info flex-column">
-                <p class="text-body2 text-primary-dark">{`Network`}</p>
+                <p class="text-body2 text-secondary">{`Network`}</p>
                 <p class="item_value text-body2">{confirmData.messageData.network.name}</p>
             </div>
         </div>
@@ -161,7 +162,7 @@ a.help{
             {@html process}
         </div>
         <div class="function_info flex-column">
-            <p class="text-body2 text-primary-dark">{`Action`}</p>
+            <p class="text-body2 text-secondary">{`Action`}</p>
             <p class="text-body2">{txData.txInfo.methodName}</p>
         </div>
     </div>
@@ -172,13 +173,13 @@ a.help{
             <div class="kwarg_icon">{@html arrow_right}</div>
             <p class="text-subtitle2 text-body2">{kwarg}</p>
         </div>
-        <div class="kwarg-value text-subtitle4 text-primary-dark">{txData.txInfo.kwargs[kwarg]}</div>
+        <div class="kwarg-value text-subtitle4 text-secondary">{txData.txInfo.kwargs[kwarg]}</div>
         {/each}
     </div>
     <div class="buttons flex-row">
         <Button 
             id={'deny-btn'}
-            classes={'button__solid button__purple'}
+            classes={'button__solid button__primary'}
             name="Deny"
             width={'175px'}
             height={'42px'}
@@ -193,7 +194,7 @@ a.help{
             height={'42px'}
             click={approveTx} />
     </div>
-    <a class="outside-link help" href={confirmData.url} rel="noopener noreferrer" target="_blank">what is this?</a>
+    <a class="text-link help" href={confirmData.url} rel="noopener noreferrer" target="_blank">what is this?</a>
 </div>
 
 

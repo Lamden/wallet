@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext, onMount, onDestroy, afterUpdate } from 'svelte';
     import { fade } from 'svelte/transition';
     
@@ -11,7 +13,6 @@
 
     //Images
     import MetaMask from '../../img/misc/metamask-fox.svg'
-    import checkmarkWhite from '../../img/menu_icons/icon_checkmark-white.svg'
 
     //Context
     const { changeStep, setSwapInfo } = getContext('functions');
@@ -95,10 +96,7 @@
 
 <style>
 .text-box2{
-    color: cyan;
-}
-a{
-    text-decoration: unset;
+    color: var(--text-accent);
 }
 .metamask-logo{
     width: 10vw;
@@ -141,21 +139,21 @@ strong{
 
         <div class="flow-text-box2 text-body1">
             <span>{`To install metamask follow the instructions on `}
-                <a href="https://metamask.io/" class="outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
+                <a href="https://metamask.io/" class="text-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
             </span>
         </div>
 
         <div class="flex-column buttons">
             {#if installStatus === "Installed" && isCorrectNetwork}
                 <Button id={'continue-btn'}
-                    classes={'button__solid button__purple'}
+                    classes={'button__solid button__primary'}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name="Continue" 
                     click={nextPage} />
             {:else}
                 <Button id={'check-btn'}
-                        classes={`button__solid button__purple`}
+                        classes={`button__solid button__primary`}
                         styles={'margin-bottom: 16px;'}
                         width={'100%'}
                         name={metaMaskButton}
@@ -169,12 +167,14 @@ strong{
                     name="Cancel" 
                     click={() => switchPage('Swaps')} />  
 
-            <a  class="text-caption text-secondary" 
-                href="https://docs.lamden.io/wallet/" 
-                target="_blank" 
-                rel="noopener noreferrer" >
-                Help & FAQ
-            </a>
+            {#if whitelabel.helpLinks.show}
+                <a  class="text-link text-caption text-secondary" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    Help & FAQ
+                </a>
+            {/if} 
         </div>
 
 
@@ -183,7 +183,7 @@ strong{
         <div class="metamask-logo">
             {@html MetaMask}
         </div>
-        <a href="https://metamask.io/" class="text-body2 outside-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
+        <a href="https://metamask.io/" class="text-body2 text-link" target="_blank" rel="noreferrer noopener">metamask.io</a>
         <p  class="text-body1"
             class:text-green={installStatus === 'Installed'}>
             {installStatus === 'Installed' ? `MetaMask is Installed`: checking && errorMsg === '' ?  `checking ${currChecks} / ${maxChecks}` : ''} 
@@ -198,7 +198,7 @@ strong{
         {#if address !== ''}
             <span class="text-body2">{`ETH Address `}
             <a  href={`${blockExplorerURL}/address/${address}`} 
-                class="text-body2 outside-link " target="_blank" rel="noopener noreferrer">{` ${address}`}
+                class="text-body2 text-link " target="_blank" rel="noopener noreferrer">{` ${address}`}
             </a></span>
         {/if}
         {#if errorMsg !== ''}

@@ -123,6 +123,7 @@ import SwapsDisclaimer_TokensExchange from './swaps/SwapsDisclaimer_TokensExchan
 import SwapsDisclaimer_ExchangeTerms from './swaps/SwapsDisclaimer_ExchangeTerms.svelte';
 import ContinueSwap from './swaps/ContinueSwap.svelte';
 
+
 export const RestorePages = {
     RestoreMain, 
     RestoreUpload, 
@@ -199,7 +200,6 @@ export const Components = {
 
 export const Modals = {
     CoinLamdenSend, 
-    CoinLamdenContract,
     CoinModify, CoinOptions, CoinDelete, CoinEditNickname,
     CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
     CoinLamdenContract,

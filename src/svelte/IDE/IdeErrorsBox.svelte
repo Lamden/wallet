@@ -36,7 +36,7 @@
 <style>
 .errors-box{
 	padding: 4px 17px;
-	color: black;
+	color: var(--font-black);
 }
 .no-errors{
     background: #52ff52;

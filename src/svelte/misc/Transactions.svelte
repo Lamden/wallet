@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     //Stores
     import { currentNetwork } from '../../js/stores/stores.js';
 
@@ -7,7 +9,7 @@
     const { Transaction, Button } = Components;
 
     //Images
-    import refresh from '../../img/menu_icons/icon_refresh.svg';
+    import RefreshIcon from '../icons/RefreshIcon.svelte'
 
     export let transactionsList = [];
     export let vk;
@@ -62,12 +64,14 @@ h4{
 </style>
 
 <div class="flex-row tx-history-h3">
-    <h3>Transaction History</h3>			
-    <div on:click={refreshHistory} 
-		 class="flex-col refresh-icon clickable" 
-		 class:spinner={refreshing}>
-		 {@html refresh} 
-	</div>
+    <h3>{whitelabel.accountDetails.transactions.history.title}</h3>	
+    {#if whitelabel.accountDetails.transactions.history.show_refresh}		
+        <div on:click={refreshHistory} 
+            class="flex-col refresh-icon clickable" 
+            class:spinner={refreshing}>
+            <RefreshIcon />
+        </div>
+    {/if}
 </div>
 
 {#each transactionsList as txData}
@@ -77,7 +81,7 @@ h4{
     <div class="flex-row button-more">
         <Button 
             name={"show more"}
-            classes="button__transparent button__blue"
+            classes="button__transparent button__accent"
             margin={"0 0 1rem 0"}
             click={openLink}
             />

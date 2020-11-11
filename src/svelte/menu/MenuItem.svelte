@@ -9,6 +9,7 @@
 
     //Props
     export let menuItem;
+    export let iconLookup;
 
     let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
 
@@ -45,12 +46,16 @@
     display: block;
     position: absolute;
     top: inherit;
-    left: 90px;
+    left: 50px;
     z-index: 100;
     width: fit-content;
     width: 110px;
-    background-color: var(--bg-menu-grey);
+    background-color: var(--bg-secondary);
     padding: 9px
+}
+
+.item:hover{
+    filter: brightness(125%)
 }
 
 .floating-label{
@@ -58,7 +63,7 @@
 }
 
 .notselected:hover{
-    background-color: var(--bg-color-grey);
+    background-color: var(--bg-secondary);
 }
 
 .logo{
@@ -72,7 +77,7 @@
 }
 
 .selected{
-    background-color: #461BC2;
+    background-color: var(--primary-color);
 }
 
 .warning{
@@ -110,7 +115,7 @@
      class:notselected={!isSelected} 
      on:click={ () => menuAction() }
     >
-    <div class="logo">{@html menuItem.logo}</div>
+    <div class="logo">{@html iconLookup[menuItem.logo]}</div>
     <span class="name" class:warning={backupPage && $needsBackup}> {menuItem.name} </span>
     <div class="floating-label text-subtitle2 ">
         {menuItem.name}

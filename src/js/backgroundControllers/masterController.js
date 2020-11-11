@@ -1,3 +1,5 @@
+import whitelabel from '../../../whitelabel.json'
+
 import { networkController } from './networkController.js'
 import { dappController } from './dappController.js'
 import { controllerUtils  } from './controllerUtils.js'
@@ -179,7 +181,7 @@ export const masterController = () => {
                 return callback("ok")
 
             }catch (err){
-                return makeTxStatus(undefined, ['Unable to Build Lamden Transaction', err.message]);
+                return makeTxStatus(undefined, [`Unable to Build ${whitelabel.companyName} Transaction`, err.message]);
             }
         }        
     }

@@ -1,6 +1,8 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+    
     //Images
-    import TAU from '../../img/coin_logos/lamden_logo_white.svg';
+    import TAU from '../../img/logo.svg';
     import ETH from '../../img/coin_logos/ethereum.svg';
 
     //Props
@@ -27,6 +29,8 @@
 </style>
 
 <div style={styles}>{@html logo}</div>
+
+
 
 
 

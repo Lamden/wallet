@@ -1,3 +1,5 @@
+import whitelabel from '../../../whitelabel.json'
+
 import { writable, derived, get } from 'svelte/store';
 
 import * as validators from 'types-validate-assert'
@@ -8,31 +10,13 @@ import { isNetworkStoreObj, isNetworkObj } from '../objectValidations';
 
 import Lamden from 'lamden-js'
 
-
-let mainnet = {
-    name: 'Lamden Mainnet', 
-    hosts: ['https://masternode-01.lamden.io'],
-    type:'mainnet', 
-    lamden: true, 
-    currencySymbol: 'TAU',
-    blockExplorer: 'https://mainnet.lamden.io'
-}
-let testnet = {
-    name: 'Lamden Testnet', 
-    hosts: ['https://testnet-master-1.lamden.io'], 
-    type:'testnet', 
-    lamden: true, 
-    currencySymbol: 'dTAU',
-    blockExplorer: 'https://testnet.lamden.io'
-}
-let lamdenNetworks = [mainnet, testnet]
+let lamdenNetworks = whitelabel.networks
 
 let defualtNetworksStore = {
     lamden: lamdenNetworks,
     user : [],
-    current: 'Lamden Mainnet|mainnet|lamden'
+    current: `${whitelabel.networks[0].name}|${whitelabel.networks[0].type}|lamden`
 }
-
 
 const makeList = (networkStore) => {
     return [...networkStore.user, ...networkStore.lamden];
@@ -44,10 +28,10 @@ const foundNetwork = (networkStore, matchKey) => {
 }
 
 //A Derrived Store of both user and lamden networks
-export const mainnetNetwork = new Lamden.Network(mainnet);
+export const mainnetNetwork = new Lamden.Network(whitelabel.networks.find(network => network.type === "mainnet"));
 
 //A Derrived Store of both user and lamden networks
-export const testnetNetwork = new Lamden.Network(testnet);
+export const testnetNetwork = new Lamden.Network(whitelabel.networks.find(network => network.type === "testnet"));
 
 export const createNetworksStore = () => {
     let initialized = false;

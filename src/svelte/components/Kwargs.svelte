@@ -10,7 +10,7 @@
 
     export let argumentList
     export let methodIndex = undefined
-    export let backgroundColor;
+    export let bgStyle = "primary"
 
     afterUpdate(() => {
         dispatch('newArgValues', {argumentList, methodIndex})
@@ -26,5 +26,5 @@
 </style>
 
 {#each argumentList as argumentInfo, index}
-    <Kwarg {argumentInfo} {index} on:argChanged={handleArgChanged} {backgroundColor} />
+    <Kwarg {argumentInfo} {index} on:argChanged={handleArgChanged} {bgStyle}/>
 {/each}

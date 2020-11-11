@@ -7,7 +7,6 @@
     //Props
     export let id;
     export let label;
-    export let backgroundColor = label === '' ? 'transparent' : '';
     export let defaultText = 'None';
     export let items = [];
     export let styles = '';
@@ -19,6 +18,7 @@
     export let required = false;
     export let sideBox = false;
     export let boxHeight = "242px";
+    export let bgStyle = "primary";
 
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
@@ -71,11 +71,13 @@ label{
     line-height: 16px;
     padding: 0 4px;
     color: var(--font-primary);
+    background: inherit;
 }
 
 .custom-select {
     position: relative;
     font-family: Arial;
+    background: inherit;
 }
 
 .custom-select select {
@@ -83,12 +85,12 @@ label{
 }
 
 .select-selected {
-    border: 1px solid #e0e0e03d;
+    border: 1px solid var(--outline);
     border-radius: 4px;
 }
 
 .select-selected.open {
-    border: 1px solid #e0e0e03d;
+    border: 1px solid var(--outline);
     border-radius: 4px 4px 0 0;
     overflow-x: hidden;
 }
@@ -97,14 +99,14 @@ label{
     margin-top: 2px;
     content: "";
     border: 6px solid transparent;
-    border-color: var(--font-primary-dark) transparent transparent transparent;
+    border-color: var(--font-primary) transparent transparent transparent;
     position: absolute;
     top: 53%;
     right: 15px;
 }
 
 .select-selected.select-arrow-active:after {
-    border-color: transparent transparent var(--font-primary-dark) transparent;
+    border-color: transparent transparent var(--font-primary) transparent;
     margin-top: -5px;
 }
 
@@ -131,8 +133,8 @@ label{
 
 .select-items {
     position: absolute;
-    border: 1px solid #e0e0e03d;
-    background-color: #262626;
+    border: 1px solid var(--outline);
+    background-color: var(--bg-secondary);
     border-radius: 0 0 4px 4px;
     left: 0;
     right: 0;
@@ -146,19 +148,21 @@ label{
 }
 
 .select-items div:hover {
-    background-color: #ffffff38;
+    filter: brightness(125%);
     border-radius: 0px;
 }
 
 .same-as-selected {
-    background-color: #ffffff18;
+    filter: brightness(110%);
     border-radius: 0px;
 }
 
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
-<div bind:this={customSelectElm} class={`custom-select ${classes}`} style={`width:${width}; margin:${margin}; max-width: ${maxWidth};`}>
-    <label style={`background: ${backgroundColor || 'var(--bg-color)'};`}>{label}</label>
+<div bind:this={customSelectElm} 
+     class={`custom-select ${classes}`} 
+     style={`width:${width}; margin:${margin}; max-width: ${maxWidth}; background: var(--bg-${bgStyle})`}>
+    <label>{label}</label>
     <select id={id} required={required} bind:this={selectElm}>
         {#each items as item, index}
             <option id={`coin-${index}`} value={index}>{item.name}</option>

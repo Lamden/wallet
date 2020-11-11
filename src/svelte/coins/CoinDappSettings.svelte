@@ -15,7 +15,7 @@
     import verified_app from '../../img/menu_icons/icon_verified_app.svg'
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
-    import plusWhite from '../../img/menu_icons/icon_plus-white.svg';
+    import plusWhite from '../../img/menu_icons/icon_plus.svg';
     import deleteIcon from '../../img/menu_icons/icon_delete.svg';
 
 	//Context
@@ -36,7 +36,7 @@
     $: ratio = 0;
     $: addressLink = `${$currentNetwork.blockExplorer}/addresses/${coin.vk}`
     $: options = [
-        {id: 'preapproval-btn', name: 'Automatic Transactions', desc: `get rid of popups`, icon: verified_app, color: 'purple', click: () => showPreApprove() },
+        {id: 'preapproval-btn', name: 'Automatic Transactions', desc: `get rid of popups`, icon: verified_app, color: 'primary', click: () => showPreApprove() },
         {id: 'revoke-btn', name: 'Revoke Access', desc: `remove access to ${$currentNetwork.type}`, icon: deleteIcon, color: 'grey', click: () => showRevokeAccess() }
     ]
 
@@ -59,8 +59,12 @@
 </script>
 
 <style>
+#coin-dapp-settings{
+    background: inherit;
+}
+
 .dapp-info{
-    border-left: 1px solid var(--divider-color);
+    border-left: 1px solid var(--divider-dark);
     padding-left: 20px;
 }
 .options-box{
@@ -79,25 +83,18 @@
     margin: 0 20px;
 
 }
-.purple{
+
+.options:hover{
+    filter: brightness(125%);
+}
+.primary{
     background-color: var(--primary-color);
 }
 
-.purple:hover{
-    background-color: #5121de;
-}
-
 .grey{
-    background-color: var(--bg-color-grey);
+    background-color: var(--bg-secondary);
 }
 
-.grey:hover{
-    background-color: #444444;
-}
-
-.buttons{
-    align-items: center;
-}
 .icon{
     width: 20px;
 }
@@ -115,7 +112,7 @@ p{
 .flex-row.align-center{
     align-items: center;
 }
-.outside-link{
+.text-link{
     font-size: 0.9em;
     word-break: break-word;
 }
@@ -143,7 +140,7 @@ p{
             
             <div class="flex-row align-center">
                 <p>Homepage:</p>
-                <a class="outside-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
+                <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
             </div>
             <div class="flex-row align-center">
                 <p>Contract Name:</p>
@@ -151,7 +148,7 @@ p{
             </div>
             <div class="flex-row align-center">
                 <p>Account Address:</p>
-                <a class="outside-link" href={addressLink} rel="noopener noreferrer" target="_blank">{dappInfo.vk}</a>
+                <a class="text-link" href={addressLink} rel="noopener noreferrer" target="_blank">{dappInfo.vk}</a>
                 <div class="icon copy" on:click={copyWalletAddress}>
                     {#if copySuccessful}
                         {@html copyGreen}
@@ -170,7 +167,7 @@ p{
         {#each options as option}
             <div id={option.id} class="options flex-column"
                 class:grey={ option.color === 'grey'}
-                class:purple={ option.color === 'purple'}
+                class:primary={ option.color === 'primary'}
                 on:click={option.click}>
                 <div class="icon" >{@html option.icon}</div>
                 <div class="option-name text-subtitle2">{option.name}</div>

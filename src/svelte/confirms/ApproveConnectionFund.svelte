@@ -1,4 +1,6 @@
 <script>
+    import whitelabel from '../../../whitelabel.json'
+
     import { getContext } from 'svelte'
     import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
@@ -120,7 +122,7 @@
 
     <p>
         You can send {confirmData.messageData.network.currencySymbol} to your 
-        {confirmData.messageData.appName} <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a> 
+        {confirmData.messageData.appName} <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a> 
         to start using it right away.
 
     </p>
@@ -147,7 +149,7 @@
         </div>
     </div>
 
-    <p class= "confirm-message" class:text-primary-dark={!amount || amount <= 0}>{confirmMessage(amount)}</p>
+    <p class= "confirm-message" class:text-secondary={!amount || amount <= 0}>{confirmMessage(amount)}</p>
 
     <div class="flex-column">
         <div class="buttons flex-row">
@@ -162,14 +164,21 @@
 
             <Button 
                 id={'fund-next-btn'}
-                classes={'button__solid button__purple'}
+                classes={'button__solid button__primary'}
                 name={amount > 0 ? "Yes" : "Skip"}
                 width={'175px'}
                 height={'42px'}
                 click={set} />
         </div>
         <div class="help-link">
-            <a class="outside-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#fund-linked-account" rel="noopener noreferrer" target="_blank">learn more</a>
+                    {#if whitelabel.helpLinks.show}
+                <a  class="text-link" 
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/accounts_linked_create#fund-linked-account"}
+                    target="_blank" 
+                    rel="noopener noreferrer" >
+                    learn more
+                </a>
+            {/if} 
         </div>  
     </div>
 </div>

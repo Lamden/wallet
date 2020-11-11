@@ -1,4 +1,6 @@
 <script> 
+    import whitelabel from '../../../whitelabel.json'
+    
     import { setContext, getContext, onMount } from 'svelte';
 
     //Stores
@@ -18,14 +20,14 @@
     
     
     //Images
-    import squares_bg from '../../img/backgrounds/squares_bg.png';
-    import lightning_bg from '../../img/backgrounds/lightning_bg.jpeg';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
+    import dapp_default_bg from '../../img/backgrounds/dapp_default_bg.jpeg';
     import verified_app from '../../img/menu_icons/icon_verified_app.svg'
     import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
     import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
     import settings from '../../img/menu_icons/icon_settings.svg';
     import options from '../../img/menu_icons/icon_options.svg';
-    import refresh from '../../img/menu_icons/icon_refresh.svg';
+    import RefreshIcon from '../icons/RefreshIcon.svelte'
     
     //Utils
     import { copyToClipboard, displayBalance } from '../../js/utils.js'
@@ -43,13 +45,13 @@
     }
 
     let buttons = [
-        {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__purple'},
+        {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__primary'},
     ]
 
     $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
     $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
-    $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  lightning_bg : `${dappInfo.url}${dappInfo.background}` : lightning_bg : squares_bg
+    $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
     $: symbol = coin.symbol;
     $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk)) || '0'
     $: sendPage = sendPages[coin.network]
@@ -65,9 +67,6 @@
     $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
     $: stampRatio = 1
 
-    
-
-
 	onMount(() => {
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
@@ -79,7 +78,6 @@
                 .catch((err) => brokenBGLink = true)
         }
     });
-
 
     const getDappInfo = (dappStore) => {
         return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
@@ -96,7 +94,7 @@
 
     const fetchTransactions = () => {
         if ($currentNetwork.blockExplorer){
-            return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=10`)
+            return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=${whitelabel.accountDetails.transactions.history.amount}`)
             .then(res => res.json())
             .then(json => {
                 if (transactionsList.length > 0 && json.data.length > 0){
@@ -132,86 +130,86 @@
 </script>
 
 <style>
-h2{
-    margin: 0;
-}
-p{
-    margin: 0;
-}
-.hero-rec{
-	box-sizing: border-box;
-	min-height: 247px;
-	border-radius: 4px;
-	margin-bottom: 18px;
-    padding: 40px 40px 26px;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-.balance-total{
-    align-items: center;
-}
+    h2{
+        margin: 0;
+    }
+    p{
+        margin: 0;
+    }
+    .hero-rec{
+        box-sizing: border-box;
+        min-height: 247px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        padding: 40px 40px 26px;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    .balance-total{
+        align-items: center;
+        color: var(--font-overlay);
+    }
 
-.wallet-details{
-    flex-grow: 1;
-}
+    .wallet-details{
+        flex-grow: 1;
+    }
 
-.dapp-logo{
-    width: 125px;
-}
+    .dapp-logo{
+        width: 125px;
+    }
 
-.nickname{
-    margin-bottom: 20px;
-}
+    .nickname{
+        margin-bottom: 20px;
+        color: var(--font-overlay);
+    }
 
-.buttons{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    flex-grow: 1;
-    margin-top: 4rem;
-}
+    .buttons{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        flex-grow: 1;
+        margin-top: 4rem;
+    }
 
-.buttons{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    flex-grow: 1;
-    margin-top: 4rem;
-}
+    .buttons{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        flex-grow: 1;
+        margin-top: 4rem;
+    }
 
-.buttons > *{
-    margin: 10px 0px;
-}
+    .buttons > *{
+        margin: 10px 0px;
+    }
 
-.dapp-name{
-    margin: 0;
-}
+    .dapp-name{
+        margin: 0;
+    }
 
-.trusted-icon{
-    width: 22px;
-    margin-right: 10px;
-    align-self: center;
-}
+    .trusted-icon{
+        width: 22px;
+        margin-right: 10px;
+        align-self: center;
+    }
 
-.refresh-icon{
-    width: 40px;
-}
+    .refresh-icon{
+        width: 40px;
+    }
 
-.text-huge:first-child{
-    margin-right: 10px;
-}
+    .text-huge:first-child{
+        margin-right: 10px;
+    }
 
-@media only screen and (max-width: 970px) {
-  .buttons {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 2rem;
-  }
-}
-
-
+    @media only screen and (max-width: 970px) {
+        .buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 2rem;
+        }
+    }
 </style>
 
 <div id="coin-details" class="flex-column text-primary">
@@ -232,14 +230,14 @@ p{
                         <h2>{coin.nickname}</h2>
                     {/if}
                 </div>
-                <div class="text-body1"> {$currentNetwork.currencySymbol} </div>
+                <div class="text-overlay text-body1"> {$currentNetwork.currencySymbol} </div>
                 <div class="flex-row balance-total">
                     <p class="text-huge">{balance}</p>
                     <div on:click={handleRefresh} 
                         id="refresh-icon"
                         class="flex-col refresh-icon" 
                         class:spinner={refreshing}>
-                        {@html refresh} 
+                        <RefreshIcon />
                     </div>
                 </div>
                 
@@ -252,40 +250,47 @@ p{
         </div>
 
         <div class="buttons">
-            {#if coin.sk !== "watchOnly"}
+            {#if whitelabel.accountDetails.buttons.send.show}
+                {#if coin.sk !== "watchOnly"}
+                    <Button
+                        id={'send-coin-btn'} 
+                        classes={'button__transparent button__overlay'}
+                        name={whitelabel.accountDetails.buttons.send.name}
+                        padding={"12px"}
+                        margin={'0 15px 15px 0'}
+                        click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
+                        icon={arrowUp}
+                    />
+                {/if}
+            {/if}
+            {#if whitelabel.accountDetails.buttons.copy.show}
                 <Button
                     id={'send-coin-btn'} 
-                    classes={'button__transparent button__blue'}
-                    name="Send Tx"
+                    classes={'button__transparent button__overlay'}
+                    name={whitelabel.accountDetails.buttons.copy.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
-                    click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
-                    icon={arrowUp}/>
+                    click={copyWalletAddress} 
+                    icon={copyWhite}
+                />
             {/if}
-            <Button
-                id={'send-coin-btn'} 
-                classes={'button__transparent button__blue'}
-                name="Copy Address"
-                padding={"12px"}
-                margin={'0 15px 15px 0'}
-		 		click={() => copyWalletAddress()} 
-				icon={copyWhite}/>
-
-		    <Button 
-                id={'modify-coin-btn'} 
-                classes={'button__transparent button__blue'}
-                icon={options}
-				name="Options"
-                padding={"12px"}
-                margin={'0 15px 15px 0'}
-		 		click={() => openModal('CoinModify', coin)}
-				/>
+            {#if whitelabel.accountDetails.buttons.options.show}
+                <Button 
+                    id={'modify-coin-btn'} 
+                    classes={'button__transparent button__overlay'}
+                    icon={options}
+                    name={whitelabel.accountDetails.buttons.options.name}
+                    padding={"12px"}
+                    margin={'0 15px 15px 0'}
+                    click={() => openModal('CoinModify', coin)}
+                />
+            {/if}
             </div>
             {#if thisNetworkApproved && $currentNetwork.lamden}
                 <div>
                     <Button 
                         id={'dapp-options-btn'} 
-                        classes={'button__transparent button__blue'}
+                        classes={'button__transparent button__overlay'}
                         name="dApp Settings"
                         icon={settings}
                         padding={"12px"}
@@ -297,13 +302,13 @@ p{
             {#if thisNetworkApproved && dappInfo} 
                 <p class="text-body2 text-green">
                     Account linked to  
-                    <a href="{dappInfo.url}" class="outside-link" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
+                    <a href="{dappInfo.url}" class="text-link" target="_blank" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
                 </p>
             {/if}
             {#if !thisNetworkApproved && dappInfo} 
                 <p class="text-body2 text-warning">
                     You have not approved for this app for {$currentNetwork.name}. Vist 
-                    <a href="{dappInfo.url}" class="outside-link" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
+                    <a href="{dappInfo.url}" class="text-link" target="_blank" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
                     to create account link.
                 </p>
             {/if}

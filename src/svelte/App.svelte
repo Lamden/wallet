@@ -1,4 +1,5 @@
 <script>
+	import whitelabel from '../../whitelabel.json'
 	import { onMount, onDestroy, setContext, beforeUpdate } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -124,11 +125,17 @@
 							<div class="components" in:fade="{{delay: 0, duration: 500}}">
 								<svelte:component this={Pages[$currentPage.name]}/>
 							</div>
-							<div class="footer-box">
-								{'Made with'}
-								<div class="heart">{@html heart}</div>
-								{'by Lamden'}
-							</div>
+							{#if whitelabel.footer.show}
+								<div class="footer-box">
+									{#if whitelabel.footer.text === "lamden_default"}
+										{'Made with'}
+										<div class="heart">{@html heart}</div>
+										{'by Lamden'}
+									{:else}
+										{whitelabel.footer.text}
+									{/if}
+								</div>
+							{/if}
 						</div>
 
 						{#if showModal}
@@ -144,7 +151,7 @@
 			{/if}
 		{/if}
 	{:else}
-		<Loading message="Loading Lamden Wallet" />
+		<Loading message={`Loading ${whitelabel.companyName} Wallet`} />
 	{/if}
 </div>
 <svelte:window on:click={(e) => clicked.set(e.target)} />
@@ -189,7 +196,7 @@
 	}
 
 	.heart{
-		margin: 0 2px;
+		margin: 0 4px;
 		position: relative;
 		width: 13px;
 		top: 1px;

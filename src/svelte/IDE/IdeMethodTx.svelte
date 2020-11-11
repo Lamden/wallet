@@ -70,15 +70,16 @@
 }
 .confirm-tx{
     width: 500px;
+    background: inherit;
 }
 
 .details{
     padding: 5px 0 40px 50px;
-    border-left: 1px solid var(--font-primary-darker)
+    border-left: 1px solid var(--font-secondary)
 }
 
 .values{
-    color: var(--font-primary-dark);
+    color: var(--font-secondary);
     align-items: center;
     overflow-wrap: break-word;
     max-height: 100px;
@@ -93,7 +94,7 @@
     align-items: center;
 }
 .disabled{
-    background: var(--bg-color-grey);
+    background: var(--bg-secondary);
 }
 </style>
 
@@ -135,7 +136,7 @@
             <div class="buttons flex-column">
                 <input  id="confirmTx-btn"
                         value="Confirm Transaction"
-                        class="button__solid button__purple submit submit-button submit-button-text"
+                        class="button__solid button__primary submit submit-button submit-button-text"
                         class:disabled={selectedWallet === undefined}
                         disabled={selectedWallet === undefined ? 'disabled' : ''}
                         type="submit" >

@@ -11,9 +11,6 @@
 	import { Components }  from '../Router.svelte'
     const { Button, DropDown, InputBox } = Components;
 
-    //Images
-    import warning from '../../img/menu_icons/icon_warning.svg';
-
     //Context
     const { nextPage, close } = getContext('tx_functions');
 
@@ -121,15 +118,16 @@
 }
 .confirm-tx{
     width: 600px;
+    background: inherit;
 }
 
 .details{
     padding: 5px 0 0px 50px;
-    border-left: 1px solid var(--font-primary-darker)
+    border-left: 1px solid var(--font-secondary)
 }
 
 .values{
-    color: var(--font-primary-dark);
+    color: var(--font-secondary);
     align-items: center;
     overflow-wrap: break-word;
     max-height: 100px;
@@ -144,7 +142,7 @@
     align-items: center;
 }
 .disabled{
-    background: var(--bg-color-grey);
+    background: var(--bg-secondary);
 }
 p{
     margin: 0.5rem 0 1rem 0;
@@ -178,7 +176,7 @@ p{
                         <h4 class="detail-name no-bottom-margin">* Your Contract Name</h4>
                         <InputBox
                             width="100%"
-                            margin="-0.5rem 0 0"
+                            margin="0.5rem 0 0"
                             value={detail.value}
                             bind:thisInput={contractNameField}
                             on:keyup={clearValidation}
@@ -195,7 +193,7 @@ p{
                 <h4 class="detail-name no-bottom-margin">* Stamp Limit</h4>
                 <InputBox
                     width="100%"
-                    margin="-0.5rem 0 0"
+                    margin="0.5rem 0 0"
                     bind:value={stampLimit}
                     inputType={"number"}
                     required={true}
@@ -222,7 +220,7 @@ p{
             <div class="buttons flex-column">
                 <input  id="confirmTx-btn"
                         value="Submit Contract"
-                        class="button__solid button__purple submit submit-button submit-button-text"
+                        class="button__solid button__primary submit submit-button submit-button-text"
                         class:disabled={selectedWallet === undefined}
                         disabled={selectedWallet === undefined ? 'disabled' : ''}
                         type="submit" >
