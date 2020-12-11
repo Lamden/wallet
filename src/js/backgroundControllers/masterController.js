@@ -157,7 +157,7 @@ export const masterController = () => {
                 //Set senderVk to the one assocated with this dapp
                 txInfo.senderVk = wallet.vk;
                 //Allow approval requests to be submitted without hardcoding the approved smart contract
-                if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
+                if (txInfo.methodName === "approve"){
                     approvalRequest = true;
                     txInfo.kwargs.to = dappInfo[txInfo.networkType].contractName;
                 }else{
