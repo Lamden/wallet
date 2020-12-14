@@ -18,9 +18,22 @@ These TAU Wallets needs funding:
     - 6a91a9a65eb80829a360efc0555cad8841af64c78375bbf394f6ecb89d5644ee
     - 960c002a36c30c3aec8bc670e9b8b40eebcfd545f4e9237579fd7395a21ccebb
 
-These smart contract needs to exist and it's content doesn't matter 
+These smart contract needs to exist
     - con_wallet_testing
     - con_wallet_testing_2
+
+Code for contracts:
+yourState = Hash(default_value='')
+
+@export
+def set_value(key_name: str, key_value: str):
+    yourState[key_name] = key_value
+
+@export
+def set_value_for_sender(key_value: str):
+    sender = ctx.caller
+    yourState[sender] = key_value
+
 */
 
 const process = require('process');
@@ -46,7 +59,7 @@ const config = {
     walletExtentionID: "hiknponkciemeacgombejeookoebjdoe",
     metamaskExtentionID: "nkbihfbeogaeaoehlefnkodbefgpgknn",
     metamaskFolder: `${getMetaMaskLocation()}`, //Path to where metamask is installed on your computer
-    metamaskVersion: "8.1.3_0", //version of metamask (appends to metamaskFolder to create full plugin path)
+    metamaskVersion: "8.1.6_0", //version of metamask (appends to metamaskFolder to create full plugin path)
     get metamaskPath() {
         return path.join(this.metamaskFolder, this.metamaskExtentionID, this.metamaskVersion)
     },

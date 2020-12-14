@@ -48,5 +48,15 @@
             "amount" : 1
         },
         "stampLimit": 20
+    },
+    "nonStandardTransactionInfo":{
+        "contractName": "con_wallet_testing_2",
+        "methodName": "set_value",
+        "networkType": "testnet",
+        "kwargs":{
+            "key_name": "con_wallet_testing_2",
+            "key_value" : ""
+        },
+        "stampLimit": 20
     }
 }

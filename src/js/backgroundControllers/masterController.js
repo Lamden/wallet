@@ -108,8 +108,9 @@ export const masterController = () => {
         return response
     }
 
-    // 1) For security the txInfo contractName is populated/overwritten by the LamdenWallet as the one that was approved by the user
-    // 2) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
+    // 1) For security if a contract name is provided that differes from the approved contract, automatic transactions will be ignored
+    // 2) If no contract name is provided then the approved contract name will be provided 
+    // 3) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
     // This means that a dApp can only send transactions that were approved by the user in the original connection request
     const initiateDAppTxSend = (sender, data, dappInfo, callback = undefined) => {
         const makeTxStatus = (status = `Unable to process transaction`, errors = undefined) => {
@@ -123,6 +124,7 @@ export const masterController = () => {
             let txInfo = {};
             let errors = []
             let approvalRequest = false;
+            let forceTxApproval = false;
             
             try{
                 //Make sure the txInfo was a JSON string (for security)
@@ -150,29 +152,41 @@ export const masterController = () => {
             }
             
             try{
+                console.log(JSON.stringify(txInfo))
                 //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
                 const wallet = accounts.getAccountByVK(dappInfo.vk);
                 //Create a unique ID for this transaction for reference later if needed
                 if (!txInfo.uid) txInfo.uid = utils.hashStringValue(new Date().toISOString())
                 //Set senderVk to the one assocated with this dapp
                 txInfo.senderVk = wallet.vk;
-                //Allow approval requests to be submitted without hardcoding the approved smart contract
-                if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
-                    approvalRequest = true;
-                    txInfo.kwargs.to = dappInfo[txInfo.networkType].contractName;
+                //Check if contractName was supplied
+                if (typeof txInfo.contractName !== 'undefined'){
+                    //Check if the contract name is currency, and that it's an approval transaction
+                    if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
+                        approvalRequest = true;
+                        //Hardcode the approved contract name into the approval request
+                        txInfo.kwargs.to = dappInfo[txInfo.networkType].contractName;
+                    }else{
+                        //Check if the provided contract Name differs from the approved one
+                        // If so, then force the user to approve the transaction (ignoring auto tx settings)
+                        if (txInfo.contractName !== dappInfo[txInfo.networkType].contractName){
+                            console.log('forcing')
+                            forceTxApproval = true
+                        }
+                    }
                 }else{
                     //Set the contract name to the one approved by the user for the dApp
                     txInfo.contractName = dappInfo[txInfo.networkType].contractName
                 }
+
                 //Create a Lamden Transaction
                 const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo)
                 const info = (({ appName, url, logo  }) => ({ appName, url, logo }))(dappInfo);
                 const txData = txBuilder.getAllInfo()
                 if (approvalRequest) {
-
                     promptCurrencyApproval(sender, {txData, wallet, dappInfo: info})
                 }else {
-                    if (dappInfo[txBuilder.type].trustedApp || dappInfo[txBuilder.type].stampPreApproval > 0){
+                    if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval ){
                         transactions.sendLamdenTx(txBuilder, dappInfo.url)
                     }else{
                         promptApproveTransaction(sender, {txData, wallet, dappInfo: info, network})

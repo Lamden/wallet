@@ -224,12 +224,27 @@ const getWalletResponse = async (driver) => {
     `);
 }
 
-const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
+const setupSendListener = (driver) => {
     return driver.executeScript(`
         window.walletTxResult = new Promise((resolve, reject) => {window.txResolver = resolve})
         document.addEventListener('lamdenWalletTxStatus', (response) => {
-            window.txResolver(response.detail)
+            let detail = response.detail
+
+            if (detail.data){
+                if (detail.data.blockResult){
+                    if(detail.data.blockResult.hash) return
+                }
+            }
+            window.txResolver(detail)
         });
+    `);
+}
+
+const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
+    return driver.executeScript(`
+        window.walletTxResult = undefined;
+        window.txResolver = undefined;
+        window.walletTxResult = new Promise((resolve, reject) => {window.txResolver = resolve})
         document.dispatchEvent( new CustomEvent('lamdenWalletSendTx', {detail: '${JSON.stringify(transactionInfo)}'} ));
         ${awaitResponse ? "console.log(await window.walletTxResult); return await window.walletTxResult" : ""}
     `);
@@ -237,7 +252,7 @@ const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
 
 const getTxResult = async (driver) => {
     return driver.executeScript(`
-        console.log(await window.walletTxResult);
+        console.log(await window.walletTxResult)
         return await window.walletTxResult
     `);
 }
@@ -296,7 +311,7 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
         return await httpServer.close()
     }
     await stop().catch((err) => reject(err))
-    //driver && driver.quit();
+    driver && driver.quit();
     await sleep(1000, true)
     resolve()
 })}
@@ -313,5 +328,6 @@ module.exports = {
     getWalletResponse,
     startServer, closeTest,
     sendTx, getTxResult,
-    getApprovalAmount, getAccountBalance
+    getApprovalAmount, getAccountBalance,
+    setupSendListener
 }

@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -27,7 +27,7 @@
     "url": "https://github.com/Lamden/wallet.git"
   },
   "devDependencies": {
-    "chromedriver": "^85.0.0",
+    "chromedriver": "^87.0.4",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",
