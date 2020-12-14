@@ -40,7 +40,7 @@ describe('Testing Clearinghouse API Handler', function () {
         await driver.findElement(By.className("first-time-flow__terms")).click()
         await helpers.sleep(500)
         await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
-        await helpers.sleep(500)
+        await helpers.sleep(2000)
         await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
         await helpers.sleep(500)
 

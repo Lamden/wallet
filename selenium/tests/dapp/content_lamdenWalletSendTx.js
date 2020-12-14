@@ -36,7 +36,9 @@ describe('Content Script - Testing Dapp SendTx API', function () {
      context('Test Setup', function() {
         it('Loads Test Website', async function() {
             await driver.executeScript(`window.open('http://localhost:${config.port}','_blank');`);
+            
             await helpers.switchWindow(driver, 1)
+            await helpers.setupSendListener(driver);
             await driver.findElement(By.id('wallet-tests')).then(element => {
                 assert.ok(element)
             })
@@ -137,7 +139,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let result = response.data
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
             assert.equal(result.resultInfo.type, 'success')
-            assert.equal(result.signed, true)
             assert.equal(result.signature.length > 0, true)
             assert.equal(JSON.stringify(result.txInfo.kwargs), JSON.stringify(transaction.kwargs));
             assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
@@ -170,13 +171,31 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let result = txResponse.data
             assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
             assert.equal(result.resultInfo.type, 'success')
-            assert.equal(result.signed, true)
             assert.equal(result.signature.length > 0, true)
             assert.equal(JSON.stringify(result.txInfo.kwargs), JSON.stringify(transaction.kwargs));
             assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
             assert.equal(result.txInfo.contractName, connectionInfo.approvals[transaction.networkType].contractName);
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
+        });
+        it('ignores Trusted App auto transactions if contract differs from approved', async function() {
+            this.timeout(30000);
+            await helpers.sleep(10000)
+            let transaction = helpers.getInstance(dappsInfo.nonStandardTransactionInfo)
+            await helpers.sendTx(driver, transaction, false)
+            await helpers.approveTxPopup(driver, 2, 1)
+            await helpers.sleep(1000)
+            let response = await helpers.getTxResult(driver)
+            assert.equal(response.status, "success");
+            let result = response.data
+            assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
+            assert.equal(result.resultInfo.type, 'success')
+            assert.equal(result.signature.length > 0, true)
+            assert.equal(JSON.stringify(result.txInfo.kwargs), JSON.stringify(transaction.kwargs));
+            assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
+            assert.equal(result.txInfo.contractName, dappsInfo.nonStandardTransactionInfo.contractName);
+            assert.equal(result.txInfo.methodName, transaction.methodName);
+            assert.equal(result.txInfo.stampLimit, transaction.stampLimit);       
         });
     })
 })

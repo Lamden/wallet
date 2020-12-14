@@ -103,7 +103,7 @@
 	}
 
 	.logo {
-		width: 32px;
+		width: 125px;
 		margin-right: 15.5px;
 		margin-left: 20px;
 	}

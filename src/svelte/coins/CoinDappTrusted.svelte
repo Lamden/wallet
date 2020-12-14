@@ -114,13 +114,7 @@
     <p class="text-body2">
         Automatic transactions make for a better user experience as some Apps can send frequent transactions.
         Once automatic transactions are enabled you will no longer receive popups when <strong>{dappInfo.appName}</strong> sends transations
-        to its smart contract <strong>{dappInfo[$currentNetwork.type].contractName}</strong>.
-    </p>
-    <h2>Is this safe?</h2>
-    <p class="text-body2">
-        Since <strong>{dappInfo.appName}</strong> is locked to only sending transactions through its smart contract, it cannot spend your <strong>{$currentNetwork.currencySymbol}</strong> directly.
-        The Apps will however spend your <strong>{$currentNetwork.currencySymbol}</strong>, a bit at a time, as it makes transactions. For added security
-        it is advised that you only transfer over as much <strong>{$currentNetwork.currencySymbol}</strong> to this account as the app needs to operate.
+        to its smart contract <strong>{dappInfo[$currentNetwork.type].contractName}</strong>.  Transactions to other contracts will always trigger a popup.
     </p>
     <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">
         learn more about automatic transactions
