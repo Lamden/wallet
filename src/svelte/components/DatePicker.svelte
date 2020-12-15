@@ -4,10 +4,9 @@
 	const dispatch = createEventDispatcher();
 	
 	//Utils
-    import { encodeLocaleDateTime, Encoder } from '../../js/utils.js'
+    import { encodeLocaleDateTime, encodeUTCDateTime } from '../../js/utils.js'
 
-	export let dateFormated = new Date().toLocaleString();
-	export let dateISO = new Date(dateFormated).toISOString();
+	export let dateISO = new Date(new Date().toLocaleString()).toISOString();
 
 	export let id = '';
 	export let label = '';
@@ -15,7 +14,7 @@
 	export let placeholder;
 	export let bgStyle = "primary";
 
-	let datePickerElm;
+	let datePickerElm, lableElm;
 	let showLocale = true;
 	let labels = ['Year','Month','Day','Hr','Min','Sec','Mil']
 	let constraints = [
@@ -30,7 +29,7 @@
 	let currDate = new Date().toString()
 	let timeZone = currDate.substring(currDate.lastIndexOf("(") + 1, currDate.lastIndexOf(")"));
 
-	$: dateValues = showLocale ? encodeLocaleDateTime(new Date(dateFormated)) : Encoder('datetime', dateFormated)
+	$: dateValues = []
 
 	const options = {
 		enableTime: true,
@@ -41,33 +40,62 @@
 	}
 
 	onMount(() => {
-		dateFormated = new Date().toString();
+		dateISO = new Date(new Date().toLocaleString()).toISOString();
+		dateValues = encodeLocaleDateTime(dateISO);
 		dispatch('changed')
 	})
 
 	const handleChange = (e) => {
-		dateFormated = e.detail[0][0].toString()
 		dateISO = e.detail[1]
-		dispatch('changed', e.detail)
+		dateValues = showLocale ? encodeLocaleDateTime(dateISO) : encodeUTCDateTime(dateISO)
+		dispatch('changed', dateISO)
 	}
 
 	const handleInputChange = (e, index) => {
 		dateValues[index] = parseInt(e.target.value);
 		if (e.target.value > constraints[index].max) dateValues[index] = constraints[index].max
 		if (e.target.value < constraints[index].min) dateValues[index] = constraints[index].min
-		dateISO = new Date(
-			dateValues[0],
-			dateValues[1],
-			dateValues[2],
-			dateValues[3],
-			dateValues[4],
-			dateValues[5],
-			dateValues[6]
-			).toString()
+		determineISOdate(showLocale)
+
+	}
+
+	const determineISOdate = () => {
+		let newDate
+		if (showLocale){
+			newDate = new Date(
+				dateValues[0],
+				dateValues[1]-1,
+				dateValues[2],
+				dateValues[3],
+				dateValues[4],
+				dateValues[5],
+				dateValues[6]
+			)
+			dateValues = encodeLocaleDateTime(newDate)
+		}else{
+			newDate = new Date(Date.UTC(
+				dateValues[0],
+				dateValues[1]-1,
+				dateValues[2],
+				dateValues[3],
+				dateValues[4],
+				dateValues[5],
+				dateValues[6]
+			));
+			dateValues = encodeUTCDateTime(newDate)
+		}
+		console.log(dateValues)
+		console.log(newDate)
+		dateISO = newDate.toISOString()
+		dispatch('changed', dateISO)
 	}
 
 	const handleTimezonClick = (e) => {
-		if (e.target === datePickerElm) showLocale = !showLocale;
+		if (e.currentTarget === lableElm) {
+			showLocale = !showLocale
+			dateValues = showLocale ? encodeLocaleDateTime(dateISO) : encodeUTCDateTime(dateISO)
+			dispatch('changed', dateISO)
+		}
 	}
 
 </script> 
@@ -115,6 +143,7 @@ label > strong:hover{
 </style>
 
 <label  class="inputbox-label text-link" 
+		bind:this={lableElm}
 		on:click={handleTimezonClick}> 
 		{label} <strong>{`(${showLocale ? timeZone : 'UTC'})`}</strong>
 </label>
