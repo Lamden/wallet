@@ -61,7 +61,6 @@ export const transactionsController = (utils, actions) => {
             }
             if (txBuilder.transactionSigned){
                 txBuilder.send(undefined, undefined, () => {
-                    //console.log(txBuilder.getAllInfo())
                     txBuilder.sentFrom = sentFrom;
                     processSendResponse(txBuilder);
                     if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())

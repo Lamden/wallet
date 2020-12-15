@@ -38,7 +38,6 @@ export const accountsController = (utils) => {
             setAccountStorage()
             return true;
         } catch (e){
-            console.log(e)
             return false
         }
     }

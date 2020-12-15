@@ -23,8 +23,6 @@
 	let monacoComponent;
 	let CONTRACTING_API = "https://testnet.lamden.io/contracting"
 
-	let argInfo = {type: 'datetime', name:'testing', value:""}
-
 	onMount(() =>{
 		Monaco.then(mod => {
 			if (mod){
@@ -145,7 +143,6 @@
 			<IdeErrorsBox {lintErrors} />
 		{/if}
 		{#if editorIsLoaded && $activeTab.methods}
-			<Kwarg bind:argumentInfo={argInfo} on:argChanged={() => console.log(argInfo) } bgStyle={"black"}/>
 			<IdeGetVariable contractName={$activeTab.name}/>
 			<IdeMethods methods={$activeTab.methods} />
 		{/if}

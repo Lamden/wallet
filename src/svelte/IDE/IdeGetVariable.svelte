@@ -18,7 +18,6 @@
             .then(res => {result = res})
             .catch(err => result = 'Error: Not Found')
         } catch (e) {
-            console.log(e)
             result = 'Error: Not Found'
         }
     }

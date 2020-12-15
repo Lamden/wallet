@@ -152,7 +152,6 @@ export const masterController = () => {
             }
             
             try{
-                console.log(JSON.stringify(txInfo))
                 //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
                 const wallet = accounts.getAccountByVK(dappInfo.vk);
                 //Create a unique ID for this transaction for reference later if needed
@@ -170,7 +169,6 @@ export const masterController = () => {
                         //Check if the provided contract Name differs from the approved one
                         // If so, then force the user to approve the transaction (ignoring auto tx settings)
                         if (txInfo.contractName !== dappInfo[txInfo.networkType].contractName){
-                            console.log('forcing')
                             forceTxApproval = true
                         }
                     }

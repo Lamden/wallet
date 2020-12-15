@@ -84,8 +84,7 @@
 			));
 			dateValues = encodeUTCDateTime(newDate)
 		}
-		console.log(dateValues)
-		console.log(newDate)
+
 		dateISO = newDate.toISOString()
 		dispatch('changed', dateISO)
 	}
