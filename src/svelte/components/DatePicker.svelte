@@ -17,7 +17,7 @@
 
 	let datePickerElm;
 	let showLocale = true;
-	let labels = ['Yr','Mon','Day','Hr','Min','Sec','Mil']
+	let labels = ['Year','Month','Day','Hr','Min','Sec','Mil']
 	let constraints = [
 		{min: 1, max: 9999},
 		{min: 1, max: 12},
