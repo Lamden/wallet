@@ -158,7 +158,7 @@ const encodeLocaleDateTime = (value) => {
     if (!isDate()) throwError()
     return [
         value.getFullYear(), 
-        value.getMonth(), 
+        value.getMonth()+1, 
         value.getDate(), 
         value.getHours(), 
         value.getMinutes(), 
