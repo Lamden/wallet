@@ -167,6 +167,12 @@ const encodeLocaleDateTime = (value) => {
     ]
 }
 
+const encodeUTCDateTime = (value) => {
+    let dateValues = Encoder('datetime', value)
+    dateValues[1] = dateValues[1] + 1
+    return dateValues
+}
+
 const encodeLocaleTimeDelta = (value) => {
     const isDate = () => {
         return value instanceof Date; 
@@ -234,7 +240,7 @@ module.exports = {
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject, hashStringValue,
     formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
-    Encoder, encodeLocaleDateTime, encodeLocaleTimeDelta, 
+    Encoder, encodeLocaleDateTime, encodeUTCDateTime, encodeLocaleTimeDelta, 
     displayBalance,
     getKeyValue, 
     createCharmKey,
