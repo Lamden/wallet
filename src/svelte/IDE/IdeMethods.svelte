@@ -60,7 +60,7 @@
     padding: 1rem;
     margin: 1rem 1rem 0 0;
     max-width: calc(100% / 2.18);
-    min-width: 435px;
+    min-width: fit-content;
     width: 100%;
     background: var(--bg-secondary);
     box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;

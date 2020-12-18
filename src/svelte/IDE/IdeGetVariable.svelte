@@ -15,7 +15,7 @@
     const handleRun = async () => {
         try{
             $currentNetwork.API.getVariable(contractName, variableName, key)
-            .then(res => {result = res})
+            .then(res => {console.log(res); result = res})
             .catch(err => result = 'Error: Not Found')
         } catch (e) {
             result = 'Error: Not Found'
@@ -62,7 +62,7 @@
     />
     <div>
         <InputBox
-            value={result}
+            value={JSON.stringify(result)}
             label={`${contractName} - Current State`}
             inputType={'textarea'}
             width={'100%'}

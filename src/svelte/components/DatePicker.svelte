@@ -110,6 +110,7 @@
 	z-index: 0;
 	cursor: pointer;
 	background-color: inherit;
+	min-width: fit-content;
 }
 
 .mainbox{
