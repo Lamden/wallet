@@ -84,8 +84,7 @@
 			));
 			dateValues = encodeUTCDateTime(newDate)
 		}
-		console.log(dateValues)
-		console.log(newDate)
+
 		dateISO = newDate.toISOString()
 		dispatch('changed', dateISO)
 	}
@@ -111,6 +110,7 @@
 	z-index: 0;
 	cursor: pointer;
 	background-color: inherit;
+	min-width: fit-content;
 }
 
 .mainbox{

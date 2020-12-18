@@ -18,7 +18,6 @@
             .then(res => {result = res})
             .catch(err => result = 'Error: Not Found')
         } catch (e) {
-            console.log(e)
             result = 'Error: Not Found'
         }
     }
@@ -63,7 +62,7 @@
     />
     <div>
         <InputBox
-            value={result}
+            value={JSON.stringify(result)}
             label={`${contractName} - Current State`}
             inputType={'textarea'}
             width={'100%'}
