@@ -216,7 +216,7 @@ h2{
         <DropDown
             id={'dapps-dd'}
             items={dAppList} 
-            label={'Currencly Linked Apps'}
+            label={'Currently Linked Apps'}
             margin="0 0 2rem"
             on:selected={(e) => associateDapp(e.detail.selected.value)}
         />
