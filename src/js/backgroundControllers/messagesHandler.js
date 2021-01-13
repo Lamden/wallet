@@ -145,6 +145,13 @@ export const messagesHandler = (masterController) => {
                         masterController.transactions.checkEthereumTxStatus(message.data, sendResponse)
                         return true
                     }
+                    //Reorder Account List
+                    if (message.type === 'accountsReorderUp') {
+                        masterController.accounts.reorderUp(message.data, sendResponse)
+                    }
+                    if (message.type === 'accountsReorderDown') {
+                        masterController.accounts.reorderDown(message.data, sendResponse)
+                    }
                 }
             }
 

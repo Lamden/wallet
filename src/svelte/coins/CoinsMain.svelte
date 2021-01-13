@@ -33,6 +33,12 @@
 	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : '0';
 
 	let refreshing = false;
+	let orderingLocked = false;
+	$: coinStorage = [...$CoinStore].map((coin, index) => {
+		coin.id = index
+		return coin
+	})
+	$: output = console.log(coinStorage)
 
 	onMount(() => {
 		handleRefresh();
@@ -46,6 +52,28 @@
 			refreshing = false
 		}, 2000);
 	}
+
+	const handleReorder = (e) => {
+		console.log(e)
+		let { id, direction } = e.detail
+		if (direction == "up" && !orderingLocked){
+			orderingLocked = true;
+			chrome.runtime.sendMessage({type: 'accountsReorderUp', data: id}, (success) => {
+				console.log(success)
+				orderingLocked = false;
+			})
+		}
+
+		if (direction == "down" && !orderingLocked){
+			orderingLocked = true;
+			chrome.runtime.sendMessage({type: 'accountsReorderDown', data: id}, (success) => {
+				console.log(success)
+				orderingLocked = false;
+			})
+		}
+
+		
+    }
 
 </script>
 
@@ -156,7 +184,7 @@ p{
 
 	</div>
 	{#if $currentNetwork}
-		{#if $CoinStore.length === 0}
+		{#if coinStorage.length === 0}
 			<CoinEmpty />
 		{:else}
 			<div class="header header-text divider">
@@ -170,8 +198,8 @@ p{
 					<div class="header-percent header-text">{whitelabel.mainPage.portfolio.title}</div>
 				{/if}
 			</div>
-			{#each $CoinStore as coin, id}
-				<Coin {coin} {id} />
+			{#each coinStorage as coin (coin.id) }
+				<Coin {coin} on:reorder={handleReorder}/>
 				<CoinDivider />
 			{/each}
 		{/if}

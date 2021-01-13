@@ -1,7 +1,7 @@
 <script>
     import whitelabel from '../../../whitelabel.json'
 
-    import { getContext, setContext, afterUpdate } from 'svelte';
+    import { getContext, setContext, afterUpdate, createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
@@ -19,9 +19,10 @@
     import logo from '../../img/logo.svg'
     import charm_default from '../../img/misc/charm_default.svg';
 
+    const dispatch = createEventDispatcher()
+
     // Props
     export let coin;
-    export let id;
 
     const formats = {
         'number': {default: 0},
@@ -38,7 +39,7 @@
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
     $: balanceStr = balance ? displayBalance(balance) : '0'
     $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
-    $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
+    $: dappInfo = $DappStore[getDappInfo($DappStore, coin)] || undefined
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
     $: dappCharms = dappNetworkInfo ? dappNetworkInfo.charms || [] : []
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
@@ -65,6 +66,9 @@
     const handleBrokenCharmIcon = (index) => {
         brokenCharmIconLink[index] = true; 
     }
+
+    const handleReorderUp = () => dispatch('reorder', {id: coin.id, direction: "up"})
+    const handleReorderDown = () => dispatch('reorder', {id: coin.id, direction: "down"})
     
 </script>
 
@@ -160,9 +164,9 @@ p > a {
 </style>
 
 <div 
-    id={`coin-row-${id}`} 
+    id={`coin-row-${coin.id}`} 
     class="coin-box" 
-    on:click={ () => switchPage('CoinDetails', coin)}
+    on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
     >
     {#if whitelabel.mainPage.logo.show}
@@ -194,7 +198,7 @@ p > a {
                     {/if}
                 </div>
                 {#if whitelabel.mainPage.account_info.show_network_name}
-                    <div id={`coin-nickname-${id}`} class="text-body2 text-secondary nickname">
+                    <div id={`coin-nickname-${coin.id}`} class="text-body2 text-secondary nickname">
                         {`${coin.name}`} 
                     </div>
                 {/if}
@@ -213,8 +217,14 @@ p > a {
             <div class="percent text text-body1"> {`${percent}`}</div>
         {/if}
     {/if}
+    <div class="flex-col">
+         <button on:click={handleReorderUp}>up</button>
+          <button on:click={handleReorderDown}>down</button>
+    </div>
+   
 </div>
 {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
+    <!--
     {#each dappCharms as charm, index}
         <div class="flex-row charm-row">
             {#if !brokenCharmIconLink[index]}
@@ -228,7 +238,9 @@ p > a {
             {/await}
         </div>
     {/each}
+    -->
     <div class="dapp-info">
+        <button on:click={() => switchPage('CoinDetails', coin)}>details</button>
         <p>{`linked to `}
             <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
         </p>

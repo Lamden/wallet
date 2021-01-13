@@ -267,7 +267,9 @@ export const masterController = () => {
             addOne: accounts.addOne,
             addMany: accounts.addMany,
             changeAccountNickname: accounts.changeAccountNickname,
-            decryptKeys: accounts.decryptKeys
+            decryptKeys: accounts.decryptKeys,
+            reorderUp: accounts.reorderUp,
+            reorderDown: accounts.reorderDown
         },
         "dapps": {
             setTrusted: dapps.setTrusted,

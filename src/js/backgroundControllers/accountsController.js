@@ -287,6 +287,37 @@ export const accountsController = (utils) => {
         return hash === "" && vault === "" ? true : false
     }
 
+    const reorderUp = (index, callback = undefined) => {
+        console.log({index, callback})
+        if (index <= 0) {
+            if (callback) callback(true)
+            return true
+        }
+        moveArrayItemToNewIndex(index, index - 1)
+        if (callback) callback(true)
+    }
+
+    const reorderDown = (index, callback = undefined) => {
+        console.log({index, callback})
+        if (index >= (accountStore.length - 1)) {
+            if (callback) callback(true)
+            return true
+        }
+        moveArrayItemToNewIndex(index, index + 1)
+        if (callback) callback(true)
+    }
+
+    const moveArrayItemToNewIndex = (old_index, new_index) => {
+        if (new_index >= accountStore.length) {
+            var k = new_index - accountStore.length + 1;
+            while (k--) {
+                accountStore.push(undefined);
+            }
+        }
+        accountStore.splice(new_index, 0, accountStore.splice(old_index, 1)[0]);
+        refreshAccountStore()
+    };
+
     return {
         createPassword,
         checkPassword,
@@ -308,6 +339,7 @@ export const accountsController = (utils) => {
         validatePassword: (string) => validatePasswordFromVault(string),
         walletIsLocked,
         decryptKeys,
-        signTx
+        signTx,
+        reorderUp, reorderDown
     }
 }
