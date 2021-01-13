@@ -82,6 +82,20 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
     flex-direction: row;
 }
 
+.flex-align-center{
+    align-items: center;
+}
+
+.flex-just-center{
+    justify-content: center;
+}
+
+.flex-center-center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .text-black{
     color: var(--font-black);
 }

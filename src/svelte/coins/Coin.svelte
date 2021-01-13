@@ -134,7 +134,6 @@
 }
 .dapp-info{
     display: flex;
-    align-items: flex-end;
     justify-content: flex-end;
 }
 .dapp-info > p {
@@ -148,15 +147,6 @@
 }
 p > a {
     margin: 0 5px;
-}
-.charm-img{
-    width: 25px;
-    margin: 0 10px 0 0;
-}
-.charm-row{
-    align-items: center;
-    padding-left: 100px;
-    margin-bottom: 5px;
 }
 .name-box{
     line-height: 1.5;
@@ -223,27 +213,12 @@ p > a {
     </div>
    
 </div>
-{#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
-    <!--
-    {#each dappCharms as charm, index}
-        <div class="flex-row charm-row">
-            {#if !brokenCharmIconLink[index]}
-                <img class="charm-img" src={`${dappInfo.url}${charm.iconPath}`} alt={`${charm.name} logo`} on:error={() => brokenCharmIconLink[index] = true}>
-            {:else}
-                <div class="charm-img">{@html charm_default}</div>
-            {/if}
-            <label class="text-body2" style={"margin-right: 10px;"}>{charm.name}: </label>
-            {#await getItemValue(charm) then response}
-                <label class="text-body2 text-secondary">{formatValue(response)}</label>
-            {/await}
-        </div>
-    {/each}
-    -->
-    <div class="dapp-info">
-        <button on:click={() => switchPage('CoinDetails', coin)}>details</button>
+<div class="flex-row flex-align-center dapp-info">
+    <button on:click={() => switchPage('CoinDetails', coin)}>details</button>
+    {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
         <p>{`linked to `}
             <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
         </p>
-    </div>
-{/if}
+    {/if}
+</div>
 

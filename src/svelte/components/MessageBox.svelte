@@ -29,9 +29,10 @@
 }
 
 .message{
-    align-items: center;
-    padding-top: 65px;
-    margin: 1rem 0 2rem;
+    align-items: flex-start;
+    /*padding-top: 65px;*/
+    /*margin: 1rem 0 2rem;*/
+    margin: 3rem 0 0.5rem;
 }
 
 .icon{
@@ -40,7 +41,7 @@
 }
 
 .checkmark{
-    width: 22px;
+    width: 37px;
 }
 
 .buttons{

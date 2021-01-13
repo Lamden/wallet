@@ -30,6 +30,8 @@ import CoinDappTrusted from './coins/CoinDappTrusted.svelte';
 import CoinDappRevoke from './coins/CoinDappRevoke.svelte';
 import CoinAdd from './coins/CoinAdd.svelte';
 import CoinAddDetails from './coins/CoinAddDetails.svelte';
+import CoinAddToken from './coins/CoinAddToken.svelte'
+import CoinAddAccount from './coins/CoinAddAccount.svelte';
 import CoinEmpty from './coins/CoinEmpty.svelte';
 import CoinLamdenSend from './coins/CoinLamdenSend.svelte';
 import CoinLamdenContract from './coins/CoinLamdenContract.svelte';
@@ -89,6 +91,7 @@ import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
 import SwapsStatus from './components/SwapsStatus.svelte';
 import SwapStatus from './components/SwapStatus.svelte';
+import TokenLogo from './components/TokenLogo.svelte'
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -195,7 +198,8 @@ export const Components = {
     StrongPW,
     Transaction,
     Kwargs, Kwarg,
-    SwapsStatus, SwapStatus
+    SwapsStatus, SwapStatus,
+    TokenLogo
 };
 
 export const Modals = {
@@ -219,7 +223,7 @@ export {
     Nav, NavLogo, NavControls, NavStatus,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory,
+    Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory, CoinAddToken, CoinAddAccount,
     DevToolsMain, DevToolsDocumentation, DevToolsNetworks,
     BackupMain,
     Restore,

@@ -6,6 +6,7 @@ import { controllerUtils  } from './controllerUtils.js'
 import { accountsController  } from './accountsController.js'
 import { balancesController  } from './balancesController.js'
 import { transactionsController } from './transactionsController.js'
+import { tokenController } from './tokenController.js'
 
 export const masterController = () => {
     const utils = controllerUtils
@@ -28,6 +29,7 @@ export const masterController = () => {
             getAccountByVK: accounts.getAccountByVK
         }
     })()));
+    const tokens = Object.freeze(tokenController(utils));
 
     const createPassword = (string) => {
         let created = accounts.createPassword(string);
@@ -290,6 +292,12 @@ export const masterController = () => {
             sendEthereumTokenApproval: transactions.sendEthereumTokenApproval,
             sendEthereumSwapTransaction: transactions.sendEthereumSwapTransaction,
             checkEthereumTxStatus: transactions.checkEthereumTxStatus
+        },
+        "tokens": {
+            addToken: tokens.addToken,
+            validateTokenContract: tokens.validateTokenContract,
+            getTokenMeta: tokens.getTokenMeta,
+            tokenExists: tokens.tokenExists,
         },
         balances,
         utils,
