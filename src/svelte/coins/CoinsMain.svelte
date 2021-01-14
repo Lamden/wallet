@@ -6,13 +6,14 @@
 	//Stores
 	import { 
 			CoinStore,
+			TokenStore,
 			balanceTotal,
 			currentNetwork,
 			networkKey
 		} from '../../js/stores/stores.js';
 
 	//Components
-	import { Coin, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
+	import { Coin, Token, CoinEmpty, CoinDivider, Modal, Modals, Components }  from '../Router.svelte'
 	const { Button } = Components;
 
 	//Images
@@ -34,11 +35,16 @@
 
 	let refreshing = false;
 	let orderingLocked = false;
-	$: coinStorage = [...$CoinStore].map((coin, index) => {
+	$: output1 = console.log($TokenStore)
+	$: coinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
 		coin.id = index
 		return coin
-	})
-	$: output = console.log(coinStorage)
+	}) : [];
+	$: tokenStorage = $TokenStore ? [...$TokenStore].map((token, index) => {
+		token.id = index
+		return token
+	}) : [];
+	$: output = console.log(tokenStorage)
 
 	onMount(() => {
 		handleRefresh();
@@ -47,13 +53,44 @@
 	const handleRefresh = () => {
 		if (refreshing) return
 		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
+		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false
 		}, 2000);
 	}
 
-	const handleReorder = (e) => {
+	const handleRefreshTokens = () => {
+		if (refreshing) return
+		chrome.runtime.sendMessage({type: 'refreshTokenBalances'}, (results) => console.log(results))
+		refreshing = true
+		setTimeout(() => {
+		refreshing = false
+		}, 2000);
+		
+	}
+
+	const handleReorderToken = (e) => {
+		console.log(e)
+		let { id, direction } = e.detail
+		if (direction == "up" && !orderingLocked){
+			orderingLocked = true;
+			chrome.runtime.sendMessage({type: 'tokensReorderUp', data: id}, (success) => {
+				console.log(success)
+				orderingLocked = false;
+			})
+		}
+
+		if (direction == "down" && !orderingLocked){
+			orderingLocked = true;
+			chrome.runtime.sendMessage({type: 'tokensReorderDown', data: id}, (success) => {
+				console.log(success)
+				orderingLocked = false;
+			})
+		}
+	}
+	
+	const handleReorderAccount = (e) => {
 		console.log(e)
 		let { id, direction } = e.detail
 		if (direction == "up" && !orderingLocked){
@@ -71,8 +108,6 @@
 				orderingLocked = false;
 			})
 		}
-
-		
     }
 
 </script>
@@ -98,6 +133,7 @@
 
 .refresh-icon{
     width: 40px;
+	cursor: pointer;
 }
 .text-huge:first-child{
     margin-right: 10px;
@@ -106,7 +142,11 @@
 	display: flex;
 	flex-direction: row;
 	width: 100%;
-	height: 40px;
+	padding: 0.5rem 0;
+	margin-bottom: 0.5rem;
+}
+.header-accounts{
+	margin-top: 2rem;
 }
 
 .divider{
@@ -116,8 +156,6 @@
 .header-text{
 	display: flex;
 	align-items: center;
-    font-size: 14px;
-    line-height: 20px;
 }
 
 .header-name{
@@ -162,11 +200,10 @@ p{
 			<p class="text-huge">{`${displayBalance(totalBalance)}`}</p>
 			<div on:click={handleRefresh} 
 				id="refresh-icon"
-				class="flex-col refresh-icon" 
+				class="flex-column refresh-icon" 
 				class:spinner={refreshing}>
 				<RefreshIcon />
 			</div>
-
 		</div>
 		<div class="flex-row buttons">
 			{#if whitelabel.mainPage.buttons.add_account.show}
@@ -181,13 +218,26 @@ p{
 				/>
 			{/if}
 		</div>
-
 	</div>
+
 	{#if $currentNetwork}
+		{#if tokenStorage.length > 0 && whitelabel.enableTokens}
+			<div class="header header-text divider text-body1 weight-300">
+				{#if whitelabel.mainPage.token_columns.token_name.show}
+					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.token_columns.token_name.title}</div>
+				{/if}
+				{#if whitelabel.mainPage.token_columns.token_amount.show}
+					<div class="header-amount header-text">{whitelabel.mainPage.token_columns.token_amount.title}</div>
+				{/if}
+			</div>
+			{#each tokenStorage as token (token.id) }
+				<Token {token} on:reorderToken={handleReorderToken}/>
+			{/each}
+		{/if}
 		{#if coinStorage.length === 0}
 			<CoinEmpty />
 		{:else}
-			<div class="header header-text divider">
+			<div class="header header-accounts header-text text-body1 weight-300 divider ">
 				{#if whitelabel.mainPage.account_info.show}
 					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
 				{/if}
@@ -197,9 +247,9 @@ p{
 				{#if whitelabel.mainPage.portfolio.show}
 					<div class="header-percent header-text">{whitelabel.mainPage.portfolio.title}</div>
 				{/if}
-			</div>
+			</div>	
 			{#each coinStorage as coin (coin.id) }
-				<Coin {coin} on:reorder={handleReorder}/>
+				<Coin {coin} on:reorderAccount={handleReorderAccount}/>
 				<CoinDivider />
 			{/each}
 		{/if}

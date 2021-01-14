@@ -124,8 +124,8 @@
             margin="0 0 2rem 0"
             on:changed={handleContractInput}
             bind:value={contractName}
-            placeholder={`Contract Name`}
-            label={"Enter Token Contract"}
+            placeholder={`Enter Token Contract Name`}
+            label={"Contract Name"}
         />
 
         <div class="flex-row">
@@ -134,8 +134,8 @@
                     id={"nickname"}
                     margin="0 0 2rem 0"
                     bind:value={tokenName}
-                    placeholder={`Token Name`}
-                    label={"Enter Token Name"}
+                    placeholder={`Enter Token Name`}
+                    label={"Token Name"}
                     disabled={!contractValid}
                 />
 
@@ -143,8 +143,8 @@
                     id={"nickname"}
                     margin="0 0 2rem 0"
                     bind:value={tokenSymbol}
-                    placeholder={`Token Symbol`}
-                    label={"Enter Token Symbol"}
+                    placeholder={`Enter Token Symbol`}
+                    label={"Token Symbol"}
                     disabled={!contractValid}
                 />
             </div>

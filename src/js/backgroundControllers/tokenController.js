@@ -30,13 +30,12 @@ TO DO
         }
 */
 
-export const tokenController = (utils) => {
-
+export const tokenController = (utils, actions) => {
     let tokens = [];
     let token_balances = {};
 
     chrome.storage.local.get({
-        "tokens": [], //depreciated and replaced with vault storage
+        "tokens": [], 
         "token_balances": {}
     },
     function(getValue) {
@@ -161,7 +160,6 @@ export const tokenController = (utils) => {
             logo_base64_png: contractInfo.variables.includes("token_base64_png") ? await getTokenMetaValue(contractName, "token_base64_png", "") : undefined,
             logo_url: contractInfo.variables.includes("token_logo_url") ? await getTokenMetaValue(contractName, "token_logo_url", undefined) : undefined
         }
-        console.log(meta)
         if (callback) callback(meta)
         return meta
     }
@@ -175,7 +173,6 @@ export const tokenController = (utils) => {
 
     const tokenExists = (contractName, callback = undefined) => {
         let token = tokens.find(token => token.contractName === contractName)
-        console.log({contractName, token})
         if (!token) {
             if (callback) callback(false)
             return false
@@ -186,7 +183,6 @@ export const tokenController = (utils) => {
 
     const addToken = async (tokenInfo, callback = undefined) => {
         let validatedContractInfo = await validateTokenContract(tokenInfo.contractName)
-        console.log(validatedContractInfo)
         if (!validatedContractInfo){
             if (callback) callback(false)
             return false
@@ -197,12 +193,69 @@ export const tokenController = (utils) => {
         return true
     }
 
+    const refreshTokenBalances = async (callback = undefined) => {
+        let keysToGet = [] 
+        let accounts = actions.getSanatizedAccounts()
+        let network = utils.networks.getCurrent()
+
+        accounts.map(account => {
+            tokens.map(token => {
+                keysToGet.push({
+                    contractName: token.contractName,
+                    variableName: "balances",
+                    key: account.vk
+                })
+            })
+        })
+        let res = await network.blockExplorer_API.getKeys(keysToGet)
+        res = res.filter(f => f.value !== null).map(balance => {
+            let contractName = balance.key.split(".")[0]
+            let vk = balance.key.split(":")[1]
+            if (!token_balances[vk]) token_balances[vk] = {}
+            token_balances[vk][contractName] = utils.getValueFromReturn(balance.value)
+        })
+        if (callback) callback(token_balances)
+        saveTokensBalancesToStorage()
+    }
+
+    const reorderUp = (index, callback = undefined) => {
+        if (index <= 0) {
+            if (callback) callback(true)
+            return true
+        }
+        moveArrayItemToNewIndex(index, index - 1)
+        if (callback) callback(true)
+    }
+
+    const reorderDown = (index, callback = undefined) => {
+        if (index >= (tokens.length - 1)) {
+            if (callback) callback(true)
+            return true
+        }
+        moveArrayItemToNewIndex(index, index + 1)
+        if (callback) callback(true)
+    }
+
+    const moveArrayItemToNewIndex = (old_index, new_index) => {
+        if (new_index >= tokens.length) {
+            var k = new_index - tokens.length + 1;
+            while (k--) {
+                tokens.push(undefined);
+            }
+        }
+        tokens.splice(new_index, 0, tokens.splice(old_index, 1)[0]);
+        saveTokensToStorage()
+    };
+
     const saveTokensToStorage = () => chrome.storage.local.set({"tokens": tokens});
+    const saveTokensBalancesToStorage = () => chrome.storage.local.set({"token_balances": token_balances})
 
     return {
         addToken,
         validateTokenContract,
         getTokenMeta,
-        tokenExists
+        tokenExists,
+        refreshTokenBalances,
+        reorderUp, reorderDown
     }
 }

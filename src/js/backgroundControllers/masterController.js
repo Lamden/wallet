@@ -29,7 +29,11 @@ export const masterController = () => {
             getAccountByVK: accounts.getAccountByVK
         }
     })()));
-    const tokens = Object.freeze(tokenController(utils));
+    const tokens = Object.freeze(tokenController(utils, (() => {
+        return {
+            getSanatizedAccounts: accounts.getSanatizedAccounts
+        }
+    })()));
 
     const createPassword = (string) => {
         let created = accounts.createPassword(string);
@@ -298,6 +302,9 @@ export const masterController = () => {
             validateTokenContract: tokens.validateTokenContract,
             getTokenMeta: tokens.getTokenMeta,
             tokenExists: tokens.tokenExists,
+            refreshTokenBalances: tokens.refreshTokenBalances,
+            reorderUp: tokens.reorderUp,
+            reorderDown: tokens.reorderDown
         },
         balances,
         utils,

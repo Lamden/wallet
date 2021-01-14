@@ -67,7 +67,7 @@ h4{
     <h3>{whitelabel.accountDetails.transactions.history.title}</h3>	
     {#if whitelabel.accountDetails.transactions.history.show_refresh}		
         <div on:click={refreshHistory} 
-            class="flex-col refresh-icon clickable" 
+            class="flex-column refresh-icon clickable" 
             class:spinner={refreshing}>
             <RefreshIcon />
         </div>

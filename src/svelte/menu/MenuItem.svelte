@@ -78,6 +78,7 @@
 
 .selected{
     background-color: var(--primary-color);
+    color: var(--font-primary-inverse);
 }
 
 .warning{

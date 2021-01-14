@@ -94,7 +94,7 @@
     </p>
     
 
-    <div class="approve-items flex-col">
+    <div class="approve-items flex-column">
         <div class="item flex-row">
             <div class="item_icon">
                 <SmartContractIcon />

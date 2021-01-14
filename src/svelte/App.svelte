@@ -7,7 +7,7 @@
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import { SettingsStore, currentPage, clicked } from '../js/stores/stores.js';
+	import { SettingsStore, currentPage, clicked, currentThemeName } from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
@@ -72,7 +72,8 @@
 		closeModal: () => showModal = false,
 		firstRun: () => firstRun ? true : false,
 		appHome: () => switchPage('CoinsMain'),
-		checkFirstRun: () => checkFirstRun()
+		checkFirstRun: () => checkFirstRun(),
+		themeToggle: themeToggle
 	});
 
 
@@ -103,6 +104,33 @@
 
 	const closeModal = () => {
 		showModal = false;
+	}
+
+	function themeToggle() {
+		let body = document.getElementById("theme-toggle")
+		let lighttheme = getThemeSetting()
+		if (!lighttheme) {
+			body.classList.add("light");
+			currentThemeName.set('light')  
+		}
+		else {
+			body.classList.remove("light");
+			currentThemeName.set('dark')
+		}
+		localStorage.setItem("lighttheme", !lighttheme)
+	}
+
+	function themeSet() {
+		let body = document.getElementById("theme-toggle")
+		let lighttheme = getThemeSetting()
+		if (lighttheme) {
+			body.classList.add("light");
+			currentThemeName.set('light')
+		}else currentThemeName.set('dark')
+	}
+
+	function getThemeSetting() {
+		return JSON.parse(localStorage.getItem("lighttheme"))
 	}
 
 </script>

@@ -12,7 +12,7 @@
     import network from '../../img/menu_icons/icon_network-testnet.svg'
 
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, themeToggle } = getContext('app_functions');
 
     let status = 'checking'
 
@@ -91,4 +91,7 @@ p.mainnet:hover{
             {@html network}
         {/if}
     </div>
+    
+
 </div>
+<button on:click={themeToggle}>light/dark</button>

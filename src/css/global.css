@@ -24,6 +24,8 @@ body{
     --bg-secondary: #262626;   
 
     --font-primary: #E0E0E0;
+    --font-primary-dim: #929292;
+    --font-primary-inverse: #E0E0E0;
     --font-secondary: #7f7f7f;
     --font-overlay: var(--overlay-color);
 
@@ -68,6 +70,32 @@ body{
     color: var(--font-primary)
 }
 
+.light{
+    --primary-color: #461BC2;
+    --secondary-color: #303030;
+    --overlay-color: #FFF;
+    --accent-color: #4FB8FF;
+
+    --bg-primary: #fff; 
+    --bg-secondary: #f6f6f6;   
+
+    --font-primary: #373737;
+    --font-primary-dim: #929292;
+    --font-primary-inverse: #E0E0E0;
+    --font-secondary: #7f7f7f;
+    --font-overlay: var(--overlay-color);
+
+    --divider-light: #e4e4e4;
+    --divider-dark: #b5b5b5;
+
+    --outline: #676767;
+
+    --warning-color: orange;
+    --error-color: red;
+    --black-color: #121212;
+    --success-color: #31ce31;
+}
+
 a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visited, a:-webkit-any-link:hover{
     text-decoration: none;
 }
@@ -75,6 +103,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 .flex-column{
     display: flex;
     flex-direction: column;
+}
+
+.flex-grow-1{
+    flex-grow: 1;
 }
 
 .flex-row{
@@ -96,11 +128,17 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
     justify-content: center;
 }
 
+.flex-center-end{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .text-black{
     color: var(--font-black);
 }
 
-.text-primary{
+.text-primary-color{
     color: var(--primary-color);
 }
 
@@ -122,6 +160,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 
 .text-primary{
     color: var(--font-primary);
+}
+
+.text-primary-dim{
+    color: var(--font-primary-dim);
 }
 
 .text-secondary{
@@ -163,6 +205,35 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 .text-link-secondary:visited {
     color: var(--link-visited);
     outline: none;
+}
+
+.weight-100{
+    font-weight: 100;
+}
+
+.weight-200{
+    font-weight: 200;
+}
+
+.weight-300{
+    font-weight: 300;
+}
+
+.weight-400{
+    font-weight: 400;
+}
+
+.weight-500{
+    font-weight: 500;
+}
+.weight-600{
+    font-weight: 600;
+}
+.weight-700{
+    font-weight: 700;
+}
+.weight-800{
+    font-weight: 800;
 }
 
 .fill-font-primary{
@@ -219,34 +290,29 @@ h3{
 
 .text-body1{
     font-style: normal;
-    font-weight: normal;
     font-size: 16px;
     letter-spacing: 0.44px;
 }
 
 .text-body2, h4{
     font-style: normal;
-    font-weight: normal;
     font-size: 14px;
     letter-spacing: 0.25px;
 }
 .text-body3, h5{
     font-style: normal;
-    font-weight: normal;
     font-size: 12px;
     letter-spacing: 0.44px;
 }
 
 .text-huge{
     font-style: normal;
-    font-weight: normal;
     font-size: 55px;
     letter-spacing: 0.25px;    
 }
 
 h6{
     font-style: normal;
-    font-weight: normal;
     font-size: 22px;
     letter-spacing: 0.25px;
     margin: 1rem 0 2rem;
@@ -254,7 +320,6 @@ h6{
 
 .text-subtitle1{
     font-style: normal;
-    font-weight: normal;
     font-size: 10px;
     letter-spacing: 0.25px;
 }
@@ -268,7 +333,6 @@ h6{
 
 .text-subtitle3{
     font-style: normal;
-    font-weight: normal;
     font-size: 16px;
     letter-spacing: 0.44px;
 }
@@ -276,7 +340,6 @@ h6{
 
 .text-caption{
     font-style: normal;
-    font-weight: normal;
     font-size: 12px;
     letter-spacing: 0.4px;
     text-align: center;
@@ -362,8 +425,8 @@ h6{
 .buttonGroup__center{
     box-shadow: unset;
     border-radius: 0;
-    border-left: 1px solid var(--font-primary-darker);
-    border-right: 1px solid var(--font-primary-darker);
+    border-left: 1px solid var(--font-primary-dim);
+    border-right: 1px solid var(--font-primary-dim);
 }
 .buttonGroup__center:focus{
     z-index: 1;
@@ -483,6 +546,18 @@ button {
     padding: 3px;
     cursor: pointer;
 }
+
+.details-button{
+    background: transparent;
+    padding: 2px 6px;
+}
+
+.row-box:hover .details-button{
+    color: var(--font-primary);
+    background: var(--primary-color);
+    border-radius: 16px;
+}
+
 
 .submit-button {
     width: 232px;
@@ -772,3 +847,16 @@ button {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
   }
+
+.row-box:hover{
+    background-color: var(--bg-secondary)
+}
+
+.show-on-hover{
+    display: none;
+}
+
+.row-box:hover .show-on-hover{
+    display: flex;
+}
+

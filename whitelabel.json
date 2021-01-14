@@ -1,5 +1,6 @@
 {
     "companyName": "Lamden",
+    "enableTokens": true,
     "helpLinks":{
         "show": true,
         "masterURL": "https://www.google.ca"
@@ -153,15 +154,28 @@
         "account_info":{
             "title": "Account Name",
             "show" : true,
-            "show_network_name": true
+            "show_network_name": false
         },
         "amount":{
-            "title": "Amount",
+            "title": "",
             "show" : true
         },
         "portfolio":{
             "title": "Portfolio %",
             "show" : true
+        },
+        "token_columns":{
+            "token_logo":{
+                "show" : true
+            },
+            "token_name":{
+                "title": "Token Name",
+                "show" : true
+            },
+            "token_amount":{
+                "title": "Amount",
+                "show" : true
+            }
         }
     },
     "accountDetails": {

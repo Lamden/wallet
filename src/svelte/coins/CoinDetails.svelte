@@ -235,7 +235,7 @@
                     <p class="text-huge">{balance}</p>
                     <div on:click={handleRefresh} 
                         id="refresh-icon"
-                        class="flex-col refresh-icon" 
+                        class="flex-column refresh-icon" 
                         class:spinner={refreshing}>
                         <RefreshIcon />
                     </div>

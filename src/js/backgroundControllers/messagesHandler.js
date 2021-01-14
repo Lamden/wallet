@@ -153,6 +153,12 @@ export const messagesHandler = (masterController) => {
                         masterController.accounts.reorderDown(message.data, sendResponse)
                     }
                     //Token Messages
+                    if (message.type === 'tokensReorderUp') {
+                        masterController.tokens.reorderUp(message.data, sendResponse)
+                    }
+                    if (message.type === 'tokensReorderDown') {
+                        masterController.tokens.reorderDown(message.data, sendResponse)
+                    }
                     if (message.type === 'addToken') {
                         masterController.tokens.addToken(message.data, sendResponse)
                         return true;
@@ -167,6 +173,10 @@ export const messagesHandler = (masterController) => {
                     }
                     if (message.type === 'tokenExists') {
                         masterController.tokens.tokenExists(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'refreshTokenBalances') {
+                        masterController.tokens.refreshTokenBalances(sendResponse)
                         return true;
                     }
                 }

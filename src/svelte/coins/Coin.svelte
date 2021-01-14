@@ -12,7 +12,7 @@
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
     //Utils
-    import { displayBalance, getKeyValue, createCharmKey, formatValue } from '../../js/utils.js'  
+    import { displayBalance, getKeyValue, createCharmKey, formatValue, stringToFixed } from '../../js/utils.js'  
 
     //Images
     import linkedAccount from '../../img/misc/linked_account.svg'
@@ -37,7 +37,7 @@
     
     $: watching = coin.sk === "watchOnly"
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
-    $: balanceStr = balance ? displayBalance(balance) : '0'
+    $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : '0'
     $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
     $: dappInfo = $DappStore[getDappInfo($DappStore, coin)] || undefined
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
@@ -67,22 +67,14 @@
         brokenCharmIconLink[index] = true; 
     }
 
-    const handleReorderUp = () => dispatch('reorder', {id: coin.id, direction: "up"})
-    const handleReorderDown = () => dispatch('reorder', {id: coin.id, direction: "down"})
+    const handleReorderUp = () => dispatch('reorderAccount', {id: coin.id, direction: "up"})
+    const handleReorderDown = () => dispatch('reorderAccount', {id: coin.id, direction: "down"})
     
 </script>
 
 <style>
-.coin-box{
-    display: flex;
-    flex-direction: row;
-    min-height: 63px;
-    padding: 12px 0;
-    cursor: pointer;
-}
-
-.coin-box:hover{
-    background-color: var(--bg-secondary)
+.row-box{
+    padding: 1rem 28px 0.5rem 16px;
 }
 
 .text{
@@ -100,11 +92,6 @@
 	width: 234px;
 }
 
-.nickname{
-    word-break: break-word;
-    margin-right: 20px;
-}
-
 .amount{
     padding-left: 15px;
     flex-grow: 1;
@@ -113,8 +100,8 @@
 
 .percent{
     justify-content: flex-end;
-    margin-right: 28px;  
 	width: 90px;
+    flex-grow: 1;
 }
 
 .watching-text{
@@ -124,7 +111,7 @@
 .dapp-logo{
     position: relative;
     width: 32px;
-    margin: 0 36px 0 16px;
+    margin: 0 36px 0 0;
 }
 .dapp-linked-account-logo{
     position: absolute;
@@ -132,93 +119,73 @@
     right: 0;
     width: 14px;
 }
-.dapp-info{
-    display: flex;
-    justify-content: flex-end;
-}
-.dapp-info > p {
-    color: var(--text-primary);
-    max-width: fit-content;
-    border-radius: 9px;
-    background: var(--bg-secondary);
-    box-shadow: 0px 1px 2px rgba(8, 35, 48, 0.24), 0px 2px 6px rgba(8, 35, 48, 0.16);
-    margin-top: 5px;
-    padding: 6px 14px;
-}
-p > a {
-    margin: 0 5px;
-}
 .name-box{
-    line-height: 1.5;
+    line-height: 1.1;
 }
 </style>
 
 <div 
     id={`coin-row-${coin.id}`} 
-    class="coin-box" 
+    class="row-box flex-column" 
     on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
     >
-    {#if whitelabel.mainPage.logo.show}
-        <div class="logo flex-column">
-            {#if dappInfo}
-                {#if dappLogo && !brokenIconLink}
-                    <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo" on:error={() => brokenIconLink = true}>
-                {:else}
-                    <div class="dapp-logo">
-                        {@html logo}
-                        <div class="dapp-linked-account-logo"> 
-                            {@html linkedAccount}
-                        </div>
-                    </div>
-                {/if}
-            {:else}
-                <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 16px;`}/>
-            {/if}
-        </div>
-    {/if}
-    {#if whitelabel.mainPage.account_info.show}
-        <div class="name text text-body1">
-            <div class="name-box">
-                <div class="text-body1">
-                    {#if dappInfo}
-                        {`${dappInfo.appName}`}
+    <div class="flex-row flex-center-center">
+        {#if whitelabel.mainPage.logo.show}
+            <div class="logo flex-center-center">
+                {#if dappInfo}
+                    {#if dappLogo && !brokenIconLink}
+                        <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo" on:error={() => brokenIconLink = true}>
                     {:else}
-                        {`${coin.nickname}`}
+                        <div class="dapp-logo">
+                            {@html logo}
+                            <div class="dapp-linked-account-logo"> 
+                                {@html linkedAccount}
+                            </div>
+                        </div>
                     {/if}
-                </div>
-                {#if whitelabel.mainPage.account_info.show_network_name}
-                    <div id={`coin-nickname-${coin.id}`} class="text-body2 text-secondary nickname">
-                        {`${coin.name}`} 
-                    </div>
+                {:else}
+                    <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/>
                 {/if}
             </div>
-        </div>
-    {/if}
-    {#if whitelabel.mainPage.amount.show}
-        <div class="amount flex-column">
-            <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
-        </div>
-    {/if}
-    {#if whitelabel.mainPage.portfolio.show}
-        {#if watching}
-            <div class="text-body2 text-secondary watching-text percent">{"watching"}</div>
-        {:else}
-            <div class="percent text text-body1"> {`${percent}`}</div>
         {/if}
-    {/if}
-    <div class="flex-col">
-         <button on:click={handleReorderUp}>up</button>
-          <button on:click={handleReorderDown}>down</button>
+        {#if whitelabel.mainPage.account_info.show}
+            <div class="name text text-body1">
+                <div class="name-box">
+                    <div class="text-body1 ">
+                        {#if dappInfo}
+                            {`${dappInfo.appName}`}
+                        {:else}
+                            {`${coin.nickname}`}
+                        {/if}
+                    </div>
+                    {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
+                        <a class="text-link text-subtitle1" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+        {#if whitelabel.mainPage.amount.show}
+            <div class="amount flex-column text-primary-dim">
+                <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
+            </div>
+        {/if}
+        
+        {#if whitelabel.mainPage.portfolio.show}
+            {#if watching}
+                <div class="text-body2 text-primary-dim watching-text percent ">{"watching"}</div>
+            {:else}
+                <div class="percent text text-body1  weight-200"> {`${percent}`}</div>
+            {/if}
+        {/if}
     </div>
-   
+    <div class="flex-row flex-center-end">
+        <div class="flex-row show-on-hover">
+            <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
+            <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
+        </div>
+        <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
+    </div>
 </div>
-<div class="flex-row flex-align-center dapp-info">
-    <button on:click={() => switchPage('CoinDetails', coin)}>details</button>
-    {#if typeof dappInfo !== 'undefined' && $currentNetwork.lamden}
-        <p>{`linked to `}
-            <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{dappInfo.url}</a>
-        </p>
-    {/if}
-</div>
+
 

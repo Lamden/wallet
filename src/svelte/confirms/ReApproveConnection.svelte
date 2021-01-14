@@ -94,7 +94,7 @@
         <strong>has requested a change the smart contract name for this Linked Account. </strong> 
     </p>    
 
-    <div class="approve-items flex-col">
+    <div class="approve-items flex-column">
         <div class="item flex-row">
             <div class="item_icon">
                 <SmartContractIcon />
