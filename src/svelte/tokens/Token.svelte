@@ -80,10 +80,12 @@
         </div>
     {/if}
     <div class="flex-row flex-center-end">
+    <!--
         <div class="flex-row show-on-hover">
             <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
             <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
         </div>
+        -->
         <button class="button__text text-body2 details-button" on:click={() => switchPage('TokenDetails', token)}>details</button>
     </div>
 </div>

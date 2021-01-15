@@ -12,12 +12,21 @@
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
     //Utils
-    import { displayBalance, getKeyValue, createCharmKey, formatValue, stringToFixed, getTokenBalance } from '../../js/utils.js'  
+    import { 
+        formatAccountAddress, 
+        displayBalance, 
+        getKeyValue, 
+        createCharmKey, 
+        formatValue, 
+        stringToFixed, 
+        getTokenBalance, 
+        copyToClipboard } from '../../js/utils.js'  
 
     //Images
     import linkedAccount from '../../img/misc/linked_account.svg'
     import logo from '../../img/logo.svg'
-    import charm_default from '../../img/misc/charm_default.svg';
+    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
+    import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
 
     const dispatch = createEventDispatcher()
 
@@ -32,6 +41,7 @@
 
     let brokenIconLink = false;
     let brokenCharmIconLink = [];
+    let copied = false;
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -71,7 +81,12 @@
         brokenCharmIconLink[index] = true; 
     }
 
-
+    const handleAddressCopy = () => {
+        copyToClipboard(coin.vk)
+        console.log("click")
+        copied = true;
+        setTimeout(() => copied = false, 2000)
+    }
 
     const handleReorderUp = () => dispatch('reorderAccount', {id: coin.id, direction: "up"})
     const handleReorderDown = () => dispatch('reorderAccount', {id: coin.id, direction: "down"})
@@ -130,6 +145,24 @@
 }
 .token-balance{
     margin-bottom: 0.25rem;
+}
+
+.address{
+    padding: 2px 6px;
+    background: var(--bg-secondary);
+    cursor: pointer;
+    border-radius: 16px;
+}
+.address:hover{
+    filter: brightness(120%);
+}
+.address.success{
+    color: var(--success-color);
+}
+.icon-copy{
+    width: 10px;
+    height: 10px;
+    margin-left: 8px;
 }
 </style>
 
@@ -206,6 +239,16 @@
             </div>
             
         {/if}-->
+        <div class="address text-primary-dim flex-row" class:success={copied} on:click={handleAddressCopy}>
+            {formatAccountAddress(coin.vk, 10, 4)}
+            <div class="icon-copy">
+                {#if !copied}
+                    {@html copyWhite}
+                {:else}
+                    {@html copyGreen}
+                {/if}
+            </div>
+        </div>
         <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
     </div>
 </div>

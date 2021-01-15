@@ -87,7 +87,7 @@
     }
 
     const finish = (returnMessage) => {
-        //chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
+        chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
         sendMessage(returnMessage);
         nextPage();
     }

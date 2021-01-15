@@ -203,7 +203,8 @@ p{
 	padding: 2px 6px;
 }
 .hide-tokens-button:hover{
-	border: 1px solid var(--font-primary);
+	text-decoration: underline;
+	/*border: 1px solid var(--font-primary);*/
 	filter: brightness(110%);
 }
 </style>

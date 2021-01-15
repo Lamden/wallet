@@ -575,14 +575,15 @@ button {
 }
 
 .details-button{
-    background: transparent;
+    color: var(--font-primary-dim);
     padding: 2px 6px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
 }
 
 .row-box:hover .details-button{
     color: var(--font-primary);
     background: var(--primary-color);
-    border-radius: 16px;
 }
 
 

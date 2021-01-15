@@ -91,7 +91,7 @@
             token, 
             coin: account,
             txMethod,
-            refreshTx: () => handleRefresh(2000)
+            refreshTx: () => handleRefresh(8000)
         })
     }
 </script>
