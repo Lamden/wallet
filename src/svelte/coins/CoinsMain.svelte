@@ -40,7 +40,7 @@
 		coin.id = index
 		return coin
 	}) : [];
-	$: tokenStorage = $TokenStore ? [...$TokenStore].map((token, index) => {
+	$: tokenStorage = $TokenStore[networkKey($currentNetwork)] ? [...$TokenStore[networkKey($currentNetwork)]].map((token, index) => {
 		token.id = index
 		return token
 	}) : [];

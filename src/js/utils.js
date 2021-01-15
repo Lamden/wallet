@@ -261,6 +261,20 @@ const stringToFixed = (value, precision) => {
     }
   }
 
+const getTokenTotalBalance = (netKey, contractName, tokenBalanceTotals) => {
+    console.log({netKey, contractName, tokenBalanceTotals})
+    if (!tokenBalanceTotals) return "0"
+    if (!tokenBalanceTotals[netKey]) return "0"
+    return tokenBalanceTotals[netKey][contractName] || "0"
+}
+const getTokenBalance = (netKey, vk, contractName, tokenBalancesStore) => {
+    console.log({netKey, vk, contractName, tokenBalancesStore})
+    if (!tokenBalancesStore[netKey]) return "0"
+    if (!tokenBalancesStore[netKey][vk]) return "0"
+    if (!tokenBalancesStore[netKey][vk][contractName]) return "0"
+    return tokenBalancesStore[netKey][vk][contractName]
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -271,5 +285,7 @@ module.exports = {
     getKeyValue, 
     createCharmKey,
     formatValue,
-    stringToFixed
+    stringToFixed,
+    getTokenTotalBalance,
+    getTokenBalance
   }

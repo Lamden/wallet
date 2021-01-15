@@ -2,7 +2,7 @@
     import { getContext} from 'svelte';
 
     //Stores
-    import { SettingsStore } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
 
     //Components
     import { Components } from '../Router.svelte';

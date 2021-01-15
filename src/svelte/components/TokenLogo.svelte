@@ -12,6 +12,8 @@
     $: urlLogo = tokenMeta ? tokenMeta.logo_url || undefined : undefined;
 
     $: placeholderLogo = !svgLogo && !pngLogo && !urlLogo ? genericIcon_base64_svg : undefined;
+
+    $: log = console.log(tokenMeta)
 </script>
 
 {#if placeholderLogo}   

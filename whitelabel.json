@@ -206,6 +206,22 @@
             }
         }
     },
+    "tokenDetails": {
+        "buttons":{
+            "send":{
+                "name": "TRANSFER",
+                "show": true
+            },
+            "approve":{
+                "name": "APPROVE",
+                "show": true
+            },
+            "options":{
+                "name": "OPTIONS",
+                "show": true
+            }
+        }
+    },
     "footer":{
         "show": true,
         "text": "lamden_default"

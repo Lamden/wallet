@@ -6,13 +6,13 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { currentNetwork, BalancesStore, balanceTotal, DappStore, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, balanceTotal, DappStore, networkKey, TokenBalancesStore } from '../../js/stores/stores.js';
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
 
     //Utils
-    import { displayBalance, getKeyValue, createCharmKey, formatValue, stringToFixed } from '../../js/utils.js'  
+    import { displayBalance, getKeyValue, createCharmKey, formatValue, stringToFixed, getTokenBalance } from '../../js/utils.js'  
 
     //Images
     import linkedAccount from '../../img/misc/linked_account.svg'
@@ -23,6 +23,7 @@
 
     // Props
     export let coin;
+    export let token;
 
     const formats = {
         'number': {default: 0},
@@ -35,14 +36,17 @@
     //Context
     const { switchPage } = getContext('app_functions');
     
+    $: netKey = networkKey($currentNetwork)
     $: watching = coin.sk === "watchOnly"
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
     $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : '0'
-    $: percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "" : toPercentString();
+    $: percent = typeof $balanceTotal[netKey] === 'undefined' ? "" : toPercentString();
     $: dappInfo = $DappStore[getDappInfo($DappStore, coin)] || undefined
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
     $: dappCharms = dappNetworkInfo ? dappNetworkInfo.charms || [] : []
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
+
+    $: tokenBalance = token && coin ? displayBalance(stringToFixed(getTokenBalance(netKey, coin.vk, token.contractName, $TokenBalancesStore), 8)) : "0"
 
     afterUpdate(() => {
         balance = BalancesStore.getBalance($currentNetwork, coin.vk)
@@ -66,6 +70,8 @@
     const handleBrokenCharmIcon = (index) => {
         brokenCharmIconLink[index] = true; 
     }
+
+
 
     const handleReorderUp = () => dispatch('reorderAccount', {id: coin.id, direction: "up"})
     const handleReorderDown = () => dispatch('reorderAccount', {id: coin.id, direction: "down"})
@@ -122,6 +128,9 @@
 .name-box{
     line-height: 1.1;
 }
+.token-balance{
+    margin-bottom: 0.25rem;
+}
 </style>
 
 <div 
@@ -166,12 +175,21 @@
             </div>
         {/if}
         {#if whitelabel.mainPage.amount.show}
-            <div class="amount flex-column text-primary-dim">
-                <div class="text-body1">{`${balanceStr} ${$currentNetwork.currencySymbol}`}</div>
-            </div>
+                <div class="amount flex-column">
+                    {#if token}
+                        <div class="token-balance text-body1">{`${tokenBalance} ${token.tokenSymbol}`}</div>
+                    {/if}
+                    <div class="text-body3 text-primary-dim"
+                         class:text-body1={!token}
+                         class:text-body3={typeof token !== "undefined"}
+                    >
+                        {`${balanceStr} ${$currentNetwork.currencySymbol}`}
+                    </div>
+                </div>
+
         {/if}
         
-        {#if whitelabel.mainPage.portfolio.show}
+        {#if whitelabel.mainPage.portfolio.show && !token}
             {#if watching}
                 <div class="text-body2 text-primary-dim watching-text percent ">{"watching"}</div>
             {:else}
@@ -180,10 +198,12 @@
         {/if}
     </div>
     <div class="flex-row flex-center-end">
-        <div class="flex-row show-on-hover">
-            <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
-            <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
-        </div>
+        {#if !token}
+            <div class="flex-row show-on-hover">
+                <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
+                <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
+            </div>
+        {/if}
         <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
     </div>
 </div>

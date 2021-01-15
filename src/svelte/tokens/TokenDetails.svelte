@@ -1,0 +1,209 @@
+<script> 
+    import whitelabel from '../../../whitelabel.json'
+    
+    import { setContext, getContext, onMount } from 'svelte';
+
+    //Stores
+    import { 
+        TokenStore,
+        CoinStore,
+        SettingsStore, 
+        currentNetwork, 
+        networkKey,
+        TokenBalancesStore,
+        tokensDropDown,
+        tokenBalanceTotal
+    } from '../../js/stores/stores.js';
+
+    //Misc
+    import { getTokenTotalBalance } from '../../js/utils.js';
+
+    //Components
+    import { Modal, Modals, Components, Coin, CoinDivider }  from '../Router.svelte'
+    const { Button, TokenLogo } = Components;
+    
+    //Images
+    import hero_bg from '../../img/backgrounds/hero_bg.png';
+    import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
+    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
+    import settings from '../../img/menu_icons/icon_settings.svg';
+    import options from '../../img/menu_icons/icon_options.svg';
+    import RefreshIcon from '../icons/RefreshIcon.svelte'
+    
+    //Utils
+    import { copyToClipboard, displayBalance, stringToFixed } from '../../js/utils.js'
+
+    //Context
+    const { switchPage, openModal, closeModal } = getContext('app_functions');
+
+    let refreshing = false;
+
+    let buttons = [
+        {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__primary'},
+    ]
+
+    $: netKey = networkKey($currentNetwork)
+    $: tokens = $TokenStore[netKey] || []
+    $: token = tokens.find(f => f.contractName === $SettingsStore.currentPage.data.contractName) || $SettingsStore.currentPage.data;
+    $: balance = displayBalance(stringToFixed(getTokenTotalBalance(netKey, token.contractName, $tokenBalanceTotal), 8))
+    $: accountList = createAccountList($TokenBalancesStore)
+
+	onMount(() => { 
+        null
+    });
+
+    const createAccountList = () => {
+        let acountsWithBalances = []
+        if (!$TokenBalancesStore[netKey]) return acountsWithBalances
+
+        Object.keys($TokenBalancesStore[netKey]).forEach(vk => {
+            console.log({
+                vk,
+                balance: $TokenBalancesStore[netKey][vk][token.contractName] 
+            })
+            if (typeof $TokenBalancesStore[netKey][vk][token.contractName] !== 'undefined'){
+                acountsWithBalances.push($CoinStore.find(f => f.vk === vk))
+            }
+        })
+        return acountsWithBalances
+    }
+
+
+    const copyWalletAddress = () => {
+        copyToClipboard(coin.vk)
+        openModal('MessageBox', {
+            text: "Account Address Copied",
+            type: "success",
+            buttons: buttons
+        })
+    }
+
+    const handleRefresh = () => {
+        if (refreshing) return
+		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
+		refreshing = true
+		setTimeout(() => {
+            refreshing = false
+		}, 2000);
+    }
+</script>
+
+<style>
+    h2{
+        margin: 0;
+    }
+    p{
+        margin: 0;
+    }
+    .hero-rec{
+        box-sizing: border-box;
+        min-height: 247px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        padding: 40px 40px 26px;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    .balance-total{
+        color: var(--font-overlay);
+    }
+
+    .token-name{
+        margin-bottom: 20px;
+        color: var(--font-overlay);
+    }
+
+    .buttons{
+        display: flex;
+        flex-basis: row;
+        flex-wrap: wrap;
+        margin-top: 4rem;
+    }
+
+    .buttons > *{
+        margin: 10px 0px;
+    }
+
+    .refresh-icon{
+        width: 40px;
+    }
+
+    .text-huge:first-child{
+        margin-right: 10px;
+    }
+
+    @media only screen and (max-width: 970px) {
+        .buttons {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 2rem;
+        }
+    }
+</style>
+
+<div id="token-details" class="flex-column text-primary">
+	<div class="hero-rec flex-column" style="background-image: url({hero_bg});">
+        <div class="token-name flex-row flex-align-center text-body1">
+            <TokenLogo tokenMeta={token} width={"40px"} margin="0 10px 0 0" />
+            <h2>{token.tokenName}</h2>
+        </div>
+        <div class="text-overlay text-body1"> {token.tokenSymbol} </div>
+        <div class="flex-row balance-total">
+            <p class="text-huge">{balance}</p>
+            <div on:click={handleRefresh} 
+                id="refresh-icon"
+                class="flex-column refresh-icon" 
+                class:spinner={refreshing}>
+                <RefreshIcon />
+            </div>
+        </div>  
+        <div class="buttons flex-grow">
+            {#if whitelabel.tokenDetails.buttons.send.show}
+                <Button
+                    id={'transfer-token-btn'} 
+                    classes={'button__transparent button__overlay'}
+                    name={whitelabel.tokenDetails.buttons.send.name}
+                    padding={"12px"}
+                    margin={'0 15px 15px 0'}
+                    click={null} 
+                    icon={arrowUp}
+                />
+            {/if}
+            {#if whitelabel.tokenDetails.buttons.approve.show}
+                <Button
+                    id={'approve-token-btn'} 
+                    classes={'button__transparent button__overlay'}
+                    name={whitelabel.tokenDetails.buttons.approve.name}
+                    padding={"12px"}
+                    margin={'0 15px 15px 0'}
+                    click={null} 
+                    icon={copyWhite}
+                />
+            {/if}
+            {#if whitelabel.tokenDetails.buttons.options.show}
+                <Button 
+                    id={'modify-token-btn'} 
+                    classes={'button__transparent button__overlay'}
+                    icon={options}
+                    name={whitelabel.tokenDetails.buttons.options.name}
+                    padding={"12px"}
+                    margin={'0 15px 15px 0'}
+                    click={null}
+                />
+            {/if}
+        </div>
+    </div>
+    <div>
+        {#each accountList as account}
+            <Coin coin={account} {token}/>
+			<CoinDivider />
+        {/each}
+    </div>
+    <!--
+    {#if thisNetworkApproved && $currentNetwork.lamden}
+        <Charms dappInfo={dappInfo} />
+    {/if}
+
+    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions} /> 
+    -->
+</div>

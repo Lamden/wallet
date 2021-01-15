@@ -41,7 +41,6 @@ import CoinEditNickname from './coins/CoinEditNickname.svelte';
 import CoinDelete from './coins/CoinDelete.svelte'; 
 import CoinDeleting from './coins/CoinDeleting.svelte'; 
 import CoinHistory from  './coins/CoinHistory.svelte'; 
-import Token from './coins/Token.svelte';
 
 //Backup and Restore
 import Backup from './backup_restore/Backup.svelte';
@@ -127,6 +126,10 @@ import SwapsDisclaimer_TokensExchange from './swaps/SwapsDisclaimer_TokensExchan
 import SwapsDisclaimer_ExchangeTerms from './swaps/SwapsDisclaimer_ExchangeTerms.svelte';
 import ContinueSwap from './swaps/ContinueSwap.svelte';
 
+//Token
+import TokenDetails from './tokens/TokenDetails.svelte';
+import Token from './tokens/Token.svelte';
+
 
 export const RestorePages = {
     RestoreMain, 
@@ -172,6 +175,7 @@ export const SwapsPages = {
 
 export const Pages = { 
     CoinsMain, CoinDetails, 
+    TokenDetails,
     LockScreen, 
     BackupMain,
     SwapsMain, 
@@ -225,6 +229,7 @@ export {
     Menu, MenuBox, MenuItem,
     CoinsMain, 
     Coin, Token, CoinDivider, CoinDetails, CoinEmpty, CoinHistory, CoinAddToken, CoinAddAccount,
+    TokenDetails,
     DevToolsMain, DevToolsDocumentation, DevToolsNetworks,
     BackupMain,
     Restore,

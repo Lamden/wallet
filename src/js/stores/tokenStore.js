@@ -22,19 +22,21 @@
 import { writable, get, derived } from 'svelte/store';
 import { validateTypes } from 'types-validate-assert';
 
+import { networkKey } from './stores.js'
+
 export const createTokenStore = () => {
     let initialized = false;
 
     const getStore = () => {
         //Set the TokenStore to the value of the chome.storage.local
-        chrome.storage.local.get({"tokens": []}, function(getValue) {
+        chrome.storage.local.get({"tokens": {}}, function(getValue) {
             initialized = true;
             TokenStore.set(getValue.tokens)
         });
     }
 
     //Create Intial Store
-    const TokenStore = writable([]);
+    const TokenStore = writable({});
 
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
@@ -57,10 +59,15 @@ export const createTokenStore = () => {
         subscribe,
         set,
         update,
-        getByContractName: (contractName) => {
+        getByContractName: (networkObj, contractName) => {
             if (validateTypes.isStringWithValue(contractName)) return;
 
-            let foundToken = get(TokenStore).find(token => token.contractName === contractName)
+            let netkey = networkKey(networkObj)
+
+            let tokenStore = get(TokenStore)
+            if (!tokenStore[netkey]) return undefined;
+
+            let foundToken = tokenStore[netkey].find(token => token.contractName === contractName)
             return foundToken
         }
     };
@@ -70,6 +77,8 @@ export const TokenStore = createTokenStore();
 
 //Create a derived store to total all wallets
 export const tokensDropDown = derived(TokenStore, ($TokenStore) => {
+    null
+    /*
     let returnList = [{
         value: undefined,
         name: `Select Token`,
@@ -83,4 +92,5 @@ export const tokensDropDown = derived(TokenStore, ($TokenStore) => {
         })
     })
     return returnList
+    */
 });

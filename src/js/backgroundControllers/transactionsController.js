@@ -176,3 +176,41 @@ export const transactionsController = (utils, actions) => {
         sendCurrencyTransaction
     }
 }
+
+/*
+const txBatcher = (() => {
+    let queue = []
+    let sending = false
+
+    document.addEventListener('lamdenWalletTxStatus', (response) => {
+        // Set sending to false.
+        // Any Tx result will do, failed or success, as it means the tx hit he masternode at least
+        sending = false
+
+        // deal with response
+    });
+
+    const processTxQueue = async () => {
+        //Process a tx if there are items in the queue and we aren't currently sending
+        if (queue.length > 0 && !sending) {
+            //Call send transaction and then 
+            sendTrasaction(queue[0])
+        }
+    }
+
+    const sendTrasaction = async (txInfo) => {
+        // Send the transaction to the wallet
+        document.dispatchEvent(new CustomEvent('lamdenWalletSendTx', {details: JSON.stringify(txInfo)}));
+    }
+
+    //Check the queue every second
+    setInterval(processTxQueue, 1000)
+
+    return {
+        addToQueue: (txinfo) => queue.push(txInfo)
+    }
+})()
+
+txBatcher.addToQueue(txInfo)
+
+*/

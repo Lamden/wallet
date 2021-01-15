@@ -1,41 +1,9 @@
-
-/*
-TO DO
-    Only add tokens from mainnet contracts
-    
-    1. manage a storage object for tokens
-        - Add a new token
-        - Remove a token
-        - Update a token
-
-    2. Refresh token balances
-        - Get all account addresses currently in wallet
-        - For each token, get balance on each account
-        - Store balance associated to accounts
-
-    Storage:
-        tokens: 
-        [
-            {
-                symbol, 
-                name, 
-                contract_name, 
-                logo
-            }
-        ]
-        token_balances: {
-            <vk>: {
-                <contract_name>:{ balance }
-            }
-        }
-*/
-
 export const tokenController = (utils, actions) => {
-    let tokens = [];
+    let tokens = {};
     let token_balances = {};
 
     chrome.storage.local.get({
-        "tokens": [], 
+        "tokens": {}, 
         "token_balances": {}
     },
     function(getValue) {
@@ -172,22 +140,25 @@ export const tokenController = (utils, actions) => {
     }
 
     const tokenExists = (contractName, callback = undefined) => {
-        let token = tokens.find(token => token.contractName === contractName)
-        if (!token) {
-            if (callback) callback(false)
-            return false
+        let network = utils.networks.getCurrent()
+        let exists = true;
+        if (!tokens[network.networkKey]) exists = false;
+        else{
+            if (!tokens[network.networkKey].find(token => token.contractName === contractName)) exists = false;
         }
-        if (callback) callback(true)
-        return true
+        if (callback) callback(exists)
+        return exists
     }
 
     const addToken = async (tokenInfo, callback = undefined) => {
+        let network = utils.networks.getCurrent()
         let validatedContractInfo = await validateTokenContract(tokenInfo.contractName)
         if (!validatedContractInfo){
             if (callback) callback(false)
             return false
         }
-        tokens.push(tokenInfo)
+        if (!tokens[network.networkKey]) tokens[network.networkKey] = []
+        tokens[network.networkKey].push(tokenInfo)
         saveTokensToStorage()
         if (callback) callback(true)
         return true
@@ -198,8 +169,11 @@ export const tokenController = (utils, actions) => {
         let accounts = actions.getSanatizedAccounts()
         let network = utils.networks.getCurrent()
 
+        if (!tokens[network.networkKey]) return;
+        if (tokens[network.networkKey].length === 0) return;
+
         accounts.map(account => {
-            tokens.map(token => {
+            tokens[network.networkKey].map(token => {
                 keysToGet.push({
                     contractName: token.contractName,
                     variableName: "balances",
@@ -211,8 +185,9 @@ export const tokenController = (utils, actions) => {
         res = res.filter(f => f.value !== null).map(balance => {
             let contractName = balance.key.split(".")[0]
             let vk = balance.key.split(":")[1]
-            if (!token_balances[vk]) token_balances[vk] = {}
-            token_balances[vk][contractName] = utils.getValueFromReturn(balance.value)
+            if (!token_balances[network.networkKey]) token_balances[network.networkKey] = {}
+            if (!token_balances[network.networkKey][vk]) token_balances[network.networkKey][vk] = {}
+            token_balances[network.networkKey][vk][contractName] = utils.getValueFromReturn(balance.value)
         })
         if (callback) callback(token_balances)
         saveTokensBalancesToStorage()
@@ -228,7 +203,12 @@ export const tokenController = (utils, actions) => {
     }
 
     const reorderDown = (index, callback = undefined) => {
-        if (index >= (tokens.length - 1)) {
+        let network = utils.networks.getCurrent()
+        if (!tokens[network.networkKey]){
+            if (callback) callback(true)
+            return true
+        }
+        if (index >= (tokens[network.networkKey].length - 1)) {
             if (callback) callback(true)
             return true
         }
@@ -237,13 +217,15 @@ export const tokenController = (utils, actions) => {
     }
 
     const moveArrayItemToNewIndex = (old_index, new_index) => {
-        if (new_index >= tokens.length) {
-            var k = new_index - tokens.length + 1;
+        let network = utils.networks.getCurrent()
+        if (!tokens[network.networkKey]) return
+        if (new_index >= tokens[network.networkKey].length) {
+            var k = new_index - tokens[network.networkKey].length + 1;
             while (k--) {
-                tokens.push(undefined);
+                tokens[network.networkKey].push(undefined);
             }
         }
-        tokens.splice(new_index, 0, tokens.splice(old_index, 1)[0]);
+        tokens[network.networkKey].splice(new_index, 0, tokens[network.networkKey].splice(old_index, 1)[0]);
         saveTokensToStorage()
     };
 

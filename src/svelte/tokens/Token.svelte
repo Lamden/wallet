@@ -6,13 +6,13 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { tokenBalanceTotal } from '../../js/stores/stores.js';
+    import { tokenBalanceTotal, currentNetwork, networkKey } from '../../js/stores/stores.js';
 
     //Components
     import TokenLogo from '../components/TokenLogo.svelte';
 
     //Utils
-    import { displayBalance, formatValue, stringToFixed } from '../../js/utils.js'  
+    import { displayBalance, formatValue, stringToFixed, getTokenTotalBalance} from '../../js/utils.js'  
 
     const dispatch = createEventDispatcher()
 
@@ -21,7 +21,7 @@
 
     let logoSize = "25px"
 
-    $: balance = $tokenBalanceTotal[token.contractName] || "0"
+    $: balance = getTokenTotalBalance(networkKey($currentNetwork), token.contractName, $tokenBalanceTotal)
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -84,7 +84,7 @@
             <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
             <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
         </div>
-        <button class="button__text text-body2 details-button" >details</button>
+        <button class="button__text text-body2 details-button" on:click={() => switchPage('TokenDetails', token)}>details</button>
     </div>
 </div>
 

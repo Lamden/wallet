@@ -3,12 +3,13 @@ import { writable, get, derived } from 'svelte/store';
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
+import { networkKey } from './stores.js'
 import { Encoder } from '../utils.js'
 
 export const createTokenBalancesStore = () => {
     const getStore = () => {
         //Set the TokenTokenBalancesStore to the value of the chome.storage.local
-        chrome.storage.local.get({"token_balances": []}, function(getValue) {
+        chrome.storage.local.get({"token_balances": {}}, function(getValue) {
             TokenBalancesStore.set(getValue.token_balances)
         });
     }
@@ -36,30 +37,17 @@ export const createTokenBalancesStore = () => {
     return {
         subscribe,
         set,
-        update/*,
-        getBalance: (networkObj, vk) => {
+        update,
+        getNetworkTokenBalances: (networkObj) => {
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
             let netkey = networkKey(networkObj)
+            if (!validateTypes.isStringWithValue(netkey)) return {}
 
-            if (validateTypes.isStringWithValue(netkey) && validateTypes.isStringWithValue(vk)){
-                const balanceStore = get(TokenBalancesStore)
-                if (!balanceStore[netkey]) return Encoder('bigNumber', '0')
-                if (!balanceStore[netkey][vk]) return Encoder('bigNumber', '0')
-                if (!balanceStore[netkey][vk].balance) return Encoder('bigNumber', '0')
-                return Encoder('bigNumber', balanceStore[netkey][vk].balance)
-            }else{
-                return Encoder('bigNumber', '0');
-            }
-        },
-        refreshNetworkCache: (networkObj) => {
-            //Reject missing or undefined arguments
-            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
-            chrome.runtime.sendMessage({type: 'TokenBalancesStoreClearNetwork', data: networkObj.getNetworkInfo()})
-        },
-        refreshAllCache: () => {
-            chrome.runtime.sendMessage({type: 'TokenBalancesStoreClearAllNetworks'})
-        }*/
+            let tokenBalancesStore = get(TokenBalancesStore)
+            if (!tokenBalancesStore[netkey]) return {}
+            return tokenBalancesStore[netkey]
+        }
     };
 }
 //Create TokenBalancesStore instance
@@ -68,11 +56,15 @@ export const TokenBalancesStore = createTokenBalancesStore();
 //Create a derived store to total all wallets
 export const tokenBalanceTotal = derived(TokenBalancesStore, ($TokenBalancesStore) => {
     let totals = {};
-    Object.keys($TokenBalancesStore).forEach(vk =>{
-        Object.keys($TokenBalancesStore[vk]).forEach(token => {
-            if (!totals[token]) totals[token] = Encoder('bigNumber', $TokenBalancesStore[vk][token])
-            else totals[token] = totals[token].plus($TokenBalancesStore[vk][token])
+    Object.keys($TokenBalancesStore).forEach(network =>{
+        Object.keys($TokenBalancesStore[network]).forEach(vk =>{
+            Object.keys($TokenBalancesStore[network][vk]).forEach(token => {
+                if (!totals[network]) totals[network] = {}
+                if (!totals[network][token]) totals[network][token] = Encoder('bigNumber', $TokenBalancesStore[network][vk][token])
+                else totals[network][token] = totals[network][token].plus($TokenBalancesStore[network][vk][token])
+            })
         })
     })
+
     return totals;
 });
