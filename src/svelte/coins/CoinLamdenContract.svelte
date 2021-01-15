@@ -26,9 +26,13 @@
     //Props
     export let coin;
     export let currentPage;
+    export let accountList;
+    export let startingContract;
+    export let startingMethod;
 
     const MethodStore = writable([])
     const MethodArgsStore = writable([])
+    let initializedStartingMethod = false;
     let selectedWallet;
     let contractError = false;
     let transaction;
@@ -74,12 +78,19 @@
 
     const methodList = (methods) => {
         if (!methods) return [];
-        return methods.map(method => {
+        let returnList = methods.map(method => {
             return {
                 value: method,
                 name: `${method.name}`,
             }
         })
+        if (startingMethod && !initializedStartingMethod){
+            returnList.map(method => {
+                if (method.value.name === startingMethod) method.selected = true;
+                return method;
+            })
+        }
+        return returnList
     }
 
     const setArgs = (method) => {
@@ -175,7 +186,7 @@
 <div class="send-lamden flex-column" class:hide={currentPage !== 'CoinLamdenContract'}>
     <h2> Make a {whitelabel.companyName} Transaction</h2>
     <DropDown  
-        items={coinList()} 
+        items={accountList || coinList()} 
         id={'mycoins'} 
         label={'Select Account to Send From'}
         required={true}
@@ -202,7 +213,7 @@
         <InputBox
             id="contract-input"
             width="100%"
-            value={contractName}
+            value={startingContract || contractName}
             bind:thisInput={contractNameField}
             label={"Enter Contract Name"}
             margin="0 0 1rem 0"

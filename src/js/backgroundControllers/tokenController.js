@@ -168,7 +168,7 @@ export const tokenController = (utils, actions) => {
         let keysToGet = [] 
         let accounts = actions.getSanatizedAccounts()
         let network = utils.networks.getCurrent()
-
+        console.log({accounts, network})
         if (!tokens[network.networkKey]) return;
         if (tokens[network.networkKey].length === 0) return;
 
@@ -181,7 +181,9 @@ export const tokenController = (utils, actions) => {
                 })
             })
         })
+        console.log({accounts})
         let res = await network.blockExplorer_API.getKeys(keysToGet)
+        console.log(res)
         res = res.filter(f => f.value !== null).map(balance => {
             let contractName = balance.key.split(".")[0]
             let vk = balance.key.split(":")[1]

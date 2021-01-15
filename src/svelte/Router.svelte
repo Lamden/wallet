@@ -128,6 +128,7 @@ import ContinueSwap from './swaps/ContinueSwap.svelte';
 
 //Token
 import TokenDetails from './tokens/TokenDetails.svelte';
+import TokenLamdenSend from './tokens/TokenLamdenSend.svelte';
 import Token from './tokens/Token.svelte';
 
 
@@ -208,7 +209,7 @@ export const Components = {
 };
 
 export const Modals = {
-    CoinLamdenSend, 
+    CoinLamdenSend, TokenLamdenSend,
     CoinModify, CoinOptions, CoinDelete, CoinEditNickname,
     CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
     CoinLamdenContract,

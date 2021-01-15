@@ -161,7 +161,7 @@
         {#if whitelabel.mainPage.account_info.show}
             <div class="name text text-body1">
                 <div class="name-box">
-                    <div class="text-body1 ">
+                    <div class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
                         {#if dappInfo}
                             {`${dappInfo.appName}`}
                         {:else}
@@ -198,12 +198,14 @@
         {/if}
     </div>
     <div class="flex-row flex-center-end">
+    <!--
         {#if !token}
             <div class="flex-row show-on-hover">
                 <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
                 <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
             </div>
-        {/if}
+            
+        {/if}-->
         <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
     </div>
 </div>

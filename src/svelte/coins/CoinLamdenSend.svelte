@@ -71,7 +71,11 @@
     }
 </script>
 
-<CoinLamdenContract {coin} currentPage={steps[currentStep - 1].page} on:contractDetails={(e) => saveTxDetails(e)} />
+<CoinLamdenContract 
+    {coin} 
+    currentPage={steps[currentStep - 1].page} 
+    on:contractDetails={(e) => saveTxDetails(e)} 
+/>
 {#if currentStep > 1}
     <svelte:component this={Modals[steps[currentStep - 1].page]} 
                       result={resultInfo} 

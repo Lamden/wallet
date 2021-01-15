@@ -259,7 +259,8 @@ const stringToFixed = (value, precision) => {
         return `${values[0]}.${values[1].substring(0, precision)}`
       }
     }
-  }
+}
+const displayBalanceToFixed = (value, precision) => displayBalance(stringToFixed(value, precision))
 
 const getTokenTotalBalance = (netKey, contractName, tokenBalanceTotals) => {
     console.log({netKey, contractName, tokenBalanceTotals})
@@ -275,17 +276,21 @@ const getTokenBalance = (netKey, vk, contractName, tokenBalancesStore) => {
     return tokenBalancesStore[netKey][vk][contractName]
 }
 
+const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
+    return account.substring(0, lsize) + '...' + account.substring(account.length - rsize)
+  }
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject, hashStringValue,
     formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
     Encoder, encodeLocaleDateTime, encodeUTCDateTime, encodeLocaleTimeDelta, 
-    displayBalance,
+    displayBalance, displayBalanceToFixed,
     getKeyValue, 
     createCharmKey,
     formatValue,
     stringToFixed,
     getTokenTotalBalance,
-    getTokenBalance
+    getTokenBalance, formatAccountAddress
   }

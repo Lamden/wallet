@@ -33,7 +33,7 @@
 
 <style>
 .row-box{
-    padding: 0.25rem 28px 0.25rem 16px;
+    padding: 0.5rem 28px 0.5rem 16px;
 }
 
 .text{
@@ -70,7 +70,7 @@
         </div>
     {/if}
     {#if whitelabel.mainPage.token_columns.token_name.show}
-        <div class="name text text-body2">
+        <div class="name nickname text text-body2" on:click={() => switchPage('TokenDetails', token)}>
             {`${token.tokenName}`}
         </div>
     {/if}

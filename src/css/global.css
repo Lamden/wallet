@@ -236,6 +236,31 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
     font-weight: 800;
 }
 
+.mt-1{
+    margin-top: 1rem;
+}
+
+.mtb-1{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.mt-half{
+    margin-top: 0.5rem;
+}
+
+.mtb-half{
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.mt-quarter{
+    margin-top: 1rem;
+}
+
+.mtb-quarter{
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
 .fill-font-primary{
     fill: var(--font-primary)
 }
@@ -359,6 +384,8 @@ h6{
     letter-spacing: 0.75px;
     text-transform: uppercase;
 }
+
+button:focus { outline: none; }
 
 .button__solid{
     display: flex;
@@ -848,8 +875,8 @@ button {
     transform: rotate(45deg);
   }
 
-.row-box:hover{
-    background-color: var(--bg-secondary)
+.row-box:hover .nickname{
+    text-decoration: underline;
 }
 
 .show-on-hover{
@@ -860,3 +887,6 @@ button {
     display: flex;
 }
 
+.row-box .nickname {
+    cursor: pointer;
+}

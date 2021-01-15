@@ -55,7 +55,6 @@
     const createAccountList = () => {
         let acountsWithBalances = []
         if (!$TokenBalancesStore[netKey]) return acountsWithBalances
-
         Object.keys($TokenBalancesStore[netKey]).forEach(vk => {
             console.log({
                 vk,
@@ -78,13 +77,22 @@
         })
     }
 
-    const handleRefresh = () => {
+    const handleRefresh = (delay = 0) => {
         if (refreshing) return
-		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
+		setTimeout(chrome.runtime.sendMessage({type: 'refreshTokenBalances'}), delay)
 		refreshing = true
 		setTimeout(() => {
             refreshing = false
 		}, 2000);
+    }
+
+    const handleOpenTxWindow = (txMethod, account = undefined) => {
+        openModal('TokenLamdenSend', {
+            token, 
+            coin: account,
+            txMethod,
+            refreshTx: () => handleRefresh(2000)
+        })
     }
 </script>
 
@@ -165,7 +173,7 @@
                     name={whitelabel.tokenDetails.buttons.send.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
-                    click={null} 
+                    click={() => handleOpenTxWindow('transfer', undefined)}
                     icon={arrowUp}
                 />
             {/if}
@@ -176,7 +184,7 @@
                     name={whitelabel.tokenDetails.buttons.approve.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
-                    click={null} 
+                    click={() => handleOpenTxWindow('approve', undefined)}
                     icon={copyWhite}
                 />
             {/if}
@@ -196,6 +204,13 @@
     <div>
         {#each accountList as account}
             <Coin coin={account} {token}/>
+            <!--
+            <div class="flex-row flex-center-end" style="margin-right: 28px;">
+                <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'transfer')} >transfer</button>
+                <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'approve')} >approve</button>
+                <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'tansfer_from')} >transfer from</button>
+            </div>
+            -->
 			<CoinDivider />
         {/each}
     </div>

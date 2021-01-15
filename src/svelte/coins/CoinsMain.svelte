@@ -9,7 +9,8 @@
 			TokenStore,
 			balanceTotal,
 			currentNetwork,
-			networkKey
+			networkKey,
+			SettingsStore
 		} from '../../js/stores/stores.js';
 
 	//Components
@@ -44,7 +45,8 @@
 		token.id = index
 		return token
 	}) : [];
-	$: output = console.log(tokenStorage)
+	$: output = console.log($SettingsStore)
+	$: hideTokens = $SettingsStore.hideTokens ? true : false;
 
 	onMount(() => {
 		handleRefresh();
@@ -108,7 +110,12 @@
 				orderingLocked = false;
 			})
 		}
-    }
+	}
+	
+	const handleHideTokens = () =>{
+		if (!$SettingsStore.hideTokens) SettingsStore.hideTokens(true)
+		else SettingsStore.hideTokens(false)
+	}
 
 </script>
 
@@ -189,6 +196,16 @@ p{
 .logo-space{
 	margin-left: 84px;
 }
+.hide-tokens-button{
+	border: 1px solid transparent;
+	color: var(--primary-color);
+	margin-right: 28px; 
+	padding: 2px 6px;
+}
+.hide-tokens-button:hover{
+	border: 1px solid var(--font-primary);
+	filter: brightness(110%);
+}
 </style>
 
 <div class="coinsmain text-primary">
@@ -224,15 +241,31 @@ p{
 		{#if tokenStorage.length > 0 && whitelabel.enableTokens}
 			<div class="header header-text divider text-body1 weight-300">
 				{#if whitelabel.mainPage.token_columns.token_name.show}
-					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.token_columns.token_name.title}</div>
+					<div class:logo-space={whitelabel.mainPage.logo.show} 
+						 class="header-name header-text"
+						 class:text-primary-dim={hideTokens}>
+						 {whitelabel.mainPage.token_columns.token_name.title}
+					</div>
 				{/if}
 				{#if whitelabel.mainPage.token_columns.token_amount.show}
-					<div class="header-amount header-text">{whitelabel.mainPage.token_columns.token_amount.title}</div>
+					<div class="header-amount header-text"
+						 class:text-primary-dim={hideTokens}>
+						{whitelabel.mainPage.token_columns.token_amount.title}
+					</div>
+				{/if}
+				{#if whitelabel.mainPage.token_columns.token_amount.show}
+					<button class="button__text hide-tokens-button text-body1 weight-200" on:click={handleHideTokens}>{hideTokens ? "show" : "hide"}</button>
 				{/if}
 			</div>
-			{#each tokenStorage as token (token.id) }
-				<Token {token} on:reorderToken={handleReorderToken}/>
-			{/each}
+			{#if !hideTokens}
+				{#each tokenStorage as token (token.id) }
+					<Token {token} on:reorderToken={handleReorderToken}/>
+				{/each}
+			{:else}
+				<div class="text-primary-dim text-body2 flex-row flex-center-center mb-half">
+					{`${tokenStorage.length} ${tokenStorage.length === 1 ? 'token' : 'tokens'} hidden`}
+				</div>
+			{/if}
 		{/if}
 		{#if coinStorage.length === 0}
 			<CoinEmpty />
