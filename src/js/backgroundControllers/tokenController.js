@@ -27,10 +27,12 @@ export const tokenController = (utils, actions) => {
             if (callback) callback(false)
             return false
         }
-        if (!tokenVariablesAreValid(contractInfo.variables)) {
+        /* // Removed as requirement
+         if (!tokenVariablesAreValid(contractInfo.variables)) {
             if (callback) callback(false)
             return false
         }
+        */
         if (!tokenHashesAreValid(contractInfo.hashes)) {
             if (callback) callback(false)
             return false
@@ -55,10 +57,6 @@ export const tokenController = (utils, actions) => {
             },
             "balance_of":{
                 "account":"str"
-            },
-            "main_balance_of":{
-                "main_account": "str",
-                "account": "str"
             },
             "transfer_from":{
                 "amount": "float",
@@ -91,6 +89,8 @@ export const tokenController = (utils, actions) => {
         })
         return validateMethods.every((val) => val === true)
     }
+/*
+    // Removed as requirement
 
     const tokenVariablesAreValid = (contractVariables) => {
         const requiredVariables = ["token_name", "token_symbol"]
@@ -98,7 +98,7 @@ export const tokenController = (utils, actions) => {
         return validateVariables.every((val) => val === true)
 
     }
-
+*/
     const tokenHashesAreValid = (contractHashes) => {
         const requiredHashes = ["balances"]
         let validateHashes = requiredHashes.map(hashName => contractHashes.includes(hashName))
@@ -164,11 +164,48 @@ export const tokenController = (utils, actions) => {
         return true
     }
 
+    const updateToken = async (tokenInfo, callback = undefined) => {
+        console.log(tokenInfo)
+        let network = utils.networks.getCurrent()
+        tokens[network.networkKey] = tokens[network.networkKey].map((token) => {
+            if (token.contractName === tokenInfo.contractName) return tokenInfo
+            return token
+        })
+        console.log(tokens[network.networkKey])
+        saveTokensToStorage()
+        if (callback) callback(true)
+        return true
+    }
+
+    const deleteTokenOne = async (tokenInfo, callback = undefined) => {
+        let network = utils.networks.getCurrent()
+        const before = tokens[network.networkKey].length
+        tokens[network.networkKey].forEach((token, index) => {
+            if (token.contractName === tokenInfo.contractName) tokens[network.networkKey].splice(index, 1);
+        })
+        if (tokens[network.networkKey].length < before){  
+            saveTokensToStorage();
+            if (callback) callback(true)
+            return true
+        }else{
+            if (callback) callback(false)
+            return false
+        }
+    }
+
+    const deleteTokenAll = async (callback = undefined) => {
+        let network = utils.networks.getCurrent()
+        tokens[network.networkKey] = []
+        saveTokensToStorage();
+        if (callback) callback(true)
+        return true
+    }
+
     const refreshTokenBalances = async (callback = undefined) => {
         let keysToGet = [] 
         let accounts = actions.getSanatizedAccounts()
         let network = utils.networks.getCurrent()
-        console.log({accounts, network})
+
         if (!tokens[network.networkKey]) return;
         if (tokens[network.networkKey].length === 0) return;
 
@@ -181,17 +218,17 @@ export const tokenController = (utils, actions) => {
                 })
             })
         })
-        console.log({accounts})
+
         let res = await network.blockExplorer_API.getKeys(keysToGet)
-        console.log(res)
+        let newBalances = {}
         res = res.filter(f => f.value !== null).map(balance => {
             let contractName = balance.key.split(".")[0]
             let vk = balance.key.split(":")[1]
-            if (!token_balances[network.networkKey]) token_balances[network.networkKey] = {}
-            if (!token_balances[network.networkKey][vk]) token_balances[network.networkKey][vk] = {}
-            token_balances[network.networkKey][vk][contractName] = utils.getValueFromReturn(balance.value)
+            if (!newBalances[vk]) newBalances[vk] = {}
+            newBalances[vk][contractName] = utils.getValueFromReturn(balance.value)
         })
-        if (callback) callback(token_balances)
+        token_balances[network.networkKey] = newBalances
+        if (callback) callback(newBalances)
         saveTokensBalancesToStorage()
     }
 
@@ -235,7 +272,7 @@ export const tokenController = (utils, actions) => {
     const saveTokensBalancesToStorage = () => chrome.storage.local.set({"token_balances": token_balances})
 
     return {
-        addToken,
+        addToken, updateToken, deleteTokenOne, deleteTokenAll,
         validateTokenContract,
         getTokenMeta,
         tokenExists,

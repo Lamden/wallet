@@ -163,6 +163,18 @@ export const messagesHandler = (masterController) => {
                         masterController.tokens.addToken(message.data, sendResponse)
                         return true;
                     }
+                    if (message.type === 'updateToken') {
+                        masterController.tokens.updateToken(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'deleteTokenOne') {
+                        masterController.tokens.deleteTokenOne(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'deleteTokenAll') {
+                        masterController.tokens.deleteTokenAll(sendResponse)
+                        return true;
+                    }
                     if (message.type === 'validateTokenContract') {
                         masterController.tokens.validateTokenContract(message.data, sendResponse)
                         return true;

@@ -299,6 +299,9 @@ export const masterController = () => {
         },
         "tokens": {
             addToken: tokens.addToken,
+            updateToken: tokens.updateToken,
+            deleteTokenOne: tokens.deleteTokenOne,
+            deleteTokenAll: tokens.deleteTokenAll,
             validateTokenContract: tokens.validateTokenContract,
             getTokenMeta: tokens.getTokenMeta,
             tokenExists: tokens.tokenExists,

@@ -95,9 +95,11 @@
 
 <style>
 .row-box{
-    padding: 1rem 28px 0.5rem 16px;
+    padding: 1.5rem 28px 0.25rem 16px;
 }
-
+.coin-main-row{
+    margin-bottom: 0.5rem;
+}
 .text{
     display: flex;
     align-items: center;
@@ -172,7 +174,7 @@
     on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
     >
-    <div class="flex-row flex-center-center">
+    <div class="coin-main-row flex-row flex-center-center">
         {#if whitelabel.mainPage.logo.show}
             <div class="logo flex-center-center">
                 {#if dappInfo}
@@ -249,7 +251,9 @@
                 {/if}
             </div>
         </div>
-        <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
+        <!--
+            <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
+        -->
     </div>
 </div>
 

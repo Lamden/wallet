@@ -6,7 +6,7 @@
     import charm_default from '../../img/misc/charm_default.svg';
 
     //Utils
-    import { getKeyValue, createCharmKey, formatValue } from '../../js/utils.js'
+    import { getKeyValue, createCharmKey, formatValue, repalceVariablesInIconPath } from '../../js/utils.js'
 
     //Props
     export let charmInfo;
@@ -26,7 +26,8 @@
     $: format = charmInfo.formatAs || 'number'
     $: value = getItemValue(charmInfo)
     $: defaultValue = formats[format].default
-    $: iconPath = charmInfo.iconPath || false
+    $: iconPath = repalceVariablesInIconPath(charmInfo.iconPath, vk) || false
+    $: log = console.log(iconPath)
     
     const getItemValue = async (info) => {
         let res = await getKeyValue($currentNetwork, contractName, info.variableName, createCharmKey(info, vk), format)

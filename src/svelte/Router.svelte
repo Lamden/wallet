@@ -130,6 +130,11 @@ import ContinueSwap from './swaps/ContinueSwap.svelte';
 import TokenDetails from './tokens/TokenDetails.svelte';
 import TokenLamdenSend from './tokens/TokenLamdenSend.svelte';
 import Token from './tokens/Token.svelte';
+import TokenModify from './tokens/TokenModify.svelte';
+import TokenOptions from './tokens/TokenOptions.svelte';
+import TokenDelete from './tokens/TokenDelete.svelte';
+import TokenDeleting from './tokens/TokenDeleting.svelte';
+import TokenEditDetails from './tokens/TokenEditDetails.svelte';
 
 
 export const RestorePages = {
@@ -205,12 +210,13 @@ export const Components = {
     Transaction,
     Kwargs, Kwarg,
     SwapsStatus, SwapStatus,
-    TokenLogo
+    TokenLogo, TokenEditDetails
 };
 
 export const Modals = {
     CoinLamdenSend, TokenLamdenSend,
-    CoinModify, CoinOptions, CoinDelete, CoinEditNickname,
+    CoinModify, CoinOptions, CoinDelete, CoinDeleting, CoinEditNickname,
+    TokenModify, TokenOptions, TokenDelete, TokenDeleting,
     CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
     CoinLamdenContract,
     CoinAdd, CoinAddDetails,
@@ -218,7 +224,6 @@ export const Modals = {
     CoinSendingTx,
     ResultBox,
     MessageBox,
-    CoinDeleting,
     DevToolsDeleteNetwork,
     IdeModelNewTab, 
     IdeModelSubmit, IdeSubmitContract, 

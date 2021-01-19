@@ -196,7 +196,7 @@
                     name={whitelabel.tokenDetails.buttons.options.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
-                    click={null}
+                    click={() => openModal('TokenModify', token)}
                 />
             {/if}
         </div>

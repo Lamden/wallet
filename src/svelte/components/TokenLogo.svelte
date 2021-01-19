@@ -13,7 +13,7 @@
 
     $: placeholderLogo = !svgLogo && !pngLogo && !urlLogo ? genericIcon_base64_svg : undefined;
 
-    $: log = console.log(tokenMeta)
+    $: log = console.log({tokenMeta, svgLogo, pngLogo, urlLogo})
 </script>
 
 {#if placeholderLogo}   
@@ -25,7 +25,7 @@
 {/if}
 
 {#if pngLogo}   
-    <img style={`margin: ${margin};`} {width} {height} src="{`data:image/png+xml;base64,${pngLogo}`}" alt="token logo"/>
+    <img style={`margin: ${margin};`} {width} {height} src="{`data:image/png;base64,${pngLogo}`}" alt="token logo"/>
 {/if}
 
 {#if urlLogo}   

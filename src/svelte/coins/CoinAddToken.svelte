@@ -6,7 +6,7 @@
 
     //Components
     import { Components } from '../Router.svelte';
-    const { InputBox, TokenLogo} = Components;
+    const { InputBox, Button, TokenEditDetails, Loading} = Components;
 
     //Context
     const { closeModal } = getContext('app_functions');
@@ -15,40 +15,84 @@
     //DOM NODES
     let formObj
     
-    let contractName = ""
-    let tokenName = ""
-    let tokenMeta;
-    let tokenSymbol = ""
+    
+    let contractName
     let error = null
-    let contractChecker;
-    let contractValid = null;
+    let contractChecker
+    let contractValid = null
+    
+    let tokenMeta = undefined
+    let newTokenMeta = undefined; 
+
+    let loadingData = false;
 
     const returnMessageButtons = [
             {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
             {id: "another-btn", name: 'Add Another', click: () => tokenPage(), class: 'button__solid'}
         ]
-    
+
+    const createNewMetaObject = (update = undefined) => {
+        let newObj  = {contractName};
+        if (update) {
+            if (update.tokenName) newObj.tokenName = update.tokenName
+            if (update.tokenSymbol) newObj.tokenSymbol = update.tokenSymbol
+            if (update.logo_base64_svg) {
+                newObj.logo_base64_svg = update.logo_base64_svg
+                newObj.logo_base64_png = null
+            }
+            if (update.logo_base64_png) {
+                newObj.logo_base64_png = update.logo_base64_png
+                newObj.logo_base64_svg = null
+            }
+        }
+        newTokenMeta =  {...tokenMeta, ...newObj}
+    }
+
     const handleSubmit = (e) => {
-        addToken(Object.assign(tokenMeta, {tokenSymbol, tokenName, contractName}))
+        addToken(newTokenMeta)
+    }
+
+    const handleInputKeyUp = () => {
+        error = ""
+        clearTokenMeta()
     }
 
     const handleContractInput = (e) => {
         error = null
-        tokenExists(contractName).then(exists => {
-            if (!exists){
-                 validateTokenContract()
-            }else{
-                error = "ALREADY ADDED"
-            }
-        })
+        contractName = e.detail.target.value
+        if (contractName.length > 0){
+            tokenExists(contractName).then(exists => {
+                if (!exists){
+                    validateTokenContract()
+                }else{
+                    error = "Token already in Wallet"
+                }
+            })
+        }
     }
+
+    const handleTokenDetailsChanged = (e) => createNewMetaObject(e.detail)
     
     const validateTokenContract = () => {
+        error = null
         const nameToCheck = contractName.slice();
         chrome.runtime.sendMessage({type: 'validateTokenContract', data: nameToCheck}, (result) => {
             contractValid = result
             if (contractValid) getTokenMeta(nameToCheck)
-            else clearTokenMeta()
+            else {
+                error = "Invalid Token Contract"
+                clearTokenMeta()
+            }
+        })
+    }
+    const getTokenMeta = (contract) => {
+        loadingData = true;
+        chrome.runtime.sendMessage({type: 'getTokenMeta', data: contract}, (result) => {
+            loadingData = false;
+            if (result){
+                tokenMeta = result
+                createNewMetaObject()
+            }
         })
     }
 
@@ -69,17 +113,10 @@
         })
     }
 
-    const getTokenMeta = (contract) => {
-        chrome.runtime.sendMessage({type: 'getTokenMeta', data: contract}, (result) => {
-            if (result){
-                tokenMeta = result
-                tokenName = result.tokenName
-                tokenSymbol = result.tokenSymbol
-            }
-        })
+    const clearTokenMeta = () => {
+        tokenMeta = undefined;
+        newTokenMeta = undefined;
     }
-
-    const clearTokenMeta = () => tokenName = tokenSymbol = ""
 
     const sendMessage = (returnMessage) => {
         returnMessage.buttons = returnMessageButtons
@@ -94,72 +131,59 @@
 </script>
 
 <style>
-    .token-logo-box{
-        padding: 20px;
-        border: 1px solid var(--outline);
-    }
-    .token-meta-left{
-        flex-grow: 1;
-        margin-right: 2rem;
-    }
-    .token-meta-right{
-        margin-top: 1rem;
+    .token-meta-box-dim{
+        filter: var(--componet-disabled);
     }
 
-    .submit-button-box{
+    .button-box{
         flex-grow: 1;
         justify-content: flex-end;
         align-items: center;
         padding-bottom: 20px;
     }
 
+    .loading-box{
+        width: 50px;
+    }
+
 </style>
 
-<form  class="flex-column" on:submit|preventDefault={handleSubmit} 
-    target="_self" bind:this={formObj}>
-        <h3 class="header">Enter Token Information</h3>
-
+<div class="flex-column" >
+    <h3 class="header">Enter Token Information</h3>
+    <div class="flex-row flex-align-center">
         <InputBox
             id={"contract_name"}
             margin="0 0 2rem 0"
             on:changed={handleContractInput}
-            bind:value={contractName}
+            on:keyup={handleInputKeyUp}
+            warningMsg={error || ""}
             placeholder={`Enter Token Contract Name`}
             label={"Contract Name"}
         />
-
-        <div class="flex-row">
-            <div class="token-meta-left">
-                <InputBox
-                    id={"nickname"}
-                    margin="0 0 2rem 0"
-                    bind:value={tokenName}
-                    placeholder={`Enter Token Name`}
-                    label={"Token Name"}
-                    disabled={!contractValid}
-                />
-
-                <InputBox
-                    id={"nickname"}
-                    margin="0 0 2rem 0"
-                    bind:value={tokenSymbol}
-                    placeholder={`Enter Token Symbol`}
-                    label={"Token Symbol"}
-                    disabled={!contractValid}
-                />
-            </div>
-            <div class="token-meta-right">
-                <div class="token-logo-box flex-center-center">
-                    <TokenLogo {tokenMeta} width="80px" />
-                </div>
-            </div>
+        <div class="loading-box flex-row flex-center-center">
+            {#if loadingData}
+                <Loading width="30px" mainStyle="margin: -16px 0 0 12px;"/>
+            {/if}
         </div>
+    </div>
 
-        <div class={"submit-button-box flex-column"}>
-            <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" 
-                   type="submit" 
-                   value={error || "Add Token"}
-                   disabled={tokenName === "" || tokenSymbol === "" || error}
-            >
-        </div>
-</form>
+    <div class:token-meta-box-dim={error !== null || !tokenMeta}>
+        <TokenEditDetails 
+            tokenMeta={newTokenMeta} 
+            on:changed={handleTokenDetailsChanged} 
+            disableInputs={!contractValid && !tokenMeta} 
+            {error}
+        />
+    </div>
+
+    <div class={"button-box flex-column"}>
+        <Button 
+            id={"add-token-btn"}
+            classes={'button__solid button__primary'} 
+            width={'260px'}
+            name={"Add Token"} 
+            click={handleSubmit}
+
+            disabled={(!contractValid && !tokenMeta )|| error}/>  
+    </div>
+</div>

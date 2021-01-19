@@ -74,11 +74,6 @@
 </script>
 
 <style>
-
-#filePicker{
-    display: none;
-}
-
 .caption-box{
     display: inline;
     margin: 16px 0 20px 0;

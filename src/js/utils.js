@@ -218,6 +218,17 @@ const createCharmKey = (info, vk) => {
     return key;
 }
 
+const repalceVariablesInIconPath = (iconPath, vk) => {
+    if (!iconPath) return false
+    const variableMapping = {
+        '<wallet vk>': vk
+    }
+    Object.keys(variableMapping).forEach(variable => {
+        iconPath = iconPath.replace(variable, variableMapping[variable])
+    })
+    return iconPath
+}
+
 const formatValue = (value, format = undefined) => {
     if (!format) return value
     if (format === 'number' && typeof value === 'string') return stripTrailingZero(value)
@@ -283,7 +294,7 @@ module.exports = {
     Encoder, encodeLocaleDateTime, encodeUTCDateTime, encodeLocaleTimeDelta, 
     displayBalance, displayBalanceToFixed,
     getKeyValue, 
-    createCharmKey,
+    createCharmKey, repalceVariablesInIconPath,
     formatValue,
     stringToFixed,
     getTokenTotalBalance,
