@@ -7,7 +7,6 @@ const fetch = require('node-fetch').default;
 export class LamdenBlockexplorer_API{
     constructor(url){
         if (!validateTypes.isStringWithValue(url)) throw new Error(`Need blockexplorer URL`)
-
         this.url = url;        
     }
 
@@ -47,8 +46,10 @@ export class LamdenBlockexplorer_API{
     }
 
     async getKeys(data){
+        console.log(this)
         let path = '/states/history/getKeys'
         return this.send('POST', path, JSON.stringify(data), undefined, (res, err) => {
+            console.log(res)
             if (err) return;
             return res
         })

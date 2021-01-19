@@ -21,7 +21,7 @@ export const networkController = (utils) => {
     }
 
     const addBlockexplorer = (networkObj) => {
-        networkObj.blockExplorer_API = new LamdenBlockexplorer_API('http://localhost:1337')
+        networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
     }
 
     const addExtras = (networkObj) => {

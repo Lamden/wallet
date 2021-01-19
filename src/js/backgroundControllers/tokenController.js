@@ -221,7 +221,7 @@ export const tokenController = (utils, actions) => {
                 })
             })
         })
-
+        console.log({network, keysToGet})
         let res = await network.blockExplorer_API.getKeys(keysToGet)
         let newBalances = {}
         res = res.filter(f => f.value !== null).map(balance => {
