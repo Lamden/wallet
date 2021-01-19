@@ -29,14 +29,7 @@
 <div class="token-delete">
     <h2> {`Delete ${token.tokenName} (${token.tokenSymbol})`}  </h2>
     <p class="text-body1">Are you sure?</p>
-    <div class="buttons flex-column">
-        <Button 
-            id={"back-btn"}
-            classes={'button__solid buttom__primary'} 
-            width={'260px'}
-            margin={'10px 0 0 0'}
-            name="No" 
-            click={home} />  
+    <div class="buttons flex-column"> 
         <Button 
             id={"delete-token-btn"}
             classes={'button__solid button__red'} 

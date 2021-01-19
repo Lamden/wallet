@@ -42,6 +42,7 @@ export const tokenController = (utils, actions) => {
     }
 
     const tokenMethodsAreValid = (contractMethods) => {
+        console.log(contractMethods)
         const requiredMethods = {
             "transfer": {
                 "amount": "float",
@@ -100,6 +101,7 @@ export const tokenController = (utils, actions) => {
     }
 */
     const tokenHashesAreValid = (contractHashes) => {
+        console.log(contractHashes)
         const requiredHashes = ["balances"]
         let validateHashes = requiredHashes.map(hashName => contractHashes.includes(hashName))
         return validateHashes.every((val) => val === true)
@@ -110,6 +112,7 @@ export const tokenController = (utils, actions) => {
         let network = utils.networks.getCurrent()
 
         let contractInfo = await network.API.getContractInfo(contractName)
+        console.log(contractInfo)
         if (contractInfo.error) return false
         let contractDetails = await Promise.all([
             await network.API.getContractVariables(contractName),

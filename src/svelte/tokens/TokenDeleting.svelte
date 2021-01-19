@@ -35,7 +35,6 @@
         })
         .then(res => {
             if (res){
-                appHome()
                 setResult(successResult)
             }else{
                 setResult(failedResult)

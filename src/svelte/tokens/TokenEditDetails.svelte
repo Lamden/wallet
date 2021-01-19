@@ -30,6 +30,7 @@
         if (!meta) return true;
         return !meta.logo_base64_svg && !meta.logo_base64_png && !meta.logo_url && !uploaded
     }
+
     const clearLogoMeta = () => {
         logo_base64_svg = undefined
         logo_base64_png = undefined
@@ -68,6 +69,7 @@
     }
 
     const convertToBase64 = async (fileObj) => {
+        console.log(fileObj)
         logoError = null;
         clearLogoMeta();
         const reader = new FileReader();
@@ -80,6 +82,7 @@
                 console.log({width: image.width, height: image.height})
                 if (image.width <= 192 && image.height <= 192){
                     logo_base64_png = b64
+                    logo_base64_svg = null
                     uploadLogo = true;
                 }else{
                     logoError = "image size maximum 192x192"
@@ -89,10 +92,11 @@
 
             if (fileObj.type === "image/svg+xml") {
                 logo_base64_svg = b64
+                logo_base64_png = null
                 uploadLogo = true;
                 dispatchNewValues()
             }
-            if (fileObj.type === "image/png")image.src = `data:image/png;base64,${b64}`
+            if (fileObj.type === "image/png") image.src = `data:image/png;base64,${b64}`
         };
         reader.readAsDataURL(fileObj);
     }

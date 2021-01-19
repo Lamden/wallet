@@ -33,15 +33,17 @@
     /*padding-top: 65px;*/
     /*margin: 1rem 0 2rem;*/
     margin: 3rem 0 0.5rem;
+    width: 100%;
 }
 
 .icon{
     margin-right: 14px;
-    width: 22px;
+    min-width: 30px;
+    margin-top: -4px;
 }
 
 .checkmark{
-    width: 37px;
+    min-width: 30px;;
 }
 
 .buttons{

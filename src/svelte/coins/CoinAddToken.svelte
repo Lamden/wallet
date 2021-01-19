@@ -8,6 +8,9 @@
     import { Components } from '../Router.svelte';
     const { InputBox, Button, TokenEditDetails, Loading} = Components;
 
+    //Misc
+    import { getLogoFromURL } from '../../js/utils.js'
+
     //Context
     const { closeModal } = getContext('app_functions');
     const { nextPage, setMessage, tokenPage } = getContext('coinadd_functions');
@@ -15,6 +18,7 @@
     //DOM NODES
     let formObj
     
+    const MAX_IMAGE_SIZE = 100;
     
     let contractName
     let error = null
@@ -39,16 +43,21 @@
             if (update.logo_base64_svg) {
                 newObj.logo_base64_svg = update.logo_base64_svg
                 newObj.logo_base64_png = null
+                newObj.token_logo_url = null
             }
             if (update.logo_base64_png) {
                 newObj.logo_base64_png = update.logo_base64_png
                 newObj.logo_base64_svg = null
+                newObj.token_logo_url = null
             }
         }
         newTokenMeta =  {...tokenMeta, ...newObj}
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+        if (newTokenMeta.logo_url && !newTokenMeta.logo_base64_svg && !newTokenMeta.logo_base64_png) {
+           newTokenMeta=  await getLogoFromURL(newTokenMeta, MAX_IMAGE_SIZE)
+        }
         addToken(newTokenMeta)
     }
 
@@ -96,7 +105,8 @@
         })
     }
 
-    const addToken = (tokenInfo) => {
+    const addToken = async (tokenInfo) => {
+        Object.keys(tokenInfo).forEach(key => !tokenInfo[key] ? delete tokenInfo[key] : null)
         chrome.runtime.sendMessage({type: 'addToken', data: tokenInfo}, (result) => {
             if (result) {
                 finish({type:'success', text: `${tokenInfo.tokenName} added successfully`});

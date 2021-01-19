@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     //Utils
-    import { copyToClipboard, displayBalance } from '../../js/utils.js'
+    import { copyToClipboard, displayBalance, getLogoFromURL } from '../../js/utils.js'
 
 	//Stores
     import { currentNetwork } from '../../js/stores/stores.js';
@@ -11,35 +11,41 @@
 	import { Components }  from '../Router.svelte'
     const { Button, DropDown, TokenEditDetails } = Components;
     
-    //Images
+    //Icons
     import SaveIcon from '../icons/SaveIcon.svelte'
     import DeleteIcon from '../icons/DeleteIcon.svelte'
+    import RefreshIcon from '../icons/RefreshIcon.svelte'
 
 	//Context
-    const { token, close, setPage, setMessage } = getContext('tokenmodify_functions');
+    const { close, setPage, setMessage } = getContext('tokenmodify_functions');
+    let { token } = getContext('tokenmodify_functions');
 
-    let options = [
-        {id: 'modify-delete-btn', name: 'Delete', desc: 'Token from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
-    ]
+    const MAX_IMAGE_SIZE = 100;
     const buttons = [
         {id: 'close-btn', name: 'Close', click: () => close(), class: 'button__solid button__primary'}
     ]
     let message = {buttons}
+    let loadingData = false;
+    let tokenRefreshed = false;
 
     let newTokenMeta = createNewMetaObject()
     
-    $: tokenUnChanged = (() => {
-        let checker = Object.keys(newTokenMeta).map(key => {
-            if (typeof token[key] === 'undefined') return true;
-            return token[key] === newTokenMeta[key]
-        })
+    $: tokenUnChanged = checkIfTokenChanged(newTokenMeta)
 
-        return checker.every(val => val === true)
-
-    })()
-    $: balance =  '0'
+    $: options = [
+        {id: 'modify-refresh-btn', name: 'Refresh', desc: 'Contract Metadata', iconComponent: RefreshIcon, color: loadingData ? 'grey' : 'primary', click: () => getTokenMeta() },
+        {id: 'modify-delete-btn', name: 'Delete', desc: 'Token from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
+    ]
 
     const showDelete = () => setPage(2);
+
+    const checkIfTokenChanged = (tokenInfo) => {
+        let checker = Object.keys(token).map(key => {
+            if (key === "contractName") return true;
+            return token[key] === tokenInfo[key]
+        })
+        return checker.every(val => val === true)
+    }
 
     const handleTokenUpdates = (e) => newTokenMeta = createNewMetaObject(e.detail)
 
@@ -51,22 +57,42 @@
             if (update.logo_base64_svg) {
                 newObj.logo_base64_svg = update.logo_base64_svg
                 newObj.logo_base64_png = null
+                newObj.logo_base64_url = null
             }
             if (update.logo_base64_png) {
                 newObj.logo_base64_png = update.logo_base64_png
                 newObj.logo_base64_svg = null
+                newObj.logo_base64_url = null
             }
         }
         return {...token, ...newObj}
     }
 
     const saveAndClose = () => {
-        if (!tokenUnChanged) updateTokenInfo()
+        updateTokenInfo(newTokenMeta)
         close()
     }
 
-    const updateTokenInfo = () => {
-        chrome.runtime.sendMessage({type: 'updateToken', data: newTokenMeta})
+    const updateTokenInfo = (tokenInfo) => {
+        Object.keys(tokenInfo).forEach(key => !tokenInfo[key] ? delete tokenInfo[key] : null)
+        chrome.runtime.sendMessage({type: 'updateToken', data: tokenInfo})
+    }
+
+    const getTokenMeta = (contract) => {
+        loadingData = true;
+        chrome.runtime.sendMessage({type: 'getTokenMeta', data: token.contractName}, (result) => {
+            loadingData = false;
+            if (result) applyTokenMeta({contractName:token.contractName,  ...result})
+        })
+    }
+
+    const applyTokenMeta = async (tokenInfo, contractName) => {
+        if (tokenInfo.logo_url) tokenInfo = await getLogoFromURL(tokenInfo, MAX_IMAGE_SIZE)
+        if (!checkIfTokenChanged(tokenInfo)){
+            tokenRefreshed = true;
+            token = tokenInfo
+            newTokenMeta = createNewMetaObject()
+        }
     }
 
 </script>
@@ -76,8 +102,11 @@
     background: inherit;
 }
 .options-box{
-    justify-content: space-evenly;
+    justify-content: center;
     background: inherit;
+}
+.options-box:first-child{
+    margin-right: 1rem;
 }
 .options{
     cursor: pointer;
@@ -88,6 +117,7 @@
     height: 95px;
     border-radius: 8px;
     padding: 16px 0;
+    margin: 0 0.5rem;
 }
 
 .primary{
@@ -131,7 +161,7 @@ p{
                 class:grey={ option.color === 'grey'}
                 class:primary={ option.color === 'primary'}
                 on:click={option.click}>
-                <svelte:component this={option.iconComponent} width="20px"/>
+                <svelte:component this={option.iconComponent} width="20px" color="var(--color-white)"/>
                 <div class="option-name text-subtitle2">{option.name}</div>
                 <div class="option-desc text-caption">{option.desc}</div>
             </div>
@@ -141,7 +171,9 @@ p{
         <Button classes={`button__solid button__primary`}
             width={'232px'}
             margin={'0 0 0 0'}
-            name={tokenUnChanged ? "Close" : "Save & Close"}
-            click={saveAndClose} />    
+            name="Save"
+            disabled={tokenUnChanged && !tokenRefreshed}
+            click={saveAndClose}
+        />    
     </div>
 </div>

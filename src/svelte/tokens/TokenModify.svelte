@@ -50,9 +50,23 @@
     width: 550px;
     background: inherit;
 }
+.cancel-button{
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
 
 </style>
 
 <div class="token-modify">
     <svelte:component this={Modals[steps[currentStep - 1].page]} result={resultInfo} {message} />
+    <div class="cancel-button">
+        <Button id="cancel-modal-btn"
+                classes={'button__text text-caption'} 
+                width={'125px'}
+                height={'24px'}
+                padding={0}
+                name="Cancel" 
+                click={() => closeModal()} />    
+    </div>
 </div>

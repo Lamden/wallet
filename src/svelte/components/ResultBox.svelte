@@ -35,9 +35,9 @@ h2{
 
 .icon{
     margin-right: 10px;
-    width: 20px;
+    min-width: 31px;
     position: relative;
-    top: 5px;
+    top: -1px;
 }
 
 .buttons{

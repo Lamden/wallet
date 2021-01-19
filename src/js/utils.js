@@ -286,6 +286,86 @@ const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
     return account.substring(0, lsize) + '...' + account.substring(account.length - rsize)
   }
 
+const dataURLToBlob = function(dataURL) {
+    var BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        var parts = dataURL.split(',');
+        var contentType = parts[0].split(':')[1];
+        var raw = parts[1];
+
+        return new Blob([raw], {type: contentType});
+    }
+
+    var parts = dataURL.split(BASE64_MARKER);
+    var contentType = parts[0].split(':')[1];
+    var raw = window.atob(parts[1]);
+    var rawLength = raw.length;
+
+    var uInt8Array = new Uint8Array(rawLength);
+
+    for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return new Blob([uInt8Array], {type: contentType});
+}
+
+const readBlobToFile = (blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader
+    reader.onload = () => {
+        resolve(reader.result)
+    };
+    reader.onerror = () => reject()
+    reader.readAsDataURL(blob);
+})
+
+const readFileToImage = (file) => new Promise((resolve, reject) => {
+    var image = new Image()
+    image.onload = () => {
+        resolve(image)
+    };
+    image.onerror = () => reject()
+    image.src = file
+})
+
+const resizeImage = (image, MAX_IMAGE_SIZE) => {
+    var canvas = document.createElement('canvas'),
+        max_size = MAX_IMAGE_SIZE,
+        width = image.width,
+        height = image.height;
+    if (width > height) {
+        if (width > max_size) {
+            height *= max_size / width;
+            width = max_size;
+        }
+    } else {
+        if (height > max_size) {
+            width *= max_size / height;
+            height = max_size;
+        }
+    }
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+    var dataUrl = canvas.toDataURL('image/jpeg');
+    return dataURLToBlob(dataUrl);
+}
+
+const getLogoFromURL = async (tokenInfo, MAX_IMAGE_SIZE) => {
+    const acceptedImageTypes = ["image/jpeg", "image/png", "image/svg"]
+    let blob = await fetch(tokenInfo.logo_url).then(res => res.blob())
+    if (acceptedImageTypes.includes(blob.type)){
+        let file = await readBlobToFile(blob)
+        let image = await readFileToImage(file)
+        if (image.width >= MAX_IMAGE_SIZE || image.height >= MAX_IMAGE_SIZE) {
+            file = await readBlobToFile(resizeImage(image, MAX_IMAGE_SIZE))
+        }
+        tokenInfo.logo_base64_url = file
+        delete tokenInfo.logo_url
+        return tokenInfo
+    }
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -298,5 +378,6 @@ module.exports = {
     formatValue,
     stringToFixed,
     getTokenTotalBalance,
-    getTokenBalance, formatAccountAddress
+    getTokenBalance, formatAccountAddress,
+    dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL
   }

@@ -198,7 +198,7 @@ p{
 }
 .hide-tokens-button{
 	border: 1px solid transparent;
-	color: var(--primary-color);
+	color: var(--font-primary-dim);
 	margin-right: 28px; 
 	padding: 2px 6px;
 }
