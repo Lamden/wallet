@@ -25,8 +25,10 @@
     //Images
     import linkedAccount from '../../img/misc/linked_account.svg'
     import logo from '../../img/logo.svg'
-    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
-    import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
+
+    //Icons
+    import CheckmarkIcon from '../icons/CheckmarkIcon.svelte';
+    import CopyIcon from '../icons/CopyIcon.svelte';
 
     const dispatch = createEventDispatcher()
 
@@ -83,7 +85,6 @@
 
     const handleAddressCopy = () => {
         copyToClipboard(coin.vk)
-        console.log("click")
         copied = true;
         setTimeout(() => copied = false, 2000)
     }
@@ -196,7 +197,7 @@
         {#if whitelabel.mainPage.account_info.show}
             <div class="name text text-body1">
                 <div class="name-box">
-                    <div class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
+                    <div id={`coin-nickname-${coin.id}`}  class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
                         {#if dappInfo}
                             {`${dappInfo.appName}`}
                         {:else}
@@ -241,13 +242,13 @@
             </div>
             
         {/if}-->
-        <div class="address text-primary-dim flex-row" class:success={copied} on:click={handleAddressCopy}>
+        <div class="address text-primary-dim flex-row" class:success={copied} on:click={handleAddressCopy} title="copy account address">
             {formatAccountAddress(coin.vk, 10, 4)}
             <div class="icon-copy">
                 {#if !copied}
-                    {@html copyWhite}
+                    <CopyIcon width="9px" color="var(--font-primary)"/>
                 {:else}
-                    {@html copyGreen}
+                    <CheckmarkIcon width="10px" color="var(--success-color)"/>
                 {/if}
             </div>
         </div>

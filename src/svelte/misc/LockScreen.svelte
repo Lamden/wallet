@@ -18,7 +18,7 @@
 
     export let loaded;
 
-//REMOVE THIS ---------
+/* TO DO REMOVE THIS ---------
     onMount(() => {
             chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue("Testing0!2")}, (unlocked) => {
                 if (!unlocked || chrome.runtime.lastError) {
@@ -26,7 +26,7 @@
                 }
             })
     })
-/// -----------
+*/
 
     const handleSubmit = () => {
         if (formObj.checkValidity()){

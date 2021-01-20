@@ -98,7 +98,7 @@ const changeToTestnet = async (driver) => {
 
 const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
-    await driver.findElement(By.id("coin-row-1")).click()
+    await driver.findElement(By.id("coin-nickname-1")).click()
     await sleep(500, true)
     let btn = await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]"))
     await driver.executeScript("arguments[0].click();", btn);
