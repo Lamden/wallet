@@ -64,13 +64,14 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.findElement(By.id('restore-btn')).click()
     await sleep(1000)
     await driver.findElement(By.id('home-btn')).click()
-    await sleep(8000)
-    await changeToTestnet(driver)
+    // await sleep(8000)
+    await sleep(3000)
+    await changeToTestnet(driver)/*
     let refreshIcon = await driver.findElement(By.id('refresh-icon'))
     await refreshIcon.click()
     await sleep(3000, true)
     await refreshIcon.click()
-    await sleep(3000, true)
+    await sleep(3000, true)*/
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -114,7 +115,6 @@ const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
     await driver.findElement(By.id("accounts")).click()
     await sleep(1000, true)
-
 }
 
 const getInstance = (obj) => {

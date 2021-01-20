@@ -59,7 +59,7 @@
 </style>
 
 <div 
-    id={`token-row-${token.id}`} 
+    id={`token-row-${token.tokenSymbol}`} 
     class="row-box flex-row" 
     on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"

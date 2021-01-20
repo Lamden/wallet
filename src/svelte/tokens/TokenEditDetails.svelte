@@ -54,6 +54,7 @@
     }
 
     const handleFileEvent = (ev) => {
+        console.log("GOT FILE!")
         let file;
         ev.preventDefault();
 
@@ -64,7 +65,7 @@
         } else if (ev.dataTransfer.files) {
             ev.dataTransfer.files[0].kind === 'file' ? file = ev.dataTransfer.files[0].getAsFile() : null;
         }
-        
+        console.log({ev, file})
         if (file) convertToBase64( file)
     }
 
@@ -79,11 +80,13 @@
             var b64 = reader.result.replace(/^data:.+;base64,/, '');
 
             image.onload = function(){
+                console.log(image)
                 console.log({width: image.width, height: image.height})
                 if (image.width <= 192 && image.height <= 192){
                     logo_base64_png = b64
                     logo_base64_svg = null
                     uploadLogo = true;
+                    console.log({logo_base64_png, logo_base64_svg, uploadLogo})
                 }else{
                     logoError = "image size maximum 192x192"
                 }
@@ -168,7 +171,7 @@
 <div class="flex-row">
     <div class="token-meta-left">
         <InputBox
-            id={"nickname"}
+            id={"input-token-name"}
             margin="0 0 2rem 0"
             bind:value={tokenName}
             on:keyup={handleTokenNameChange}
@@ -179,7 +182,7 @@
         />
 
         <InputBox
-            id={"nickname"}
+            id={"input-token-symbol"}
             margin="0 0 2rem 0"
             bind:value={tokenSymbol}
             on:keyup={handleTokenSymbolChange}

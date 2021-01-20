@@ -30,6 +30,9 @@
 
     let loadingData = false;
 
+    $: hasNameAndSymbol = newTokenMeta ? newTokenMeta.tokenName && newTokenMeta.tokenSymbol : false;
+    $: buttonDisabled = (!contractValid && !tokenMeta ) || error || !hasNameAndSymbol
+    
     const returnMessageButtons = [
             {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
             {id: "another-btn", name: 'Add Another', click: () => tokenPage(), class: 'button__solid'}
@@ -194,6 +197,6 @@
             name={"Add Token"} 
             click={handleSubmit}
 
-            disabled={(!contractValid && !tokenMeta )|| error}/>  
+            disabled={buttonDisabled}/>  
     </div>
 </div>

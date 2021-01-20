@@ -20,6 +20,9 @@
     "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",
     "test-dapps-get-info": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
     "test-dapps-sendtx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
+    "test-tokens": "mocha --recursive --timeout 30000 selenium/tests/tokens/*.js",
+    "test-tokens-add": "mocha --timeout 30000 selenium/tests/tokens/tokens-add.js",
+    "test-tokens-upload": "mocha --timeout 30000 selenium/tests/tokens/tokens-upload-images.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {

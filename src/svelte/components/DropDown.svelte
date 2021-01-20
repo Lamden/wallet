@@ -180,7 +180,7 @@ label{
         </div>
         <div class="select-items" class:select-hide={hideBox} style={`max-height: ${boxHeight};`}>
             {#each displayItems as item, index }
-                <div class:same-as-selected={selectElm.selectedIndex === index}
+                <div id={`select-option-${index}`} class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
                      {item.name}
                 </div>
