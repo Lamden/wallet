@@ -28,7 +28,20 @@ const addToken_Save = async (driver, token) => {
     let message = await messageField.getAttribute("innerText")
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
-    await driver.wait(until.elementLocated(By.id(`token-row-${token.tokenSymbol}`)), 5000);
+    await validateTokenOnAccountsScreen(driver, token)
+}
+
+const validateTokenOnAccountsScreen = async (driver, token) => {
+    await helpers.gotoAccountsPage(driver)
+    await driver.wait(until.elementLocated(By.id(`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`)), 5000);
+    await validateTokenLogo(driver, token)
+}
+
+const validateTokenNotOnAccountsScreen = async (driver, token)=> {
+    await helpers.gotoAccountsPage(driver)
+    await helpers.sleep(500, true)
+    let tokenRows = await driver.findElements(By.id(`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`))
+    assert.equal(tokenRows.length, 0)
 }
 
 const validateTokenName = async (driver, token) => {
@@ -46,10 +59,27 @@ const validateTokenSymbol = async (driver, token) => {
 const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
-    let input = await driver.findElement(By.id(`token-logo-${token.tokenSymbol}-${type}`))
+
+    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 10000);
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
-    else  assert.equal(src, token.logo);
+    else  {
+        if (type === "urlB64") assert.equal(src, token.logo_base64_url);
+        else assert.equal(src, token.logo);
+    }
+}
+
+const validateTokenLogoInBox = async (driver, token, overrideLogoType=undefined) => {
+    let type = token.logo_type;
+    if (overrideLogoType) type = overrideLogoType
+    helpers.sleep(10000, true)
+    let input = await driver.wait(until.elementLocated(By.css(`.token-logo-box #token-logo-${token.tokenSymbol}-${type}`)), 10000);  
+    let src = await input.getAttribute("src")
+    if (type === "placeholder") assert.equal(src, placeholder_base64); 
+    else  {
+        if (type === "urlB64") assert.equal(src, token.logo_base64_url);
+        else assert.equal(src, token.logo);
+    }
 }
 
 const validateInputError = async (driver, errorShouldBe) => {
@@ -74,12 +104,17 @@ const cancelAddTokenModal = async (driver) => {
      await driver.findElement(By.id('modal-cancel-btn')).click();
 }
 
+const cancelTokenOptionsModal = async (driver) => {
+    await driver.findElement(By.id('cancel-modal-btn')).click();
+}
+
 const uploadImage = async (driver, imagePath ) => {
     let filePicker = await driver.wait(until.elementLocated(By.id(`filePicker`)), 10000);
     await filePicker.sendKeys(path.join(config.workingDir, imagePath))
 }
 
 const validateImageTooLargeError = async (driver) => {
+    await helpers.sleep(1000, true)
     let inputMessage = await driver.findElement(By.className('logo-warning'))
     let errorIs = await inputMessage.getAttribute("innerText")
     assert.equal("image size maximum 192x192", errorIs);
@@ -90,11 +125,67 @@ const clearUploadImage = async (driver) => {
     await clearButton.click()
 }
 
+const refreshTokenInfoButton = async (driver) => {
+    await driver.wait(until.elementLocated(By.id(`modify-refresh-btn`)), 2000).click();
+    await helpers.sleep(4000, true)
+}
+
+const addToken = async (driver, token) => {
+        await addToken_ShowDetails(driver, token)
+        await helpers.sleep(3000)
+        await addToken_Save(driver, token)
+        await helpers.sleep(1000)
+}
+
+const deleteToken = async (driver) => {
+    await driver.wait(until.elementLocated(By.id(`modify-delete-btn`)), 2000).click();
+    await driver.wait(until.elementLocated(By.id(`delete-token-btn`)), 2000).click();
+    await driver.wait(until.elementLocated(By.id(`home-btn`)), 2000).click();
+}
+
+const saveTokenModal = async (driver, token) => {
+    let saveButton = await driver.findElement(By.id("token-options-save-btn"))
+    assert.equal(await saveButton.isEnabled(), true);
+    await saveButton.click()
+}
+
+const gotoTokenDetails = async (driver, token) => {
+    await driver.findElement(By.xpath(`//div[contains(text(),'${token.tokenName}')]`)).click()
+}
+
+const gotoTokenOptions = async (driver, token) => {
+    await driver.wait(until.elementLocated(By.id(`modify-token-btn`)), 2000).click();
+}
+
+const validateTransacationFormDetails = async (driver, token, method) => {
+    helpers.sleep(1000)
+    let contractInput = await driver.findElement(By.id("contract-input"))
+    let contractInputValue = await contractInput.getAttribute("value")
+    assert.equal(contractInputValue, token.contractName);
+    helpers.sleep(1000)
+    let methodsSelect = await driver.findElement(By.id("methods-currently-selected"))
+    let methodsSelectValue = await methodsSelect.getAttribute("innerText")
+    assert.equal(methodsSelectValue, method);
+
+
+
+}
+
+const cancelTransferModal = async (driver) => {
+    await driver.findElement(By.id("transfer-modal-cancel")).click()
+}
+
 module.exports = {
     addToken_ShowDetails, addToken_Save,
-    validateTokenName, validateTokenSymbol, validateTokenLogo, validateInputError,
+    validateTokenName, validateTokenSymbol, validateTokenLogo, validateInputError, validateTokenLogoInBox,
     changeTokenName, changeTokenSymbol,
-    cancelAddTokenModal,
+    cancelAddTokenModal, cancelTokenOptionsModal, cancelTransferModal,
     uploadImage, clearUploadImage,
-    validateImageTooLargeError
+    validateImageTooLargeError,
+    gotoTokenDetails, gotoTokenOptions,
+    addToken, saveTokenModal, deleteToken,
+    validateTokenOnAccountsScreen,
+    refreshTokenInfoButton,
+    validateTokenNotOnAccountsScreen,
+    validateTransacationFormDetails
 }

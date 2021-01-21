@@ -169,6 +169,7 @@ p{
     </div>
     <div class="buttons flex-column">
         <Button classes={`button__solid button__primary`}
+            id={"token-options-save-btn"}
             width={'232px'}
             margin={'0 0 0 0'}
             name="Save"

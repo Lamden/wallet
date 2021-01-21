@@ -55,6 +55,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.validateTokenName(driver, token)
             await tokenHelpers.validateTokenSymbol(driver, token)
             await tokenHelpers.validateTokenLogo(driver, token)
+            token.logo_type = "urlB64"
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Displays placeholder token icon if no icon found in contract or uploaded', async function() {
@@ -78,8 +79,8 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             let token = tokenInfo.archer_token
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
-            token.tokenSymbol = 'RARR'
-            await tokenHelpers.changeTokenSymbol(driver, 'RARR')
+            token.tokenSymbol = 'SUPER'
+            await tokenHelpers.changeTokenSymbol(driver, 'SUPER')
             await tokenHelpers.addToken_Save(driver, token)
         });
     })

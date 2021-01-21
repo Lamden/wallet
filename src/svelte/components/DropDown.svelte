@@ -170,6 +170,7 @@ label{
     </select>
     {#if selectElm}
         <div bind:this={newSelectElm} 
+             id={`${id}-currently-selected`}
              class="select-selected"
              style={`height: ${innerHeight}; width:${width}; ${styles}`}
              class:select-arrow-active={!hideBox}

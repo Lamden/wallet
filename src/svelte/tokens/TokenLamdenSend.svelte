@@ -127,6 +127,7 @@
     {/if}
     {#if steps[currentStep - 1].cancelButton}
         <Button classes={'button__text text-caption'} 
+                id="transfer-modal-cancel"
                 width={'125px'}
                 height={'24px'}
                 padding={0}

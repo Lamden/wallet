@@ -39,6 +39,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
             token.logo = tokenImages.pngLogoBase64
             await tokenHelpers.validateTokenLogo(driver, token, "png")
             await helpers.sleep(1000, true)
+            token.logo_type = "png"
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can upload an svg to change icon', async function() {
@@ -49,6 +50,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
             token.logo = tokenImages.svgLogoBase64
             await tokenHelpers.validateTokenLogo(driver, token, "svg")
             await helpers.sleep(1000, true)
+            token.logo_type = "svg"
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can upload an image and then revert back to contract standard', async function() {

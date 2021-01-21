@@ -31,6 +31,10 @@ const switchWindow = async (driver, windowNum) => {
     await sleep(1000, true)
 }
 
+const gotoAccountsPage = async (driver) => {
+    await driver.findElement(By.id('accounts')).click();
+}
+
 const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
     await switchWindow(driver, 0)      
     await driver.findElement(By.id('create-wallet')).click();
@@ -329,5 +333,6 @@ module.exports = {
     startServer, closeTest,
     sendTx, getTxResult,
     getApprovalAmount, getAccountBalance,
-    setupSendListener
+    setupSendListener,
+    gotoAccountsPage
 }
