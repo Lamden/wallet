@@ -29,6 +29,7 @@
     //Icons
     import CheckmarkIcon from '../icons/CheckmarkIcon.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
+    import DirectionalChevronIcon from '../icons/DirectionalChevronIcon.svelte'
 
     const dispatch = createEventDispatcher()
 
@@ -41,6 +42,8 @@
         'string': {default: 'None'}
     }
 
+    let divElm;
+
     let brokenIconLink = false;
     let brokenCharmIconLink = [];
     let copied = false;
@@ -48,6 +51,7 @@
     //Context
     const { switchPage } = getContext('app_functions');
     
+
     $: netKey = networkKey($currentNetwork)
     $: watching = coin.sk === "watchOnly"
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
@@ -57,6 +61,8 @@
     $: dappNetworkInfo = dappInfo ? dappInfo[$currentNetwork.type] : undefined
     $: dappCharms = dappNetworkInfo ? dappNetworkInfo.charms || [] : []
     $: dappLogo = dappInfo ? dappInfo.logo || false : false
+    $: dappLogoSrc = dappLogo ? `${dappInfo.url}${dappLogo}` : undefined
+    $: brokenIconLink = checkIfLogoURLBroken(dappLogoSrc)
 
     $: tokenBalance = token && coin ? displayBalance(stringToFixed(getTokenBalance(netKey, coin.vk, token.contractName, $TokenBalancesStore), 8)) : "0"
 
@@ -65,6 +71,13 @@
         balanceStr = balance ? balance.toLocaleString('en') : '0'
         percent = typeof $balanceTotal[networkKey($currentNetwork)] === 'undefined' ? "0.0 %" : toPercentString();
     })
+
+    const checkIfLogoURLBroken = (logoSrc) => {
+        return fetch(logoSrc, {cache: "reload"}).then(res => {
+            if (res.ok && res.status === 200) return true
+            else return false
+        }).catch(err => false)
+    }
 
     const toPercentString = () => {
         if (isNaN((balance / $balanceTotal[networkKey($currentNetwork)]))) return '0.0 %'
@@ -89,8 +102,12 @@
         setTimeout(() => copied = false, 2000)
     }
 
-    const handleReorderUp = () => dispatch('reorderAccount', {id: coin.id, direction: "up"})
-    const handleReorderDown = () => dispatch('reorderAccount', {id: coin.id, direction: "down"})
+    const handleReorderUp = () => {
+        dispatch('reorderAccount', {id: coin.id, direction: "up"})
+    }
+    const handleReorderDown = () => {
+        dispatch('reorderAccount', {id: coin.id, direction: "down"})
+    }
     
 </script>
 
@@ -110,6 +127,8 @@
 .logo{
     display: flex;
     justify-content: center;
+    width: 68px;
+    height: 35px;
 }
 
 .name{
@@ -152,12 +171,13 @@
 
 .address{
     padding: 2px 6px;
+    margin-left: 5px;
     background: var(--bg-secondary);
     cursor: pointer;
     border-radius: 16px;
 }
 .address:hover{
-    filter: brightness(120%);
+    background: var(--bg-secondary-hover);
 }
 .address.success{
     color: var(--success-color);
@@ -171,6 +191,7 @@
 
 <div 
     id={`coin-row-${coin.id}`} 
+    bind:this={divElm}
     class="row-box flex-column" 
     on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
@@ -179,18 +200,27 @@
         {#if whitelabel.mainPage.logo.show}
             <div class="logo flex-center-center">
                 {#if dappInfo}
-                    {#if dappLogo && !brokenIconLink}
-                        <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp logo" on:error={() => brokenIconLink = true}>
-                    {:else}
+                    {#await brokenIconLink}
                         <div class="dapp-logo">
                             {@html logo}
                             <div class="dapp-linked-account-logo"> 
                                 {@html linkedAccount}
                             </div>
                         </div>
-                    {/if}
+                    {:then res}
+                        {#if res}
+                            <img class="dapp-logo" src={dappLogoSrc} alt="dapp logo" > 
+                        {:else}
+                            <div class="dapp-logo">
+                                {@html logo}
+                                <div class="dapp-linked-account-logo"> 
+                                    {@html linkedAccount}
+                                </div>
+                            </div>
+                        {/if}
+                    {/await}
                 {:else}
-                    <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/>
+                    <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/> 
                 {/if}
             </div>
         {/if}
@@ -234,14 +264,16 @@
         {/if}
     </div>
     <div class="flex-row flex-center-end">
-    <!--
         {#if !token}
             <div class="flex-row show-on-hover">
-                <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
-                <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
-            </div>
-            
-        {/if}-->
+                <button class="reorder-button" on:click={handleReorderUp}>
+                    <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
+                </button>
+                <button class="reorder-button" on:click={handleReorderDown}>
+                    <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
+                </button>
+            </div>    
+        {/if}
         <div class="address text-primary-dim flex-row" class:success={copied} on:click={handleAddressCopy} title="copy account address">
             {formatAccountAddress(coin.vk, 10, 4)}
             <div class="icon-copy">
@@ -257,5 +289,3 @@
         -->
     </div>
 </div>
-
-

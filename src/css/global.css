@@ -24,6 +24,7 @@ body{
 
     --bg-primary: #151515; 
     --bg-secondary: #262626;   
+    --bg-secondary-hover: #383838; 
     --bg-semi-transparent: #0000007a;
     --bg-transparent: transparent;
 
@@ -403,6 +404,19 @@ h6{
     text-transform: uppercase;
 }
 
+button {
+    position: relative;
+    font-size: 10px;
+    margin: 2px;
+    padding: 3px;
+    cursor: pointer;
+    border: unset;
+}
+
+button:active{
+    top: 1px;
+}
+
 button:focus { outline: none; }
 
 button.button__solid:not(:disabled):hover {
@@ -595,13 +609,6 @@ input.submit-button:disabled{
     border: 1px solid var(--error-color);
 }
 
-button {
-    font-size: 10px;
-    margin: 2px;
-    padding: 3px;
-    cursor: pointer;
-}
-
 .details-button{
     color: var(--font-primary-dim);
     padding: 2px 6px;
@@ -624,6 +631,24 @@ button {
     color: var(--font-primary);
     background: var(--primary-color);
 }
+
+.reorder-button:hover{
+    background: var(--bg-secondary-hover);
+}
+
+.reorder-button:hover path{
+    fill: var(--accent-color);
+}
+
+.reorder-button{
+    background: var(--bg-secondary);
+    border-radius: 99px;
+    padding: 0;
+    margin: 0 1px;
+    width: 18px;
+    height: 18px;
+}
+
 
 
 .submit-button {
