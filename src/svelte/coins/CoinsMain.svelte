@@ -73,12 +73,11 @@
 	}
 
 	const handleReorderToken = (e) => {
-		console.log(e)
 		let { id, direction } = e.detail
 		if (direction == "up" && !orderingLocked){
 			orderingLocked = true;
 			chrome.runtime.sendMessage({type: 'tokensReorderUp', data: id}, (success) => {
-				console.log(success)
+				if (id !== 0) scrollWindow(-41)
 				orderingLocked = false;
 			})
 		}
@@ -86,7 +85,7 @@
 		if (direction == "down" && !orderingLocked){
 			orderingLocked = true;
 			chrome.runtime.sendMessage({type: 'tokensReorderDown', data: id}, (success) => {
-				console.log(success)
+				if (id + 1 < tokenStorage.length) scrollWindow(41)
 				orderingLocked = false;
 			})
 		}
@@ -105,7 +104,7 @@
 		if (direction == "down" && !orderingLocked){
 			orderingLocked = true;
 			chrome.runtime.sendMessage({type: 'accountsReorderDown', data: id}, (success) => {
-				if (id + 1 < $CoinStore.length)scrollWindow(90)
+				if (id + 1 < coinStorage.length)scrollWindow(90)
 				orderingLocked = false;
 			})
 		}

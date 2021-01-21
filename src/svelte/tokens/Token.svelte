@@ -11,6 +11,9 @@
     //Components
     import TokenLogo from '../components/TokenLogo.svelte';
 
+    //Icons
+     import DirectionalChevronIcon from '../icons/DirectionalChevronIcon.svelte'
+
     //Utils
     import { displayBalance, formatValue, stringToFixed, getTokenTotalBalance} from '../../js/utils.js'  
 
@@ -80,14 +83,14 @@
         </div>
     {/if}
     <div class="flex-row flex-center-end">
-    <!--
         <div class="flex-row show-on-hover">
-            <button class="button__text text-body2" on:click={handleReorderUp}>up</button>
-            <button class="button__text text-body2" on:click={handleReorderDown}>down</button>
-        </div>
-        
-        <button class="button__text text-body2 details-button" on:click={() => switchPage('TokenDetails', token)}>details</button>
-        -->
+            <button class="reorder-button" on:click={handleReorderUp}>
+                <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
+            </button>
+            <button class="reorder-button" on:click={handleReorderDown}>
+                <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
+            </button>
+        </div>  
     </div>
 </div>
 
