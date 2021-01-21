@@ -36,7 +36,6 @@
 
 	let refreshing = false;
 	let orderingLocked = false;
-	$: output1 = console.log($TokenStore)
 	$: coinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
 		coin.id = index
 		return coin
@@ -45,7 +44,6 @@
 		token.id = index
 		return token
 	}) : [];
-	$: output = console.log($SettingsStore)
 	$: hideTokens = $SettingsStore.hideTokens ? true : false;
 
 	onMount(() => {

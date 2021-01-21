@@ -92,6 +92,8 @@ import Kwarg from './components/Kwarg.svelte';
 import SwapsStatus from './components/SwapsStatus.svelte';
 import SwapStatus from './components/SwapStatus.svelte';
 import TokenLogo from './components/TokenLogo.svelte'
+import LightDarkToggle from './components/LightDarkToggle.svelte'
+
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -210,7 +212,8 @@ export const Components = {
     Transaction,
     Kwargs, Kwarg,
     SwapsStatus, SwapStatus,
-    TokenLogo, TokenEditDetails
+    TokenLogo, TokenEditDetails,
+    LightDarkToggle
 };
 
 export const Modals = {

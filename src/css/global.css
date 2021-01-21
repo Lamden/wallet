@@ -86,6 +86,7 @@ body{
 
     --bg-primary: #fff; 
     --bg-secondary: #f6f6f6;   
+    --bg-secondary-hover: #ececec; 
 
     --font-primary: #373737;
     --font-primary-dim: #929292;

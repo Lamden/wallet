@@ -27,7 +27,6 @@
     $: value = getItemValue(charmInfo)
     $: defaultValue = formats[format].default
     $: iconPath = repalceVariablesInIconPath(charmInfo.iconPath, vk) || false
-    $: log = console.log(iconPath)
     
     const getItemValue = async (info) => {
         let res = await getKeyValue($currentNetwork, contractName, info.variableName, createCharmKey(info, vk), format)

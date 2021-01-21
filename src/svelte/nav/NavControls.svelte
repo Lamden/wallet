@@ -91,7 +91,4 @@ p.mainnet:hover{
             {@html network}
         {/if}
     </div>
-    
-
 </div>
-<button on:click={themeToggle}>light/dark</button>

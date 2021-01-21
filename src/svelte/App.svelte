@@ -11,7 +11,7 @@
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
-	const { Modal, Loading } = Components;
+	const { Modal, Loading, LightDarkToggle } = Components;
 
 	//Images
 	import heart from '../img/menu_icons/icon_heart.svg';
@@ -46,6 +46,7 @@
 	chrome.runtime.onMessage.addListener(walletIsLockedListener)
 
 	onMount(() => {
+		themeSet();
 		chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 			walletIsLocked = locked;
 		})
@@ -181,8 +182,10 @@
 	{:else}
 		<Loading message={`Loading ${whitelabel.companyName} Wallet`} />
 	{/if}
+<LightDarkToggle />
 </div>
 <svelte:window on:click={(e) => clicked.set(e.target)} />
+
 
 
 <style>
