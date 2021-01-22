@@ -99,48 +99,12 @@
 
 <style>
 #token-options{
-    background: inherit;
+    background: var(--bg-primary);
 }
-.options-box{
-    justify-content: center;
-    background: inherit;
-}
-.options-box:first-child{
-    margin-right: 1rem;
-}
-.options{
-    cursor: pointer;
-    box-sizing: border-box;
-    align-items: center;
-    justify-content: space-between;
-    width: 150px;
-    height: 95px;
-    border-radius: 8px;
-    padding: 16px 0;
-    margin: 0 0.5rem;
-}
-
-.primary{
-    background-color: var(--primary-color);
-}
-
-.primary:hover{
-    filter: brightness(125%);
-}
-
-.grey{
-    background-color: var(--bg-secondary);
-}
-
-.grey:hover{
-    filter: brightness(125%);
-}
-
 .buttons{
     align-items: center;
     margin-top: 1rem;
 }
-
 h2{
     margin: 1rem 0 0.5rem;
 }
@@ -158,8 +122,8 @@ p{
     <div class="options-box flex-row">
         {#each options as option}
             <div id={option.id} class="options flex-column"
-                class:grey={ option.color === 'grey'}
-                class:primary={ option.color === 'primary'}
+                class:options-box-grey={ option.color === 'grey'}
+                class:options-box-primary={ option.color === 'primary'}
                 on:click={option.click}>
                 <svelte:component this={option.iconComponent} width="20px" color="var(--color-white)"/>
                 <div class="option-name text-subtitle2">{option.name}</div>

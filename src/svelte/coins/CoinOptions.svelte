@@ -11,11 +11,10 @@
 	import { Components }  from '../Router.svelte'
     const { Button, DropDown } = Components;
     
-    //Images
-    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
-    import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
-    import edit from '../../img/menu_icons/icon_edit.svg';
-    import del from '../../img/menu_icons/icon_delete.svg';
+    //Icons
+    import CopyIcon from '../icons/CopyIcon.svelte'
+    import DeleteIcon from '../icons/DeleteIcon.svelte'
+    import EditIcon from '../icons/EditIcon.svelte'
 
 	//Context
     const { getModalData } = getContext('app_functions');
@@ -24,9 +23,9 @@
     let selectedWallet;
     let copySuccessful;
     let options = [
-        {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', icon: copyWhite, color: 'primary', click: () => copyWalletAddress() },
-        {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', icon: edit, color: 'primary', click: () => showEdit() },
-        {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', icon: del, color: 'grey', click: () => showDelete() },
+        {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', iconComponent: CopyIcon, color: 'primary', click: () => copyWalletAddress() },
+        {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', iconComponent: EditIcon, color: 'primary', click: () => showEdit() },
+        {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
     ]
     const buttons = [
         {id: 'close-btn', name: 'Close', click: () => close(), class: 'button__solid button__primary'}
@@ -119,21 +118,6 @@
 #coin-options{
     background: inherit;
 }
-.options-box{
-    justify-content: space-evenly;
-    margin-top: 1rem;
-    background: inherit;
-}
-.options{
-    cursor: pointer;
-    box-sizing: border-box;
-    align-items: center;
-    justify-content: space-between;
-    width: 150px;
-    height: 95px;
-    border-radius: 8px;
-    padding: 16px 0;
-}
 p, a{
     margin: 0.5rem 0;
 }
@@ -149,28 +133,12 @@ p, a{
     margin-top: 7px;
     height: 32px;
 }
-.primary{
-    background-color: var(--primary-color);
-}
-
-.primary:hover{
-    filter: brightness(125%);
-}
-
-.grey{
-    background-color: var(--bg-secondary);
-}
-
-.grey:hover{
-    filter: brightness(125%);
-}
 
 .buttons{
     align-items: center;
 }
-.copy-message-icon{
-    margin-right: 11px;
-    width: 12px;
+.copy-address-words{
+    margin-left: 11px;
 }
 .icon{
     width: 20px;
@@ -225,20 +193,24 @@ h2{
     <div class="options-box flex-row">
         {#each options as option}
             <div id={option.id} class="options flex-column"
-                class:grey={ option.color === 'grey'}
-                class:primary={ option.color === 'primary'}
+                class:options-box-grey={ option.color === 'grey'}
+                class:options-box-primary={ option.color === 'primary'}
                 on:click={option.click}>
-                <div class="icon" >{@html option.icon}</div>
+                <svelte:component 
+                    this={option.iconComponent} 
+                    width="20px" 
+                    color={option.color === "primary" ? "var(--color-white)" : "var(--font-primary)"}
+                />
                 <div class="option-name text-subtitle2">{option.name}</div>
-                <div class="option-desc text-caption">{option.desc}</div>
+                <div class="option-desc text-caption text-opacity-1">{option.desc}</div>
             </div>
         {/each}
     </div>
     <div class="results">
         {#if copySuccessful}
             <div id={"copy-address"} class="copy-message flex-row text-caption2">
-                <div class="copy-message-icon" >{@html copyGreen}</div>
-                Account Address Copied
+                <CopyIcon width="12px" color="var(--success-color)" />
+                <span class="copy-address-words">Account Address Copied</span>
             </div>
         {/if}
     </div>

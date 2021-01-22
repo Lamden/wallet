@@ -48,7 +48,7 @@
                 {
                     "id": "accounts", 
                     "show": true,
-                    "logo": "holdings", 
+                    "logo": "account", 
                     "name": "Accounts", 
                     "page": {
                         "name": "CoinsMain"

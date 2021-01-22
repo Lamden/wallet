@@ -36,15 +36,6 @@
         overflow-x: hidden;
     }
 
-    .hero-rec{
-        width: 100%;
-        padding: 1.2rem 20px;
-        justify-content: space-between;
-        align-items: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-
     .dapp-name{
         align-items: center;
         margin-bottom: 0.25rem;
@@ -64,7 +55,7 @@
 </style>
 
 <div class="approve-conection flex-column">
-    <div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
+    <div class="flex-column hero-rec popup" style="background-image: url({hero_bg})" >
         {#if reapprove}
             <h2>Smart Contract Update</h2>
         {:else}

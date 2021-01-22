@@ -37,16 +37,6 @@ p{
     padding: 20px 30px;
 }
 
-.hero-rec{
-    width: 100%;
-    padding: 1.2rem 20px;
-    justify-content: space-between;
-    align-items: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    box-sizing: border-box;
-}
-
 .approve-items{
     width: 100%;
     justify-content: space-between;
@@ -128,7 +118,7 @@ a.help{
 
 </style>
 
-<div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
+<div class="flex-column hero-rec popup" style="background-image: url({hero_bg})" >
     <h2>{`Confirm Transaction From`}</h2>
     <div class="flex-row dapp-name">
         <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" />

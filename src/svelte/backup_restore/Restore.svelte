@@ -9,7 +9,9 @@
     
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';
-    import arrowRight from '../../img/menu_icons/icon_arrow-right.svg';
+
+    //Icons 
+    import DirectionalArrowIcon from '../icons/DirectionalArrowIcon.svelte'
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -23,15 +25,7 @@
 }
 
 .hero-rec{
-    display: flex;
-    flex-direction: column;
-	box-sizing: border-box;
 	min-height: 310px;
-	border-radius: 4px;
-	margin-bottom: 18px;
-    padding: 40px;
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 
 .buttons{
@@ -55,19 +49,21 @@
         <h2 class="heading">
             Restoring Accounts to Your {whitelabel.companyName} Wallet is Quick & Easy
         </h2>
-        <div class="subtext text-body1">
+        <div class="subtext text-body1 text-opacity-1">
             It only takes a few minutes, please have your original Keystore file ready,
             and be prepared to provide the password for it.
         </div>
         <div class="buttons">
-        	<Button
+            <Button
                 id={'restore-btn'} 
-                classes={'button__transparent button__accent'}
-				name="Restore Now"
-                margin={'0 49px 0 0'}
-		 		click={() => switchPage('RestoreMain')} 
-				icon={arrowRight}
-                iconPosition='after'/>
+                classes={'button__transparent button__overlay'}
+                name="Restore Now"
+                click={() => switchPage('RestoreMain')}
+            >
+                <div slot="icon-after">
+                    <DirectionalArrowIcon width="12px" direction="right" color="var(--color-white)" />
+                </div>
+            </Button> 
         </div>
 	</div>
 </div>

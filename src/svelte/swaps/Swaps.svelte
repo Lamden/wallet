@@ -28,15 +28,7 @@
 }
 
 .hero-rec{
-    display: flex;
-    flex-direction: column;
-	box-sizing: border-box;
 	min-height: 310px;
-	border-radius: 4px;
-	margin-bottom: 18px;
-    padding: 40px;
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 
 .buttons{
@@ -67,7 +59,7 @@ strong{
             {`Swap your Ethereum ERC-20 TAU Tokens for Lamden Mainnet TAU`}
         </h2>
         
-        <div class="subtext text-body1">
+        <div class="subtext text-body1 text-opacity-1">
                 {`
                     During this process you will send your Ethereum ERC-20 TAU tokens to an Ethereum Swap Contract and 
                     Lamden will send you the equivalent number of Lamden TAU Tokens on Lamden Mainnet.
@@ -83,7 +75,7 @@ strong{
         <div class="buttons">
         	<Button
                 id={'start-swap-btn'} 
-                classes={'button__transparent button__accent'}
+                classes={'button__transparent button__overlay'}
 				name="Start Swap"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('SwapsMain')}

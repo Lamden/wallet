@@ -130,6 +130,11 @@
 
 .button-group{
     margin-bottom: 1rem;
+    border-radius: 4px;
+    box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
+
 }
 .submit-button-box{
     flex-grow: 1;

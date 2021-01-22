@@ -1,3 +1,11 @@
+<script>
+    export let width = "18";
+    export let color = "var(--font-primary)";
+
+    $: height = width;
+
+</script>
+
 
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -8,8 +16,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    viewBox="0 0 65.269188 56.560993"
-   width="522.1535"
-   height="452.48795"
+   {width} {height} 
    version="1.1"
    id="svg37"
    sodipodi:docname="icon_smartcontract.svg"
@@ -28,7 +35,7 @@
   <defs
      id="defs41" />
   <sodipodi:namedview
-     pagecolor="currentColor"
+     pagecolor={color}
      bordercolor="#666666"
      borderopacity="1"
      objecttolerance="10"
@@ -54,14 +61,14 @@
        originy="-7.8932318" />
   </sodipodi:namedview>
   <rect
-     style="opacity:1;fill:currentColor;fill-opacity:0;stroke:currentColor;stroke-width:3.75;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+     style={`opacity:1;fill:${color};fill-opacity:0;stroke:${color};stroke-width:3.75;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers`}
      id="rect829"
      width="61.519188"
      height="52.810993"
      x="1.875"
      y="1.875" />
   <path
-     style="fill:none;stroke:currentColor;stroke-width:3.75;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style={`fill:none;stroke:${color};stroke-width:3.75;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1`}
      d="M 1.2475788,15.477603 H 63.022454"
      id="path849"
      inkscape:connector-curvature="0" />

@@ -104,13 +104,8 @@
         margin: 0;
     }
     .hero-rec{
-        box-sizing: border-box;
         min-height: 247px;
-        border-radius: 4px;
-        margin-bottom: 18px;
         padding: 40px 40px 26px;
-        background-size: cover;
-        background-repeat: no-repeat;
     }
     .balance-total{
         color: var(--font-overlay);

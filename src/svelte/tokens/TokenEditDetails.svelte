@@ -26,6 +26,8 @@
     $: hasNoMeta = !tokenName || !tokenSymbol
     $: dragover = '';
 
+    $: log = console.log(tokenMeta)
+
     const checkForLogo = (meta, uploaded) => {
         if (!meta) return true;
         return !meta.logo_base64_svg && !meta.logo_base64_png && !meta.logo_url && !uploaded
@@ -165,6 +167,10 @@
         margin: 0 10px;
     }
 
+    .upload-button{
+        padding: 2px 6px;
+    }
+
 </style>
 
 
@@ -177,7 +183,7 @@
             on:keyup={handleTokenNameChange}
             placeholder={`Enter Token Name`}
             label={"Token Name"}
-            bgStyle={error !== null || !tokenMeta ? "transparent" : "primary"}
+            bgStyle={tokenMeta ? "primary" : "transparent"}
             disabled={disableInputs}
         />
 
@@ -188,7 +194,7 @@
             on:keyup={handleTokenSymbolChange}
             placeholder={`Enter Token Symbol`}
             label={"Token Symbol"}
-            bgStyle={error !== null || !tokenMeta ? "transparent" : "primary"}
+            bgStyle={tokenMeta ? "primary" : "transparent"}
             disabled={disableInputs}
         />
     </div>
@@ -206,9 +212,9 @@
                 {/if}
             <div class="token-logo-upload">
                 {#if !disableInputs}
-                    <button class="button__text upload-button text-body2 weight-200" 
+                    <button class="button__small upload-button text-body2 weight-200" 
                             on:click|preventDefault={openPicker}>
-                        {hasNoLogo && tokenMeta ? 'upload' : 'change'}
+                            {hasNoLogo && tokenMeta ? 'upload' : 'change'}
                     </button>
                     <input  id="filePicker" type="file" accept=".png,.svg" on:change={handleFileEvent}>
                 {/if}

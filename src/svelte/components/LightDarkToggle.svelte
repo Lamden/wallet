@@ -30,24 +30,24 @@
         border-radius: 99px;
         padding: 2px;
 
-        box-shadow: -1px 2px 4px 0px rgba(0, 0, 0, 0.5);
-        -webkit-box-shadow: -1px 2px 4px 0px rgba(0, 0, 0, 0.5);
-        -moz-box-shadow: -1px 2px 4px 0px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--box-shadow-3);
+        -webkit-box-shadow: var(--box-shadow-3);
+        -moz-box-shadow: var(--box-shadow-3);
 
     }
     .wrapper:hover{
         top: 1px;
         background: var(--bg-secondary);
         border: 1px solid var(--outline);
-        box-shadow: -1px 1px 2px 0px rgba(0, 0, 0, 0.5);
-        -webkit-box-shadow: -1px 1px 2px 0px rgba(0, 0, 0, 0.5);
-        -moz-box-shadow: -1px 1px 2px 0px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--box-shadow-2);
+        -webkit-box-shadow: var(--box-shadow-2);
+        -moz-box-shadow: var(--box-shadow-2);
     }
     .wrapper:active{
         top: 2px;
-        box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5);
-        -webkit-box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5);
-        -moz-box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--box-shadow-1);
+        -webkit-box-shadow: var(--box-shadow-1);
+        -moz-box-shadow: var(--box-shadow-1);
     }
     .icons{
         position: absolute;

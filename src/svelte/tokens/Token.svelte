@@ -84,10 +84,10 @@
     {/if}
     <div class="flex-row flex-center-end">
         <div class="flex-row show-on-hover">
-            <button class="reorder-button" on:click={handleReorderUp}>
+            <button class="button__small reorder-button" on:click={handleReorderUp}>
                 <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
             </button>
-            <button class="reorder-button" on:click={handleReorderDown}>
+            <button class="button__small reorder-button" on:click={handleReorderDown}>
                 <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
             </button>
         </div>  

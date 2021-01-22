@@ -1,0 +1,20 @@
+<script>
+    export let width = "18";
+    export let color = "var(--font-primary)";
+
+    $: height = width;
+
+</script>
+
+<svg {width} {height} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="0 0 48 48">
+    <defs>
+        <clipPath id="_clipPath_Y8UJXJqtlwAXj23ZUdKHmlFkLOhiCT0J">
+            <rect width="48" height="48"/>
+        </clipPath>
+    </defs>
+    <g clip-path="url(#_clipPath_Y8UJXJqtlwAXj23ZUdKHmlFkLOhiCT0J)">
+        <rect x="0" y="0" width="48" height="48" transform="matrix(1,0,0,1,0,0)" fill="none"/>
+        <path d=" M 10.028 0 L 0 9.102 L 10.028 18.204 L 10.028 10.947 L 35.432 10.947 C 38.133 10.947 40.299 13.468 40.299 16.543 C 40.299 19.618 38.106 22.171 35.432 22.171 L 12.435 22.171 C 7.969 22.171 4.359 26.353 4.359 31.457 C 4.359 36.592 7.996 40.743 12.435 40.743 L 37.972 40.743 L 37.972 48 L 48 38.898 L 37.972 29.796 L 37.972 37.053 L 12.408 37.053 C 9.707 37.053 7.541 34.532 7.541 31.426 C 7.541 28.32 9.734 25.83 12.408 25.83 L 35.405 25.83 C 39.871 25.83 43.481 21.648 43.481 16.543 C 43.481 11.408 39.844 7.257 35.405 7.257 L 10.001 7.257 L 10.001 0 L 10.028 0 Z " fill-rule="evenodd" 
+        fill={color}/>
+    </g>
+</svg>

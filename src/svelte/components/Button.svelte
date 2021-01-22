@@ -3,10 +3,6 @@
     export let id;
     export let name = '';
     export let click;
-    export let icon = '';
-    export let iconWidth = '14px';
-    export let iconPosition = 'before';
-    export let iconInvert = false;
     export let width = 'unset';
     export let height = '42px';
     export let padding = '0 16px';
@@ -16,75 +12,27 @@
     export let disabled = false;
     export let tabIndex;
     export let spellcheck = true;
-
-    $: iconAfter = iconPosition === 'after' ? true : false;
 </script>
 
 <style>
-button{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.label{
-    text-align: center;
-    width: 100%;
-}
-
-.label-left{
-    margin: 0 0 0 11px; 
-}
-
-.label-right{
-    margin: 0 11px 0 0; 
-}
-
-.icon-left {
-    margin: 0 8px 0 0;   
-}
-
-.icon-right {
-    margin: 0 0 0 8px;
-}
-
-.icon-after{
-    flex-direction: row-reverse;
-}
-
-.icon-invert{
-    filter: invert(1);
+.text-button{
+    margin: 0 6px;
 }
 .disabled{
     color: grey;
 }
-.disabled.button__primary:hover{
-    filter: brightness(75%);
-}
-.disabled.button__primary{
-    filter: brightness(75%);
-}
 
 </style>
 
-<button 
-        class={`${disabled ? 'disabled ' : ''}${classes}`}
+<button class={`flex-row flex-center-centr ${disabled ? 'disabled ' : ''}${classes}`}
         id={id}
         on:click={click}
         disabled={disabled}
         style="min-width: fit-content; width: {width}; height: {height}; padding: {padding}; margin: {margin}; {styles}"
-        class:icon-after={iconAfter}
-        
         tabIndex={tabIndex}
         type="button"
     >
-
-    {#if icon !== ''}
-        <div style={`width: ${iconWidth};`} 
-            class:icon-left={!iconAfter} 
-            class:icon-right={iconAfter}
-            class:icon-invert={iconInvert}>{@html icon}</div>
-    {/if}
-
-    <div class="text-button" class:label-left={iconAfter} class:label-right={!iconAfter}> {name} </div>
+    <slot name="icon-before"></slot>
+    <div class="text-button"> {name} </div>
+    <slot name="icon-after"></slot>
  </button>

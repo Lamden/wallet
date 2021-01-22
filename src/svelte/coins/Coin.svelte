@@ -181,6 +181,7 @@
 }
 .address.success{
     color: var(--success-color);
+    border: 1px solid var(--success-color);
 }
 .icon-copy{
     width: 10px;
@@ -245,9 +246,7 @@
                     {#if token}
                         <div class="token-balance text-body1">{`${tokenBalance} ${token.tokenSymbol}`}</div>
                     {/if}
-                    <div class="text-body3 text-primary-dim"
-                         class:text-body1={!token}
-                         class:text-body3={typeof token !== "undefined"}
+                    <div class="text-primary-dim text-body1"
                     >
                         {`${balanceStr} ${$currentNetwork.currencySymbol}`}
                     </div>
@@ -266,15 +265,19 @@
     <div class="flex-row flex-center-end">
         {#if !token}
             <div class="flex-row show-on-hover">
-                <button class="reorder-button" on:click={handleReorderUp}>
+                <button class="button__small reorder-button" on:click={handleReorderUp}>
                     <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
                 </button>
-                <button class="reorder-button" on:click={handleReorderDown}>
+                <button class="button__small reorder-button" on:click={handleReorderDown}>
                     <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
                 </button>
             </div>    
         {/if}
-        <div class="address text-primary-dim flex-row" class:success={copied} on:click={handleAddressCopy} title="copy account address">
+        <button class="button__small address flex-row" 
+                class:success={copied} 
+                on:click={handleAddressCopy} 
+                title="copy account address"
+        >
             {formatAccountAddress(coin.vk, 10, 4)}
             <div class="icon-copy">
                 {#if !copied}
@@ -283,9 +286,6 @@
                     <CheckmarkIcon width="10px" color="var(--success-color)"/>
                 {/if}
             </div>
-        </div>
-        <!--
-            <button class="button__text details-button text-body2 weight-200" on:click={() => switchPage('CoinDetails', coin)}>details</button>
-        -->
+        </button>
     </div>
 </div>

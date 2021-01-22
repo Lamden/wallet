@@ -21,7 +21,9 @@
 	import hero_bg from '../../img/backgrounds/hero_bg.png';
 	import plus from '../../img/menu_icons/icon_plus.svg';
 
+	//Icons
 	import RefreshIcon from '../icons/RefreshIcon.svelte'
+	import PlusIcon from '../icons/PlusIcon.svelte'
 
 	//Utils
 	import { displayBalance } from '../../js/utils.js';
@@ -126,16 +128,7 @@
 }
 
 .hero-rec{
-	position: relative;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
 	height: 346px;
-	border-radius: 4px;
-	margin-bottom: 18px;
-    padding: 40px;
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 
 .refresh-icon{
@@ -197,15 +190,10 @@ p{
 	margin-left: 84px;
 }
 .hide-tokens-button{
-	border: 1px solid transparent;
-	color: var(--font-primary-dim);
-	margin-right: 28px; 
 	padding: 2px 6px;
 }
-.hide-tokens-button:hover{
-	text-decoration: underline;
-	/*border: 1px solid var(--font-primary);*/
-	filter: brightness(110%);
+.show-tokens-button{
+	padding: 5px 10px;
 }
 </style>
 
@@ -225,53 +213,57 @@ p{
 		</div>
 		<div class="flex-row buttons">
 			{#if whitelabel.mainPage.buttons.add_account.show}
-				<Button id={'add-btn'}
+				<Button
+					id={'add-btn'} 
 					classes={'button__transparent button__overlay'}
 					name={whitelabel.mainPage.buttons.add_account.name}
-					width={'155px'}
-					margin={'0 20px 0 0'}
-					click={() => openModal('CoinAdd')} 
-					icon={plus}
-					iconWidth={'19px'}
-				/>
+					click={() => openModal('CoinAdd')}
+				>
+					<div slot="icon-before">
+						<PlusIcon width="15px" color="var(--color-white)" />
+					</div>
+				</Button> 
 			{/if}
 		</div>
 	</div>
 
 	{#if $currentNetwork}
 		{#if tokenStorage.length > 0 && whitelabel.enableTokens}
-			<div class="header header-text divider text-body1 weight-300">
-				{#if whitelabel.mainPage.token_columns.token_name.show}
-					<div class:logo-space={whitelabel.mainPage.logo.show} 
-						 class="header-name header-text"
-						 class:text-primary-dim={hideTokens}>
-						 {whitelabel.mainPage.token_columns.token_name.title}
-					</div>
-				{/if}
-				{#if whitelabel.mainPage.token_columns.token_amount.show}
-					<div class="header-amount header-text"
-						 class:text-primary-dim={hideTokens}>
-						{whitelabel.mainPage.token_columns.token_amount.title}
-					</div>
-				{/if}
-				{#if whitelabel.mainPage.token_columns.token_amount.show}
-					<button class="button__text hide-tokens-button text-body1 weight-200" on:click={handleHideTokens}>{hideTokens ? "show" : "hide"}</button>
-				{/if}
+			{#if hideTokens}
+			<div class="flex-row flex-center-center mb-half">
+				<button class="button__small show-tokens-button text-body2"
+						on:click={handleHideTokens}
+				>
+					{`${tokenStorage.length} ${tokenStorage.length === 1 ? 'token' : 'tokens'} hidden`}
+				</button>
 			</div>
-			{#if !hideTokens}
+
+			{:else}
+				<div class="header header-text divider text-body1">
+					{#if whitelabel.mainPage.token_columns.token_name.show}
+						<div class:logo-space={whitelabel.mainPage.logo.show} 
+							class="header-name header-text">
+							{whitelabel.mainPage.token_columns.token_name.title}
+						</div>
+					{/if}
+					{#if whitelabel.mainPage.token_columns.token_amount.show}
+						<div class="header-amount header-text">
+							{whitelabel.mainPage.token_columns.token_amount.title}
+						</div>
+					{/if}
+					{#if whitelabel.mainPage.token_columns.token_amount.show}
+						<button class="button__small hide-tokens-button text-body2" on:click={handleHideTokens}>{"hide"}</button>
+					{/if}
+				</div>
 				{#each tokenStorage as token (token.id) }
 					<Token {token} on:reorderToken={handleReorderToken}/>
 				{/each}
-			{:else}
-				<div class="text-primary-dim text-body2 flex-row flex-center-center mb-half">
-					{`${tokenStorage.length} ${tokenStorage.length === 1 ? 'token' : 'tokens'} hidden`}
-				</div>
 			{/if}
 		{/if}
 		{#if coinStorage.length === 0}
 			<CoinEmpty />
 		{:else}
-			<div class="header header-accounts header-text text-body1 weight-300 divider ">
+			<div class="header header-accounts header-text text-body1 divider ">
 				{#if whitelabel.mainPage.account_info.show}
 					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
 				{/if}

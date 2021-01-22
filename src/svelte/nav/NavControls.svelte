@@ -52,7 +52,9 @@
 }
 .box:hover{
     background: var(--bg-secondary);
-    box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
+    box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
 }
 p{
     margin: 0;

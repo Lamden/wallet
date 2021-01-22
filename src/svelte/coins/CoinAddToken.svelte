@@ -71,6 +71,8 @@
 
     const handleContractInput = (e) => {
         error = null
+        contractValid = false
+        tokenMeta = undefined;
         contractName = e.detail.target.value
         if (contractName.length > 0){
             tokenExists(contractName).then(exists => {

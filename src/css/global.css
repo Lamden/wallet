@@ -15,16 +15,20 @@ body{
     /*
         Main UI Colors
     */
+    --primary-color-lighter: #642eff;
     --primary-color: #461BC2;
     --secondary-color: #303030;
     --overlay-color: #FFF;
     --accent-color: #4FB8FF;
 
     --color-white: #FFF;
+    --color-grey-1: #262626;
+    --color-grey-2: #383838;
+    --color-grey-3: #4a4a4a;
 
     --bg-primary: #151515; 
-    --bg-secondary: #262626;   
-    --bg-secondary-hover: #383838; 
+    --bg-secondary: var(--color-grey-1);   
+    --bg-secondary-hover: var(--color-grey-2);   
     --bg-semi-transparent: #0000007a;
     --bg-transparent: transparent;
 
@@ -68,6 +72,17 @@ body{
 
     --componet-disabled: brightness(50%);
    /* --componet-enabled: brightness(100%);*/
+
+   --box-shadow-color-1: #0823303d;
+   --box-shadow-color-2: #08233029;
+   --box-shadow-1: 0px 0px 1px var(--box-shadow-color-1), 0px 1px 4px var(--box-shadow-color-2);
+   --box-shadow-2: 0px 1px 2px var(--box-shadow-color-1), 0px 2px 6px var(--box-shadow-color-2);
+   --box-shadow-3: 0px 2px 4px var(--box-shadow-color-1), 0px 4px 8px var(--box-shadow-color-2);
+   --box-shadow-4: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
+
+
+    --input-outline: var(--color-grey-3);
+
 }
 
 body{
@@ -84,18 +99,26 @@ body{
     --overlay-color: #FFF;
     --accent-color: #4FB8FF;
 
+    --color-grey-1: #f6f6f6;
+    --color-grey-2: #ececec;
+    --color-grey-3: #dcdcdc;
+
     --bg-primary: #fff; 
-    --bg-secondary: #f6f6f6;   
-    --bg-secondary-hover: #ececec; 
+    --bg-secondary: var(--color-grey-1);   
+    --bg-secondary-hover: var(--color-grey-2); 
 
     --font-primary: #373737;
     --font-primary-dim: #929292;
     --font-primary-inverse: #E0E0E0;
+    --font-secondary-lighter: #cacaca;
     --font-secondary: #7f7f7f;
     --font-overlay: var(--overlay-color);
 
     --divider-light: #e4e4e4;
     --divider-dark: #b5b5b5;
+
+    --button-secondary-color: var(--color-grey-1); 
+    --button-secondary-text-color: var(--font-primary);
 
     --outline: #676767;
 
@@ -152,6 +175,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 
 .text-black{
     color: var(--font-black);
+}
+
+.text-white{
+    color: var(--color-white);
 }
 
 .text-primary-color{
@@ -219,12 +246,16 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 }
 
 .text-link-secondary:hover {
-    color: var(--font-primary);
+    color: var(--accent-color);
 }
 
 .text-link-secondary:visited {
-    color: var(--link-visited);
+    color: var(--link-color-secondary);
     outline: none;
+}
+
+.text-opacity-1{
+    opacity: 0.75;
 }
 
 .weight-100{
@@ -405,6 +436,10 @@ h6{
     text-transform: uppercase;
 }
 
+.box-shadow-1{
+    box-shadow: var(--box-shadow-1);
+}
+
 button {
     position: relative;
     font-size: 10px;
@@ -412,6 +447,7 @@ button {
     padding: 3px;
     cursor: pointer;
     border: unset;
+    box-shadow: var(--box-shadow-1);
 }
 
 button:active{
@@ -420,19 +456,6 @@ button:active{
 
 button:focus { outline: none; }
 
-button.button__solid:not(:disabled):hover {
-    filter: brightness(125%);
-}
-button.button__solid:disabled{
-    filter: brightness(60%);
-}
-
-input.submit-button:not(:disabled):hover {
-    filter: brightness(125%);
-}
-input.submit-button:disabled{
-    filter: brightness(80%);
-}
 .button__solid{
     display: flex;
     align-items: center;
@@ -446,10 +469,35 @@ input.submit-button:disabled{
     color: var(--button-secondary-text-color);
 }
 
+button.button__solid:not(:disabled):hover {
+    background: var(--color-grey-2);
+}
+
+button.button__solid:not(:disabled):hover {
+    background: var(--color-grey-2);
+}
+
+button.button__solid:disabled{
+    filter: brightness(60%);
+}
+
+input.submit-button:not(:disabled):hover {
+    filter: brightness(125%);
+}
+input.submit-button:disabled{
+    filter: brightness(80%);
+}
+
+
 .button__solid.button__primary{
     color: var(--button-primary-text-color);
     background-color: var(--button-primary-color);
 }
+.button__solid.button__primary:not(:disabled):hover{
+    filter: brightness(120%);
+    background-color: var(--button-primary-color);
+}
+
 .button__solid.button__secondary{
     color: var(--button-secondary-text-color);
     background-color: var(--button-secondary-color);
@@ -511,6 +559,7 @@ input.submit-button:disabled{
     border: unset;
     background: var(--bg-primary);
     color: var(--font-secondary);
+    box-shadow: none;
 }
 
 .button__icon{
@@ -633,24 +682,43 @@ input.submit-button:disabled{
     background: var(--primary-color);
 }
 
-.reorder-button:hover{
-    background: var(--bg-secondary-hover);
-}
-
-.reorder-button:hover path{
-    fill: var(--accent-color);
-}
-
-.reorder-button{
+.button__small{
+    border: 1px solid transparent;
     background: var(--bg-secondary);
     border-radius: 99px;
     padding: 0;
+}
+
+.button__small:hover{
+    border: 1px solid var(--accent-color);
+    background: var(--bg-secondary-hover);
+    color: var(--accent-color);
+}
+
+.button__small:hover path{
+    fill: var(--accent-color);
+}
+
+.button__small.button__primary:not(:disabled):hover{
+    filter: brightness(120%);
+    background-color: var(--button-primary-color);
+}
+
+.button__small.button__primary{
+    color: var(--button-primary-text-color);
+    background-color: var(--button-primary-color);
+}
+
+.reorder-button{
     margin: 0 1px;
     width: 18px;
     height: 18px;
 }
 
-
+.run-button{
+    padding: 2px 5px;
+    margin: 0 0 0 10px;
+}
 
 .submit-button {
     width: 232px;
@@ -668,6 +736,25 @@ input.submit-button:disabled{
     text-align: center;
     letter-spacing: 0.75px;
     text-transform: uppercase;
+}
+
+.hero-rec{
+	position: relative;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	border-radius: 4px;
+	margin-bottom: 18px;
+    padding: 40px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: var(--color-white);
+}
+
+.hero-rec.popup{
+    width: 100%;
+    padding: 2rem 0;
+    justify-content: space-between;
 }
 
 .error {
@@ -739,7 +826,7 @@ input.submit-button:disabled{
     width: 100%;
 
     background: inherit;
-    border: 1px solid var(--outline);
+    border: 1px solid var(--input-outline);
     box-sizing: border-box;
     transition: border 0.5s;
     border-radius: 4px;
@@ -965,4 +1052,41 @@ input.submit-button:disabled{
 
 .row-box .nickname {
     cursor: pointer;
+}
+
+.options-box{
+    justify-content: center;
+    background: inherit;
+    border: 1px solid transparent;
+}
+.options-box:first-child{
+    margin-right: 1rem;
+}
+.options{
+    cursor: pointer;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    width: 150px;
+    height: 95px;
+    border-radius: 8px;
+    padding: 16px 0;
+    margin: 0 0.5rem;
+}
+.options-box-primary{
+    color: var(--color-white);
+    background-color: var(--primary-color);
+}
+
+.options-box-primary:hover{
+    filter: brightness(125%);
+}
+
+.options-box-grey{
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--color-grey-3);
+}
+
+.options-box-grey:hover{
+    background-color: var(--bg-secondary-hover);
 }

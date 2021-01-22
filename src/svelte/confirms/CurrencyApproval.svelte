@@ -38,17 +38,6 @@
     flex-grow: 1;
     justify-content: center;
 }
-
-.hero-rec{
-    width: 100%;
-    padding: 2rem 0;
-    justify-content: space-between;
-    align-items: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    box-sizing: border-box;
-}
-
 .text-subtitle4.text-link{
     margin-top: 1rem;
 }
