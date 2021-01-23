@@ -104,7 +104,7 @@
 	position: relative;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid var(--outline);
+	border: 1px solid var(--input-outline);
 	padding: 0px 5px 10px 10px;
 	border-radius: 4px;
 	z-index: 0;

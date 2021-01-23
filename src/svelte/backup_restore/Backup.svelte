@@ -18,6 +18,7 @@
 
     //Icons 
     import DirectionalArrowIcon from '../icons/DirectionalArrowIcon.svelte'
+    import CloseIcon from '../icons/CloseIcon.svelte'
 
 	//Context
     const { switchPage } = getContext('app_functions');
@@ -91,15 +92,10 @@
                 <div class="warning-icon">{@html cautionIcon}</div>
                 <div class="warning-text text-body4">
                     You have added Accounts since your last backup so it is HIGHLY recommended that you create another backup.
+                    <button class="button__icon" on:click={dismissWarning}>
+                        <CloseIcon id={'dismiss-btn'} width="12px" click={dismissWarning} margin="0 0 -2px 1px"/>
+                    </button>
                 </div>
-                <Button
-                    id={'dismiss-btn'} 
-                    classes={'button__icon'}
-                    height="unset"
-                    padding={'0'}
-                    click={dismissWarning} 
-                    icon={iconClose}
-                    iconPosition='after'/>
             </div>
         {/if}
 	</div>

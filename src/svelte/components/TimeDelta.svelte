@@ -42,7 +42,7 @@
 	position: relative;
 	justify-content: space-around;
 	align-items: center;
-	border: 1px solid var(--outline);
+	border: 1px solid var(--input-outline);
 	padding: 0px 10px 10px 10px;
 	border-radius: 4px;
 	background: none;

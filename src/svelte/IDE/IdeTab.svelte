@@ -10,7 +10,7 @@
 
     //Icons
     import ConnectedIcon from '../icons/ConnectedIcon.svelte'
-    import DeleteIcon from '../icons/DeleteIcon.svelte'
+    import CloseIcon from '../icons/CloseIcon.svelte'
 
     //Props
     export let file;
@@ -95,7 +95,7 @@
     {/if}
     {#if file.selected}
         <div on:click={closeTab} title="Close Tab">
-            <DeleteIcon width="14px" margin="0 0 -3px 5px" color={"var(--font-primary-dim)"}/>
+            <CloseIcon width="14px" margin="0 0 -3px 5px" color="var(--font-primary-dim)"/>
         </div>
     {/if}
 </div>

@@ -72,18 +72,16 @@ body{
     --button-secondary-text-color: var(--font-primary);
 
     --componet-disabled: brightness(50%);
-   /* --componet-enabled: brightness(100%);*/
+    /* --componet-enabled: brightness(100%);*/
 
-   --box-shadow-color-1: #0823303d;
-   --box-shadow-color-2: #08233029;
-   --box-shadow-1: 0px 0px 1px var(--box-shadow-color-1), 0px 1px 4px var(--box-shadow-color-2);
-   --box-shadow-2: 0px 1px 2px var(--box-shadow-color-1), 0px 2px 6px var(--box-shadow-color-2);
-   --box-shadow-3: 0px 2px 4px var(--box-shadow-color-1), 0px 4px 8px var(--box-shadow-color-2);
-   --box-shadow-4: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
-
+    --box-shadow-color-1: #0823303d;
+    --box-shadow-color-2: #08233029;
+    --box-shadow-1: 0px 0px 1px var(--box-shadow-color-1), 0px 1px 4px var(--box-shadow-color-2);
+    --box-shadow-2: 0px 1px 2px var(--box-shadow-color-1), 0px 2px 6px var(--box-shadow-color-2);
+    --box-shadow-3: 0px 2px 4px var(--box-shadow-color-1), 0px 4px 8px var(--box-shadow-color-2);
+    --box-shadow-4: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
 
     --input-outline: var(--color-grey-3);
-
 }
 
 body{
@@ -566,6 +564,9 @@ input.submit-button:disabled{
 .button__icon{
     background-color: unset;
     border: unset;
+    box-shadow: unset;
+    -webkit-box-shadow: unset;
+    -moz-box-shadow: unset;
 }
 
 .button__outlined{
@@ -685,9 +686,17 @@ input.submit-button:disabled{
     background: var(--primary-color);
 }
 
+.button__icon{
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
 .button__small{
     border: 1px solid transparent;
     background: var(--bg-secondary);
+    color: var(--font-primary);
     border-radius: 99px;
     padding: 0;
 }
