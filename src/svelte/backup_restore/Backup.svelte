@@ -77,7 +77,7 @@
         <div class="buttons">
         	<Button
                 id={'backup-btn'} 
-                classes={'button__transparent button__overlay'}
+                classes={'button__outlined button__overlay'}
 				name="Backup Wallet"
 		 		click={() => switchPage('BackupMain')}
             >

@@ -66,6 +66,7 @@ body{
     */
     --button-primary-color: var(--primary-color);  
     --button-primary-text-color: var(--font-overlay);
+    --button-outlined-background: #461bc2ad;
 
     --button-secondary-color: var(--secondary-color); 
     --button-secondary-text-color: var(--font-primary);
@@ -567,95 +568,97 @@ input.submit-button:disabled{
     border: unset;
 }
 
-.button__transparent{
+.button__outlined{
     position: relative;
     display: flex;
     align-items: center;
     background-color: unset;
     border: unset;
     border: 1px solid var(--font-primary);
+    background: var(--button-outlined-background);
+
     border-radius: 4px;
     color: var(--font-primary);
     padding: 13px 8px 13px 12px;
 }
 
-.button__transparent::before {
+.button__outlined::before {
     content: "";
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
 }
 
-.button__transparent:hover:before {
+.button__outlined:hover:before {
     background-color: var(--font-primary);
     filter: opacity(20%)
 }
 
-.button__transparent.button__primary:hover:before {
+.button__outlined.button__primary:hover:before {
     background-color: var(--primary-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__primary:hover {
+.button__outlined.button__primary:hover {
     border: 1px solid var(--primary-color);
 }
 
-.button__transparent.button__secondary:hover:before {
+.button__outlined.button__secondary:hover:before {
     background-color: var(--secondary-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__secondary:hover {
+.button__outlined.button__secondary:hover {
     border: 1px solid var(--secondary-color);
 }
 
-.button__transparent.button__overlay {
+.button__outlined.button__overlay {
     color: var(--font-overlay);
     border: 1px solid var(--overlay-color);
 }
 
-.button__transparent.button__overlay:hover:before {
+.button__outlined.button__overlay:hover:before {
     background-color: var(--overlay-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__overlay:hover {
+.button__outlined.button__overlay:hover {
     border: 1px solid var(--overlay-color);
 }
 
-.button__transparent.button__accent:hover:before {
+.button__outlined.button__accent:hover:before {
     background-color: var(--accent-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__accent:hover{
+.button__outlined.button__accent:hover{
     border: 1px solid var(--accent-color);
 }
 
-.button__transparent.button__success:hover:before {
+.button__outlined.button__success:hover:before {
     background-color: var(--success-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__success:hover{
+.button__outlined.button__success:hover{
     border: 1px solid var(--success-color);
 }
 
-.button__transparent.button__warning:hover:before {
+.button__outlined.button__warning:hover:before {
     background-color: var(--warning-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__warning:hover{
+.button__outlined.button__warning:hover{
     border: 1px solid var(--warning-color);
 }
 
-.button__transparent.button__warning:hover:before {
+.button__outlined.button__warning:hover:before {
     background-color: var(--error-color);
     filter: opacity(20%)
 }
 
-.button__transparent.button__warning:hover{
+.button__outlined.button__warning:hover{
     border: 1px solid var(--error-color);
 }
 

@@ -93,7 +93,7 @@ import {getContext} from 'svelte'
     {#if swap.status !== "success"}
         <Button 
             name={swap.status === 'error' ? 'retry' : "continue"}
-            classes="button__transparent button__accent"
+            classes="button__outlined button__accent"
             padding={'5px 10px'}
             height={'30px'}
             margin={'0.5rem 0 0 0'}

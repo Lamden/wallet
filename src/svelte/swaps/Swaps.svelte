@@ -75,7 +75,7 @@ strong{
         <div class="buttons">
         	<Button
                 id={'start-swap-btn'} 
-                classes={'button__transparent button__overlay'}
+                classes={'button__outlined button__overlay'}
 				name="Start Swap"
                 margin={'0 49px 0 0'}
 		 		click={() => switchPage('SwapsMain')}

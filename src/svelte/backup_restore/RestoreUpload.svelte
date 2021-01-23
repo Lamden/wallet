@@ -18,6 +18,7 @@
     export let restore = false;
 
     let disabledButton = true;
+    let fileName;
     $: activeButton = disabledButton ? '' : ' button__primary'
     $: dragover = '';
 
@@ -58,8 +59,13 @@
             ev.dataTransfer.files[0].kind === 'file' ? file = ev.dataTransfer.files[0].getAsFile() : null;
         }
         if (file) {
-            setFile(file);
-            disabledButton = false;
+            if (file.name.includes(".keystore")){
+                setFile(file);
+                fileName = file.name;
+                disabledButton = false;
+            }else{
+                dragover = false;
+            }
         }
     }
 
@@ -82,12 +88,6 @@
 .caption-box.text-caption{
     text-align: left;
 }
-
-.text-primary:hover{
-    text-decoration: underline;
-    color: var(--font-accent);
-}
-
 span{
     cursor: pointer;
 }
@@ -103,7 +103,10 @@ span{
 }
 
 .dragover{
-    background-color: var(--primary-color)
+    background-color: var(--primary-color);
+    color: var(--color-white);
+    word-break: break-all;
+    padding: 0 10px;
 }
 
 </style>
@@ -125,7 +128,7 @@ span{
             on:dragover|preventDefault={(e) => handleDragover(e)}
             on:dragleave|preventDefault={(e) => handleDragleave(e)}
             on:drop={(ev) => handleFileEvent(ev)}>
-            Drop File Here
+            {fileName ? fileName : "Drop File Here"}
         </div>
         
         <input  id="filePicker" type="file" accept=".keystore" on:change={(ev) => handleFileEvent(ev)}>

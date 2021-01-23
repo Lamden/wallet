@@ -215,7 +215,7 @@ p{
 			{#if whitelabel.mainPage.buttons.add_account.show}
 				<Button
 					id={'add-btn'} 
-					classes={'button__transparent button__overlay'}
+					classes={'button__outlined button__overlay'}
 					name={whitelabel.mainPage.buttons.add_account.name}
 					click={() => openModal('CoinAdd')}
 				>

@@ -159,7 +159,7 @@
         <div class="flex-row name-button">
             <Button 
                 name={"tx details"}
-                classes="button__transparent button__accent"
+                classes="button__outlined button__accent"
                 padding={'5px 10px'}
                 height={'30px'}
                 margin={'0 0 0 10px'}

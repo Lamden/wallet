@@ -81,7 +81,7 @@ h4{
     <div class="flex-row button-more">
         <Button 
             name={"show more"}
-            classes="button__transparent button__accent"
+            classes="button__outlined button__accent"
             margin={"0 0 1rem 0"}
             click={openLink}
             />

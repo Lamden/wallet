@@ -56,7 +56,7 @@
         <div class="buttons">
             <Button
                 id={'restore-btn'} 
-                classes={'button__transparent button__overlay'}
+                classes={'button__outlined button__overlay'}
                 name="Restore Now"
                 click={() => switchPage('RestoreMain')}
             >

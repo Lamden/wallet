@@ -253,7 +253,7 @@
                 {#if coin.sk !== "watchOnly"}
                     <Button
                         id={'send-coin-btn'} 
-                        classes={'button__transparent button__overlay'}
+                        classes={'button__outlined button__overlay'}
                         name={whitelabel.accountDetails.buttons.send.name}
                         click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
                         padding={"12px"}
@@ -268,7 +268,7 @@
             {#if whitelabel.accountDetails.buttons.copy.show}
                 <Button
                     id={'copy-address-btn'} 
-                    classes={'button__transparent button__overlay'}
+                    classes={'button__outlined button__overlay'}
                     click={copyWalletAddress} 
                     name={whitelabel.accountDetails.buttons.copy.name}
                     padding={"12px"}
@@ -282,7 +282,7 @@
             {#if whitelabel.accountDetails.buttons.options.show}
                 <Button
                     id={'modify-coin-btn'} 
-                    classes={'button__transparent button__overlay'}
+                    classes={'button__outlined button__overlay'}
                     name={whitelabel.accountDetails.buttons.options.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
@@ -296,15 +296,18 @@
             </div>
             {#if thisNetworkApproved && $currentNetwork.lamden}
                 <div>
-                    <Button 
+                    <Button
                         id={'dapp-options-btn'} 
-                        classes={'button__transparent button__overlay'}
+                        classes={'button__outlined button__overlay'}
                         name="dApp Settings"
-                        icon={settings}
                         padding={"12px"}
                         margin={'0 0 15px 0'}
                         click={() => openModal('CoinDappOptions', {coin, dappInfo, startPage: 1})}
-                        />
+                    >
+                        <div slot="icon-before">
+                            <SettingsIcon width="15px" color="var(--color-white)" />
+                        </div>
+                    </Button> 
                 </div>
             {/if}
             {#if thisNetworkApproved && dappInfo} 

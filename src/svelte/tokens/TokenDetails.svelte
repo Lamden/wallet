@@ -23,12 +23,13 @@
     const { Button, TokenLogo } = Components;
     
     //Images
-    import hero_bg from '../../img/backgrounds/hero_bg.png';
-    import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
-    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
-    import settings from '../../img/menu_icons/icon_settings.svg';
-    import options from '../../img/menu_icons/icon_options.svg';
+    import hero_bg from '../../img/backgrounds/hero_bg.png';   
+
+    //Icons
     import RefreshIcon from '../icons/RefreshIcon.svelte'
+    import TransferIcon from '../icons/TransferIcon.svelte'
+    import ApproveIcon from '../icons/ApproveIcon.svelte'
+    import SettingsIcon from '../icons/SettingsIcon.svelte'
     
     //Utils
     import { copyToClipboard, displayBalance, stringToFixed } from '../../js/utils.js'
@@ -164,35 +165,44 @@
             {#if whitelabel.tokenDetails.buttons.send.show}
                 <Button
                     id={'transfer-token-btn'} 
-                    classes={'button__transparent button__overlay'}
+                    classes={'button__outlined button__overlay'}
                     name={whitelabel.tokenDetails.buttons.send.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
                     click={() => handleOpenTxWindow('transfer', undefined)}
-                    icon={arrowUp}
-                />
+                >
+                    <div slot="icon-before">
+                        <TransferIcon width="15px" color="var(--color-white)" />
+                    </div>
+                </Button> 
             {/if}
             {#if whitelabel.tokenDetails.buttons.approve.show}
                 <Button
                     id={'approve-token-btn'} 
-                    classes={'button__transparent button__overlay'}
+                    classes={'button__outlined button__overlay'}
                     name={whitelabel.tokenDetails.buttons.approve.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
                     click={() => handleOpenTxWindow('approve', undefined)}
-                    icon={copyWhite}
-                />
+                >
+                    <div slot="icon-after">
+                        <ApproveIcon width="15px" color="var(--color-white)" />
+                    </div>
+                </Button> 
             {/if}
             {#if whitelabel.tokenDetails.buttons.options.show}
-                <Button 
-                    id={'modify-token-btn'} 
-                    classes={'button__transparent button__overlay'}
-                    icon={options}
+                <Button
+                    id={'modify-token-btn'}
+                    classes={'button__outlined button__overlay'}
                     name={whitelabel.tokenDetails.buttons.options.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
                     click={() => openModal('TokenModify', token)}
-                />
+                >
+                    <div slot="icon-after">
+                        <SettingsIcon width="15px" color="var(--color-white)" />
+                    </div>
+                </Button> 
             {/if}
         </div>
     </div>

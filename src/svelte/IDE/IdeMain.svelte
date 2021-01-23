@@ -125,7 +125,7 @@
 					{#if $activeTab.type === 'local'}
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent button__accent'}
+							classes={'button__outlined button__accent'}
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
 							height={'42px'}
@@ -133,7 +133,7 @@
 						/>
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent button__accent'}
+							classes={'button__outlined button__accent'}
 							name="Submit to Network"
 							height={'42px'}
 							click={() => lint(submit)}
