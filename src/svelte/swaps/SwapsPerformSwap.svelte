@@ -6,13 +6,17 @@
     import { steps, currentNetwork, SwapsStore } from '../../js/stores/stores.js';
 
     //Image
-    import lamdenLogoOld from '../../img/coin_logos/lamden_logo_old.svg'
     import lamdenLogoNew from '../../img/coin_logos/lamden_logo_white.svg'
-    import errorCircle from '../../img/menu_icons/icon_error-circle.svg'
     import circleCheck from '../../img/menu_icons/icon_circle-check.svg'
+
+    //Icons
+    import LamdenOldLogo from '../icons/logos/LamdenOldLogo.svelte'
+    import SwapIcon from '../icons/menu/SwapIcon.svelte'
+    import ErrorIcon from '../icons/ErrorIcon.svelte'
 
     //Utils
     import ClearingHouse_API from '../../js/crypto/clearingHouseAPI'
+    import { formatAccountAddress } from '../../js/utils'
 
 	//Components
 	import { Components }  from '../Router.svelte'
@@ -107,11 +111,7 @@
     margin-top: 2rem;
 }
 .loading{
-    margin-bottom: -0.5rem;
-}
-.icon-error{
-    height: 30px;
-    width: 30px;
+    margin-top: 2rem;
 }
 .swap-details{
     display: flex;
@@ -124,7 +124,7 @@
 }
 .logo{
     width: 95px;
-    padding: 20px;
+    padding: 20px 10px;
 }
 .flag{
     width: 150px;
@@ -139,6 +139,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 250px;
+    text-align: center;
+}
+.amount{
+        width: max-content;
 }
 @media (min-width: 1024px) {
     .swap-details{
@@ -182,28 +186,20 @@
             <div class="flag" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
             <h2 class="text-accent" in:fade="{{delay: 0, duration: 500}}">Swap is Complete</h2>
         {/if}
-        {#if errorMsg !== ''}
-            <p class="text-body1 text-red" >{errorMsg}</p>
-        {/if}
-
         {#if !success}
             <div class="swap-details">
-                <div class="flex-column">
-                    <div class="logo">{@html lamdenLogoOld}</div>
+                <div class="flex-column flex-just-center">
+                    <div class="logo"><LamdenOldLogo width="95px" color="var(--font-primary)"/></div>
                     <a href={`${getChainInfo().blockExplorer}/address/${getEthAddress()}`} 
                         class="text-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">
-                        {getEthAddress()}
+                        {formatAccountAddress(getEthAddress(), 8, 4)}
                     </a>
                 </div>
                 <div class="loading-column flex-column">
-                    {#if typeof success === 'undefined'}
-                        <Loading class="loading" width={'30px'} />
-                    {:else}
-                        <div class="loading icon-error">{@html errorCircle}</div>
-                    {/if}
-                    <p class="text-subtitle2">{`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}</p>
+                    <SwapIcon width="30px" color="var(--font-primary-dim)"/>
+                    <p class="amount text-subtitle2">{`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}</p>
                 </div>
                 <div class="flex-column">
                     <div class="logo">{@html lamdenLogoNew}</div>
@@ -211,9 +207,18 @@
                         class="text-link text-subtitle2"
                         target="_blank" 
                         rel="noopener noreferrer">
-                        {getLamdenAddress()}
+                        {formatAccountAddress(getLamdenAddress(), 8, 4)}
                     </a>
                 </div>
+            </div>
+            <div class="flex-column flex-center-center loading">
+                {#if typeof success === 'undefined'}
+                    <Loading  width={'80px'} height="unset" />
+                {/if}
+                {#if errorMsg !== ''}
+                    <ErrorIcon width="80px"/>
+                    <p class="text-body1 text-red" >{errorMsg}</p>
+                {/if}
             </div>
         {/if}
     </div>

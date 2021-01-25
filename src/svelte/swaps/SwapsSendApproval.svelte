@@ -20,13 +20,13 @@
 
 
     //Context
-    const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse } = getContext('functions');
+    const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse, setHasPreviousApproval } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
-    //DOM Nodes
-    let inputNode
-
     let amount = 0;
+
+    let hasApproval;
+    let checkedhasApproval = false;
 
     $: metamaskTxResponse = null;
     $: sending = false;
@@ -35,7 +35,7 @@
     $: chinese = document.documentElement.lang.includes('zh-')
 
     const nextPage = () => {
-        setMetamaskApprovalResponse(metamaskTxResponse)
+        if (!hasApproval) setMetamaskApprovalResponse(metamaskTxResponse)
         changeStep(6)
     }
 
@@ -44,64 +44,33 @@
             stepsStore.currentStep = 4;
             return stepsStore
         })
-
-        inputNode.value = getTokenBalance()
-        handleChanged()
-
+        checkIfAlreadyApproved()
     })
+
+    const checkIfAlreadyApproved = () => {
+        return new Promise(resolver => {
+            chrome.runtime.sendMessage({type: 'checkERC20Approval', data: { address: getEthAddress()}}, (alreadyApproved) => {
+                checkedhasApproval = true;
+                hasApproval = alreadyApproved;
+                setHasPreviousApproval(hasApproval)
+                resolver()
+            })
+        })
+
+    }
 
     const sendTokenApproval = () => {
         if (!sent){
-            if (getTokenBalance() < inputNode.value){
-                inputNode.setCustomValidity('cannot be higher than balance')
-                inputNode.reportValidity()
-            }else{
-                sending = true
-                errorMsg = ''
-                chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: inputNode.value}}, (response) => {
-                    sending = false
-                    if (typeof response.error === 'undefined') {
-                        metamaskTxResponse = response
-                    } else {
-                        errorMsg = response.error
-                    }
-                })
-            }
-        }
-    }
-
-    const handleChanged = () => {
-        inputNode.setCustomValidity('')
-        inputNode.reportValidity()
-        const updateAmounts = (val) => {
-            amount = String(val)
-            inputNode.value = val
-        }
-        const updateAmount = () => amount = String(inputNode.value)
-        if (isNaN(inputNode.value)) {
-            updateAmount("0")
-            return
-        } 
-        if (!inputNode.value.includes(".")) {
-            updateAmount()
-            return
-        }
-        let intPart = inputNode.value.split(".")[0]
-        let decimalPart = inputNode.value.split(".")[1]
-        if (!decimalPart && !intPart) {
-            updateAmounts("0")
-            return
-        }
-        if (!decimalPart) {
-            updateAmounts(intPart)
-            return
-        }
-        if (parseInt(decimalPart) === 0) {
-            updateAmounts(intPart)
-            return
-        }
-        if (decimalPart.length > 8) {
-            updateAmounts(intPart + "." + decimalPart.substring(0, 8))
+            errorMsg = ''
+            sending = true
+            chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: "100000000"}}, (response) => {
+                sending = false
+                if (typeof response.error === 'undefined') {
+                    metamaskTxResponse = response
+                } else {
+                    errorMsg = response.error
+                }
+            })
         }
     }
 
@@ -137,7 +106,7 @@ p.text-body2{
     width: 100%;
 }
 .grey{
-    color: var(--font-secondary)
+    opacity: 0;
 }
 .swap-details > p{
     white-space: nowrap;
@@ -150,12 +119,8 @@ p.text-body2{
 .swap-details > p > strong{
     font-weight: 500;
 }
-.text-body2 > strong{
-    color: var(--font-accent);
-}
 .text-warning{
     margin: 2rem 0 -0.5rem;
-    text-align: center;
 }
 </style>
 
@@ -167,25 +132,8 @@ p.text-body2{
             {`Lamden requires access to your tokens to complete the swap process.`}
         </p>
 
-        <p class="text-body2">
-            <strong>Ethereum {$currentNetwork.currencySymbol} Balance:</strong><br>
-            {`${getTokenBalance().toFixed(8)} ${getChainInfo().tauSymbol}`}
-        </p>
-
-        {#if !sent}
-            <InputBox 
-                bind:thisInput={inputNode}
-                on:changed={handleChanged}
-                label={`Approve Amount`}
-                inputType={'number'}
-                bind:value={amount}
-                placeholder={`${getChainInfo().tauSymbol} Amount`}
-                disabled={sending}
-            />
-        {/if}
-
         <div class="flex-column buttons">
-            {#if sent}
+            {#if sent || hasApproval}
                 <Button id={'continue-btn'}
                         classes={'button__solid button__primary'}
                         styles={'margin-bottom: 16px;'}
@@ -197,7 +145,7 @@ p.text-body2{
                     classes={`button__solid button__primary`}
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
-                    name={sent ? "Approved" : sending ? "Sending" : "Send Approval"}
+                    name={!checkedhasApproval ? "Checking Approval" : sent ? "Approved" : sending ? "Sending" : "Send Approval"}
                     disabled={sending}
                     click={sendTokenApproval} />
             {/if}
@@ -221,27 +169,33 @@ p.text-body2{
          </div>
     </div>
     <div class="flex-column flow-content-right">
-        <div class="swap-details" class:grey={sending || sent || errorMsg !== ''}>
-            <h3>Transaction Details</h3>
-            <p><strong>Contract:</strong><br>
-                {`Ethereum ${getChainInfo().chainName}:`}
-                {#if (sending || sent || errorMsg !== '') && !chinese} {getChainInfo().tauContract}
-                {:else}
-                    <a class="text-link" href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} rel="noopener noreferrer" target="_blank">
-                        {getChainInfo().tauContract}
-                    </a>
-                {/if}
-            </p> 
-            <p><strong>Function:</strong><br>
-                approve
-            </p> 
-            {#if !chinese}
-                <p><strong>Amount:</strong><br>
-                    {amount}
-                </p> 
-            {/if}
-            <p class:text-warning={!sending && !sent && errorMsg === ''}>Please deal with all pending Metamask transactions before clicking the "Send Approval" button.</p>
-        </div>
+        {#if !hasApproval && checkedhasApproval}
+            <div class="swap-details" class:grey={sending || sent || errorMsg !== ''}>
+                
+                    <h3>Transaction Details</h3>
+                    <p><strong class="text-primary-dim">Contract:</strong><br>
+                        {#if (sending || sent || errorMsg !== '') && !chinese} {getChainInfo().tauContract}
+                        {:else}
+                            <a class="text-link" href={getChainInfo().blockExplorer + '/address/' + getChainInfo().tauContract} rel="noopener noreferrer" target="_blank">
+                                {getChainInfo().tauContract}
+                            </a>
+                        {/if}
+                    </p> 
+                    <p><strong class="text-primary-dim">Function:</strong><br>
+                        approve
+                    </p> 
+                    <p class:text-warning={!sending && !sent && errorMsg === ''}>Please deal with all pending Metamask transactions before clicking the "Send Approval" button.</p>
+
+            </div>
+        {/if}
+        {#if !checkedhasApproval}
+            <div style="position: absolute;">
+                <Loading message="Please Wait"
+                     subMessage="Checking if Swap Contract is approved"
+                     mainStyle="justify-content: flex-start;"
+                />
+            </div>
+        {/if}
         {#if sending}
             <div style="position: absolute;">
                 <Loading message="Waiting for transaction to complete..."
@@ -252,7 +206,7 @@ p.text-body2{
                 <p class="text-body2">Depending on the congestion of the Ethereum network, and gas used, this could take a while.</p>
             </div>
         {/if}
-        {#if sent}
+        {#if sent || hasApproval}
             <div class="flex-column result" >
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
                 <h3>{'Approved!'}</h3>

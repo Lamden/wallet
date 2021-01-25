@@ -130,6 +130,11 @@ export const messagesHandler = (masterController) => {
                         masterController.transactions.requestEthereumAccount(sendResponse)
                         return true;
                     }
+                    //Check ERC20 TAU approval
+                    if (message.type === 'checkERC20Approval') {
+                        masterController.transactions.checkERC20Approval(message.data, sendResponse)
+                        return true
+                    } 
                     //Send ETH Tokens
                     if (message.type === 'sendTokenApproval') {
                         masterController.transactions.sendEthereumTokenApproval(message.data, sendResponse)

@@ -10,7 +10,7 @@
     const { Button, DropDown, InputBox } = Components;
 
     //Context
-    const { changeStep, setLamdenWallet } = getContext('functions');
+    const { changeStep } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
     let notScrolled = true;
@@ -118,7 +118,7 @@ h3{
             inputType="textarea"
             bind:thisInput={inputElm}
             value={legalText}
-            margin="-1rem 0 2rem"
+            margin="0 0 2rem"
             rows="19"
             on:scroll={handleScroll}
             on:mouseup={handleScroll}

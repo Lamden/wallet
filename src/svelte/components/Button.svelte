@@ -18,9 +18,6 @@
 .text-button{
     margin: 0 6px;
 }
-.disabled{
-    color: grey;
-}
 
 </style>
 

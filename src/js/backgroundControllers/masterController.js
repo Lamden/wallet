@@ -295,7 +295,8 @@ export const masterController = () => {
             requestEthereumAccount: transactions.requestEthereumAccount,
             sendEthereumTokenApproval: transactions.sendEthereumTokenApproval,
             sendEthereumSwapTransaction: transactions.sendEthereumSwapTransaction,
-            checkEthereumTxStatus: transactions.checkEthereumTxStatus
+            checkEthereumTxStatus: transactions.checkEthereumTxStatus,
+            checkERC20Approval: transactions.checkERC20Approval
         },
         "tokens": {
             addToken: tokens.addToken,

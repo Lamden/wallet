@@ -40,12 +40,17 @@ import {getContext} from 'svelte'
     strong{
         margin-right: 5px;
     }
+    span.weight-300 {
+        margin: 0 10px 0 0;
+        line-height: 1.5;
+    }
+    
 
 </style>
 
 <div class="flex-row swap-details text-body2">
-    <p>{new Date(swap.created).toLocaleString()}</p>
-    <p class="amount"><strong>Amount</strong>{`${swap.amount} ${currencySymbol}`}</p>
+    <p class="text-primary-dim">{new Date(swap.created).toLocaleString()}</p>
+    <p class="amount"><strong class="text-primary-dim">Amount</strong>{`${swap.amount} ${currencySymbol}`}</p>
     <p 
         class:text-green={swap.status === 'success'} 
         class:text-red={swap.status === 'error'} 
@@ -53,34 +58,36 @@ import {getContext} from 'svelte'
         {swap.status.toUpperCase()}
     </p>
 </div>
-<div class="swap-side">
+<div class="flex-column swap-side">
+    {#if swap.eth_approval_txHash}
+        <p>
+            <span class="weight-300">ETH Approval Tx</span>
+            <a class="text-link" href={blockexplorer.ethereum + '/tx/' + swap.eth_approval_txHash} rel="noopener noreferrer" target="_blank">
+                {swap.eth_approval_txHash}
+            </a>
+        </p>
+    {/if}
     <p>
-        <strong>ETH Approval Tx</strong>
-        <a class="text-link" href={blockexplorer.ethereum + '/tx/' + swap.eth_approval_txHash} rel="noopener noreferrer" target="_blank">
-            {swap.eth_approval_txHash}
-        </a>
-    </p>
-    <p>
-        <strong>ETH Swap Contract Tx</strong>
+        <span class="weight-300">ETH Swap Contract Tx</span>
         <a class="text-link" href={blockexplorer.ethereum + '/tx/' + swap.eth_swap_txHash} rel="noopener noreferrer" target="_blank">
             {swap.eth_swap_txHash}
         </a>
     </p>
         <p>
-        <strong>ETH Address</strong>
+        <span class="weight-300">ETH Address</span>
         <a class="text-link" href={blockexplorer.ethereum + '/address/' + swap.swapInfo.address} rel="noopener noreferrer" target="_blank">
             {swap.swapInfo.address}
         </a>
     </p>
     
-    <p><strong>Lamden Address</strong>
+    <p><span class="weight-300">Lamden Address</span>
             <a class="text-link" href={blockexplorer.lamden + '/addresses/' + swap.lamdenAddress} rel="noopener noreferrer" target="_blank">
             {swap.lamdenAddress}
         </a>
     </p>
     {#if swap.lamden_swap_txHash}
         <p>
-            <strong>Lamden {currencySymbol} Send Tx</strong>
+            <span class="weight-300">Lamden {currencySymbol} Send Tx</span>
             <a class="text-link" href={blockexplorer.lamden + '/transactions/' + swap.lamden_swap_txHash} rel="noopener noreferrer" target="_blank">
                 {swap.lamden_swap_txHash}
             </a>
@@ -91,13 +98,15 @@ import {getContext} from 'svelte'
         <p class="text-red">{swap.errorMsg}</p>
     {/if}
     {#if swap.status !== "success"}
-        <Button 
-            name={swap.status === 'error' ? 'retry' : "continue"}
-            classes="button__outlined button__accent"
-            padding={'5px 10px'}
-            height={'30px'}
-            margin={'0.5rem 0 0 0'}
-            click={() => switchPage('ContinueSwap', swap)}
-        />
+        <div class="flex flex-just-end">
+            <Button 
+                name={swap.status === 'error' ? 'retry' : "continue"}
+                classes="button__solid button_primary button__small"
+                height="unset"
+                padding="6px 10px"
+                margin={'0.5rem 0 0 0'}
+                click={() => switchPage('ContinueSwap', swap)}
+            />
+        </div>
     {/if}
 </div> 

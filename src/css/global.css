@@ -57,7 +57,7 @@ body{
     --font-error: var(--error-color);
     --font-black: var(--black-color);
 
-    --link-color: var(--primary-color);
+    --link-color: var(--font-primary);
     --link-color-secondary: var(--font-overlay);
     --link-visited: var(--accent-color);
 
@@ -137,6 +137,9 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 #filePicker{
     display: none;
 }
+.flex{
+    display: flex;
+}
 
 .flex-column{
     display: flex;
@@ -158,6 +161,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 
 .flex-just-center{
     justify-content: center;
+}
+
+.flex-just-end{
+    justify-content: flex-end;
 }
 
 .flex-center-center{
@@ -226,17 +233,22 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 
 .text-link{
     color: var(--link-color);
+    text-decoration: underline;
     cursor: pointer;
 }
 
 .text-link:hover {
-    filter: brightness(150%);
-    color: var(--primary-color);
+    color: var(--accent-color);
 }
 
 .text-link:visited {
-    color: var(--link-visited);
+    color: var(--link-color);
+    text-decoration: underline;
     outline: none;
+}
+
+.text-link:visited:hover {
+    color: var(--accent-color);
 }
 
 .text-link-secondary{
@@ -486,7 +498,6 @@ input.submit-button:not(:disabled):hover {
 input.submit-button:disabled{
     filter: brightness(80%);
 }
-
 
 .button__solid.button__primary{
     color: var(--button-primary-text-color);
@@ -1012,7 +1023,7 @@ input.submit-button:disabled{
     height: 22px;
     width: 22px;
     border-radius: 4px;
-    background-color: var(--font-primary);
+    background-color: var(--color-grey-3);
   }
   
   .chk-container:hover input ~ .chk-checkmark {

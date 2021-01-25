@@ -149,6 +149,12 @@ export const transactionsController = (utils, actions) => {
         return true;
     }
 
+    const checkERC20Approval = (data, callback = undefined) => {
+        const { address } = data;
+        utils.Ethereum.checkERC20Approval(address).then(res => callback(res))   
+        return true;
+    }
+
     const sendEthereumTokenApproval = (data, callback = undefined) => {
         const {address, amount } = data;
         utils.Ethereum.sendSwapContractApproval(address, amount).then(res => callback(res))   
@@ -173,7 +179,8 @@ export const transactionsController = (utils, actions) => {
         sendEthereumTokenApproval,
         sendEthereumSwapTransaction,
         checkEthereumTxStatus,
-        sendCurrencyTransaction
+        sendCurrencyTransaction,
+        checkERC20Approval
     }
 }
 

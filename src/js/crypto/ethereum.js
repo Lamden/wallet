@@ -22,13 +22,13 @@ const ethNetworks = {
     }
 }
 
+const APPROVAL_STARTING_BLOCK = 11726426 
+
 const getWeb3 = () => {
     if (typeof web3 === 'undefined'){
         const provider = createMetaMaskProvider()
-        console.log(provider)
         try{
             web3 = new Web3(provider)
-            console.log(web3)
             return web3
         }catch(e){
             console.log(e)
@@ -39,23 +39,19 @@ const getWeb3 = () => {
 }
 
 const requestAccount = async () => {
-    try{
-        web3 = getWeb3();
-        console.log(web3)
-    }catch(e){
-        console.log(e)
-    }
-    
-    console.log(web3)
     const getAddress = (address) => {
-        console.log(address)
         if (validateTypes.isArrayWithValues(address)) return address[0]
         else if(validateTypes.isStringWithValue(address)) return address
         return null
     }
+
+    try{
+        web3 = getWeb3();
+    }catch(e){
+        console.log(e)
+    }
     try {
-        let response = await web3.eth.requestAccounts().then(address => getAddress(address))
-        console.log(response)
+        let response = await web3.eth.getAccounts().then(address => getAddress(address))
         return response
     }catch (e){
         console.log(e)
@@ -73,8 +69,35 @@ const getChainInfo = async () => {
 }
 
 
-const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) => {
+const checkERC20Approval = async (approvalFrom) => {
+    let chainInfo = await getChainInfo()
+    if (typeof chainInfo.error !== 'undefined') return chainInfo
+    let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
+    let approvalTo = ethNetwork.swapContract
+    let tokenContract = ethNetwork.tauContract
     
+    // Get ERC20 Token contract instance
+    let contract = new web3.eth.Contract(ABIs.ERC20, tokenContract);
+
+    return new Promise((resolve, reject) => {
+        contract.getPastEvents('Approval',{
+            fromBlock: APPROVAL_STARTING_BLOCK - 10,
+            toBlock: 'latest'
+            },
+        (error, events) => {
+            if (error) reject(error)
+            let filteredList = events.filter(f => {
+                return f.returnValues.spender === approvalTo &&
+                       f.returnValues.owner === approvalFrom
+            })
+            resolve(filteredList.length > 0)
+        })
+    })
+}
+
+
+
+const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) => {
     let web3 = getWeb3();
     let amountToWei;
 
@@ -105,7 +128,6 @@ const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) 
 }
 
 const sendSwapContractApproval = async (userEthAddress, amount) => {
-    
     let chainInfo = await getChainInfo()
     if (typeof chainInfo.error !== 'undefined') return chainInfo
     let ethNetwork = ethNetworks[`${chainInfo.chainID}`]
@@ -130,8 +152,8 @@ const sendSwapTx = async (ethSenderAddress, tokenContract, amount, lamdenAddress
     let contract = new web3.eth.Contract(ABIs.swapContract, tokenContract);
     //Create Approve Transactions
     let swap = contract.methods.swap(lamdenAddress, amountToWei)
-
     //Send Transfer
+
     try{
         let response =  await swap.send({from: ethSenderAddress})
         return response
@@ -184,6 +206,7 @@ const checkTxStatus = async (txHash) => {
 module.exports = {
     requestAccount,
     sendApprovalTx,
+    checkERC20Approval,
     sendSwapContractTx,
     sendSwapContractApproval,
     getChainInfo,

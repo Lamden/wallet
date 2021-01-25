@@ -283,7 +283,7 @@ const getTokenBalance = (netKey, vk, contractName, tokenBalancesStore) => {
 }
 
 const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
-    return account.substring(0, lsize) + '...' + account.substring(account.length - rsize)
+    return account.substring(0, lsize) + ' ... ' + account.substring(account.length - rsize)
   }
 
 const dataURLToBlob = function(dataURL) {
