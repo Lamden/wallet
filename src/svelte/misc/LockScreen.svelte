@@ -1,6 +1,5 @@
 <script>
     import whitelabel from '../../../whitelabel.json'
-    import { onMount } from 'svelte'
 
 	import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
@@ -17,15 +16,6 @@
     let formObj, pwdObj;
 
     export let loaded;
-
- //TO DO REMOVE THIS ---------
-    onMount(() => {
-            chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue("Testing0!2")}, (unlocked) => {
-                if (!unlocked || chrome.runtime.lastError) {
-                    setValidity(pwdObj, "Incorrect Password")
-                }
-            })
-    })
 
 
     const handleSubmit = () => {

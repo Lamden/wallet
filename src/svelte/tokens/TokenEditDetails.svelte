@@ -6,7 +6,7 @@
     const { InputBox, TokenLogo} = Components;
 
     //Icons
-    import iconClose from '../../img/menu_icons/icon_close.svg'
+    import CloseIcon from '../icons/CloseIcon.svelte'
 
     //Props
     export let tokenMeta;
@@ -133,13 +133,8 @@
     }
     .clear-button{
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 25px;
-        height: 25px;
-        background: transparent;
-        color: var(--font-primary);
-        border: none;
+        top: 3px;
+        right: 3px;
     }
     .token-logo-upload{
         position: absolute;
@@ -206,8 +201,8 @@
              on:dragleave|preventDefault={handleDragleave}
              on:drop={handleFileEvent}>
                 {#if (!disableInputs && uploadLogo) || logoError}
-                    <button class="clear-button" on:click|preventDefault={clearLogoMeta}>
-                        {@html iconClose}
+                    <button class="button__icon clear-button" on:click|preventDefault={clearLogoMeta}>
+                        <CloseIcon width="20px" />
                     </button>
                 {/if}
             <div class="token-logo-upload">

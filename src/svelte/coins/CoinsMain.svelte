@@ -19,7 +19,6 @@
 
 	//Images
 	import hero_bg from '../../img/backgrounds/hero_bg.png';
-	import plus from '../../img/menu_icons/icon_plus.svg';
 
 	//Icons
 	import RefreshIcon from '../icons/RefreshIcon.svelte'

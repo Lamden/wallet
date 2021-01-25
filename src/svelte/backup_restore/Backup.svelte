@@ -14,7 +14,6 @@
     import hero_bg from '../../img/backgrounds/hero_bg.png';
     import cautionIcon from '../../img/menu_icons/icon_caution.svg'
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';
-    import iconClose from '../../img/menu_icons/icon_close.svg'
 
     //Icons 
     import DirectionalArrowIcon from '../icons/DirectionalArrowIcon.svelte'

@@ -5,9 +5,6 @@
 	//Stores
     import { FilesStore, currentNetwork, clicked } from '../../js/stores/stores.js';
 
-    //Images
-    import del from '../../img/menu_icons/icon_delete.svg';
-
     //Icons
     import ConnectedIcon from '../icons/ConnectedIcon.svelte'
     import CloseIcon from '../icons/CloseIcon.svelte'

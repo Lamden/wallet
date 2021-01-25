@@ -22,10 +22,7 @@
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';
     import dapp_default_bg from '../../img/backgrounds/dapp_default_bg.jpeg';
-    import verified_app from '../../img/menu_icons/icon_verified_app.svg'
-    import settings from '../../img/menu_icons/icon_settings.svg';
-    import options from '../../img/menu_icons/icon_options.svg';
-    
+    import verified_app from '../../img/menu_icons/icon_verified_app.svg'    
 
     //Icons
     import RefreshIcon from '../icons/RefreshIcon.svelte'

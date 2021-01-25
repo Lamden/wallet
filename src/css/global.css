@@ -28,7 +28,7 @@ body{
 
     --bg-primary: #151515; 
     --bg-secondary: var(--color-grey-1);   
-    --bg-secondary-hover: var(--color-grey-2);   
+    --bg-secondary-hover: var(--color-grey-2);  
     --bg-semi-transparent: #0000007a;
     --bg-transparent: transparent;
 
@@ -445,6 +445,7 @@ h6{
     font-size: 14px;
     letter-spacing: 0.75px;
     text-transform: uppercase;
+    background: transparent;
 }
 
 .box-shadow-1{
@@ -578,6 +579,9 @@ input.submit-button:disabled{
     box-shadow: unset;
     -webkit-box-shadow: unset;
     -moz-box-shadow: unset;
+    background: transparent;
+    padding: 0;
+    margin: 0;
 }
 
 .button__outlined{
@@ -697,12 +701,7 @@ input.submit-button:disabled{
     background: var(--primary-color);
 }
 
-.button__icon{
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-    background: transparent;
-}
+
 
 .button__small{
     border: 1px solid transparent;

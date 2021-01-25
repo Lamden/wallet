@@ -144,7 +144,7 @@
     "mainPage": {
         "buttons":{
             "add_account":{
-                "name": "ACCOUNT & TOKENS",
+                "name": "ACCOUNTS & TOKENS",
                 "show": true
             }
         },
