@@ -3,12 +3,12 @@ const whitelabel = require('../../../whitelabel.json')
     const assert = require('assert');
     const {Builder, By, until} = require('selenium-webdriver');
     let chrome = require("selenium-webdriver/chrome");
-    let config = require("../../config/config")
-    const helpers = require('../../helpers/helpers')
+    let config = require("../../../config/config")
+    const helpers = require('../../../helpers/helpers')
     let tokenInfo = require("../../fixtures/tokenInfo.json")
-    let tokenImages = require("../../fixtures/tokenImages")
-    const tokenHelpers = require('../../helpers/helpers-token')
-    let walletInfo = require("../../fixtures/walletInfo")
+    let tokenImages = require("../../../fixtures/tokenImages")
+    const tokenHelpers = require('../../../helpers/helpers-token')
+    let walletInfo = require("../../../fixtures/walletInfo")
     var validators = require('types-validate-assert');
     const { validateTypes } = validators
     

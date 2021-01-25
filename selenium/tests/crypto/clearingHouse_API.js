@@ -27,29 +27,7 @@ describe('Testing Clearinghouse API Handler', function () {
     after(() => driver && driver.quit());
 
     it('Setup Metamask Extention', async function() {
-        await helpers.sleep(500)
-        await helpers.switchWindow(driver, 1) 
-        await driver.findElement(By.xpath("//button[contains(text(),'Get Started')]")).click()
-        await driver.findElement(By.xpath("//button[contains(text(),'Import wallet')]")).click()
-        await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
-        await helpers.sleep(1000)
-        //await driver.findElement(By.tagName("textarea")).sendKeys(config.metamaskBackupPhrase)
-        await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
-        await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
-        await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
-        await driver.findElement(By.className("first-time-flow__terms")).click()
-        await helpers.sleep(500)
-        await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
-        await helpers.sleep(2000)
-        await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
-        await helpers.sleep(500)
-
-        try {
-            await driver.findElement(By.className("popover-header__button")).click()
-        }catch(e){}
-        
-        await driver.findElement(By.xpath("//div[@title='Ethereum Mainnet']")).click()
-        await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
+        await helpers.setupMetamask(driver);
         assert.equal(true, true);
     });
 

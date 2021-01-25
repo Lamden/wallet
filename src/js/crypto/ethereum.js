@@ -25,23 +25,40 @@ const ethNetworks = {
 const getWeb3 = () => {
     if (typeof web3 === 'undefined'){
         const provider = createMetaMaskProvider()
-        web3 = new Web3(provider)
-        return web3
+        console.log(provider)
+        try{
+            web3 = new Web3(provider)
+            console.log(web3)
+            return web3
+        }catch(e){
+            console.log(e)
+        }
+
     }
     return web3
 }
 
 const requestAccount = async () => {
-    let web3 = getWeb3();
+    try{
+        web3 = getWeb3();
+        console.log(web3)
+    }catch(e){
+        console.log(e)
+    }
+    
+    console.log(web3)
     const getAddress = (address) => {
+        console.log(address)
         if (validateTypes.isArrayWithValues(address)) return address[0]
         else if(validateTypes.isStringWithValue(address)) return address
         return null
     }
     try {
         let response = await web3.eth.requestAccounts().then(address => getAddress(address))
+        console.log(response)
         return response
     }catch (e){
+        console.log(e)
         return {error: e.message}
     }
 }

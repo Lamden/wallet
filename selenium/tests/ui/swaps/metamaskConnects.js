@@ -1,4 +1,4 @@
-const whitelabel = require('../../../whitelabel.json')
+const whitelabel = require('../../../../whitelabel.json')
 
 const assert = require('assert');
 const {Builder, By, until} = require('selenium-webdriver');
@@ -31,40 +31,15 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    after(() => driver && driver.quit());
+    //after(() => driver && driver.quit());
 
     it('Setup Metamask', async function() {
-        await helpers.sleep(500)
-        await helpers.switchWindow(driver, 1) 
-        await driver.findElement(By.xpath("//button[contains(text(),'Get Started')]")).click()
-        await driver.findElement(By.xpath("//button[contains(text(),'Import wallet')]")).click()
-        await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
-        await helpers.sleep(1000)
-        //await driver.findElement(By.tagName("textarea")).sendKeys(config.metamaskBackupPhrase)
-        await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
-        await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
-        await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
-        await driver.findElement(By.className("first-time-flow__terms")).click()
-        await helpers.sleep(500)
-        await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
-        await helpers.sleep(500)
-        await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
-        await helpers.sleep(500)
-        await driver.findElement(By.xpath("//div[@title='Main Ethereum Network']")).click()
-        await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
+        await helpers.setupMetamask(driver, false);
         assert.equal(true, true);
     });
 
     it('Setup Lamden Wallet firstRun', async function() {
-        await helpers.switchWindow(driver, 0)      
-        await driver.findElement(By.id('create-wallet')).click();
-        await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
-        await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
-        await driver.findElement(By.id('save-pwd')).click()
-        await driver.findElement(By.id('i-understand')).click()
-        await helpers.sleep(5000)
-        await helpers.changeToTestnet(driver)
-        await helpers.sleep(1000)
+        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, false)
         assert.equal(true, true);
     });
     it('Renders Swaps.svelte', async function() {
@@ -154,7 +129,7 @@ describe('Complete A Lamden Wallet Token Swap', function () {
             assert.equal(disabled, 'true');
         })
         await driver.findElement(By.className('custom-select')).click()
-        await driver.findElement(By.xpath(`//div[contains(text(),'My ${whitelabel.companyName} Account')]`)).click()
+        await driver.findElement(By.xpath(`//div[contains(text(),'My TAU Address')]`)).click()
         
         await continue_Button.getAttribute('disabled').then(disabled => assert.equal(disabled, null))
         await continue_Button.click();
@@ -180,61 +155,5 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         })
         await continue_Button.click()
 
-    });/*
-    it('Renders SwapsSendApproval.svelte', async function() {
-        let approval_Button = await driver.findElement(By.id('send-approval-btn'))
-        await approval_Button.getAttribute('innerText').then(text => {
-            assert.equal(text, 'SEND APPROVAL');
-        })
-        let amount_Input = await driver.findElement(By.xpath("//input[@type='number']"))
-        await amount_Input.clear()
-        await amount_Input.sendKeys(swapInfo.swapAmount)
     });
-    it('SwapsSendApproval.svelte - Triggers Metamask popup for approval', async function() {
-        await driver.findElement(By.id('send-approval-btn')).click()
-        await helpers.sleep(3000)
-        await helpers.switchWindow(driver, 2) 
-        let popupConfim_Button = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Confirm')]")), 10000);
-        await popupConfim_Button.click()
-    });
-    it('SwapsSendApproval.svelte - Waits for metamask to return tx status', async function() {
-        await helpers.switchWindow(driver, 0) 
-        await driver.wait(until.elementLocated(By.className("circle-checkmark")), 30000);
-        let continue_Button = await driver.findElement(By.id('continue-btn'))
-        await continue_Button.getAttribute('disabled').then(disabled => {
-            assert.equal(disabled, null);
-        })
-        await continue_Button.click()
-    });
-    it('Renders SwapsSendEthTx.svelte', async function() {
-        let pageID = await driver.findElement(By.id('swap_sendSwapTx'))
-        assert.equal(typeof pageID !== 'undefined', true);
-    });
-    it('SwapsSendEthTx.svelte: Triggers Metamask popup for approval', async function() {
-        await driver.findElement(By.id('send-tx-btn')).click()
-        await helpers.sleep(3000)
-        await helpers.switchWindow(driver, 2) 
-        let popupConfim_Button = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Confirm')]")), 10000);
-        await popupConfim_Button.click()
-    });
-    it('SwapsSendEthTx.svelte - Waits for metamask to return tx status', async function() {
-        await helpers.switchWindow(driver, 0) 
-        await driver.wait(until.elementLocated(By.className("circle-checkmark")), 30000);
-        let continue_Button = await driver.findElement(By.id('continue-btn'))
-        await continue_Button.getAttribute('disabled').then(disabled => {
-            assert.equal(disabled, null);
-        })
-        await continue_Button.click()
-    });
-    it('Renders SwapsPerformSwap.svelte', async function() {
-        let home_Button = await driver.findElement(By.id('home-btn'))
-        await driver.wait(until.elementIsEnabled(home_Button), 30000)
-        await home_Button.click()
-    });
-    it('Vaidate Success ', async function() {
-        await helpers.sleep(500)
-        await driver.findElement(By.className('text-green')).getAttribute('innerText').then(text => {
-            assert.equal(text, 'SUCCESS');
-        })
-    });*/
 })
