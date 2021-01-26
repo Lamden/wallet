@@ -9,9 +9,15 @@
     
     let docoLinks = [
         {
-            name: 'Lamden-js',
+            name: 'Documentation Site',
+            desc: 'For users and developers',
+            url: 'https://docs.lamden.io/',
+            image: hero_bg
+        },
+        {
+            name: 'Lamden Blockchain',
             desc: 'Our blockchain technology',
-            url: 'https://github.com/Lamden/cilantro-enterprise',
+            url: 'https://github.com/Lamden/lamden',
             image: github_bg
         },
         {
@@ -19,18 +25,6 @@
             desc:'Write smart contracts in Python',
             url:'https://contracting.lamden.io/',
             image: hero_bg
-        },
-        {
-            name: 'Mockchain',
-            desc: 'Run a local blockchain',
-            url: 'https://github.com/Lamden/mockchain',
-            image: github_bg
-        },
-        {
-            name: 'Lampy',
-            desc: 'Lamden blockchain client for Python',
-            url: 'https://github.com/Lamden/lampy',
-            image: github_bg
         },
         {
             name: 'Lamden-js',

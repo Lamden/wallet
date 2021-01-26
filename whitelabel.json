@@ -2,8 +2,7 @@
     "companyName": "Lamden",
     "enableTokens": true,
     "helpLinks":{
-        "show": true,
-        "masterURL": "https://www.google.ca"
+        "show": true
     },
     "networks": [
         {
