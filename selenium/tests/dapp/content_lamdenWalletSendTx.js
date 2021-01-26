@@ -28,7 +28,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
         await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false)
     });
-
+    
     after(() => {
         return helpers.closeTest(driver, httpServer)
      });

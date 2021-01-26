@@ -70,8 +70,8 @@ p.mainnet:hover{
     color: var(--font-warning)
 }
 .icon{
-    width: 50px;
     margin-left: 20px;
+    width: 50px;
 }
 </style>
 
@@ -88,7 +88,7 @@ p.mainnet:hover{
     </div>
     <div class="icon">
         {#if $currentNetwork.type === 'mainnet'}
-            <NetworkIcon />
+            <NetworkIcon width= "50px"/>
         {:else}
             {@html network}
         {/if}

@@ -155,7 +155,7 @@
             {@html arrow_right}
         </div>
          <div class="icon" >
-            <SmartContractIcon />
+            <SmartContractIcon width="60px"/>
         </div>    
     </div>
 

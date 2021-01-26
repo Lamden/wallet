@@ -248,7 +248,7 @@ export const masterController = () => {
 
     const createPopup = (windowId) => {
         chrome.windows.create({
-            url: `/confirm.html#${windowId}`, width: 500, height: 700, type: 'popup',
+            url: `/confirm.html#${windowId}`, width: 375, height: 650, type: 'popup',
         });
     }
 

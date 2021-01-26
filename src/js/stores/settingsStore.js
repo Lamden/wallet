@@ -97,13 +97,10 @@ const createSettingsStore = () => {
             })    
         },
         hideTokens: (value) => {
-            console.log(value)
             SettingsStore.update(settingsStore => {
                 settingsStore.hideTokens = value;
-                console.log(settingsStore)
                 return settingsStore;
             }) 
-            console.log(SettingsStore)
         }
     };
 }

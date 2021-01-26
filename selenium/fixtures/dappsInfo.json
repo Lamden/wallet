@@ -37,7 +37,7 @@
             "key_name": "con_wallet_testing",
             "key_value" : ""
         },
-        "stampLimit": 20
+        "stampLimit": 30
     },
     "approvalTransaction": {
         "contractName": "currency",

@@ -46,10 +46,8 @@ export class LamdenBlockexplorer_API{
     }
 
     async getKeys(data){
-        console.log(this)
         let path = '/states/history/getKeys'
         return this.send('POST', path, JSON.stringify(data), undefined, (res, err) => {
-            console.log(res)
             if (err) return;
             return res
         })

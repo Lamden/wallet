@@ -40,11 +40,9 @@ export const balancesController = (utils) => {
                 key: account.vk
             }
         })
-        console.log(keysToGet)
         network.blockExplorer_API.getKeys(keysToGet).then(res => {
             let newBalances = processBalances(res, accountsList, network)
             let netKey = network.networkKey
-            console.log(newBalances)
             balancesStore[netKey] = newBalances
             setStore(balancesStore)
         })

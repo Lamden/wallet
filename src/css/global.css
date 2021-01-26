@@ -775,8 +775,23 @@ input.submit-button:disabled{
 
 .hero-rec.popup{
     width: 100%;
-    padding: 2rem 0;
-    justify-content: space-between;
+    padding: 1rem;
+    line-height: 0.9;
+    margin: 0;
+    border-radius: 0;
+}
+
+.hero-rec.popup h3{
+    margin: 0 0 1rem 0;
+}
+
+.hero-rec.popup > .dapp-name {
+    align-items: center;
+}
+
+.hero-rec.popup > .dapp-name > img {
+    width: 25px;
+    margin-right: 10px;
 }
 
 .error {

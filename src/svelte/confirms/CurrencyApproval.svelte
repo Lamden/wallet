@@ -23,6 +23,12 @@
 
     let prevent = false
 
+    const getAmount = (amount) => {
+        if (!amount) return 0
+        if (amount.__fixed__) return amount.__fixed__
+        return amount
+    }
+
 </script>
 
 <style>
@@ -30,7 +36,7 @@
     align-items: center;
     flex-grow: 1;
     justify-content: space-between;
-    padding: 20px;
+    padding: 1rem;
     text-align: center;
 }
 .info{
@@ -41,12 +47,8 @@
 .text-subtitle4.text-link{
     margin-top: 1rem;
 }
-
-.buttons{
-    padding: 1rem 0;
-}
 .icon_approve{
-    width: 100px;
+    width: 75px;
     margin-bottom: 2rem;
 }
 .icon_caution{
@@ -61,7 +63,6 @@ p.message {
 }
 .caution{
     align-items: center;
-    margin-top: 3rem;
 }
 .caution > p{
     font-size: 1.1em;
@@ -69,11 +70,19 @@ p.message {
 p > strong {
     color: var(--font-accent)
 }
-
+.text-link, .text-link:visited, .text-link:focus{
+    color: var(--font-warning);
+    margin: 0.5rem 0 0 0;
+}
+.buttons{
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
 </style>
 
-<div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
-    <h2>{dappInfo.appName} wants to spend your {currencySymbol}</h2>
+<div class="flex-column hero-rec popup" style="background-image: url({hero_bg})" >
+    <h3>{dappInfo.appName} wants to spend your {currencySymbol}</h3>
     <a class="text-link" href={dappInfo.url} rel="noopener noreferrer" target="_blank">{`source ${dappInfo.url}`}</a>
 </div>
 <div class="details flex-column">
@@ -82,9 +91,8 @@ p > strong {
             {@html approve}
         </div>
         <p class="message">
-            Give <strong> {txData.txInfo.kwargs.to}</strong> access to <strong>{txData.txInfo.kwargs.amount} {currencySymbol}</strong> ?
+            Give <strong> {txData.txInfo.kwargs.to}</strong> access to <strong>{getAmount(txData.txInfo.kwargs.amount)} {currencySymbol}</strong> ?
         </p>
-
     </div>
     <div class="caution flex-row">
         <div class="icon_caution">
@@ -95,26 +103,24 @@ p > strong {
         </p>
     </div>
 
-    <div class="flex-column">
-        <div class="buttons flex-row">
-            <Button 
-                id={'deny-btn'}
-                classes={'button__solid'}
-                name="Deny"
-                width={'175px'}
-                height={'42px'}
-                margin={'0 20px 0 0'}
-                click={close} />
+    <div class="flex-column buttons">
+        <Button 
+            id={'approve-btn'}
+            classes={'button__solid button__primary'}
+            name="Approve"
+            width={'240px'}
+            height={'42px'}
+            margin={'0 0 0.5rem 0'}
+            click={approveTx} />
+        <Button 
+            id={'deny-btn'}
+            classes={'button__solid'}
+            name="Deny"
+            width={'240px'}
+            height={'42px'}
+            margin={'0 0 0.5rem 0'}
+            click={close} />
 
-            <Button 
-                id={'approve-btn'}
-                classes={'button__solid button__primary'}
-                name="Approve"
-                width={'175px'}
-                height={'42px'}
-                click={approveTx} />
-        </div>
-        <div>
             {#if whitelabel.helpLinks.show}
                 <a  class="text-link text-subtitle4" 
                     href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/accounts_linked_approval"}
@@ -122,8 +128,7 @@ p > strong {
                     rel="noopener noreferrer" >
                     what is this?
                 </a>
-            {/if} 
-        </div>   
+            {/if}   
     </div>
 </div>
 

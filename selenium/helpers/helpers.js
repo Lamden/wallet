@@ -66,17 +66,15 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.executeScript(`document.getElementById('chk-all').innerText='testing'`)
     await driver.findElement(By.id('chk-all')).click()
     await driver.findElement(By.id('restore-btn')).click()
-    await sleep(1000)
+    await sleep(2000)
     await driver.findElement(By.id('home-btn')).click()
-    // await sleep(8000)
-    await sleep(3000)
-    if (testnet) await changeToTestnet(driver)
-    /*
-    let refreshIcon = await driver.findElement(By.id('refresh-icon'))
-    await refreshIcon.click()
-    await sleep(3000, true)
-    await refreshIcon.click()
-    await sleep(3000, true)*/
+    await sleep(4000)
+    if (testnet) {
+        await changeToTestnet(driver)
+        await sleep(2000)
+    }
+    await driver.findElement(By.id('refresh-icon')).click()
+    await sleep(6000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }

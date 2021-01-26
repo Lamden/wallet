@@ -159,10 +159,11 @@
         <div class="flex-row name-button">
             <Button 
                 name={"tx details"}
-                classes="button__outlined button__accent"
+                classes="button__solid button__small"
                 padding={'5px 10px'}
                 height={'30px'}
                 margin={'0 0 0 10px'}
+                styles={"background: var(--color-grey-3);"}
                 click={openHashLink}
             />
         </div>

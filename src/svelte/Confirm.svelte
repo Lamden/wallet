@@ -1,6 +1,9 @@
 <script>
 	import { onMount, onDestroy, setContext } from 'svelte';
 
+	//Stores
+	import { currentThemeName } from '../js/stores/stores.js';
+
     //Images
     import logo_full from '../img/logo_full.svg';
 
@@ -34,6 +37,8 @@
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
 			if (response) confirmData = response
 		})
+
+		themeSet();
 
 		return () => {
 			window.removeEventListener("beforeunload", sendRejection);
@@ -72,50 +77,41 @@
 
 	const fixLogo = (logo) => logo.substring(0, 1) === '/' ? logo.substring(1, logo.length) : logo
 
+	function themeSet() {
+		let body = document.getElementById("theme-toggle")
+		let lighttheme = getThemeSetting()
+		if (lighttheme) {
+			body.classList.add("light");
+			currentThemeName.set('light')
+		}else currentThemeName.set('dark')
+	}
+
+	function getThemeSetting() {
+		return JSON.parse(localStorage.getItem("lighttheme"))
+	}
+
 	window.addEventListener("beforeunload", sendRejection);
 </script>
 
 <style>
-	:global(h2){
-		margin-bottom: 1rem;
-		text-align: center;
-	}
-
-	:global(.dapp-name){
-    	margin-bottom: 0.25rem;
-		align-items: center;
-		
-	}
-
-	:global(.dapp-name-text){
-		font-size: 23px;
-	}
-
 	.container{
 		width: -webkit-fill-available;
 	}
 
-	.box{
-		width: 100%;
-		height: 80px;
-		align-items: center;
+	.popup-box{
 		border-bottom: 1px solid gray;
+		padding: 1rem;
 	}
 
 	.logo {
-		width: 125px;
-		margin-right: 15.5px;
-		margin-left: 20px;
+		width: 100px;
 	}
 
-	.words {
-		width: 90px;
-	}
 </style>
 
 {#if confirmData}
 	<div class="flex-column container">
-		<div class="box flex-row">
+		<div class="popup-box flex-row">
 			<div class="logo" >{@html logo_full}</div>
 		</div>
 		<svelte:component this={componentMap[confirmData.type]} {confirmData}/>

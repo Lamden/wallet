@@ -26,8 +26,6 @@
     $: hasNoMeta = !tokenName || !tokenSymbol
     $: dragover = '';
 
-    $: log = console.log(tokenMeta)
-
     const checkForLogo = (meta, uploaded) => {
         if (!meta) return true;
         return !meta.logo_base64_svg && !meta.logo_base64_png && !meta.logo_url && !uploaded
@@ -56,7 +54,6 @@
     }
 
     const handleFileEvent = (ev) => {
-        console.log("GOT FILE!")
         let file;
         ev.preventDefault();
 
@@ -67,12 +64,10 @@
         } else if (ev.dataTransfer.files) {
             ev.dataTransfer.files[0].kind === 'file' ? file = ev.dataTransfer.files[0].getAsFile() : null;
         }
-        console.log({ev, file})
         if (file) convertToBase64( file)
     }
 
     const convertToBase64 = async (fileObj) => {
-        console.log(fileObj)
         logoError = null;
         clearLogoMeta();
         const reader = new FileReader();
@@ -82,13 +77,10 @@
             var b64 = reader.result.replace(/^data:.+;base64,/, '');
 
             image.onload = function(){
-                console.log(image)
-                console.log({width: image.width, height: image.height})
                 if (image.width <= 192 && image.height <= 192){
                     logo_base64_png = b64
                     logo_base64_svg = null
                     uploadLogo = true;
-                    console.log({logo_base64_png, logo_base64_svg, uploadLogo})
                 }else{
                     logoError = "image size maximum 192x192"
                 }

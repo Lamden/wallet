@@ -113,7 +113,7 @@
 
 <style>
 .row-box{
-    padding: 1.5rem 28px 0.25rem 16px;
+    padding: 1.25rem 28px 0.25rem 16px;
 }
 .coin-main-row{
     margin-bottom: 0.5rem;

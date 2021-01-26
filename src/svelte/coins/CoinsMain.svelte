@@ -63,7 +63,7 @@
 
 	const handleRefreshTokens = () => {
 		if (refreshing) return
-		chrome.runtime.sendMessage({type: 'refreshTokenBalances'}, (results) => console.log(results))
+		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
 		refreshing = true
 		setTimeout(() => {
 		refreshing = false

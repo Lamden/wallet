@@ -288,7 +288,6 @@ export const accountsController = (utils) => {
     }
 
     const reorderUp = (index, callback = undefined) => {
-        console.log({index, callback})
         if (index <= 0) {
             if (callback) callback(true)
             return true
@@ -298,7 +297,6 @@ export const accountsController = (utils) => {
     }
 
     const reorderDown = (index, callback = undefined) => {
-        console.log({index, callback})
         if (index >= (accountStore.length - 1)) {
             if (callback) callback(true)
             return true

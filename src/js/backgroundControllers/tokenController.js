@@ -42,7 +42,6 @@ export const tokenController = (utils, actions) => {
     }
 
     const tokenMethodsAreValid = (contractMethods) => {
-        console.log(contractMethods)
         const requiredMethods = {
             "transfer": {
                 "amount": "float",
@@ -101,7 +100,6 @@ export const tokenController = (utils, actions) => {
     }
 */
     const tokenHashesAreValid = (contractHashes) => {
-        console.log(contractHashes)
         const requiredHashes = ["balances"]
         let validateHashes = requiredHashes.map(hashName => contractHashes.includes(hashName))
         return validateHashes.every((val) => val === true)
@@ -112,7 +110,6 @@ export const tokenController = (utils, actions) => {
         let network = utils.networks.getCurrent()
 
         let contractInfo = await network.API.getContractInfo(contractName)
-        console.log(contractInfo)
         if (contractInfo.error) return false
         let contractDetails = await Promise.all([
             await network.API.getContractVariables(contractName),
@@ -168,13 +165,11 @@ export const tokenController = (utils, actions) => {
     }
 
     const updateToken = async (tokenInfo, callback = undefined) => {
-        console.log(tokenInfo)
         let network = utils.networks.getCurrent()
         tokens[network.networkKey] = tokens[network.networkKey].map((token) => {
             if (token.contractName === tokenInfo.contractName) return tokenInfo
             return token
         })
-        console.log(tokens[network.networkKey])
         saveTokensToStorage()
         if (callback) callback(true)
         return true
@@ -221,7 +216,6 @@ export const tokenController = (utils, actions) => {
                 })
             })
         })
-        console.log({network, keysToGet})
         let res = await network.blockExplorer_API.getKeys(keysToGet)
         let newBalances = {}
         res = res.filter(f => f.value !== null).map(balance => {

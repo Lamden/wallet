@@ -44,14 +44,11 @@ const requestAccount = async () => {
         else if(validateTypes.isStringWithValue(address)) return address
         return null
     }
+    
+    let web3 = getWeb3();
 
-    try{
-        web3 = getWeb3();
-    }catch(e){
-        console.log(e)
-    }
     try {
-        let response = await web3.eth.getAccounts().then(address => getAddress(address))
+        let response = await web3.eth.getAccounts().then(address => getAddress(address)).catch(e => console.log(e))
         return response
     }catch (e){
         console.log(e)

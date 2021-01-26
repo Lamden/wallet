@@ -31,7 +31,7 @@
     import SettingsIcon from '../icons/SettingsIcon.svelte'
     
     //Utils
-    import { copyToClipboard, displayBalance } from '../../js/utils.js'
+    import { copyToClipboard, displayBalanceToFixed } from '../../js/utils.js'
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
@@ -54,7 +54,7 @@
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
     $: symbol = coin.symbol;
-    $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk)) || '0'
+    $: balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
     $: pendingTxList = () => {
@@ -118,7 +118,7 @@
 		refreshing = true
 		setTimeout(() => {
             refreshing = false
-            balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk))
+            balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8)
 		}, 2000);
     }
     
