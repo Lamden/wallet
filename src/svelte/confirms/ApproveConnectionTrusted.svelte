@@ -148,7 +148,7 @@
             <p class="choice">
                 Automatically approve transactions from {confirmData.messageData.appName} to its smart contract. 
                 Does not include transactions to send {confirmData.messageData.network.currencySymbol}. However, will generate 
-                <a class="text-link" href="https://docs.lamden.io/docs" rel="noopener noreferrer" target="_blank">transaction costs</a>.
+                <a class="text-link" href="https://docs.lamden.io/docs/wallet/transactions_overview#stamps" rel="noopener noreferrer" target="_blank">transaction costs</a>.
             </p>
         </label>
 
