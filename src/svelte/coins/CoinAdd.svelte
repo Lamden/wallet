@@ -10,6 +10,7 @@
 
 	setContext('coinadd_functions', {
         detailsPage: () => currentStep = 1,
+        tokenPage: () => currentStep = 1,
         nextPage: () => currentStep = currentStep + 1,
         setMessage: (msg) => message = msg
     });

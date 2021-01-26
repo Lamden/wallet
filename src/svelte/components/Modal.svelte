@@ -49,7 +49,9 @@
 	padding: 30px 55px;
 	margin: 20px 0;
 	background: var(--bg-primary);
-	box-shadow: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--box-shadow-4);
+    -webkit-box-shadow: var(--box-shadow-4);
+    -moz-box-shadow: var(--box-shadow-4);
 	border-radius: 4px;
 	z-index: 60;
 }

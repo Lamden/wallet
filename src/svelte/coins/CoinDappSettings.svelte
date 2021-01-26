@@ -166,8 +166,8 @@ p{
     <div class="options-box flex-row">
         {#each options as option}
             <div id={option.id} class="options flex-column"
-                class:grey={ option.color === 'grey'}
-                class:primary={ option.color === 'primary'}
+                class:options-box-grey={ option.color === 'grey'}
+                class:options-box-primary={ option.color === 'primary'}
                 on:click={option.click}>
                 <div class="icon" >{@html option.icon}</div>
                 <div class="option-name text-subtitle2">{option.name}</div>

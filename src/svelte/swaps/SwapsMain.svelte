@@ -21,7 +21,8 @@
         setSwapInfo: (info) => {swapInfo = info},
         getSwapInfo: () => { return swapInfo },
         setMetamaskApprovalResponse: (txResponse) => {metamaskApprovalResponse = txResponse},
-        setMetamaskTxResponse: (txResponse) => {metamaskSwapTxResponse = txResponse; createSwap()},
+        setHasPreviousApproval: (value) => hasPreviousApproval = value,
+        setMetamaskTxResponse: (txResponse, amount) => {metamaskSwapTxResponse = txResponse; createSwap(amount)},
         setSwapStatus: (info) => {swapStatus = info},
         getSwapStatus: () => { return swapStatus },
         setSwapResult: (info) => {swapResult = info; updateSwap()},
@@ -33,23 +34,24 @@
         getLamdenAddress: () => { return lamdenWallet.vk },
         getEthAddress: () => { return swapInfo.address },
         getTokenBalance: () => { return swapInfo.tokenBalance.value },
-        getApprovalAmount: () => { return getApprovalAmount() },
+        getApprovalAmount: () => { return swapAmount },
         getChainInfo: () => { return swapInfo.chainInfo},
         getTxHash: (type) => { return getTxHash(type)},
         createSwap: () => createSwap(),
         isContinue: false,
         getStepList: () => progressSteps
-
     });
 
     let currentStep = 0;
     let swapInfo = {};
     let lamdenWallet = {}
+    let swapAmount = 0;
     let metamaskApprovalResponse = {};
     let metamaskSwapTxResponse = {};
     let swapStatus = {};
     let swapResult = {};
     let answers = [];
+    let hasPreviousApproval = false;
 
     let steps = [
         {page: 'SwapsDisclaimer_Questions', hideSteps: false, back: 0},
@@ -80,22 +82,15 @@
         if (type === "swapTx") return metamaskSwapTxResponse.transactionHash
     }
 
-    const getApprovalAmount = () => {
-        try{
-            return (metamaskApprovalResponse.events.Approval.returnValues.value  / Math.pow(10, 18)).toFixed(8)
-        }catch (e){
-            return 0
-        }
-    }
-
-    const createSwap = () => {
+    const createSwap = (amount) => {
+        swapAmount = amount;
         SwapsStore.createSwap(
             networkKey($currentNetwork),
             swapInfo,
             getTxHash("swapTx"), 
             getTxHash("approval"),
             lamdenWallet.vk, 
-            getApprovalAmount(), 
+            amount, 
             answers
         )
     }

@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "1.3.6",
+  "version": "1.4.0",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -11,8 +11,7 @@
     "test-firstrun-new": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_CreateWallet.js",
     "test-firstrun-restore": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_RestoreWallet.js",
     "test-swaps": "mocha --recursive --timeout 30000 selenium/tests/ui/swaps/*.js",
-    "test-swaps-main": "mocha  --timeout 30000 selenium/tests/ui/swaps/Swaps_TokenSwap.js",
-    "test-swaps-neg": "mocha  --timeout 30000 selenium/tests/ui/swaps/Swaps_TokenSwap_Neg.js",
+    "test-swaps-metamask": "mocha  --timeout 30000 selenium/tests/ui/swaps/metamaskConnects.js",
     "test-crypto": "mocha --recursive --timeout 30000 selenium/tests/crypto/*.js",
     "test-crypto-clearinghouse": "mocha --recursive --timeout 30000 selenium/tests/crypto/clearingHouse_API.js",
     "test-crypto-ethereum": "mocha --recursive --timeout 30000 selenium/tests/crypto/ethereum.js",
@@ -20,6 +19,11 @@
     "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",
     "test-dapps-get-info": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
     "test-dapps-sendtx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
+    "test-tokens": "mocha --recursive --timeout 30000 selenium/tests/ui/tokens/*.js",
+    "test-tokens-add": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-add.js",
+    "test-tokens-upload": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-upload-images.js",
+    "test-tokens-edit": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-edit.js",
+    "test-tokens-transactions": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-transactions.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -46,13 +50,13 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
-    "lamden-js": "^1.3.5",
-    "metamask-extension-provider": "^1.1.1",
+    "lamden-js": "^1.3.6",
+    "metamask-extension-provider": "^2.0.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",
     "node-cryptojs-aes": "^0.4.0",
     "svelte-flatpickr": "^2.4.0",
     "types-validate-assert": "^1.0.1",
-    "web3": "^1.2.11"
+    "web3": "^1.3.3"
   }
 }

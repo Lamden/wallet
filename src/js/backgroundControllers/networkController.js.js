@@ -1,3 +1,5 @@
+import { LamdenBlockexplorer_API } from '../blockExplorer_API.js'
+
 export const networkController = (utils) => {
     let networksStore = {};
     const LamdenNetworkTypes = ['mainnet','testnet']
@@ -18,6 +20,16 @@ export const networkController = (utils) => {
         return networkObj
     }
 
+    const addBlockexplorer = (networkObj) => {
+        networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
+    }
+
+    const addExtras = (networkObj) => {
+        addNetworkKey(networkObj)
+        addBlockexplorer(networkObj)
+        return networkObj
+    }
+
     const getAll = () => {
         return [...networksStore.user, ...networksStore.lamden]
     }
@@ -25,7 +37,7 @@ export const networkController = (utils) => {
     const getCurrent = () => {
         const networks = [...networksStore.lamden, ...networksStore.user]
         const foundNetwork = networks.find(network => networksStore.current === networkKey(network))
-        return addNetworkKey(new utils.Lamden.Network(foundNetwork))
+        return addExtras(new utils.Lamden.Network(foundNetwork))
     }
 
     const getNetwork = (networkInfo) => {

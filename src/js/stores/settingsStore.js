@@ -95,6 +95,12 @@ const createSettingsStore = () => {
                 settingsStore.dismissWarning = true;
                 return settingsStore;
             })    
+        },
+        hideTokens: (value) => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.hideTokens = value;
+                return settingsStore;
+            }) 
         }
     };
 }

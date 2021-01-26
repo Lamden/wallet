@@ -12,7 +12,7 @@
     import network from '../../img/menu_icons/icon_network-testnet.svg'
 
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, themeToggle } = getContext('app_functions');
 
     let status = 'checking'
 
@@ -52,7 +52,9 @@
 }
 .box:hover{
     background: var(--bg-secondary);
-    box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
+    box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
 }
 p{
     margin: 0;
@@ -68,8 +70,8 @@ p.mainnet:hover{
     color: var(--font-warning)
 }
 .icon{
-    width: 50px;
     margin-left: 20px;
+    width: 50px;
 }
 </style>
 
@@ -86,7 +88,7 @@ p.mainnet:hover{
     </div>
     <div class="icon">
         {#if $currentNetwork.type === 'mainnet'}
-            <NetworkIcon />
+            <NetworkIcon width= "50px"/>
         {:else}
             {@html network}
         {/if}

@@ -33,27 +33,34 @@ export const balancesController = (utils) => {
     }
 
     const updateAll = (accountsList, network) => {
-        const accountsToProcess = accountsList.length; 
-        if (accountsToProcess > 0 && updatingBalances.status === "waiting"){
-            let accountsProcessed = 0;
-            let somethingUpdated = false;
-            updatingBalances = {status: "updating", time: new Date()};
-            accountsList.forEach((account) => {
-                getUpdate(account, network)
-                .then((updated) => {
-                    if (updated) somethingUpdated = true;
-                    accountsProcessed = accountsProcessed + 1
-                    if (accountsProcessed >= accountsToProcess){
-                        if (somethingUpdated){
-                            chrome.storage.local.set({"balances": balancesStore}, () =>{
-                                updatingBalances.status = "waiting"
-                            });
-                        }
-                    }
-                })
-                .catch(() => updatingBalances.status = "waiting")
-            })
-        }
+        let keysToGet =  accountsList.map(account => {
+            return{
+                contractName: 'currency',
+                variableName: "balances",
+                key: account.vk
+            }
+        })
+        network.blockExplorer_API.getKeys(keysToGet).then(res => {
+            let newBalances = processBalances(res, accountsList, network)
+            let netKey = network.networkKey
+            balancesStore[netKey] = newBalances
+            setStore(balancesStore)
+        })
+    }
+
+    const processBalances = (balances, accountList) => {
+        let newBalancesObj = {}
+        balances.map(balance => {
+            let vk = balance.key.split(":")[1]
+            let amount = utils.getValueFromReturn(balance.value)
+            let account = accountList.find(account => account.vk === vk)
+
+            newBalancesObj[vk] =  {
+                'balance': amount || "0.0",
+                watchOnly: account.sk === "watchOnly"
+            }
+        })
+        return newBalancesObj;
     }
 
     const getUpdate = async (account, network) => {

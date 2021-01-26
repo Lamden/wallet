@@ -85,12 +85,12 @@ label{
 }
 
 .select-selected {
-    border: 1px solid var(--outline);
+    border: 1px solid var(--input-outline);;
     border-radius: 4px;
 }
 
 .select-selected.open {
-    border: 1px solid var(--outline);
+    border: 1px solid var(--input-outline);;
     border-radius: 4px 4px 0 0;
     overflow-x: hidden;
 }
@@ -99,14 +99,15 @@ label{
     margin-top: 2px;
     content: "";
     border: 6px solid transparent;
-    border-color: var(--font-primary) transparent transparent transparent;
+    border-color: var(--font-primary-dim) transparent transparent transparent;
     position: absolute;
     top: 53%;
     right: 15px;
+
 }
 
 .select-selected.select-arrow-active:after {
-    border-color: transparent transparent var(--font-primary) transparent;
+    border-color: transparent transparent var(--font-primary-dim) transparent;
     margin-top: -5px;
 }
 
@@ -121,10 +122,8 @@ label{
     transition: border 0.5s;
     padding: 12px 32px 12px 13px;
     font-style: normal;
-    font-weight: normal;
     font-size: 1.1em; 
     line-height: 1; 
-    color: var(--font-primary);
     letter-spacing: 0.44px;
 
     cursor: pointer;
@@ -133,7 +132,7 @@ label{
 
 .select-items {
     position: absolute;
-    border: 1px solid var(--outline);
+    border: 1px solid var(--input-outline);
     background-color: var(--bg-secondary);
     border-radius: 0 0 4px 4px;
     left: 0;
@@ -147,15 +146,15 @@ label{
     display: none;
 }
 
-.select-items div:hover {
-    filter: brightness(125%);
+.items:hover {
+    background-color: var(--bg-secondary-hover);
     border-radius: 0px;
 }
 
 .same-as-selected {
-    filter: brightness(110%);
-    border-radius: 0px;
+    font-weight: 600;
 }
+
 
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
@@ -170,6 +169,7 @@ label{
     </select>
     {#if selectElm}
         <div bind:this={newSelectElm} 
+             id={`${id}-currently-selected`}
              class="select-selected"
              style={`height: ${innerHeight}; width:${width}; ${styles}`}
              class:select-arrow-active={!hideBox}
@@ -180,7 +180,7 @@ label{
         </div>
         <div class="select-items" class:select-hide={hideBox} style={`max-height: ${boxHeight};`}>
             {#each displayItems as item, index }
-                <div class:same-as-selected={selectElm.selectedIndex === index}
+                <div id={`select-option-${index}`} class="items" class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
                      {item.name}
                 </div>

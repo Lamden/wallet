@@ -63,11 +63,14 @@
     min-width: fit-content;
     width: 100%;
     background: var(--bg-secondary);
-    box-shadow: 0px 1px 2px #0823303d, 0px 2px 6px #08233029;
+    box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
 }
 .heading{
     margin: 2em 0 0;
 }
+
 
 </style>
 
@@ -77,13 +80,8 @@
         <div class="method" >
             <div class="flex-row name-row">
                 <h3>{method.name}</h3>
-                <Button 
-                    name={'run'} 
-                    height={'22px'} 
-                    margin={'0 0 0 10px'}
-                    padding={'0 5px'}
-                    classes={'button__solid button__primary'}
-                    click={() => handleRun(methodIndex)}/>
+                <button class="button__small button__primary run-button text-body3"
+						click={() => handleRun(methodIndex)}>run</button>
             </div>
 
             {#if method.arguments}

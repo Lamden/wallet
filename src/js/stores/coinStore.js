@@ -1,6 +1,8 @@
 import { writable, get, derived } from 'svelte/store';
 import { validateTypes } from 'types-validate-assert';
 
+import {  formatAccountAddress } from '../utils'
+
 const sanatizedAccounts = (accounts) => {
     return accounts.map(account => {
         if (account.sk !== "watchOnly") account.sk = "encrypted"
@@ -64,7 +66,7 @@ export const coinsDropDown = derived(CoinStore, ($CoinStore) => {
     $CoinStore.map(c => {
         returnList.push({
             value: c,
-            name: `${c.nickname} ${c.vk}`,
+            name: `${formatAccountAddress(c.vk, 10,4)} - ${c.nickname}`,
             selected: false
         })
     })

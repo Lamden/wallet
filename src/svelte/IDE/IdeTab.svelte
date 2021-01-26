@@ -5,9 +5,9 @@
 	//Stores
     import { FilesStore, currentNetwork, clicked } from '../../js/stores/stores.js';
 
-    //Images
-    import del from '../../img/menu_icons/icon_delete.svg';
-    import connected from '../../img/menu_icons/icon_connected.svg';
+    //Icons
+    import ConnectedIcon from '../icons/ConnectedIcon.svelte'
+    import CloseIcon from '../icons/CloseIcon.svelte'
 
     //Props
     export let file;
@@ -49,12 +49,15 @@
 <style>
 .tab-box{
     padding: 10px;
-    margin: 2px;
+    margin: 5px;
     border-radius: 10px;
     background-color: var(--bg-secondary);
     align-items: center;
     border: 1px solid transparent;
     cursor: pointer;
+    box-shadow: var(--box-shadow-1);
+    -webkit-box-shadow: var(--box-shadow-1);
+    -moz-box-shadow: var(--box-shadow-1);
 }
 .tab-box:hover{
     border: 1px dashed var(--font-accent);
@@ -62,18 +65,8 @@
     top: -1px;
 }
 .selected{
-    background-color: var(--primary-color)
-}
-.icons{
-    margin-left: 5px;
-    width: 14px;
-    position: relative;
-    top: 1px;
-}
-
-.connected-icon{
-    margin-right: 5px;
-    margin-left: 0;
+    background-color: var(--primary-color);
+    color: var(--color-white);
 }
 .rename{
     background-color: var(--bg-secondary);
@@ -90,7 +83,7 @@
     >
 
     {#if file.type === 'online'}
-        <div class="icons connected-icon">{@html connected}</div>
+        <ConnectedIcon width="14px" margin="0 5px 0 0" color={file.selected ? "var(--color-white)" : "var(--font-primary)"} />
     {/if}
     {#if !rename}
         <div on:dblclick={() => rename = true}>{`${file.name}`}</div>
@@ -98,6 +91,8 @@
         <input id={`tab-${index}`} bind:value={tabName} class="rename" type="text" on:keyup={handleKeyUp}/>
     {/if}
     {#if file.selected}
-        <div class="icons" on:click={closeTab} title="Close Tab">{@html del}</div>
+        <div on:click={closeTab} title="Close Tab">
+            <CloseIcon width="14px" margin="0 0 -3px 5px" color="var(--font-primary-dim)"/>
+        </div>
     {/if}
 </div>

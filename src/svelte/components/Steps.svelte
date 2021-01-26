@@ -8,8 +8,8 @@
     //Stores
     import { steps } from '../../js/stores/stores.js';
 
-    //Images
-    import chevronRight from '../../img/menu_icons/icon_chevron-right.svg';
+    //Icon
+    import DirectionalChevronIcon from '../icons/DirectionalChevronIcon.svelte'
 
     //Context
     const { changeStep } = getContext('functions');
@@ -36,9 +36,7 @@
 }
 
 .back-arrow{
-    width: 9px;
-    height: 12px;
-    margin-right: 1px;
+    margin: 2px 1px 0 0;
     transform: scaleX(-1);
 }
 
@@ -64,7 +62,9 @@
 <div class="flex-row steps" class:hide={noSteps}>
     {#if hideBack}
         <div class="flex-row back-box" class:hide={$steps.currentStep >= $steps.stepList.length } on:click={() => goBack()}>
-            <div class="back-arrow">{@html chevronRight}</div>
+            <div class="back-arrow">
+                <DirectionalChevronIcon width="12px" direction="right"/>
+            </div>
             <div class="back-button text-button">{'BACK'}</div>
         </div>
     {/if}

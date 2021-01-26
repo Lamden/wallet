@@ -43,15 +43,8 @@
 
 <style>
     .detail{
-        align-items: center;
         flex-grow: 1;
-        justify-content: space-between;
-        padding-top: 2rem;
-    }
-    .padding{
-        flex-grow: 1;
-        justify-content: space-evenly;
-        padding: 0 2rem;
+        padding: 1rem;
     }
     .flow1{
         width: 100%;
@@ -65,7 +58,7 @@
         width: 100%;
     }
     .icon{
-        width: 45px;
+        width: 30px;
     }
     .icon > .checkmark{
         width: 50px;
@@ -74,30 +67,21 @@
         width: 22px;
     }
     .buttons{
-        margin-bottom: 0.5rem;
+        justify-content: flex-end;
+        align-items: center;
+        flex-grow: 1;
     }
     .help-link{
         text-align: center;
-    }
-    p{
-        font-size: 1.1em;
-        align-self: flex-start;
-        margin: 0.25rem 0;
-        line-height: 1.4;
-    }
-    p.text{
-        font-size: 1.2em;
     }
     strong{
         text-decoration: underline;
         font-weight: 400;
         min-width: fit-content;
     }
-    .buttons{
-        padding: 1rem 0;
-    }
     label{
         display: flex;
+        margin: 0.5rem 0;
     }
     label > input {
         margin: 0 15px 0 0;
@@ -109,17 +93,13 @@
         margin-right: 15px;
         font-size: 1.2em;
     }
+    p{
+        margin: 1rem 0;
+    }
     p.choice{
         font-size: 1em;
         font-weight: 300;
         margin: 0;
-    }
-    p.message{
-        font-weight: bolder;
-        letter-spacing: 0.6px;
-    }
-    .text-secondary{
-        align-self: center;
     }
 </style>
 <div class="flex-column detail"
@@ -153,13 +133,11 @@
         <div class="icon-arrows" >
             {@html arrow_right}
         </div>
-         <div class="icon" >
-            <SmartContractIcon />
-        </div>    
+        <SmartContractIcon width="38px"/>
     </div>
 
-    <div class="flex-column padding">
-        <p class="message">
+    <div class="flex-column">
+        <p class="text-body2 weight-600">
             Do you want to authorize 
             <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">automatic transactions</a> 
             for this wallet?
@@ -170,7 +148,7 @@
             <p class="choice">
                 Automatically approve transactions from {confirmData.messageData.appName} to its smart contract. 
                 Does not include transactions to send {confirmData.messageData.network.currencySymbol}. However, will generate 
-                <a class="text-link" href="https://docs.lamden.io/docs" rel="noopener noreferrer" target="_blank">transaction costs</a>.
+                <a class="text-link" href="https://docs.lamden.io/docs/wallet/transactions_overview#stamps" rel="noopener noreferrer" target="_blank">transaction costs</a>.
             </p>
         </label>
 
@@ -182,27 +160,26 @@
         </label>
     </div>
 
-    <p class="text-secondary">You can adjust this option later in the account's settings.</p>
+    <p class="font-primary-dim">You can adjust this option later in the account's settings.</p>
 
-    <div class="flex-column">
-        <div class="buttons flex-row">
-            <Button 
-                id={'trusted-back-btn'}
-                classes={'button__solid '}
-                name="Back"
-                width={'175px'}
-                height={'42px'}
-                margin={'0 20px 0 0'}
-                click={back} />
-
+    <div class="flex-column buttons">
             <Button 
                 id={'trusted-next-btn'}
                 classes={'button__solid button__primary'}
                 name="Create Account"
-                width={'175px'}
+                width={'240px'}
                 height={'42px'}
+                margin={'0 0 0.5rem 0'}
                 click={setChoice} />
-        </div>
+            <Button 
+                id={'trusted-back-btn'}
+                classes={'button__solid '}
+                name="Back"
+                width={'240px'}
+                height={'42px'}
+                margin={'0 0 0.5rem 0'}
+                click={back} />
+
         <div class="help-link">
             {#if whitelabel.helpLinks.show}
                 <a  class="text-link" 

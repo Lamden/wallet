@@ -17,6 +17,7 @@
 
     export let loaded;
 
+
     const handleSubmit = () => {
         if (formObj.checkValidity()){
             chrome.runtime.sendMessage({type: 'unlockWallet', data: hashStringValue(pwdObj.value)}, (unlocked) => {

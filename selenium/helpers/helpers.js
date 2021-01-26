@@ -31,7 +31,11 @@ const switchWindow = async (driver, windowNum) => {
     await sleep(1000, true)
 }
 
-const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
+const gotoAccountsPage = async (driver) => {
+    await driver.findElement(By.id('accounts')).click();
+}
+
+const completeFirstRunSetup = async (driver, walletPassword, lock = true, testnet = true) => {
     await switchWindow(driver, 0)      
     await driver.findElement(By.id('create-wallet')).click();
     await driver.executeScript(`document.getElementById('pwd1').value='${walletPassword}'`);
@@ -39,7 +43,7 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
     await driver.findElement(By.id('save-pwd')).click()
     await driver.findElement(By.id('i-understand')).click()
     await sleep(5000)
-    await changeToTestnet(driver)
+    if (testnet) await changeToTestnet(driver)
     await driver.findElement(By.id('refresh-icon')).click()
     await sleep(3000, true)
     if (lock){
@@ -48,7 +52,7 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true) => {
 }
 
 
-const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true) => {
+const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true, testnet=true) => {
     await switchWindow(driver, 0)      
     await driver.findElement(By.id('restore-wallet')).click();
     await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
@@ -62,15 +66,15 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.executeScript(`document.getElementById('chk-all').innerText='testing'`)
     await driver.findElement(By.id('chk-all')).click()
     await driver.findElement(By.id('restore-btn')).click()
-    await sleep(1000)
+    await sleep(2000)
     await driver.findElement(By.id('home-btn')).click()
-    await sleep(8000)
-    await changeToTestnet(driver)
-    let refreshIcon = await driver.findElement(By.id('refresh-icon'))
-    await refreshIcon.click()
-    await sleep(3000, true)
-    await refreshIcon.click()
-    await sleep(3000, true)
+    await sleep(4000)
+    if (testnet) {
+        await changeToTestnet(driver)
+        await sleep(2000)
+    }
+    await driver.findElement(By.id('refresh-icon')).click()
+    await sleep(6000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -98,7 +102,7 @@ const changeToTestnet = async (driver) => {
 
 const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
-    await driver.findElement(By.id("coin-row-1")).click()
+    await driver.findElement(By.id("coin-nickname-1")).click()
     await sleep(500, true)
     let btn = await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]"))
     await driver.executeScript("arguments[0].click();", btn);
@@ -114,7 +118,6 @@ const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
     await driver.findElement(By.id("accounts")).click()
     await sleep(1000, true)
-
 }
 
 const getInstance = (obj) => {
@@ -316,6 +319,33 @@ const closeTest = (driver, httpServer) => {return new Promise(async (resolve, re
     resolve()
 })}
 
+const setupMetamask = async (driver, kovan = true) => {
+    await sleep(500)
+    await switchWindow(driver, 1) 
+    await driver.findElement(By.xpath("//button[contains(text(),'Get Started')]")).click()
+    await driver.findElement(By.xpath("//button[contains(text(),'Import wallet')]")).click()
+    await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
+    await sleep(1000)
+
+    await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
+    await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
+    await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
+    await driver.findElement(By.className("first-time-flow__terms")).click()
+    await sleep(500)
+    await driver.findElement(By.xpath("//button[contains(text(),'Import')]")).click()
+    await sleep(2000)
+    await driver.findElement(By.xpath("//button[contains(text(),'All Done')]")).click()
+    await sleep(500)
+
+    try {
+        await driver.findElement(By.className("popover-header__button")).click()
+    }catch(e){}
+    if (kovan){
+        await driver.findElement(By.xpath("//div[@title='Ethereum Mainnet']")).click()
+        await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
+    }
+}
+
 module.exports = {
     sleep,
     switchWindow,
@@ -329,5 +359,7 @@ module.exports = {
     startServer, closeTest,
     sendTx, getTxResult,
     getApprovalAmount, getAccountBalance,
-    setupSendListener
+    setupSendListener,
+    gotoAccountsPage,
+    setupMetamask
 }

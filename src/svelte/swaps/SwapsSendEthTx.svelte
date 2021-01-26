@@ -1,7 +1,7 @@
 <script>
     import whitelabel from '../../../whitelabel.json'
 
-    import { getContext, onDestroy } from 'svelte';
+    import { getContext, onDestroy, onMount } from 'svelte';
     import { fade } from 'svelte/transition';
     
     //Stores
@@ -24,11 +24,20 @@
         "dTAU": {address: "0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07", url: "https://kovan.etherscan.io/address/0x5e20ddde9ec5386ea2f4d24b7f33d747169d6b07"}
     }
 
+    //DOM nodes
+    let inputNode;
+
+    let amount = 0;
 
     $: metamaskSwapTxResponse = null;
     $: sending = false;
     $: sent = metamaskSwapTxResponse && !sending
     $: errorMsg = ''
+
+    onMount(() => {
+        inputNode.value = getTokenBalance()
+        handleChanged();
+    })
 
     const nextPage = () => {
         changeStep(7)
@@ -38,15 +47,50 @@
         if (!sent){
             sending = true
             errorMsg = ''
-            chrome.runtime.sendMessage({type: 'sendEthSwapTransaction', data: { ethAddress: getEthAddress(), amount: getApprovalAmount(), lamdenAddress: getLamdenAddress() }}, (response) => {
+            chrome.runtime.sendMessage({type: 'sendEthSwapTransaction', data: { ethAddress: getEthAddress(), amount, lamdenAddress: getLamdenAddress() }}, (response) => {
                 sending = false
                 if (typeof response.error === 'undefined') {
                     metamaskSwapTxResponse = response
-                    setMetamaskTxResponse(metamaskSwapTxResponse)
+                    setMetamaskTxResponse(metamaskSwapTxResponse, amount)
                 } else {
                     errorMsg = response.error
                 }
             })
+        }
+    }
+
+    const handleChanged = () => {
+        inputNode.setCustomValidity('')
+        inputNode.reportValidity()
+        const updateAmounts = (val) => {
+            amount = String(val)
+            inputNode.value = val
+        }
+        const updateAmount = () => amount = String(inputNode.value)
+        if (isNaN(inputNode.value)) {
+            updateAmount("0")
+            return
+        } 
+        if (!inputNode.value.includes(".")) {
+            updateAmount()
+            return
+        }
+        let intPart = inputNode.value.split(".")[0]
+        let decimalPart = inputNode.value.split(".")[1]
+        if (!decimalPart && !intPart) {
+            updateAmounts("0")
+            return
+        }
+        if (!decimalPart) {
+            updateAmounts(intPart)
+            return
+        }
+        if (parseInt(decimalPart) === 0) {
+            updateAmounts(intPart)
+            return
+        }
+        if (decimalPart.length > 8) {
+            updateAmounts(intPart + "." + decimalPart.substring(0, 8))
         }
     }
 
@@ -79,7 +123,7 @@ a{
     width: 100%;
 }
 .swap-details.grey{
-    color: var(--font-secondary)
+    opacity: 0;
 }
 .swap-details > p{
     white-space: nowrap;
@@ -96,16 +140,29 @@ a{
     margin: 2rem 0 -0.5rem;
     text-align: center;
 }
+.eth-bal{
+    margin: 0;
+}
+.error-box{
+    margin-bottom: 1rem;
+}
 </style>
 
 <div id="swap_sendSwapTx" class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
     <div class="flex-column flow-content-left">
-        <h6>Ethereum Token Swap Transaction</h6>
+        <h6>Create Swap Transaction</h6>
     
         <p class="flow-text-box text-body1">
-            {`Send your ${$currentNetwork.currencySymbol} tokens to our `}
-            <a class="text-link text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" rel="noopener noreferrer" target="_blank">Ethereum Token Swap Contract</a>
+            {`This transaction will send your ERC-20 ${$currentNetwork.currencySymbol} tokens to our `}
+            <a class="text-link text-body1" href="{swapContractLink[$currentNetwork.currencySymbol].url}" rel="noopener noreferrer" target="_blank">Token Swap Contract</a>
+            on the Ethereum network.
         </p>
+
+
+        <p class="eth-bal text-primary-dim text-body2">
+           {`Ethereum ${$currentNetwork.currencySymbol} balance:`}
+        </p>
+        <div class="text-body2">{`${getTokenBalance().toFixed(8)} ${getChainInfo().tauSymbol}`}</div>
 
         <div class="flex-column buttons">
             {#if sent}
@@ -121,7 +178,7 @@ a{
                     styles={'margin-bottom: 16px;'}
                     width={'100%'}
                     name={sent ? "Approved" : sending ? "Sending" : "Send Transaction"}
-                    disabled={sending}
+                    disabled={sending || amount === 0}
                     click={sendEthSwapTransaction} />
             {/if}
 
@@ -135,7 +192,7 @@ a{
        
             {#if whitelabel.helpLinks.show}
                 <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/token_swap"}
                     target="_blank" 
                     rel="noopener noreferrer" >
                     Help & FAQ
@@ -144,10 +201,15 @@ a{
          </div>
     </div>
     <div class="flex-column flow-content-right">
-        <div class="swap-details" class:grey={sending || sent || errorMsg !== ''}>
+        {#if errorMsg !== ''}
+            <div class="flex-column flex-center-center error-box">
+                <div class="circle-error" in:fade="{{delay: 0, duration: 500}}">{@html iconErrorCircle}</div>
+                <p class="text-red text_body2">{errorMsg}</p>
+            </div>
+        {/if}
+        <div class="swap-details" class:grey={sending || sent}>
             <h3>Transaction Details</h3>
-            <p><strong>Contract:</strong><br>
-                {`Ethereum ${getChainInfo().chainName}:`}
+            <p><strong class="text-primary-dim">Contract:</strong><br>
                 {#if sending || sent || errorMsg !== ''} {getChainInfo().swapContract}
                 {:else}
                     <a class="text-link" href={getChainInfo().blockExplorer + '/address/' + getChainInfo().swapContract} class:grey={sending} rel="noopener noreferrer" target="_blank">
@@ -155,13 +217,21 @@ a{
                     </a>
                 {/if}
             </p> 
-            <p><strong>Function:</strong><br>
+            <p><strong class="text-primary-dim">Function:</strong><br>
                 swap
             </p> 
-            <p><strong>Amount:</strong><br>
-                {`${getApprovalAmount()} ${$currentNetwork.currencySymbol}`}
+            <p><strong class="text-primary-dim">Swap Amount:</strong><br>
+                <InputBox 
+                    bind:thisInput={inputNode}
+                    on:changed={handleChanged}
+                    styles="max-width: 300px; z-index: -1;"
+                    margin="0.25rem 0 0 0"
+                    bind:value={amount}
+                    placeholder={`${getChainInfo().tauSymbol} Amount`}
+                    disabled={sending}
+                />
             </p> 
-            <p><strong>Lamden Address:</strong><br>
+            <p><strong class="text-primary-dim">Lamden Address:</strong><br>
                 {#if sending || sent || errorMsg !== ''} {getLamdenAddress()}
                 {:else}
                     <a class="text-link" href={$currentNetwork.blockExplorer + '/addresses/' + getLamdenAddress()} class:grey={sending} rel="noopener noreferrer" target="_blank">
@@ -187,13 +257,8 @@ a{
                 <h3>{'Transaction Successful!'}</h3>
             </div>
         {/if}
-        {#if errorMsg !== ''}
-            <div class="flex-column result">
-                <div class="circle-error" in:fade="{{delay: 0, duration: 500}}">{@html iconErrorCircle}</div>
-                <p class="text-red text_body2">{errorMsg}</p>
-            </div>
-        {/if}
     </div>
+
 </div>
 
 

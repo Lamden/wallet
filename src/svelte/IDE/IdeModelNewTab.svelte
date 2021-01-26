@@ -100,14 +100,14 @@
     <div class="flex-row new-row">
         <Button 
             id={'newTab-btn'} 
-            classes={'button__transparent'}
+            classes={'button__outlined'}
             width={'40%'}
             name="Blank Contract"
             click={newTabBlankFile} 
         />
         <Button 
             id={'newTab-btn'} 
-            classes={'button__transparent'}
+            classes={'button__outlined'}
             width={'40%'}
             name="Example Contract"
             click={newTabFile} 

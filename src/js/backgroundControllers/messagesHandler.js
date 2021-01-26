@@ -130,6 +130,11 @@ export const messagesHandler = (masterController) => {
                         masterController.transactions.requestEthereumAccount(sendResponse)
                         return true;
                     }
+                    //Check ERC20 TAU approval
+                    if (message.type === 'checkERC20Approval') {
+                        masterController.transactions.checkERC20Approval(message.data, sendResponse)
+                        return true
+                    } 
                     //Send ETH Tokens
                     if (message.type === 'sendTokenApproval') {
                         masterController.transactions.sendEthereumTokenApproval(message.data, sendResponse)
@@ -144,6 +149,52 @@ export const messagesHandler = (masterController) => {
                     if (message.type === 'checkEthTxStatus') {
                         masterController.transactions.checkEthereumTxStatus(message.data, sendResponse)
                         return true
+                    }
+                    //Reorder Account List
+                    if (message.type === 'accountsReorderUp') {
+                        masterController.accounts.reorderUp(message.data, sendResponse)
+                    }
+                    if (message.type === 'accountsReorderDown') {
+                        masterController.accounts.reorderDown(message.data, sendResponse)
+                    }
+                    //Token Messages
+                    if (message.type === 'tokensReorderUp') {
+                        masterController.tokens.reorderUp(message.data, sendResponse)
+                    }
+                    if (message.type === 'tokensReorderDown') {
+                        masterController.tokens.reorderDown(message.data, sendResponse)
+                    }
+                    if (message.type === 'addToken') {
+                        masterController.tokens.addToken(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'updateToken') {
+                        masterController.tokens.updateToken(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'deleteTokenOne') {
+                        masterController.tokens.deleteTokenOne(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'deleteTokenAll') {
+                        masterController.tokens.deleteTokenAll(sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'validateTokenContract') {
+                        masterController.tokens.validateTokenContract(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'getTokenMeta') {
+                        masterController.tokens.getTokenMeta(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'tokenExists') {
+                        masterController.tokens.tokenExists(message.data, sendResponse)
+                        return true;
+                    }
+                    if (message.type === 'refreshTokenBalances') {
+                        masterController.tokens.refreshTokenBalances(sendResponse)
+                        return true;
                     }
                 }
             }

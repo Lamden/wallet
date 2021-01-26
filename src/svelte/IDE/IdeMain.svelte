@@ -98,8 +98,13 @@
 .buttons{
     background: var(--bg-secondary);
     padding: 10px 17px;
+	border-radius: 4px;
 }
-
+.editor-row{
+	box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
+}
 </style>
 
 {#if editorIsLoaded}
@@ -108,7 +113,6 @@
 			<IdeTabs />
 
 		<div class="editor-row">
-
 			<MonacoWindow 
 				bind:this={monacoComponent}
 				{monaco}
@@ -116,13 +120,12 @@
 				on:clickMethod={handleMethodClick}
 				{lintErrors}
 			/>
-
 			{#if editorIsLoaded && $activeTab.type === 'local'}
-				<div class="buttons flex-row">
+				<div class="buttons flex-row" >
 					{#if $activeTab.type === 'local'}
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent button__accent'}
+							classes={'button__outlined button__accent'}
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
 							height={'42px'}
@@ -130,7 +133,7 @@
 						/>
 						<Button 
 							id={'contractTab-btn'} 
-							classes={'button__transparent button__accent'}
+							classes={'button__outlined button__accent'}
 							name="Submit to Network"
 							height={'42px'}
 							click={() => lint(submit)}

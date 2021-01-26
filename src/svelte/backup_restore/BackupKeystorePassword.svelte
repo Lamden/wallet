@@ -126,7 +126,7 @@
                     type="submit" > 
             {#if whitelabel.helpLinks.show}
                 <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/wallet/"}
+                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}
                     target="_blank" 
                     rel="noopener noreferrer" >
                     Help & FAQ

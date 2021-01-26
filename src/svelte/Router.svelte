@@ -30,6 +30,8 @@ import CoinDappTrusted from './coins/CoinDappTrusted.svelte';
 import CoinDappRevoke from './coins/CoinDappRevoke.svelte';
 import CoinAdd from './coins/CoinAdd.svelte';
 import CoinAddDetails from './coins/CoinAddDetails.svelte';
+import CoinAddToken from './coins/CoinAddToken.svelte'
+import CoinAddAccount from './coins/CoinAddAccount.svelte';
 import CoinEmpty from './coins/CoinEmpty.svelte';
 import CoinLamdenSend from './coins/CoinLamdenSend.svelte';
 import CoinLamdenContract from './coins/CoinLamdenContract.svelte';
@@ -89,6 +91,9 @@ import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
 import SwapsStatus from './components/SwapsStatus.svelte';
 import SwapStatus from './components/SwapStatus.svelte';
+import TokenLogo from './components/TokenLogo.svelte'
+import LightDarkToggle from './components/LightDarkToggle.svelte'
+
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -122,6 +127,16 @@ import SwapsDisclaimer_Questions from './swaps/SwapsDisclaimer_Questions.svelte'
 import SwapsDisclaimer_TokensExchange from './swaps/SwapsDisclaimer_TokensExchange.svelte';
 import SwapsDisclaimer_ExchangeTerms from './swaps/SwapsDisclaimer_ExchangeTerms.svelte';
 import ContinueSwap from './swaps/ContinueSwap.svelte';
+
+//Token
+import TokenDetails from './tokens/TokenDetails.svelte';
+import TokenLamdenSend from './tokens/TokenLamdenSend.svelte';
+import Token from './tokens/Token.svelte';
+import TokenModify from './tokens/TokenModify.svelte';
+import TokenOptions from './tokens/TokenOptions.svelte';
+import TokenDelete from './tokens/TokenDelete.svelte';
+import TokenDeleting from './tokens/TokenDeleting.svelte';
+import TokenEditDetails from './tokens/TokenEditDetails.svelte';
 
 
 export const RestorePages = {
@@ -168,6 +183,7 @@ export const SwapsPages = {
 
 export const Pages = { 
     CoinsMain, CoinDetails, 
+    TokenDetails,
     LockScreen, 
     BackupMain,
     SwapsMain, 
@@ -195,12 +211,15 @@ export const Components = {
     StrongPW,
     Transaction,
     Kwargs, Kwarg,
-    SwapsStatus, SwapStatus
+    SwapsStatus, SwapStatus,
+    TokenLogo, TokenEditDetails,
+    LightDarkToggle
 };
 
 export const Modals = {
-    CoinLamdenSend, 
-    CoinModify, CoinOptions, CoinDelete, CoinEditNickname,
+    CoinLamdenSend, TokenLamdenSend,
+    CoinModify, CoinOptions, CoinDelete, CoinDeleting, CoinEditNickname,
+    TokenModify, TokenOptions, TokenDelete, TokenDeleting,
     CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
     CoinLamdenContract,
     CoinAdd, CoinAddDetails,
@@ -208,7 +227,6 @@ export const Modals = {
     CoinSendingTx,
     ResultBox,
     MessageBox,
-    CoinDeleting,
     DevToolsDeleteNetwork,
     IdeModelNewTab, 
     IdeModelSubmit, IdeSubmitContract, 
@@ -219,7 +237,8 @@ export {
     Nav, NavLogo, NavControls, NavStatus,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, CoinDivider, CoinDetails, CoinEmpty, CoinHistory,
+    Coin, Token, CoinDivider, CoinDetails, CoinEmpty, CoinHistory, CoinAddToken, CoinAddAccount,
+    TokenDetails,
     DevToolsMain, DevToolsDocumentation, DevToolsNetworks,
     BackupMain,
     Restore,

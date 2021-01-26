@@ -71,48 +71,29 @@
 
 <style>
     .detail{
-        align-items: center;
         flex-grow: 1;
-        justify-content: space-between;
-        padding-top: 2rem;
+        padding: 1rem;
     }
     .flex-row{
         width: 100%;
     }
     .inputs{
-        width: 75%;
-        padding-right: 10px;
-    }
-    .fund-details{
-        height: 160px;
-        justify-content: center;
-        align-items: center;
+        width: 100%;
     }
     .icon{
-        width: 25%;
-        box-sizing: border-box;
-        padding: 30px 20px 20px 20px;
-    }
-    .buttons{
-        margin-bottom: 0.5rem;
+        width: 60px;
+        margin: 0.5rem auto;
     }
     .help-link{
         text-align: center;
     }
-    p{
-        font-size: 1.2em;
-        text-align: center;
-        margin: 0.25rem 0;
-        line-height: 1.4;
-    }
     .buttons{
-        padding: 1rem 0;
+        justify-content: flex-end;
+        align-items: center;
+        flex-grow: 1;
     }
-    .confirm-message{
-        height: 25px;
-        font-size: 1.5em;
-        margin: 2rem 0 0;  
-        align-self: center;  
+    p{
+        margin: 0;
     }
 </style>
 
@@ -120,16 +101,16 @@
 <div class="flex-column detail"
     in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
-    <p>
+    <p class="text-body2">
         You can send {confirmData.messageData.network.currencySymbol} to your 
         {confirmData.messageData.appName} <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_overview" rel="noopener noreferrer" target="_blank">linked account</a> 
         to start using it right away.
 
     </p>
-    <div class="flex-row fund-details">
-        <div class="icon" >
-            {@html send_coins}
-        </div>
+    <div class="icon" >
+        {@html send_coins}
+    </div>
+    <div class="flex-row">
         <div class="inputs flex-column">
             {#if typeof accounts !== 'undefined'}
                 <DropDown 
@@ -149,27 +130,24 @@
         </div>
     </div>
 
-    <p class= "confirm-message" class:text-secondary={!amount || amount <= 0}>{confirmMessage(amount)}</p>
-
-    <div class="flex-column">
-        <div class="buttons flex-row">
-            <Button 
-                id={'fund-back-btn'}
-                classes={'button__solid '}
-                name="Back"
-                width={'175px'}
-                height={'42px'}
-                margin={'0 20px 0 0'}
-                click={back} />
-
-            <Button 
-                id={'fund-next-btn'}
-                classes={'button__solid button__primary'}
-                name={amount > 0 ? "Yes" : "Skip"}
-                width={'175px'}
-                height={'42px'}
-                click={set} />
-        </div>
+    <div class="flex-column buttons">
+        <p class= "text-body2" class:text-secondary={!amount || amount <= 0}>{confirmMessage(amount)}</p>
+         <Button 
+            id={'fund-next-btn'}
+            classes={'button__solid button__primary'}
+            name={amount > 0 ? "Yes" : "Skip"}
+            width={'240px'}
+            height={'42px'}
+            margin={'0 0 0.5rem 0'}
+            click={set} />
+        <Button 
+            id={'fund-back-btn'}
+            classes={'button__solid '}
+            name="Back"
+            width={'240px'}
+            height={'42px'}
+            margin={'0 0 0.5rem 0'}
+            click={back} />
         <div class="help-link">
                     {#if whitelabel.helpLinks.show}
                 <a  class="text-link" 

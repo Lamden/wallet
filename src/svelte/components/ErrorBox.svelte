@@ -11,8 +11,9 @@
     display: flex;
     flex-direction: column;
     background: var(--bg-secondary);
-    box-shadow: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
-    border-radius: 4px;
+    box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
     width: 280px;
     height: 228px;
 }

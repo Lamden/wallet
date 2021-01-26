@@ -22,15 +22,16 @@
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';
     import dapp_default_bg from '../../img/backgrounds/dapp_default_bg.jpeg';
-    import verified_app from '../../img/menu_icons/icon_verified_app.svg'
-    import arrowUp from '../../img/menu_icons/icon_arrow-up.svg';
-    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
-    import settings from '../../img/menu_icons/icon_settings.svg';
-    import options from '../../img/menu_icons/icon_options.svg';
+    import verified_app from '../../img/menu_icons/icon_verified_app.svg'    
+
+    //Icons
     import RefreshIcon from '../icons/RefreshIcon.svelte'
+    import SendIcon from '../icons/SendIcon.svelte'
+    import CopyIcon from '../icons/CopyIcon.svelte'
+    import SettingsIcon from '../icons/SettingsIcon.svelte'
     
     //Utils
-    import { copyToClipboard, displayBalance } from '../../js/utils.js'
+    import { copyToClipboard, displayBalanceToFixed } from '../../js/utils.js'
 
     //Context
     const { switchPage, openModal, closeModal } = getContext('app_functions');
@@ -53,7 +54,7 @@
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
     $: symbol = coin.symbol;
-    $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk)) || '0'
+    $: balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
     $: pendingTxList = () => {
@@ -117,7 +118,7 @@
 		refreshing = true
 		setTimeout(() => {
             refreshing = false
-            balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk))
+            balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8)
 		}, 2000);
     }
     
@@ -137,13 +138,8 @@
         margin: 0;
     }
     .hero-rec{
-        box-sizing: border-box;
         min-height: 247px;
-        border-radius: 4px;
-        margin-bottom: 18px;
         padding: 40px 40px 26px;
-        background-size: cover;
-        background-repeat: no-repeat;
     }
     .balance-total{
         align-items: center;
@@ -235,7 +231,7 @@
                     <p class="text-huge">{balance}</p>
                     <div on:click={handleRefresh} 
                         id="refresh-icon"
-                        class="flex-col refresh-icon" 
+                        class="flex-column refresh-icon" 
                         class:spinner={refreshing}>
                         <RefreshIcon />
                     </div>
@@ -254,49 +250,61 @@
                 {#if coin.sk !== "watchOnly"}
                     <Button
                         id={'send-coin-btn'} 
-                        classes={'button__transparent button__overlay'}
+                        classes={'button__outlined button__overlay'}
                         name={whitelabel.accountDetails.buttons.send.name}
+                        click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
                         padding={"12px"}
                         margin={'0 15px 15px 0'}
-                        click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
-                        icon={arrowUp}
-                    />
+                    >
+                        <div slot="icon-before">
+                            <SendIcon width="15px" color="var(--color-white)" />
+                        </div>
+                    </Button> 
                 {/if}
             {/if}
             {#if whitelabel.accountDetails.buttons.copy.show}
                 <Button
-                    id={'send-coin-btn'} 
-                    classes={'button__transparent button__overlay'}
+                    id={'copy-address-btn'} 
+                    classes={'button__outlined button__overlay'}
+                    click={copyWalletAddress} 
                     name={whitelabel.accountDetails.buttons.copy.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
-                    click={copyWalletAddress} 
-                    icon={copyWhite}
-                />
+                >
+                    <div slot="icon-before">
+                        <CopyIcon width="12px" color="var(--color-white)" />
+                    </div>
+                </Button> 
             {/if}
             {#if whitelabel.accountDetails.buttons.options.show}
-                <Button 
+                <Button
                     id={'modify-coin-btn'} 
-                    classes={'button__transparent button__overlay'}
-                    icon={options}
+                    classes={'button__outlined button__overlay'}
                     name={whitelabel.accountDetails.buttons.options.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
                     click={() => openModal('CoinModify', coin)}
-                />
+                >
+                    <div slot="icon-before">
+                        <SettingsIcon width="15px" color="var(--color-white)" />
+                    </div>
+                </Button> 
             {/if}
             </div>
             {#if thisNetworkApproved && $currentNetwork.lamden}
                 <div>
-                    <Button 
+                    <Button
                         id={'dapp-options-btn'} 
-                        classes={'button__transparent button__overlay'}
+                        classes={'button__outlined button__overlay'}
                         name="dApp Settings"
-                        icon={settings}
                         padding={"12px"}
                         margin={'0 0 15px 0'}
                         click={() => openModal('CoinDappOptions', {coin, dappInfo, startPage: 1})}
-                        />
+                    >
+                        <div slot="icon-before">
+                            <SettingsIcon width="15px" color="var(--color-white)" />
+                        </div>
+                    </Button> 
                 </div>
             {/if}
             {#if thisNetworkApproved && dappInfo} 

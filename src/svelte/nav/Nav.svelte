@@ -3,6 +3,7 @@
 
 	//Components
     import { NavLogo, NavControls }  from '../Router.svelte'
+
 </script>
 
 <style>

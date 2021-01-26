@@ -30,20 +30,17 @@
 .heading{
     align-items: center;
 }
+.run-button{
+    margin: 1rem 0 2rem 10px;
+}
 </style>
 
 
 <div class="get-variable flex-column">
     <div class="flex-row heading">
         <h2>Get Current State</h2>
-        <Button 
-            name={'run'} 
-            height={'22px'} 
-            margin={'1rem 0 2rem 10px'}
-            padding={'0 8px'}
-            classes={'button__solid button__primary'}
-            click={() => handleRun()}
-        />
+        <button class="button__small button__primary run-button text-body3"
+			click={() => handleRun()}>run</button>
     </div>
     <InputBox
         on:changed={(e) => {variableName = e.detail.target.value}}

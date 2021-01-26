@@ -6,6 +6,7 @@ import { controllerUtils  } from './controllerUtils.js'
 import { accountsController  } from './accountsController.js'
 import { balancesController  } from './balancesController.js'
 import { transactionsController } from './transactionsController.js'
+import { tokenController } from './tokenController.js'
 
 export const masterController = () => {
     const utils = controllerUtils
@@ -26,6 +27,11 @@ export const masterController = () => {
             sendCurrencyTransaction: transactions.sendCurrencyTransaction,
             sendLamdenTx: transactions.sendLamdenTx,
             getAccountByVK: accounts.getAccountByVK
+        }
+    })()));
+    const tokens = Object.freeze(tokenController(utils, (() => {
+        return {
+            getSanatizedAccounts: accounts.getSanatizedAccounts
         }
     })()));
 
@@ -242,7 +248,7 @@ export const masterController = () => {
 
     const createPopup = (windowId) => {
         chrome.windows.create({
-            url: `/confirm.html#${windowId}`, width: 500, height: 700, type: 'popup',
+            url: `/confirm.html#${windowId}`, width: 375, height: 650, type: 'popup',
         });
     }
 
@@ -267,7 +273,9 @@ export const masterController = () => {
             addOne: accounts.addOne,
             addMany: accounts.addMany,
             changeAccountNickname: accounts.changeAccountNickname,
-            decryptKeys: accounts.decryptKeys
+            decryptKeys: accounts.decryptKeys,
+            reorderUp: accounts.reorderUp,
+            reorderDown: accounts.reorderDown
         },
         "dapps": {
             setTrusted: dapps.setTrusted,
@@ -287,7 +295,20 @@ export const masterController = () => {
             requestEthereumAccount: transactions.requestEthereumAccount,
             sendEthereumTokenApproval: transactions.sendEthereumTokenApproval,
             sendEthereumSwapTransaction: transactions.sendEthereumSwapTransaction,
-            checkEthereumTxStatus: transactions.checkEthereumTxStatus
+            checkEthereumTxStatus: transactions.checkEthereumTxStatus,
+            checkERC20Approval: transactions.checkERC20Approval
+        },
+        "tokens": {
+            addToken: tokens.addToken,
+            updateToken: tokens.updateToken,
+            deleteTokenOne: tokens.deleteTokenOne,
+            deleteTokenAll: tokens.deleteTokenAll,
+            validateTokenContract: tokens.validateTokenContract,
+            getTokenMeta: tokens.getTokenMeta,
+            tokenExists: tokens.tokenExists,
+            refreshTokenBalances: tokens.refreshTokenBalances,
+            reorderUp: tokens.reorderUp,
+            reorderDown: tokens.reorderDown
         },
         balances,
         utils,

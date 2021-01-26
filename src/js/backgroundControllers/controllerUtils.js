@@ -63,6 +63,12 @@ export const controllerUtils = (() => {
 
     const removeTrailingZeros = (value) => value.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')
 
+    const getValueFromReturn = (value) => {
+        if (!value) return null;
+        if (value.__fixed__) return value.__fixed__
+        return value
+    }
+
     return {
         isJSON, 
         stripRef, 
@@ -80,6 +86,7 @@ export const controllerUtils = (() => {
         Ethereum,
         sendMessageToApp,
         sendMessageToTab,
-        removeTrailingZeros
+        removeTrailingZeros,
+        getValueFromReturn
     }
 })()

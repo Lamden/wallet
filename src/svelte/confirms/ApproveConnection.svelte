@@ -28,28 +28,6 @@
 </script>
 
 <style>
-    .approve-conection{
-        align-items: center;
-        flex-grow: 1;
-        justify-content: space-between;
-        padding: 0 20px 20px 20px;
-        overflow-x: hidden;
-    }
-
-    .hero-rec{
-        width: 100%;
-        padding: 1.2rem 20px;
-        justify-content: space-between;
-        align-items: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-
-    .dapp-name{
-        align-items: center;
-        margin-bottom: 0.25rem;
-    }
-
     p{
         margin: 0;
     }
@@ -58,26 +36,26 @@
             width: 37px;
             margin-right: 10px;
     }
-    .text-link:visited{
-        color: var(--font-accent);
+    .text-link, .text-link:visited, .text-link:focus{
+        color: var(--font-warning);
+        margin: 0.5rem 0 0 0;
     }
 </style>
 
-<div class="approve-conection flex-column">
-    <div class="flex-column hero-rec" style="background-image: url({hero_bg})" >
+<div class="flex-column flex-grow-1">
+    <div class="flex-column hero-rec popup" style="background-image: url({hero_bg})" >
         {#if reapprove}
-            <h2>Smart Contract Update</h2>
+            <h3>Smart Contract Update</h3>
         {:else}
-            <h2>Linked Account Creation</h2>
+            <h3>Linked Account Creation</h3>
         {/if}
         <div class="flex-row dapp-name">
             <img src={`${confirmData.url}/${logoFormat(confirmData.messageData.logo)}`} alt="app logo" />
             {#if reapprove}
-                <p class="dapp-name-text">{confirmData.messageData.oldConnection.appName}</p>
+                <p class="text-body1">{confirmData.messageData.oldConnection.appName}</p>
             {:else}
-                <p class="dapp-name-text">{confirmData.messageData.appName}</p>
+                <p class="text-body1">{confirmData.messageData.appName}</p>
             {/if}
-            
         </div>
         <a class="text-link" href={confirmData.url} rel="noopener noreferrer" target="_blank">{`source ${confirmData.url}`}</a>
     </div>
@@ -105,8 +83,5 @@
             on:setStep={setStep} 
         />
     {/if}
-
- 
-
 </div>
 

@@ -141,15 +141,12 @@ const defaultTypeValues = {
 }
 
 const formatKwargs = (kwargsList) => {
-    console.log(kwargsList)
     kwargs = {}
     kwargsList.forEach(item => {
         if (item.value !== "" && typeof item.value !== 'undefined') {
-            console.log({"name": item.name, "value": item.value, "type": item.type})
             kwargs[item.name] = Encoder(item.type, item.value)
         }
     })
-    console.log(kwargs)
     return kwargs;
 }
 
@@ -221,6 +218,17 @@ const createCharmKey = (info, vk) => {
     return key;
 }
 
+const repalceVariablesInIconPath = (iconPath, vk) => {
+    if (!iconPath) return false
+    const variableMapping = {
+        '<wallet vk>': vk
+    }
+    Object.keys(variableMapping).forEach(variable => {
+        iconPath = iconPath.replace(variable, variableMapping[variable])
+    })
+    return iconPath
+}
+
 const formatValue = (value, format = undefined) => {
     if (!format) return value
     if (format === 'number' && typeof value === 'string') return stripTrailingZero(value)
@@ -238,14 +246,138 @@ const getKeyValue = async (networkObj, contractName, variableName, key, format =
     return response
 }
 
+const stringToFixed = (value, precision) => {
+    if (!value) return "0.0"
+    try {
+      var values = value.split('.')
+    } catch {
+      var values = value.toString().split('.')
+    }
+    if (!values[1]) return value
+    else {
+      if (values[1].length < precision) precision = values[1].length
+      let decValue = parseInt(values[1].substring(0, precision))
+      if (decValue === 0) return `${values[0]}`
+      else {
+        let decimals = values[1].substring(0, precision)
+        for (let i = precision - 1; i >= 0; i--) {
+          if (decimals[i] === '0') precision -= 1
+          else i = -1
+        }
+        return `${values[0]}.${values[1].substring(0, precision)}`
+      }
+    }
+}
+const displayBalanceToFixed = (value, precision) => displayBalance(stringToFixed(value, precision))
+
+const getTokenTotalBalance = (netKey, contractName, tokenBalanceTotals) => {
+    if (!tokenBalanceTotals) return "0"
+    if (!tokenBalanceTotals[netKey]) return "0"
+    return tokenBalanceTotals[netKey][contractName] || "0"
+}
+const getTokenBalance = (netKey, vk, contractName, tokenBalancesStore) => {
+    if (!tokenBalancesStore[netKey]) return "0"
+    if (!tokenBalancesStore[netKey][vk]) return "0"
+    if (!tokenBalancesStore[netKey][vk][contractName]) return "0"
+    return tokenBalancesStore[netKey][vk][contractName]
+}
+
+const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
+    return account.substring(0, lsize) + ' ... ' + account.substring(account.length - rsize)
+  }
+
+const dataURLToBlob = function(dataURL) {
+    var BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        var parts = dataURL.split(',');
+        var contentType = parts[0].split(':')[1];
+        var raw = parts[1];
+
+        return new Blob([raw], {type: contentType});
+    }
+
+    var parts = dataURL.split(BASE64_MARKER);
+    var contentType = parts[0].split(':')[1];
+    var raw = window.atob(parts[1]);
+    var rawLength = raw.length;
+
+    var uInt8Array = new Uint8Array(rawLength);
+
+    for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return new Blob([uInt8Array], {type: contentType});
+}
+
+const readBlobToFile = (blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader
+    reader.onload = () => {
+        resolve(reader.result)
+    };
+    reader.onerror = () => reject()
+    reader.readAsDataURL(blob);
+})
+
+const readFileToImage = (file) => new Promise((resolve, reject) => {
+    var image = new Image()
+    image.onload = () => {
+        resolve(image)
+    };
+    image.onerror = () => reject()
+    image.src = file
+})
+
+const resizeImage = (image, MAX_IMAGE_SIZE) => {
+    var canvas = document.createElement('canvas'),
+        max_size = MAX_IMAGE_SIZE,
+        width = image.width,
+        height = image.height;
+    if (width > height) {
+        if (width > max_size) {
+            height *= max_size / width;
+            width = max_size;
+        }
+    } else {
+        if (height > max_size) {
+            width *= max_size / height;
+            height = max_size;
+        }
+    }
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+    var dataUrl = canvas.toDataURL('image/jpeg');
+    return dataURLToBlob(dataUrl);
+}
+
+const getLogoFromURL = async (tokenInfo, MAX_IMAGE_SIZE) => {
+    const acceptedImageTypes = ["image/jpeg", "image/png", "image/svg"]
+    let blob = await fetch(tokenInfo.logo_url).then(res => res.blob())
+    if (acceptedImageTypes.includes(blob.type)){
+        let file = await readBlobToFile(blob)
+        let image = await readFileToImage(file)
+        if (image.width >= MAX_IMAGE_SIZE || image.height >= MAX_IMAGE_SIZE) {
+            file = await readBlobToFile(resizeImage(image, MAX_IMAGE_SIZE))
+        }
+        tokenInfo.logo_base64_url = file
+        delete tokenInfo.logo_url
+        return tokenInfo
+    }
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
     encryptObject, decryptObject, hashStringValue,
     formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
     Encoder, encodeLocaleDateTime, encodeUTCDateTime, encodeLocaleTimeDelta, 
-    displayBalance,
+    displayBalance, displayBalanceToFixed,
     getKeyValue, 
-    createCharmKey,
-    formatValue
+    createCharmKey, repalceVariablesInIconPath,
+    formatValue,
+    stringToFixed,
+    getTokenTotalBalance,
+    getTokenBalance, formatAccountAddress,
+    dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL
   }

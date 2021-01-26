@@ -37,6 +37,10 @@
 .errors-box{
 	padding: 4px 17px;
 	color: var(--font-black);
+    box-shadow: var(--box-shadow-2);
+    -webkit-box-shadow: var(--box-shadow-2);
+    -moz-box-shadow: var(--box-shadow-2);
+    border-radius: 4px;
 }
 .no-errors{
     background: #52ff52;

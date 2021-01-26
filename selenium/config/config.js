@@ -59,7 +59,7 @@ const config = {
     walletExtentionID: "hiknponkciemeacgombejeookoebjdoe",
     metamaskExtentionID: "nkbihfbeogaeaoehlefnkodbefgpgknn",
     metamaskFolder: `${getMetaMaskLocation()}`, //Path to where metamask is installed on your computer
-    metamaskVersion: "8.1.8_0", //version of metamask (appends to metamaskFolder to create full plugin path)
+    metamaskVersion: "8.1.11_0", //version of metamask (appends to metamaskFolder to create full plugin path)
     get metamaskPath() {
         return path.join(this.metamaskFolder, this.metamaskExtentionID, this.metamaskVersion)
     },

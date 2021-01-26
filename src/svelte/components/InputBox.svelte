@@ -22,6 +22,8 @@
     export let numberStep = "any"
     export let disabled = false;
     export let bgStyle = "primary"
+    export let errorMsg = ""
+    export let warningMsg = ""
 
     export let thisInput;
 
@@ -43,9 +45,17 @@
 
 </script>
 
-<div class="inputbox" style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle})`}>
+<div class="inputbox" style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle});`}>
     {#if label !== ""}
         <label class="inputbox-label"> {label} </label>
+    {/if}
+
+    {#if warningMsg}
+        <div class="inputbox-message text-warning">{warningMsg}</div>
+    {/if}
+
+    {#if errorMsg}
+        <div class="inputbox-message text-error">{errorMsg}</div>
     {/if}
     
     {#if inputType === "password"}

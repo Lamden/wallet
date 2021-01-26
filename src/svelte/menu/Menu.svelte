@@ -6,30 +6,28 @@
     
     //Components
     import { MenuBox }  from '../Router.svelte'
-    
-    //Images
-    import about from '../../img/menu_icons/icon_about.svg';
-    import backup from '../../img/menu_icons/icon_backup.svg';
-    import devtools from '../../img/menu_icons/icon_devtools.svg';
-    import feedback from '../../img/menu_icons/icon_feedback.svg';
-    import history from '../../img/menu_icons/icon_history.svg';
-    import holdings from '../../img/menu_icons/icon_holdings.svg';
-    import restore from '../../img/menu_icons/icon_restore.svg';
-    import signout from '../../img/menu_icons/icon_signout.svg';
-    import ide from '../../img/menu_icons/icon_ide.svg';
-    import swap from '../../img/menu_icons/icon_swap.svg';
 
-    const iconLookup = {
-        "about": about,
-        "backup": backup,
-        "devtools": devtools,
-        "feedback": feedback,
-        "history": history,
-        "holdings": holdings,
-        "restore": restore,
-        "signout": signout,
-        "ide": ide,
-        "swap": swap
+    //Icons
+    import AccountsIcon from '../icons/menu/AccountsIcon.svelte'
+    import IdeIcon from '../icons/menu/IdeIcon.svelte'
+    import SwapIcon from '../icons/menu/SwapIcon.svelte'
+    import DevToolsIcon from '../icons/menu/DevToolsIcon.svelte'
+    import BackupIcon from '../icons/menu/BackupIcon.svelte'
+    import RestoreIcon from '../icons/menu/RestoreIcon.svelte'
+    import SignOutIcon from '../icons/menu/SignOutIcon.svelte'
+    import AboutIcon from '../icons/menu/AboutIcon.svelte'
+    import FeedbackIcon from '../icons/menu/FeedbackIcon.svelte'
+
+    const icons = {
+        account: AccountsIcon,
+        ide: IdeIcon,
+        swap: SwapIcon,
+        devtools: DevToolsIcon,
+        backup: BackupIcon,
+        restore: RestoreIcon,
+        signout: SignOutIcon,
+        about: AboutIcon,
+        feedback: FeedbackIcon
     }
 
     let menus = whitelabel.menu
@@ -54,7 +52,7 @@
 <div class="menus flex-column text-primary" in:fly="{{delay: 0, duration: 500, x: -50, y: 0, opacity: 0.0, easing: quintOut}}">
     {#each menus as menu}
         {#if menu.show}
-            <MenuBox heading={menu.heading} menuItems={menu.items} {iconLookup}/>
+            <MenuBox heading={menu.heading} menuItems={menu.items} {icons}/>
         {/if}
     {/each}
 </div>

@@ -105,7 +105,6 @@ export const transactionsController = (utils, actions) => {
                 const txBuilder = new utils.Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
                 await txBuilder.checkForTransactionResult()
                 .then(() => {
-                    //console.log(txBuilder.getAllInfo())
                     transactionsChecked = transactionsChecked + 1
                     if (tx.sentFrom) utils.sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
                     if (transactionsChecked >= transactionsToCheck){
@@ -149,6 +148,12 @@ export const transactionsController = (utils, actions) => {
         return true;
     }
 
+    const checkERC20Approval = (data, callback = undefined) => {
+        const { address } = data;
+        utils.Ethereum.checkERC20Approval(address).then(res => callback(res))   
+        return true;
+    }
+
     const sendEthereumTokenApproval = (data, callback = undefined) => {
         const {address, amount } = data;
         utils.Ethereum.sendSwapContractApproval(address, amount).then(res => callback(res))   
@@ -173,6 +178,45 @@ export const transactionsController = (utils, actions) => {
         sendEthereumTokenApproval,
         sendEthereumSwapTransaction,
         checkEthereumTxStatus,
-        sendCurrencyTransaction
+        sendCurrencyTransaction,
+        checkERC20Approval
     }
 }
+
+/*
+const txBatcher = (() => {
+    let queue = []
+    let sending = false
+
+    document.addEventListener('lamdenWalletTxStatus', (response) => {
+        // Set sending to false.
+        // Any Tx result will do, failed or success, as it means the tx hit he masternode at least
+        sending = false
+
+        // deal with response
+    });
+
+    const processTxQueue = async () => {
+        //Process a tx if there are items in the queue and we aren't currently sending
+        if (queue.length > 0 && !sending) {
+            //Call send transaction and then 
+            sendTrasaction(queue[0])
+        }
+    }
+
+    const sendTrasaction = async (txInfo) => {
+        // Send the transaction to the wallet
+        document.dispatchEvent(new CustomEvent('lamdenWalletSendTx', {details: JSON.stringify(txInfo)}));
+    }
+
+    //Check the queue every second
+    setInterval(processTxQueue, 1000)
+
+    return {
+        addToQueue: (txinfo) => queue.push(txInfo)
+    }
+})()
+
+txBatcher.addToQueue(txInfo)
+
+*/

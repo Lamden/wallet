@@ -71,7 +71,11 @@
     }
 </script>
 
-<CoinLamdenContract {coin} currentPage={steps[currentStep - 1].page} on:contractDetails={(e) => saveTxDetails(e)} />
+<CoinLamdenContract 
+    {coin} 
+    currentPage={steps[currentStep - 1].page} 
+    on:contractDetails={(e) => saveTxDetails(e)} 
+/>
 {#if currentStep > 1}
     <svelte:component this={Modals[steps[currentStep - 1].page]} 
                       result={resultInfo} 
@@ -82,6 +86,7 @@
 {/if}
 {#if steps[currentStep - 1].cancelButton}
     <Button classes={'button__text text-caption'} 
+            id="transfer-modal-cancel"
             width={'125px'}
 			height={'24px'}
 			padding={0}
