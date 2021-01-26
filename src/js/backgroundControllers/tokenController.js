@@ -106,7 +106,6 @@ export const tokenController = (utils, actions) => {
     }
 
     const getContractInfo = async (contractName) => {
-        // TO DO make this default to mainnet
         let network = utils.networks.getCurrent()
 
         let contractInfo = await network.API.getContractInfo(contractName)
