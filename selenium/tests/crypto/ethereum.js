@@ -19,7 +19,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    //after(() => {driver && driver.quit()});
+    after(() => {driver && driver.quit()});
 
     it('Setup Metamask Extention', async function() {
       await helpers.setupMetamask(driver);
@@ -61,9 +61,9 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     let requestResult = await driver.executeScript(`
       return  await window.requestAccount1;
     `)
-    assert.equal(requestResult.error.includes('User rejected the request.'), true);
+    assert.equal(requestResult, undefined);
   });
-/*
+
   it('requestAccount(): Returns correct eth Address from metamask on Confirm', async function() {
     driver.executeScript(`
         backpage = chrome.extension.getBackgroundPage();
@@ -229,5 +229,5 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
       return await window.txResult;
     `)
     assert.equal(txInfo.status, true);
-  })*/
+  })
 })

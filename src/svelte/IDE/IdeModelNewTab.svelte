@@ -127,7 +127,7 @@
             on:keyup={refreshValidityKeyup}
         />
         <Button 
-            id={'contractTab-btn'} 
+            id={'new-contract-btn'} 
             classes={'button__solid button__primary'}
             name="Open"
             width={'30%'}

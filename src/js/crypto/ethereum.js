@@ -48,7 +48,7 @@ const requestAccount = async () => {
     let web3 = getWeb3();
 
     try {
-        let response = await web3.eth.getAccounts().then(address => getAddress(address)).catch(e => console.log(e))
+        let response = await web3.eth.requestAccounts().then(address => getAddress(address)).catch(e => console.log(e))
         return response
     }catch (e){
         console.log(e)

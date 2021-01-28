@@ -124,7 +124,7 @@
 				<div class="buttons flex-row" >
 					{#if $activeTab.type === 'local'}
 						<Button 
-							id={'contractTab-btn'} 
+							id={'check-contract-btn'} 
 							classes={'button__outlined button__accent'}
 							name="Check Contract"
 							margin={'0 10px 3px 0'}
@@ -132,7 +132,7 @@
 							click={lint}
 						/>
 						<Button 
-							id={'contractTab-btn'} 
+							id={'submit-contract-btn'} 
 							classes={'button__outlined button__accent'}
 							name="Submit to Network"
 							height={'42px'}

@@ -1,25 +1,12 @@
-const whitelabel = require('../../../../whitelabel.json')
-
 const assert = require('assert');
 const {Builder, By, until} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 const helpers = require('../../../helpers/helpers')
 let config = require("../../../config/config")
 let walletInfo = require("../../../fixtures/walletInfo.js")
-let swapInfo = require("../../../fixtures/swapInfo")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath},${config.metamaskPath}`);
-[
-"306bcf60c74240069d56e04a6516f5fe",
-"eth_address",
-"0x00eB12f5C96B15001bf8f32bEEd970d178719AcC",
-"lamden_address",
-"18ac67698921dc56fe60ca264e4dd162774be91486743d8a67c810a6dffa60a5",
-"eth_tx_hash",
-"0x6ca100eea7f4bfa8bd86f3b272bf5c806eb5d330c0a0ec34f74dce0b19c2d510",
-"lamden_tx_hash",
-]
 
 describe('Complete A Lamden Wallet Token Swap', function () {
     let driver;
@@ -31,7 +18,7 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    //after(() => driver && driver.quit());
+    after(() => driver && driver.quit());
 
     it('Setup Metamask', async function() {
         await helpers.setupMetamask(driver, false);
@@ -149,11 +136,14 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await popupConfim_Buttom.click()
         await helpers.sleep(2000)
         await helpers.switchWindow(driver, 0) 
+
+        let ethAddress = await driver.wait(until.elementLocated(By.id("eth-address")), 20000);
+        let address = await ethAddress.getAttribute("text")
+        assert.equal(address, config.metamaskAddress);
+
         let continue_Button = await driver.findElement(By.id('continue-btn'))
         await continue_Button.getAttribute('disabled').then(disabled => {
             assert.equal(disabled, null);
         })
-        await continue_Button.click()
-
     });
 })

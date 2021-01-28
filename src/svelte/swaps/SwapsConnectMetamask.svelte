@@ -197,8 +197,8 @@ strong{
         {/if}
         {#if address !== ''}
             <span class="text-body2">{`ETH Address `}
-            <a  href={`${blockExplorerURL}/address/${address}`} 
-                class="text-body2 text-link " target="_blank" rel="noopener noreferrer">{` ${address}`}
+            <a id="eth-address" href={`${blockExplorerURL}/address/${address}`} 
+                class="text-body2 text-link " target="_blank" rel="noopener noreferrer">{`${address}`}
             </a></span>
         {/if}
         {#if errorMsg !== ''}

@@ -77,10 +77,7 @@
 
 .time{
     margin-right: 20px;
-}
-
-.nickname{
-    min-width: fit-content;
+    color: var(--color-grey-3);
 }
 
 .info-box{

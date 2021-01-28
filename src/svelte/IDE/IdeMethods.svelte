@@ -81,7 +81,7 @@
             <div class="flex-row name-row">
                 <h3>{method.name}</h3>
                 <button class="button__small button__primary run-button text-body3"
-						click={() => handleRun(methodIndex)}>run</button>
+						on:click={() => handleRun(methodIndex)}>run</button>
             </div>
 
             {#if method.arguments}
