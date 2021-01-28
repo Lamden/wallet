@@ -15,6 +15,9 @@
 	//Context
     const { closeModal } = getContext('app_functions');
     const { nextPage, setMessage, detailsPage } = getContext('coinadd_functions');
+
+    //Props
+    export let selected;
     
     //DOM NODES
     let formObj, privateKeyObj, publicKeyObj, nicknameObj
@@ -204,3 +207,4 @@
             <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" type="submit" value="Save">
         </div>
 </form>
+{JSON.stringify(selected)}
