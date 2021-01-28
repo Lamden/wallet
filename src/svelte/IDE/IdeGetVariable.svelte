@@ -40,7 +40,7 @@
     <div class="flex-row heading">
         <h2>Get Current State</h2>
         <button class="button__small button__primary run-button text-body3"
-			click={() => handleRun()}>run</button>
+			on:click={() => handleRun()}>run</button>
     </div>
     <InputBox
         on:changed={(e) => {variableName = e.detail.target.value}}

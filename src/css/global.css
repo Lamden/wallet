@@ -591,8 +591,7 @@ input.submit-button:disabled{
     background-color: unset;
     border: unset;
     border: 1px solid var(--font-primary);
-    background: var(--button-outlined-background);
-
+    background-color: var(--color-grey-2);
     border-radius: 4px;
     color: var(--font-primary);
     padding: 13px 8px 13px 12px;
@@ -629,6 +628,7 @@ input.submit-button:disabled{
 }
 
 .button__outlined.button__overlay {
+    background: var(--button-outlined-background);
     color: var(--font-overlay);
     border: 1px solid var(--overlay-color);
 }
@@ -738,7 +738,7 @@ input.submit-button:disabled{
 }
 
 .run-button{
-    padding: 2px 5px;
+    padding: 2px 5px 3px;
     margin: 0 0 0 10px;
 }
 
