@@ -54,6 +54,9 @@ p#results-message{
     font-size: 24px;
     font-weight: 300;
 }
+h3#results-subtitle{
+    color: var(--font-primary-dim);
+}
 
 </style>
 

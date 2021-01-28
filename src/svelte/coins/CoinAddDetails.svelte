@@ -36,7 +36,7 @@
         ]
 
     $: optionsList = [
-        {name: "Account", value: "account"},
+        {name: "Account", value: {name: 'Lamden', symbol: 'TAU', contract: 'currency', network: 'lamden'}},
         {name: "Token", value: "token"}
     ]
     $: selected = "token"
@@ -68,11 +68,12 @@
         on:selected={handleSelection}
     />
     {#if selected}
-        {#if selected === "account"}
-            <CoinAddAccount />
-        {/if}
+
         {#if selected === "token"}
             <CoinAddToken />
+        {:else}
+            <CoinAddAccount {selected}/>
         {/if}
     {/if}
+    {JSON.stringify(selected)}
 </div>
