@@ -133,8 +133,8 @@ export const dappController = (utils, actions) => {
     
     const rejectTx = (sender) => {
         const confirmData = txToConfirm[getSenderHash(sender)]
-        const { txInfo }  = confirmData.messageData.txData
-        utils.sendMessageToTab(confirmData.url, 'txStatus', {status: 'Transaction Cancelled', errors: ['User closed Popup window'], rejected: JSON.stringify(txInfo) })
+        const { txData }  = confirmData.messageData
+        utils.sendMessageToTab(confirmData.url, 'txStatus', {status: 'Transaction Cancelled', errors: ['User closed Popup window'], rejected: JSON.stringify(txData) })
         delete txToConfirm[getSenderHash(sender)]
     }
     
