@@ -50,7 +50,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
-    "lamden-js": "^1.5.1",
+    "lamden-js": "^1.5.7",
     "metamask-extension-provider": "^2.0.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",

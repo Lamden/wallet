@@ -61,6 +61,7 @@
 
 		editor.onMouseUp((e)=>{
 			if (e.target.element.className.includes("import-contract")  && crtlDown) {
+				console.log(e.target.element)
 				let contractName = e.target.element.innerText;
 				checkContractExists(contractName, {callback: addTab})
 			}
@@ -169,7 +170,7 @@
 		importList = [];
 		importErrors = [];
 		if (!checkedContracts[$currentNetwork.name]) checkedContracts[$currentNetwork.name] = {};
-		const position = editor.getModel().findMatches(/import\s*(\w*)/, true, true, true, null, true);
+		const position = editor.getModel().findMatches(/import \s*(\w*)/, true, true, true, null, true);
 		position.map(match =>{
 			let contractName = match.matches[1]
 			if (!CacheStore.contractExists(contractName, $currentNetwork)){

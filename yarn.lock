@@ -3789,10 +3789,10 @@
   "resolved" "https://registry.npmjs.org/kind-of/-/kind-of-6.0.3.tgz"
   "version" "6.0.3"
 
-"lamden-js@^1.5.1":
-  "integrity" "sha512-+FQ7I8DDm7OB1VDhQe5IOgA0E/hMqNlfhojgATOiF4mDTMAFU/CK9gQrGouNIj2cCZ9Y1NYlAdej4tV8iqskHA=="
-  "resolved" "https://registry.npmjs.org/lamden-js/-/lamden-js-1.5.1.tgz"
-  "version" "1.5.1"
+"lamden-js@^1.5.7":
+  "integrity" "sha512-Ds2LBMA15dBBwXJ89g5I+l6nXxo+30jZVKPAG2YnrGbMWbQncvNqNpnk0mBtmuV5+aVP6DArEPWutUP7XcvQVw=="
+  "resolved" "https://registry.npmjs.org/lamden-js/-/lamden-js-1.5.7.tgz"
+  "version" "1.5.7"
   dependencies:
     "assert" "1.4.1"
     "bignumber.js" "^9.0.0"

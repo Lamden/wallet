@@ -67,6 +67,7 @@
                 return
             }
             let exists = await $currentNetwork.API.contractExists(contractNameField.value)
+            console.log(exists)
             if (exists){
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return
