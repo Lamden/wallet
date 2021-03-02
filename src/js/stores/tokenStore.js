@@ -87,7 +87,7 @@ export const tokensDropDown = derived(TokenStore, ($TokenStore) => {
     $TokenStore.map(token => {
         returnList.push({
             value: token,
-            name: `${token.tokenSymbol} ${token.tokenName}`,
+            name: `${token.token_symbol} ${token.token_name}`,
             selected: false
         })
     })

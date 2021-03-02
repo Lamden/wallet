@@ -2,6 +2,14 @@ export const tokenController = (utils, actions) => {
     let tokens = {};
     let token_balances = {};
 
+    const LST002_RS_TOKEN_METADATA = [
+        'token_name',
+        'token_symbol',
+        'token_logo_url',
+        'token_logo_base64_svg',
+        'token_logo_base64_png'
+    ]
+
     chrome.storage.local.get({
         "tokens": {}, 
         "token_balances": {}
@@ -23,7 +31,7 @@ export const tokenController = (utils, actions) => {
             if (callback) callback(false)
             return false
         }
-        if (!tokenMethodsAreValid(contractInfo.methods)) {
+        if (!enforce_LST001_methods(contractInfo.methods)) {
             if (callback) callback(false)
             return false
         }
@@ -33,7 +41,7 @@ export const tokenController = (utils, actions) => {
             return false
         }
         */
-        if (!tokenHashesAreValid(contractInfo.hashes)) {
+        if (!enforce_LST001_hashes(contractInfo.hashes)) {
             if (callback) callback(false)
             return false
         }
@@ -41,7 +49,7 @@ export const tokenController = (utils, actions) => {
         return true
     }
 
-    const tokenMethodsAreValid = (contractMethods) => {
+    const enforce_LST001_methods = (contractMethods) => {
         const requiredMethods = {
             "transfer": {
                 "amount": "float",
@@ -50,13 +58,6 @@ export const tokenController = (utils, actions) => {
             "approve":{
                 "amount": "float",
                 "to": "str"
-            },
-            "allowance": {
-                "owner": "str",
-                "spender": "str"
-            },
-            "balance_of":{
-                "account":"str"
             },
             "transfer_from":{
                 "amount": "float",
@@ -99,7 +100,7 @@ export const tokenController = (utils, actions) => {
 
     }
 */
-    const tokenHashesAreValid = (contractHashes) => {
+    const enforce_LST001_hashes = (contractHashes) => {
         const requiredHashes = ["balances"]
         let validateHashes = requiredHashes.map(hashName => contractHashes.includes(hashName))
         return validateHashes.every((val) => val === true)
@@ -107,7 +108,6 @@ export const tokenController = (utils, actions) => {
 
     const getContractInfo = async (contractName) => {
         let network = utils.networks.getCurrent()
-
         let contractInfo = await network.API.getContractInfo(contractName)
         if (contractInfo.error) return false
         let contractDetails = await Promise.all([
@@ -120,21 +120,36 @@ export const tokenController = (utils, actions) => {
 
     const getTokenMeta = async (contractName, callback = undefined) => {
         let contractInfo = await getContractInfo(contractName)
-        const meta = {
-            tokenSymbol: await getTokenMetaValue(contractName, "token_symbol"),
-            tokenName: await getTokenMetaValue(contractName, "token_name"),
-            logo_base64_svg: contractInfo.variables.includes("token_base64_svg") ? await getTokenMetaValue(contractName, "token_base64_svg", "") : undefined,
-            logo_base64_png: contractInfo.variables.includes("token_base64_png") ? await getTokenMetaValue(contractName, "token_base64_png", "") : undefined,
-            logo_url: contractInfo.variables.includes("token_logo_url") ? await getTokenMetaValue(contractName, "token_logo_url", undefined) : undefined
+        if (!contractInfo.hashes.includes("metadata")) {
+            if (callback) callback(false)
+            return false
         }
+
+        let metaKeys = LST002_RS_TOKEN_METADATA.map(metaItem => {
+            return{
+                contractName: contractName,
+                variableName: "metadata",
+                key: metaItem
+            }
+        })
+        let tokenMeta = await getTokenMetaValues(metaKeys)
+        let meta = {}
+        tokenMeta.map(metaItem => {
+            let metaItemKey = metaItem.key.split(":")[1]
+            if (metaItemKey === "token_name") metaItemKey = "tokenName"
+            if (metaItemKey === "token_symbol") metaItemKey = "tokenSymbol"
+            if (metaItemKey === "token_logo_base64_svg") metaItemKey = "logo_base64_svg"
+            if (metaItemKey === "token_logo_base64_png") metaItemKey = "logo_base64_png"
+            if (metaItemKey === "token_logo_url") metaItemKey = "logo_url"
+            meta[metaItemKey] = metaItem.value
+        })
         if (callback) callback(meta)
         return meta
     }
 
-    const getTokenMetaValue = async (contractName, value, defaultValue = undefined) => {
+    const getTokenMetaValues = async (metaKeys) => {
         let network = utils.networks.getCurrent()
-        let res = await network.API.getVariable(contractName, value)
-        if (!res) return defaultValue
+        let res = await network.blockExplorer_API.getKeys(metaKeys)
         return res
     }
 
