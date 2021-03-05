@@ -169,7 +169,7 @@
 		importList = [];
 		importErrors = [];
 		if (!checkedContracts[$currentNetwork.name]) checkedContracts[$currentNetwork.name] = {};
-		const position = editor.getModel().findMatches(/import\s*(\w*)/, true, true, true, null, true);
+		const position = editor.getModel().findMatches(/import \s*(\w*)/, true, true, true, null, true);
 		position.map(match =>{
 			let contractName = match.matches[1]
 			if (!CacheStore.contractExists(contractName, $currentNetwork)){

@@ -53,7 +53,6 @@ const decryptStrHash = ( password, encryptedString ) => {
         const decrypted = CryptoJS.AES.decrypt(encryptedString, password);
         return CryptoJS.enc.Utf8.stringify(decrypted) === '' ? false : CryptoJS.enc.Utf8.stringify(decrypted);
     } catch (e) {
-        console.log(e)
         return false;
     }
 };
@@ -82,7 +81,6 @@ const decryptObject = ( password, objString )  => {
         const decrypt = CryptoJS.AES.decrypt(objString, password, { format: JsonFormatter })
         return JSON.parse(CryptoJS.enc.Utf8.stringify(decrypt));
     } catch (e){
-        console.log(e)
         return false;
     }
 };
@@ -246,28 +244,6 @@ const getKeyValue = async (networkObj, contractName, variableName, key, format =
     return response
 }
 
-const stringToFixed = (value, precision) => {
-    if (!value) return "0.0"
-    try {
-      var values = value.split('.')
-    } catch {
-      var values = value.toString().split('.')
-    }
-    if (!values[1]) return value
-    else {
-      if (values[1].length < precision) precision = values[1].length
-      let decValue = parseInt(values[1].substring(0, precision))
-      if (decValue === 0) return `${values[0]}`
-      else {
-        let decimals = values[1].substring(0, precision)
-        for (let i = precision - 1; i >= 0; i--) {
-          if (decimals[i] === '0') precision -= 1
-          else i = -1
-        }
-        return `${values[0]}.${values[1].substring(0, precision)}`
-      }
-    }
-}
 const displayBalanceToFixed = (value, precision) => displayBalance(stringToFixed(value, precision))
 
 const getTokenTotalBalance = (netKey, contractName, tokenBalanceTotals) => {
@@ -364,6 +340,30 @@ const getLogoFromURL = async (tokenInfo, MAX_IMAGE_SIZE) => {
         delete tokenInfo.logo_url
         return tokenInfo
     }
+}
+
+const stringToFixed = (value, precision) => {
+	if (Encoder.BigNumber.isBigNumber(value) && precision ) value = value.toFixed(precision)
+	if (!value) return "0.0"
+		try {
+			var values = value.split('.')
+		} catch {
+			var values = value.toString().split('.')
+		}
+		if (!values[1]) return value
+		else {
+			if (values[1].length < precision) precision = values[1].length
+				let decValue = parseInt(values[1].substring(0, precision))
+			if (decValue === 0) return `${values[0]}`
+			else {
+				let decimals = values[1].substring(0, precision)
+				for (let i = precision - 1; i >= 0; i--) {
+					if (decimals[i] === '0') precision -= 1
+					else i = -1
+			}
+			return `${values[0]}.${values[1].substring(0, precision)}`
+		}
+	}
 }
 
 module.exports = {

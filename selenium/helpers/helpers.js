@@ -341,7 +341,7 @@ const setupMetamask = async (driver, kovan = true) => {
         await driver.findElement(By.className("popover-header__button")).click()
     }catch(e){}
     if (kovan){
-        await driver.findElement(By.xpath("//div[@title='Ethereum Mainnet']")).click()
+        await driver.findElement(By.className("network-display")).click()
         await driver.findElement(By.xpath("//span[contains(text(),'Kovan Test Network')]")).click()
     }
 }

@@ -207,4 +207,3 @@
             <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" type="submit" value="Save">
         </div>
 </form>
-{JSON.stringify(selected)}

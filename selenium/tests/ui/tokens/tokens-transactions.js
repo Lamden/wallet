@@ -32,14 +32,14 @@ const whitelabel = require('../../../../whitelabel.json')
     
         context('test-setup', function() {
             it('Add a token to wallet, for testing', async function() {
-                let token = tokenInfo.evil_frosty
+                let token = tokenInfo.token_1_svg
                 await tokenHelpers.addToken(driver, token)
             })
         })
 
         context('token transfer', function() {
             it('Fills in the appropriate Transaction details', async function() {
-                let token = tokenInfo.evil_frosty
+                let token = tokenInfo.token_1_svg
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
                 await tokenHelpers.validateTransacationFormDetails(driver, token, 'transfer')
@@ -50,7 +50,7 @@ const whitelabel = require('../../../../whitelabel.json')
     
         context('token approve', function() {
             it('Can send an approve transaction', async function() {
-                let token = tokenInfo.evil_frosty
+                let token = tokenInfo.token_1_svg
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('approve-token-btn')), 5000).click();
                 await tokenHelpers.validateTransacationFormDetails(driver, token, 'approve')

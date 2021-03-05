@@ -75,5 +75,4 @@
             <CoinAddAccount {selected}/>
         {/if}
     {/if}
-    {JSON.stringify(selected)}
 </div>

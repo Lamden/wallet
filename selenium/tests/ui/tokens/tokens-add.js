@@ -31,7 +31,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
 
     context('add tokens', function() {
         it('Can add a token with svg icon from contract', async function() {
-            let token = tokenInfo.evil_frosty
+            let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
@@ -40,7 +40,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can add a token with png icon from contract', async function() {
-            let token = tokenInfo.valentine_token
+            let token = tokenInfo.token_2_png
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
@@ -49,7 +49,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can add a token with url icon from contract', async function() {
-            let token = tokenInfo.protection
+            let token = tokenInfo.token_3_url
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
@@ -59,7 +59,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Displays placeholder token icon if no icon found in contract or uploaded', async function() {
-            let token = tokenInfo.jeff_token
+            let token = tokenInfo.token_4_placeholder
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
@@ -68,7 +68,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can change Token Name from what was taken from contract', async function() {
-            let token = tokenInfo.lama_token
+            let token = tokenInfo.token_5_svg
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             token.tokenName = 'Super Token'
@@ -76,7 +76,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can change Token Symbol from what was taken from contract', async function() {
-            let token = tokenInfo.archer_token
+            let token = tokenInfo.token_6_svg
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             token.tokenSymbol = 'SUPER'
@@ -87,13 +87,13 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
 
     context('add tokens - negative', function() {
         it('Will display error in inputbox if token already added', async function() {
-            let token = tokenInfo.evil_frosty
+            let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)
             await tokenHelpers.validateInputError(driver, "Token already in Wallet")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
-        it('Will display error in inputbox token contract is invalid', async function() {
+        it('Will display error in inputbox if token contract is invalid', async function() {
             let token = tokenInfo.invalid_token_contract
             await tokenHelpers.addToken_ShowDetails(driver, token)
             await helpers.sleep(4000)

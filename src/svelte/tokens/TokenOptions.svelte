@@ -125,7 +125,11 @@ p{
                 class:options-box-grey={ option.color === 'grey'}
                 class:options-box-primary={ option.color === 'primary'}
                 on:click={option.click}>
-                <svelte:component this={option.iconComponent} width="20px" color="var(--color-white)"/>
+                <svelte:component 
+                    this={option.iconComponent} 
+                    width="20px" 
+                    color={option.color === "primary" ? "var(--color-white)" : "var(--font-primary)"}
+                />
                 <div class="option-name text-subtitle2">{option.name}</div>
                 <div class="option-desc text-caption">{option.desc}</div>
             </div>
