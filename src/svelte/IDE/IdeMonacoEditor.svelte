@@ -61,7 +61,6 @@
 
 		editor.onMouseUp((e)=>{
 			if (e.target.element.className.includes("import-contract")  && crtlDown) {
-				console.log(e.target.element)
 				let contractName = e.target.element.innerText;
 				checkContractExists(contractName, {callback: addTab})
 			}

@@ -16,7 +16,6 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
-            console.log(response)
             message = response.status
             if (message === "Transaction cancelled by user") {
                 setTimeout(home, 1500);
@@ -30,7 +29,6 @@
 
     const txStatus = (message, sender, sendResponse) => {
         if (message.type === "txStatus"){
-            console.log(message)
             if (typeof message.data.resultInfo !== 'undefined'){
                 if (message.data.resultInfo.title !== "Transaction Pending"){
                     dispatch('txResult', message.data)

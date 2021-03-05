@@ -32,13 +32,13 @@ describe('Testing Token Integration - Edit Token Info', function () {
 
     context('test-setup', function() {
         it('Add a token to wallet, for testing', async function() {
-            let token = tokenInfo.evil_frosty
+            let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken(driver, token)
         })
     })
 
     context('tokens options', function() {
-        let frostyToken = JSON.parse(JSON.stringify(tokenInfo.evil_frosty))
+        let frostyToken = JSON.parse(JSON.stringify(tokenInfo.token_1_svg))
         it('Will display all information from internal storage', async function() {
             await tokenHelpers.gotoTokenDetails(driver, frostyToken)
             await tokenHelpers.gotoTokenOptions(driver)
@@ -98,7 +98,7 @@ describe('Testing Token Integration - Edit Token Info', function () {
             await tokenHelpers.gotoTokenOptions(driver)
             await helpers.sleep(500, true)
             await tokenHelpers.refreshTokenInfoButton(driver)
-            frostyToken = tokenInfo.evil_frosty 
+            frostyToken = tokenInfo.token_1_svg 
             await tokenHelpers.validateTokenName(driver, frostyToken)
             await tokenHelpers.validateTokenSymbol(driver, frostyToken)
             await tokenHelpers.validateTokenLogo(driver, frostyToken)

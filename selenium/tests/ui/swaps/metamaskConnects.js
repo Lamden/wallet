@@ -63,18 +63,18 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.executeScript(`document.getElementById('permanent_establishment_in_switzerland_1').click()`)
 
         let acceptTermsButton = await driver.findElement(By.id('accept-terms-btn'))
-        acceptTermsButton.getAttribute('disabled').then(disabled => {
-            assert.equal(disabled, 'true');
-
+        await acceptTermsButton.getAttribute('disabled').then(async (disabled) => {
+            assert.equal(disabled, null);
+            await acceptTermsButton.click()
         })
-        acceptTermsButton.click()
+
     });
     it('Renders SwapsDisclaimer_TokenExchange.svelte', async function() {
-        let pageID = await driver.findElement(By.id('swap_exchangeOffer'))
-        assert.equal(typeof pageID !== 'undefined', true);
-        await driver.findElement(By.id('proceed-btn')).getAttribute('disabled').then(disabled => {
-            assert.equal(disabled, 'true');
-        })
+            await driver.wait(until.elementLocated(By.id('swap_exchangeOffer')), 5000)
+            await driver.findElement(By.id('proceed-btn')).getAttribute('disabled').then(disabled => {
+                assert.equal(disabled, 'true');
+            })
+            await helpers.sleep(500, true)
     });
     it('SwapsDisclaimer_TokenExchange: Can scroll legal, checkbox and click button ', async function() {
         await driver.executeScript(`document.getElementById('accept-offer-chk').click()`)
@@ -82,12 +82,12 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await helpers.sleep(300, true)
         await driver.executeScript(`document.getElementById('accept-offer-chk').click()`)
 
-        let proceedButton = await driver.findElement(By.id('proceed-btn'))
-        proceedButton.getAttribute('disabled').then(disabled => {
-            assert.equal(disabled, 'false');
-
+        let proceedButton = driver.wait(until.elementLocated(By.id('proceed-btn')), 5000)
+        await proceedButton.getAttribute('disabled').then(async (disabled) => {
+            assert.equal(disabled, null);
+            await proceedButton.click()
         })
-        proceedButton.click()
+        await helpers.sleep(500, true)
     });
     it('Renders SwapsDisclaimer_ExchangeTerms.svelte', async function() {
         let pageID = await driver.findElement(By.id('swap_exchangeTerms'))
@@ -95,6 +95,7 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.findElement(By.id('proceed-btn')).getAttribute('disabled').then(disabled => {
             assert.equal(disabled, 'true');
         })
+        await helpers.sleep(500, true)
     });
     it('SwapsDisclaimer_ExchangeTerms: Can scroll legal, checkbox and click button ', async function() {
         await driver.executeScript(`document.getElementById('accept-terms-chk').click()`)
@@ -103,15 +104,14 @@ describe('Complete A Lamden Wallet Token Swap', function () {
         await driver.executeScript(`document.getElementById('accept-terms-chk').click()`)
 
         let proceedButton = await driver.findElement(By.id('proceed-btn'))
-        proceedButton.getAttribute('disabled').then(disabled => {
-            assert.equal(disabled, 'false');
-
+        await proceedButton.getAttribute('disabled').then(async (disabled) => {
+            assert.equal(disabled, null);
+            await proceedButton.click()
         })
-        proceedButton.click()
         await helpers.sleep(500, true)
     });
     it('Renders SwapsChooseLamden.svelte', async function() {
-        let continue_Button = await driver.findElement(By.id('continue-btn'))
+        let continue_Button = driver.wait(until.elementLocated(By.id('continue-btn')), 5000)
         await continue_Button.getAttribute('disabled').then(disabled => {
             assert.equal(disabled, 'true');
         })

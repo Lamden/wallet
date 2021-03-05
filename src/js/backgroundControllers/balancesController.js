@@ -48,45 +48,51 @@ export const balancesController = (utils) => {
         })
     }
 
+    const processBalance = (balance, account) => {
+        let amount = utils.getValueFromReturn(balance.value)
+        return  {
+            'balance': amount || "0.0",
+            watchOnly: account.sk === "watchOnly"
+        }
+    }
+
     const processBalances = (balances, accountList) => {
         let newBalancesObj = {}
         balances.map(balance => {
             let vk = balance.key.split(":")[1]
-            let amount = utils.getValueFromReturn(balance.value)
-            let account = accountList.find(account => account.vk === vk)
-
-            newBalancesObj[vk] =  {
-                'balance': amount || "0.0",
-                watchOnly: account.sk === "watchOnly"
-            }
+            let accountInfo = accountList.find(account => account.vk === vk)
+            newBalancesObj[vk] = processBalance(balance, accountInfo)
         })
         return newBalancesObj;
     }
 
     const getUpdate = async (account, network) => {
         const vk = account.vk;
-        const watchOnly = account.sk === "watchOnly"
-        let newBalance = await network.API.getCurrencyBalance(vk).then(res => utils.removeTrailingZeros(res.toFixed(8)))   
+        let keyToGet =  {
+            contractName: 'currency',
+            variableName: "balances",
+            key: vk
+        }
+        let balance = await network.blockExplorer_API.getKeys([keyToGet])
+        let newBalanceInfo = processBalance(balance[0], account)
         let netKey = network.networkKey
+
         if (!balancesStore[netKey]) balancesStore[netKey] = {}
         if (!balancesStore[netKey][vk]){
             balancesStore[netKey][vk] = {}
-            balancesStore[netKey][vk].balance = newBalance
-            balancesStore[netKey][vk].watchOnly = watchOnly
+            balancesStore[netKey][vk] = newBalanceInfo
             return true;
         }else{
             const currentBalance = balancesStore[netKey][vk].balance
+            const newBalance = newBalanceInfo.balance
             if (currentBalance !== newBalance){
                 balancesStore[netKey][vk].balance = newBalance
-                balancesStore[netKey][vk].watchOnly = watchOnly
-                return true;
             }
-            if (balancesStore[netKey][vk].watchOnly !== watchOnly){
-                balancesStore[netKey][vk].watchOnly = watchOnly
-                return true;
+            if (balancesStore[netKey][vk].watchOnly !== newBalanceInfo.watchOnly){
+                balancesStore[netKey][vk].watchOnly = newBalanceInfo.watchOnly
             }
+            return true;
         }
-        return false
     }
 
     const setStore = (newValue) => {

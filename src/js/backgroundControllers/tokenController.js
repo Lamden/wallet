@@ -109,11 +109,11 @@ export const tokenController = (utils, actions) => {
     const getContractInfo = async (contractName) => {
         let network = utils.networks.getCurrent()
         let contractInfo = await network.API.getContractInfo(contractName)
+        if (!contractInfo) return false
         if (contractInfo.error) return false
         let contractDetails = await Promise.all([
             await network.API.getContractVariables(contractName),
-            await network.API.getContractMethods(contractName),
-
+            await network.API.getContractMethods(contractName)
         ])
         return Object.assign(contractInfo, contractDetails[0], {methods: contractDetails[1]})
     }
