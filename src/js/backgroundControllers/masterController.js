@@ -170,7 +170,7 @@ export const masterController = () => {
                     if (txInfo.contractName === "currency" && txInfo.methodName === "approve"){
                         approvalRequest = true;
                         //Hardcode the approved contract name into the approval request
-                        txInfo.kwargs.to = dappInfo[txInfo.networkType].contractName;
+                        //txInfo.kwargs.to = dappInfo[txInfo.networkType].contractName;
                     }else{
                         //Check if the provided contract Name differs from the approved one
                         // If so, then force the user to approve the transaction (ignoring auto tx settings)

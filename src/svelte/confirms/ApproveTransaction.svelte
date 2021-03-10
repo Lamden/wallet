@@ -38,15 +38,17 @@ p{
     width: 100%;
 }
 .approve-items .item{
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    align-items: center;
 }
 .approve-items .item_icon{
     min-width: 22px;
     height: 32px;
-    margin-right: 5px;
 }
 .approve-items .item_icon_size{
-    width: 30px;
+    width: 37px;
+    position: relative;
+    top: -4px;
 }
 .approve-items .item_value{
     max-width: 100%;
@@ -58,6 +60,10 @@ p{
 }
 .approve-items .item p {
     margin: 0 0 0.25px 0;
+}
+
+.item .item_info{
+        margin-left: 8px;
 }
 .kwargs {
     box-sizing: border-box;
@@ -112,20 +118,23 @@ a.help{
 </div>
 <div class="details flex-column">
     <div class="approve-items flex-column">
-        <div class="item flex-row">
-            <SmartContractIcon width="30px"/>
-            <div class="item_info flex-column">
-                <p class="text-body2 text-secondary">{`Smart Contract`}</p>
-                <p class="item_value text-body2">{txData.txInfo.contractName}</p>
-            </div>
-        </div>
+
         <div class="item flex-row">
             <div class="item_icon">
-                <NetworkIcon width="30px"/>
+                <NetworkIcon width="34px"/>
             </div>
             <div class="item_info flex-column">
                 <p class="text-body2 text-secondary">{`Network`}</p>
                 <p class="item_value text-body2">{confirmData.messageData.network.name}</p>
+            </div>
+        </div>
+        <div class="item flex-row">
+            <div class="item_icon item_icon_size">
+                <SmartContractIcon width="36px"/>
+            </div>
+            <div class="item_info flex-column">
+                <p class="text-body2 text-secondary">{`Smart Contract`}</p>
+                <p class="item_value text-body2">{txData.txInfo.contractName}</p>
             </div>
         </div>
         <div class="item flex-row">
@@ -149,22 +158,23 @@ a.help{
     </div>
     <div class="flex-column buttons ">
         <Button 
-            id={'deny-btn'}
+            id={'approve-btn'}
             classes={'button__solid button__primary'}
+            name="Approve"
+            width={'240px'}
+            height={'42px'}
+            margin={'0 0 0.5rem 0'}
+            click={approveTx} />
+        <Button 
+            id={'deny-btn'}
+            classes={'button__solid'}
             name="Deny"
             width={'240px'}
             height={'42px'}
             margin={'0 0 0.5rem 0'}
             click={close} />
 
-        <Button 
-            id={'approve-btn'}
-            classes={'button__solid'}
-            name="Approve"
-            width={'240px'}
-            height={'42px'}
-            margin={'0 0 0.5rem 0'}
-            click={approveTx} />
+
             <a class="text-link help" href={"https://docs.lamden.io/docs/wallet/accounts_linked_transfer"} rel="noopener noreferrer" target="_blank">what is this?</a>
     </div>
     
