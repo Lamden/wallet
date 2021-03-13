@@ -723,7 +723,7 @@
   "resolved" "https://registry.npmjs.org/aws4/-/aws4-1.11.0.tgz"
   "version" "1.11.0"
 
-"axios@^0.21.0":
+"axios@^0.21.1":
   "integrity" "sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA=="
   "resolved" "https://registry.npmjs.org/axios/-/axios-0.21.1.tgz"
   "version" "0.21.1"
@@ -1196,13 +1196,13 @@
   dependencies:
     "tslib" "^1.9.0"
 
-"chromedriver@^87.0.4":
-  "integrity" "sha512-kD4N/L8c0nAzh1eEAiAbEIq6Pn5TvGvckODvP5dPqF90q5tPiAJZCoWWSOUV/mrPxiodjHPfmNeOfGERHugzug=="
-  "resolved" "https://registry.npmjs.org/chromedriver/-/chromedriver-87.0.4.tgz"
-  "version" "87.0.4"
+"chromedriver@^89.0.0":
+  "integrity" "sha512-+DVYp3+m6tZUYTMl9fEgCZIDk9YBTcHws82nIV1JYwusu51zRITA0oeNzuPyFhuK7ageFnnKCDviH2BL5I4M0w=="
+  "resolved" "https://registry.npmjs.org/chromedriver/-/chromedriver-89.0.0.tgz"
+  "version" "89.0.0"
   dependencies:
     "@testim/chrome-version" "^1.0.7"
-    "axios" "^0.21.0"
+    "axios" "^0.21.1"
     "del" "^6.0.0"
     "extract-zip" "^2.0.1"
     "https-proxy-agent" "^5.0.0"
@@ -3789,10 +3789,10 @@
   "resolved" "https://registry.npmjs.org/kind-of/-/kind-of-6.0.3.tgz"
   "version" "6.0.3"
 
-"lamden-js@^1.5.8":
-  "integrity" "sha512-4BMh/CJEwNrBDaqdYOKJ6bK1AnKYm/TuNZJyA79FI/fbAAWm9xUHrVlUGX+GjyYF8fMOXelrkocYwlLEsWKxVQ=="
-  "resolved" "https://registry.npmjs.org/lamden-js/-/lamden-js-1.5.8.tgz"
-  "version" "1.5.8"
+"lamden-js@^1.6.1":
+  "integrity" "sha512-kygmn6esJIvgaxaFSoZCuBKaMJ3bMvIMaTVJ6qqRpE7go7hINuqJ7XQApEqk/AJzOD6mDSr4BhSlHinMGwuPQg=="
+  "resolved" "https://registry.npmjs.org/lamden-js/-/lamden-js-1.6.1.tgz"
+  "version" "1.6.1"
   dependencies:
     "assert" "1.4.1"
     "bignumber.js" "^9.0.0"
