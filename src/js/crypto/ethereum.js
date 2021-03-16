@@ -116,12 +116,16 @@ const sendApprovalTx = async (approvalFrom, approvalTo, tokenContract, amount ) 
     let approvalTx = contract.methods.approve(approvalTo, amountToWei)
 
     //Send Transfer
-    try{
-        let response =  await approvalTx.send({from: approvalFrom})
-        return response
-    }catch (e) {
-        return {error: e.message}
-    }
+    return await new Promise(resolver => {
+        try{
+            approvalTx.send({from: approvalFrom}).once('transactionHash', (hash) => {
+                resolver(hash)
+            })
+            .catch(e => resolver({error: e.message}))
+        }catch (e) {
+            resolver({error: e.message})
+        }
+    })
 }
 
 const sendSwapContractApproval = async (userEthAddress, amount) => {
@@ -151,12 +155,16 @@ const sendSwapTx = async (ethSenderAddress, tokenContract, amount, lamdenAddress
     let swap = contract.methods.swap(lamdenAddress, amountToWei)
     //Send Transfer
 
-    try{
-        let response =  await swap.send({from: ethSenderAddress})
-        return response
-    }catch (e) {
-        return {error: e.message}
-    }
+    return await new Promise(resolver => {
+        try{
+            swap.send({from: ethSenderAddress}).once('transactionHash', (hash) => {
+                resolver(hash)
+            })
+            .catch(e => resolver({error: e.message}))
+        }catch (e) {
+            resolver({error: e.message})
+        }
+    })
 }
 
 const sendSwapContractTx = async (ethAddress, amount, lamdenAddress) => {

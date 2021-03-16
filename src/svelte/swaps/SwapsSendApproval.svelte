@@ -16,14 +16,14 @@
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
 	//Utils
-	import { displayBalance } from '../../js/utils.js';
-
+	import { displayBalance, formatAccountAddress } from '../../js/utils.js';
 
     //Context
     const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse, setHasPreviousApproval } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
     let amount = 0;
+    let txHash;
 
     let hasApproval;
     let checkedhasApproval = false;
@@ -64,14 +64,40 @@
             errorMsg = ''
             sending = true
             chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: "100000000"}}, (response) => {
-                sending = false
                 if (typeof response.error === 'undefined') {
-                    metamaskTxResponse = response
+                    checkTxForResult()
                 } else {
-                    errorMsg = response.error
+                    errorAndFinish(response.error)
                 }
             })
         }
+    }
+
+    const checkTxForResult = () => {
+        chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: txHash}}, (response) => {
+            if (response === null) setTimeout(checkTxForResult, 10000)
+            else{
+                if (typeof response.error === 'undefined') {
+                    if (response.status === false){
+                        errorAndFinish("Transaction was reverted.")
+                    }else{
+                        if (response.blockNumber > 0){
+                            metamaskTxResponse = response
+                            sending = false;
+                        }else{
+                            errorAndFinish(response.error) 
+                        }
+                    }
+                } else {
+                    errorAndFinish(response.error)
+                }
+            }
+        })
+    }
+
+    const errorAndFinish = (error) => {
+        sending = false
+        errorMsg = error
     }
 
     const isChinese = () => {
@@ -108,6 +134,9 @@ p.text-body2{
 .grey{
     opacity: 0;
 }
+.tx-hash{
+    margin-bottom: 0.5rem;
+}
 .swap-details > p{
     white-space: nowrap;
     overflow: hidden;
@@ -119,7 +148,7 @@ p.text-body2{
 .swap-details > p > strong{
     font-weight: 500;
 }
-.text-warning{
+.do-not-close-margin{
     margin: 2rem 0 -0.5rem;
 }
 </style>
@@ -198,11 +227,11 @@ p.text-body2{
         {/if}
         {#if sending}
             <div style="position: absolute;">
-                <Loading message="Waiting for transaction to complete..."
-                     subMessage="check your MetaMask to confirm the transaction"
+                <Loading message={!txHash ? "Waiting for transaction to complete..." : "Submitted waiting for transaction to succeed."}
+                     subMessage={!txHash ? "check your MetaMask to confirm the transaction" : ""}
                      mainStyle="justify-content: flex-start;"
                 />
-                <p class="text-warning text-body1">DO NOT CLOSE THE WALLET</p>
+                <p class="text-warning text-body1 do-not-close-margin">DO NOT CLOSE THE WALLET</p>
                 <p class="text-body2">Depending on the congestion of the Ethereum network, and gas used, this could take a while.</p>
             </div>
         {/if}
@@ -211,6 +240,14 @@ p.text-body2{
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
                 <h3>{'Approved!'}</h3>
             </div>
+        {/if}
+        {#if txHash}
+            <p class="text-accent tx-hash-margin">Transaction Hash</p>
+            <a class="text-link" href="{`https://etherscan.io/tx/${txHash}`}" 
+                target="_blank" 
+                rel="noopener noreferrer">
+                    {`https://etherscan.io/tx/${formatAccountAddress(txHash,5,4)}`}
+            </a>
         {/if}
         {#if errorMsg !== ''}
             <div class="flex-column result">
