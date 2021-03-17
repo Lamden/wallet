@@ -65,6 +65,7 @@
             sending = true
             chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: "100000000"}}, (response) => {
                 if (typeof response.error === 'undefined') {
+                    txHash = response
                     checkTxForResult()
                 } else {
                     errorAndFinish(response.error)
@@ -136,7 +137,7 @@ p.text-body2{
     opacity: 0;
 }
 .tx-hash{
-    margin-bottom: 0.5rem;
+    font-size: 14px;
 }
 .swap-details > p{
     white-space: nowrap;
@@ -151,6 +152,7 @@ p.text-body2{
 }
 .do-not-close-margin{
     margin: 2rem 0 -0.5rem;
+    text-align: center;
 }
 </style>
 
@@ -161,6 +163,15 @@ p.text-body2{
         <p class="flow-text-box text-body1">
             {`Lamden requires access to your tokens to complete the swap process.`}
         </p>
+
+        {#if txHash}
+            <p class="text-bold text-accent tx-hash">Transaction Hash</p>
+            <a class="text-link" href="{`https://etherscan.io/tx/${txHash}`}" 
+                target="_blank" 
+                rel="noopener noreferrer">
+                    {`https://etherscan.io/tx/${formatAccountAddress(txHash,5,4)}`}
+            </a>
+        {/if}
 
         <div class="flex-column buttons">
             {#if sent || hasApproval}
@@ -241,14 +252,6 @@ p.text-body2{
                 <div class="circle-checkmark" in:fade="{{delay: 0, duration: 500}}">{@html circleCheck}</div>
                 <h3>{'Approved!'}</h3>
             </div>
-        {/if}
-        {#if txHash}
-            <p class="text-accent tx-hash-margin">Transaction Hash</p>
-            <a class="text-link" href="{`https://etherscan.io/tx/${txHash}`}" 
-                target="_blank" 
-                rel="noopener noreferrer">
-                    {`https://etherscan.io/tx/${formatAccountAddress(txHash,5,4)}`}
-            </a>
         {/if}
         {#if errorMsg !== ''}
             <div class="flex-column result">
