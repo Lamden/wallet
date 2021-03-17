@@ -117,6 +117,7 @@ import About from './misc/About.svelte';
 //Swaps
 import Swaps from './swaps/Swaps.svelte';
 import SwapsMain from './swaps/SwapsMain.svelte';
+import SwapsRecover from './swaps/SwapsRecover.svelte';
 import SwapsConnectMetamask from './swaps/SwapsConnectMetamask.svelte';
 import SwapsChooseLamden from './swaps/SwapsChooseLamden.svelte';
 import SwapsSendApproval from './swaps/SwapsSendApproval.svelte';
@@ -171,6 +172,7 @@ export const FirstRun = {
 };
 
 export const SwapsPages = { 
+    SwapsRecover,
     SwapsDisclaimer_Questions, SwapsDisclaimer_TokensExchange, SwapsDisclaimer_ExchangeTerms,
     SwapsConnectMetamask, 
     SwapsChooseLamden, 

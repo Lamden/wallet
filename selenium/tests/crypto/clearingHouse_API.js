@@ -25,7 +25,7 @@ describe('Testing Clearinghouse API Handler', function () {
     });
 
     after(() => driver && driver.quit());
-
+/*
     it('Setup Metamask Extention', async function() {
         await helpers.setupMetamask(driver);
         assert.equal(true, true);
@@ -76,7 +76,7 @@ describe('Testing Clearinghouse API Handler', function () {
         let txInfo = await driver.executeScript(`return await window.txResult;`)
         assert.equal(txInfo.status, true);
     })
-
+*/
     it('clearingHouseAPI.js: Can create a new class instance', function() {
         let error;
         try{

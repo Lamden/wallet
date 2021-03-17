@@ -49,8 +49,32 @@ const createSwapsStore = () => {
             SwapsStore.update(swapStore => {
                 if (!swapStore[netKey]) swapStore[netKey] = {}
                 //Set name and data in Settings store
-                if (!swapStore[netKey][eth_swap_txHash]) swapStore[netKey][eth_swap_txHash] = {
-                    created: new Date().toLocaleString(), swapInfo, eth_swap_txHash, eth_approval_txHash, lamdenAddress, amount, answers, status: 'started', errorMsg: ""
+                if (!swapStore[netKey][eth_swap_txHash]) {
+                    swapStore[netKey][eth_swap_txHash] = {
+                        created: new Date().toLocaleString(), 
+                        swapInfo, 
+                        eth_swap_txHash, 
+                        eth_approval_txHash, 
+                        lamdenAddress, 
+                        amount, 
+                        answers, 
+                        status: 'started', 
+                        errorMsg: ""
+                    }
+                }else{
+                    if (swapStore[netKey][eth_swap_txHash].status !== "success"){
+                        swapStore[netKey][eth_swap_txHash] = {
+                            created: new Date().toLocaleString(), 
+                            swapInfo, 
+                            eth_swap_txHash, 
+                            eth_approval_txHash, 
+                            lamdenAddress, 
+                            amount, 
+                            answers, 
+                            status: 'started', 
+                            errorMsg: ""
+                        }
+                    }
                 }
                 return swapStore;
             })

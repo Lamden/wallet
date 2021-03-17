@@ -167,8 +167,8 @@ export const transactionsController = (utils, actions) => {
     }
 
     const checkEthereumTxStatus = (data, callback = undefined) => {
-        const { hash } = data;
-        utils.Ethereum.checkTxStatus(hash).then(res => callback(res)) 
+        const { hash, contractType } = data;
+        utils.Ethereum.checkTxStatus(hash, contractType).then(res => callback(res)) 
         return true;
     }
 

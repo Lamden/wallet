@@ -16,14 +16,14 @@
     import iconErrorCircle from '../../img/menu_icons/icon_error-circle.svg'
 
 	//Utils
-	import { displayBalance } from '../../js/utils.js';
-
+	import { displayBalance, formatAccountAddress } from '../../js/utils.js';
 
     //Context
     const { changeStep, getEthAddress, getTokenBalance, getChainInfo, setMetamaskApprovalResponse, setHasPreviousApproval } = getContext('functions');
     const { switchPage } = getContext('app_functions');
 
     let amount = 0;
+    let txHash;
 
     let hasApproval;
     let checkedhasApproval = false;
@@ -36,7 +36,7 @@
 
     const nextPage = () => {
         if (!hasApproval) setMetamaskApprovalResponse(metamaskTxResponse)
-        changeStep(6)
+        changeStep(7)
     }
 
     onMount(() => {
@@ -64,14 +64,42 @@
             errorMsg = ''
             sending = true
             chrome.runtime.sendMessage({type: 'sendTokenApproval', data: { address: getEthAddress(), amount: "100000000"}}, (response) => {
-                sending = false
                 if (typeof response.error === 'undefined') {
-                    metamaskTxResponse = response
+                    txHash = response
+                    checkTxForResult()
                 } else {
-                    errorMsg = response.error
+                    errorAndFinish(response.error)
                 }
             })
         }
+    }
+
+    const checkTxForResult = () => {
+        chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: txHash, contractType: "erc20_approval"}}, (response) => {
+            if (response === null) setTimeout(checkTxForResult, 10000)
+            else{
+                if (typeof response.error === 'undefined') {
+                    if (response.status === false){
+                        errorAndFinish("Transaction was reverted.")
+                    }else{
+                        if (response.blockNumber > 0){
+                            metamaskTxResponse = response
+                            sending = false;
+                        }else{
+                            errorAndFinish(response.error) 
+                        }
+                    }
+                } else {
+                    if (response.error === "TxHash not found") setTimeout(checkTxForResult, 10000)
+                    else errorAndFinish(response.error)
+                }
+            }
+        })
+    }
+
+    const errorAndFinish = (error) => {
+        sending = false
+        errorMsg = error
     }
 
     const isChinese = () => {
@@ -108,6 +136,9 @@ p.text-body2{
 .grey{
     opacity: 0;
 }
+.tx-hash{
+    font-size: 14px;
+}
 .swap-details > p{
     white-space: nowrap;
     overflow: hidden;
@@ -119,8 +150,9 @@ p.text-body2{
 .swap-details > p > strong{
     font-weight: 500;
 }
-.text-warning{
+.do-not-close-margin{
     margin: 2rem 0 -0.5rem;
+    text-align: center;
 }
 </style>
 
@@ -131,6 +163,15 @@ p.text-body2{
         <p class="flow-text-box text-body1">
             {`Lamden requires access to your tokens to complete the swap process.`}
         </p>
+
+        {#if txHash}
+            <p class="text-bold text-accent tx-hash">Transaction Hash</p>
+            <a class="text-link" href="{`https://etherscan.io/tx/${txHash}`}" 
+                target="_blank" 
+                rel="noopener noreferrer">
+                    {`https://etherscan.io/tx/${formatAccountAddress(txHash,5,4)}`}
+            </a>
+        {/if}
 
         <div class="flex-column buttons">
             {#if sent || hasApproval}
@@ -198,11 +239,11 @@ p.text-body2{
         {/if}
         {#if sending}
             <div style="position: absolute;">
-                <Loading message="Waiting for transaction to complete..."
-                     subMessage="check your MetaMask to confirm the transaction"
+                <Loading message={!txHash ? "Waiting for transaction to complete..." : "Submitted waiting for transaction to succeed."}
+                     subMessage={!txHash ? "check your MetaMask to confirm the transaction" : ""}
                      mainStyle="justify-content: flex-start;"
                 />
-                <p class="text-warning text-body1">DO NOT CLOSE THE WALLET</p>
+                <p class="text-warning text-body1 do-not-close-margin">DO NOT CLOSE THE WALLET</p>
                 <p class="text-body2">Depending on the congestion of the Ethereum network, and gas used, this could take a while.</p>
             </div>
         {/if}

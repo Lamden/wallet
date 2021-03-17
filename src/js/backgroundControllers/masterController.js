@@ -263,6 +263,31 @@ export const masterController = () => {
         return false
     }
 
+    const checkSwapSeenHashes = (data, callback = undefined) => {
+        const { hash } = data;
+        let network = utils.networks.getLamdenNetwork('mainnet')
+        let keyInfo = {
+            contractName: 'con_token_swap',
+            variableName: "seen_hashes",
+            key: hash
+        }
+        let lookupKeyStr = `${keyInfo.contractName}.${keyInfo.variableName}:${keyInfo.key}`
+        network.blockExplorer_API.getKeys([keyInfo]).then(res => {
+            if (!res || !Array.isArray(res)){
+                callback(null)  
+                return
+            }
+            
+            let returnedValue = res.find(kvp => kvp.key === lookupKeyStr)
+            if (returnedValue){
+                callback(returnedValue.value)     
+            }else{
+                callback(null)
+            }
+        })
+        return true;
+    }
+
     return{
         "accounts" : {
             walletIsLocked: accounts.walletIsLocked,
@@ -323,6 +348,7 @@ export const masterController = () => {
         getWalletInfo,
         initiateAppTxSend,
         initiateDAppTxSend,
-        promptApproveDapp
+        promptApproveDapp,
+        checkSwapSeenHashes
     }
 }

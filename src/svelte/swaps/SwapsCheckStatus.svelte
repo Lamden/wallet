@@ -39,7 +39,7 @@
     const checkEthTxStatus = () => {
         if (!success){
             checking = true
-            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash("approval") }}, (response) => {
+            chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: getTxHash("approval"), contractType: "erc20_approval" }}, (response) => {
                 if (typeof response.status !== 'undefined'){
                     if (response.status){
                         success = true;

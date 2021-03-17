@@ -5,7 +5,11 @@
         "expectedAmount": "0.0000001"
     },
     "checkTxStatus" : {
-      "successfulTx": "0x126bd4480168b40e3e9a19a32b9eec0fb2c4e7696974d2c27db8850971ad6b3e",
+      "successfulTx": {
+        "hash": "0xe85da91c37d42fb0c4261298c6a092d102525282bf5ca541e2c99bed6b3199cd",
+        "receiver":"6a91a9a65eb80829a360efc0555cad8841af64c78375bbf394f6ecb89d5644ee",
+        "amount": "10000000000"
+      },
       "failedTx": "0xb23d37386a995802a8e01fa50df960d405d69e0abf4da9fc38e5a7f67b3f70de"
     },
     "lamdenAddress": "6a91a9a65eb80829a360efc0555cad8841af64c78375bbf394f6ecb89d5644ee",
