@@ -220,17 +220,15 @@ const balanceOfTAU = async (userEthAddress) => {
 }
 
 const checkTxStatus = async (txHash, contractType) => {
-    console.log({txHash, contractType})
     let web3 = getWeb3();
     try{
         let response =  await web3.eth.getTransactionReceipt(txHash)
-        console.log({response})
         if (contractType === "swap"){
             let logItem = response.logs.filter(log => log.topics.length === 1)[0]
             response.swapdata = web3.eth.abi.decodeLog(swapInputs, logItem.data, logItem.topics);
         }
         return response
-    } catch (e) {console.log(e)}
+    } catch (e) {}
     return {error: 'TxHash not found'}
 }
 

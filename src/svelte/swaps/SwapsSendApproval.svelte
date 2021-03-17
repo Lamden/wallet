@@ -36,7 +36,7 @@
 
     const nextPage = () => {
         if (!hasApproval) setMetamaskApprovalResponse(metamaskTxResponse)
-        changeStep(6)
+        changeStep(7)
     }
 
     onMount(() => {
@@ -89,7 +89,8 @@
                         }
                     }
                 } else {
-                    errorAndFinish(response.error)
+                    if (response.error === "TxHash not found") setTimeout(checkTxForResult, 10000)
+                    else errorAndFinish(response.error)
                 }
             }
         })

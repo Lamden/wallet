@@ -42,7 +42,7 @@
 
     const nextPage = () => {
         setSwapInfo(metamaskInfo)
-        changeStep(5)
+        changeStep(6)
     }
 
     const connectMetaMask = () => {

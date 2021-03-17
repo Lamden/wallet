@@ -66,9 +66,6 @@
                     name={"Select Account"}
                     disabled={typeof selectedWallet === 'undefined'}
                     click={nextPage} />
-                        <div class="flow-text-box text-body1 text-primary text-accent">
-            {`Click `}
-        </div>
             <Button id={'continue-btn'}
                     classes={'button__solid button__primary'}
                     styles={'margin-bottom: 16px;'}
