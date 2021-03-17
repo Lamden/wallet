@@ -30,7 +30,11 @@
 
     const nextPage = () => {
         setLamdenWallet(selectedWallet)
-        changeStep(4)
+        changeStep(5)
+    }
+
+    const gotoRecover = () => {
+        changeStep(3) 
     }
     
 </script>
@@ -50,6 +54,10 @@
             {`Pick the Account we should send the Lamden ${currentNetwork.currencySymbol} to.`}
         </div>
 
+        <div class="flow-text-box text-body1 text-primary text-accent">
+            {`Have a failed swap? Click the RECOVER FAILED SWAP button to restart it.`}
+        </div>
+
         <div class="flex-column flow-buttons">
             <Button id={'continue-btn'}
                     classes={'button__solid button__primary'}
@@ -58,6 +66,15 @@
                     name={"Select Account"}
                     disabled={typeof selectedWallet === 'undefined'}
                     click={nextPage} />
+                        <div class="flow-text-box text-body1 text-primary text-accent">
+            {`Click `}
+        </div>
+            <Button id={'continue-btn'}
+                    classes={'button__solid button__primary'}
+                    styles={'margin-bottom: 16px;'}
+                    width={'100%'}
+                    name={"RECOVER FAILED SWAP"}
+                    click={gotoRecover} />
             <Button id={'back-btn'}
                     classes={'button__solid'} 
                     styles={'margin-bottom: 16px;'}

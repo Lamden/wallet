@@ -5,6 +5,26 @@ const createMetaMaskProvider = require('metamask-extension-provider')
 const Web3 = require('web3')
 var web3;
 
+const swapInputs =  [
+    {
+        "indexed":false,
+        "internalType":"address",
+        "name":"sender",
+        "type":"address"
+    },
+    {
+        "indexed":false,
+        "internalType":"string",
+        "name":"receiver",
+        "type":"string"
+    },
+    {
+        "indexed":false,
+        "internalType":"uint256",
+        "name":"value",
+        "type":"uint256"
+    }
+]
 const ethNetworks = {
     '1': {
         tauContract: '0xc27a2f05fa577a83ba0fdb4c38443c0718356501',
@@ -199,12 +219,18 @@ const balanceOfTAU = async (userEthAddress) => {
     return balance
 }
 
-const checkTxStatus = async (txHash) => {
+const checkTxStatus = async (txHash, contractType) => {
+    console.log({txHash, contractType})
     let web3 = getWeb3();
     try{
         let response =  await web3.eth.getTransactionReceipt(txHash)
+        console.log({response})
+        if (contractType === "swap"){
+            let logItem = response.logs.filter(log => log.topics.length === 1)[0]
+            response.swapdata = web3.eth.abi.decodeLog(swapInputs, logItem.data, logItem.topics);
+        }
         return response
-    } catch (e) {}
+    } catch (e) {console.log(e)}
     return {error: 'TxHash not found'}
 }
 

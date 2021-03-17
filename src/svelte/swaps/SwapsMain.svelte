@@ -57,6 +57,7 @@
         {page: 'SwapsDisclaimer_Questions', hideSteps: false, back: 0},
         {page: 'SwapsDisclaimer_TokensExchange', hideSteps: false, back: 0},
         {page: 'SwapsDisclaimer_ExchangeTerms', hideSteps: false, back: 0},
+        {page: 'SwapsRecover', hideSteps: false, back: 0},
         {page: 'SwapsChooseLamden', hideSteps: false, back: 0},
         {page: 'SwapsConnectMetamask', hideSteps: false, back: 3},
         {page: 'SwapsSendApproval', hideSteps: false, back: 4},
@@ -78,7 +79,7 @@
     $: hideBack = steps[currentStep].hideBack ? false : true;
 
     const getTxHash = (type) => {
-        if (type === "approval") return metamaskApprovalResponse.transactionHash
+        if (type === "approval") return metamaskApprovalResponse.transactionHash || null;
         if (type === "swapTx") return metamaskSwapTxResponse.transactionHash
     }
 
@@ -98,8 +99,7 @@
     const updateSwap = () => {
         if (swapResult.success) SwapsStore.updateLamdenTxHash(networkKey($currentNetwork), getTxHash("swapTx"), swapResult.success)
         if (swapResult.error) SwapsStore.updateStatus(networkKey($currentNetwork), getTxHash("swapTx"), "error", swapResult.error, swapResult.hash)
-    }
-    
+    }    
 </script>
 
 

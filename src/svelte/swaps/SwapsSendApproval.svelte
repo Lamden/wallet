@@ -74,7 +74,7 @@
     }
 
     const checkTxForResult = () => {
-        chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: txHash}}, (response) => {
+        chrome.runtime.sendMessage({type: 'checkEthTxStatus', data: { hash: txHash, contractType: "erc20_approval"}}, (response) => {
             if (response === null) setTimeout(checkTxForResult, 10000)
             else{
                 if (typeof response.error === 'undefined') {

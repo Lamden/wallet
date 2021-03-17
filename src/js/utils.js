@@ -262,6 +262,11 @@ const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
     return account.substring(0, lsize) + ' ... ' + account.substring(account.length - rsize)
   }
 
+const isLamdenKey = ( key ) => {
+    if (validateTypes.isStringHex(key) && key.length === 64) return true;
+    return false;
+};
+
 const dataURLToBlob = function(dataURL) {
     var BASE64_MARKER = ';base64,';
     if (dataURL.indexOf(BASE64_MARKER) == -1) {
@@ -342,8 +347,12 @@ const getLogoFromURL = async (tokenInfo, MAX_IMAGE_SIZE) => {
     }
 }
 
+const toBigNumber = (value) => Encoder('bigNumber', value)
+
 const stringToFixed = (value, precision) => {
-	if (Encoder.BigNumber.isBigNumber(value) && precision ) value = value.toFixed(precision)
+	if (Encoder.BigNumber.isBigNumber(value) && precision ) {
+        value = value.toFixed(precision)
+    }
 	if (!value) return "0.0"
 		try {
 			var values = value.split('.')
@@ -373,10 +382,11 @@ module.exports = {
     formatKwargs, longFormTypes, typeToInputTypeMAP, defaultTypeValues,
     Encoder, encodeLocaleDateTime, encodeUTCDateTime, encodeLocaleTimeDelta, 
     displayBalance, displayBalanceToFixed,
-    getKeyValue, 
+    getKeyValue, isLamdenKey,
     createCharmKey, repalceVariablesInIconPath,
     formatValue,
-    stringToFixed,
+    stringToFixed, 
+    toBigNumber,
     getTokenTotalBalance,
     getTokenBalance, formatAccountAddress,
     dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL

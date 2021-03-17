@@ -19,7 +19,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    after(() => {driver && driver.quit()});
+    //after(() => {driver && driver.quit()});
 
     it('Setup Metamask Extention', async function() {
       await helpers.setupMetamask(driver);
@@ -141,9 +141,22 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
   it('checkTxStatus(): Can lookup a txHash and report it is successful', async function() {
     await driver.executeScript(`
       backpage = chrome.extension.getBackgroundPage();
-      return await backpage.walletEthereum.checkTxStatus('${swapInfo.checkTxStatus.successfulTx}');
+      return await backpage.walletEthereum.checkTxStatus('${swapInfo.checkTxStatus.successfulTx.hash}');
     `).then(txInfo => {
+      console.log(txInfo)
       assert.equal(txInfo.status, true);
+    })
+  });
+
+  it('checkTxStatus(): Can lookup a swap txHash and decode data', async function() {
+    await driver.executeScript(`
+      backpage = chrome.extension.getBackgroundPage();
+      return await backpage.walletEthereum.checkTxStatus('${swapInfo.checkTxStatus.successfulTx.hash}', "swap");
+    `).then(txInfo => {
+      console.log(txInfo)
+      assert.equal(txInfo.status, true);
+      assert.equal(txInfo.swapdata.receiver, swapInfo.checkTxStatus.successfulTx.receiver);
+      assert.equal(txInfo.swapdata.value, swapInfo.checkTxStatus.successfulTx.amount);
     })
   });
 
@@ -164,7 +177,7 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
       assert.equal(txInfo.error, 'TxHash not found');
     })
   });
-
+/*
   it('sendSwapContractApproval(): Can detect when the user closes the popup', async function() {
     this.timeout(30000);
 
@@ -203,10 +216,10 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     await helpers.sleep(2000) 
     await helpers.switchWindow(driver, 0) 
     console.log('        o WAITING FOR METAMASK TO COMPLETE TX')
-    let txInfo = await driver.executeScript(`
+    let txHash = await driver.executeScript(`
       return await window.txResult;
     `)
-    assert.equal(txInfo.status, true);
+    expect.to.exist(txHash);
   })
 
   it('sendSwapContractTx(): Sends a swap contract transaction', async function() {
@@ -225,9 +238,9 @@ describe('Testing Lamden Wallet Ethereum Controller', function () {
     await helpers.sleep(2000) 
     await helpers.switchWindow(driver, 0) 
     console.log('        o WAITING FOR METAMASK TO COMPLETE TX')
-    let txInfo = await driver.executeScript(`
+    let txHash = await driver.executeScript(`
       return await window.txResult;
     `)
-    assert.equal(txInfo.status, true);
-  })
+    expect.to.exist(txHash);
+  })*/
 })

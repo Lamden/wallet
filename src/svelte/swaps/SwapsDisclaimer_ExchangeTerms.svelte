@@ -281,7 +281,7 @@ Lamden Sàrl / Geneva
         if (inputElm.scrollHeight - inputElm.scrollTop < inputElm.clientHeight / 0.90 ) notScrolled = false
     })
     
-    const nextPage = () => changeStep(3)
+    const nextPage = () => changeStep(4)
 
     const handleScroll = (e) => {
         if (inputElm.scrollHeight - inputElm.scrollTop < inputElm.clientHeight / 0.90 ) notScrolled = false
