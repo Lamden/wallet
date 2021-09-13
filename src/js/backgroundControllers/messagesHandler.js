@@ -125,36 +125,6 @@ export const messagesHandler = (masterController) => {
                     if (message.type === 'revokeDappAccess') sendResponse(masterController.dapps.revokeAccess(message.data))
                     //Link a dapp to a new account
                     if (message.type === 'reassignDappAccess') sendResponse(masterController.dapps.reassignLink(message.data))
-                    //Connect to metamask
-                    if (message.type === 'connectToMetamask') {
-                        masterController.transactions.requestEthereumAccount(sendResponse)
-                        return true;
-                    }
-                    //Check ERC20 TAU approval
-                    if (message.type === 'checkERC20Approval') {
-                        masterController.transactions.checkERC20Approval(message.data, sendResponse)
-                        return true
-                    } 
-                    //Send ETH Tokens
-                    if (message.type === 'sendTokenApproval') {
-                        masterController.transactions.sendEthereumTokenApproval(message.data, sendResponse)
-                        return true
-                    } 
-                    //Send ETH Tokens
-                    if (message.type === 'sendEthSwapTransaction') {
-                        masterController.transactions.sendEthereumSwapTransaction(message.data, sendResponse)
-                        return true
-                    } 
-                    //Check an ETH transaction Status
-                    if (message.type === 'checkEthTxStatus') {
-                        masterController.transactions.checkEthereumTxStatus(message.data, sendResponse)
-                        return true
-                    }
-                    //Check for an already procssesed swap
-                    if (message.type === 'checkSwapSeenHashes') {
-                        masterController.checkSwapSeenHashes(message.data, sendResponse)
-                        return true
-                    }
                     //Reorder Account List
                     if (message.type === 'accountsReorderUp') {
                         masterController.accounts.reorderUp(message.data, sendResponse)

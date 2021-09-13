@@ -316,13 +316,6 @@ export const masterController = () => {
             getDappInfoByURL: dapps.getDappInfoByURL,
             validateConnectionMessage: dapps.validateConnectionMessage
         },
-        "transactions":{
-            requestEthereumAccount: transactions.requestEthereumAccount,
-            sendEthereumTokenApproval: transactions.sendEthereumTokenApproval,
-            sendEthereumSwapTransaction: transactions.sendEthereumSwapTransaction,
-            checkEthereumTxStatus: transactions.checkEthereumTxStatus,
-            checkERC20Approval: transactions.checkERC20Approval
-        },
         "tokens": {
             addToken: tokens.addToken,
             updateToken: tokens.updateToken,

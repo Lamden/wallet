@@ -89,8 +89,6 @@ import StrongPW from './components/StrongPW.svelte';
 import Transaction from './components/Transaction.svelte';
 import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
-import SwapsStatus from './components/SwapsStatus.svelte';
-import SwapStatus from './components/SwapStatus.svelte';
 import TokenLogo from './components/TokenLogo.svelte'
 import LightDarkToggle from './components/LightDarkToggle.svelte'
 
@@ -116,18 +114,8 @@ import About from './misc/About.svelte';
 
 //Swaps
 import Swaps from './swaps/Swaps.svelte';
-import SwapsMain from './swaps/SwapsMain.svelte';
-import SwapsRecover from './swaps/SwapsRecover.svelte';
-import SwapsConnectMetamask from './swaps/SwapsConnectMetamask.svelte';
-import SwapsChooseLamden from './swaps/SwapsChooseLamden.svelte';
-import SwapsSendApproval from './swaps/SwapsSendApproval.svelte';
-import SwapsSendEthTx from './swaps/SwapsSendEthTx.svelte';
-import SwapsCheckStatus from './swaps/SwapsCheckStatus.svelte';
-import SwapsPerformSwap from './swaps/SwapsPerformSwap.svelte';
-import SwapsDisclaimer_Questions from './swaps/SwapsDisclaimer_Questions.svelte';
-import SwapsDisclaimer_TokensExchange from './swaps/SwapsDisclaimer_TokensExchange.svelte';
-import SwapsDisclaimer_ExchangeTerms from './swaps/SwapsDisclaimer_ExchangeTerms.svelte';
-import ContinueSwap from './swaps/ContinueSwap.svelte';
+import SwapsStatus from './swaps/SwapsStatus.svelte';
+import SwapStatus from './swaps/SwapStatus.svelte';
 
 //Token
 import TokenDetails from './tokens/TokenDetails.svelte';
@@ -171,27 +159,14 @@ export const FirstRun = {
     ...RestorePages
 };
 
-export const SwapsPages = { 
-    SwapsRecover,
-    SwapsDisclaimer_Questions, SwapsDisclaimer_TokensExchange, SwapsDisclaimer_ExchangeTerms,
-    SwapsConnectMetamask, 
-    SwapsChooseLamden, 
-    SwapsSendApproval, 
-    SwapsCheckStatus, 
-    SwapsPerformSwap, 
-    SwapsSendEthTx,
-    ContinueSwap
-};
-
 export const Pages = { 
     CoinsMain, CoinDetails, 
     TokenDetails,
     LockScreen, 
     BackupMain,
-    SwapsMain, 
     Restore,
     Backup,
-    Swaps, ContinueSwap,
+    Swaps,
     DevToolsMain, 
     About, 
     IdeMain,
@@ -213,7 +188,6 @@ export const Components = {
     StrongPW,
     Transaction,
     Kwargs, Kwarg,
-    SwapsStatus, SwapStatus,
     TokenLogo, TokenEditDetails,
     LightDarkToggle
 };
@@ -250,6 +224,6 @@ export {
     Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
-    Swaps
+    Swaps, SwapsStatus, SwapStatus
 };
 </script>

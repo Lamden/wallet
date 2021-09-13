@@ -1,6 +1,4 @@
 const Lamden = require('lamden-js')
-const Web3 = require('Web3')
-const web3 = new Web3()
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators;
 const lamdenWallet = Lamden.wallet
@@ -19,14 +17,6 @@ const pubFromPriv = ( network, symbol, privateKey ) => {
         throw new Error(`Invalid ${network} privateKey`);
     }
 
-    if (network === 'ethereum') {
-        try{
-            return web3.eth.accounts.privateKeyToAccount(privateKey).address
-        } catch (e){
-            throw new Error(`Invalid ${network} privateKey`);
-        }
-    }
-    
     throw new Error(`${network} is not a supported network `);
 };
 
@@ -49,15 +39,6 @@ const keysFromPriv = ( network, symbol, privateKey ) => {
         }
     }
 
-    if (network === 'ethereum') {
-        try{
-            keyPair = web3.eth.accounts.privateKeyToAccount(privateKey)
-        } catch (e){
-            throw new Error(`Invalid ${network} privateKey`);
-        }
-        keyPair.vk =  keyPair.address
-        keyPair.sk =  keyPair.privateKey
-    }
     if (!keyPair.vk || !keyPair.sk){
 		throw new Error(`${network} is not a supported network `);
     }
@@ -81,15 +62,6 @@ const keysFromNew = ( network, symbol ) => {
 		keyPair = lamdenWallet.new_wallet();
 		if (!keyPair) throw new Error(`Error creating ${network} network wallet`);
     }
-    
-    if (network === 'ethereum'){
-        ethAccount = web3.eth.accounts.create()
-        keyPair = {
-            vk: ethAccount.address,
-            sk: ethAccount.privateKey
-        }
-		if (!keyPair) throw new Error(`Error creating ${network} network wallet`);
-	}
 
 	if (!keyPair.vk || !keyPair.sk){
 		throw new Error(`${network} is not a supported network`);
@@ -114,30 +86,11 @@ const validateAddress = ( network, wallet_address ) => {
         throw new Error(`Invalid ${network} wallet address`);
     }
 
-    if (network === 'ethereum'){
-        if (web3.utils.isAddress(wallet_address)) return web3.utils.toChecksumAddress(wallet_address)
-        throw new Error(`Invalid ${network} wallet address`);
-    }
-
-    throw new Error(`${network} is not a supported network `);
-};
-
-
-/*
-    Signed a Raw transaction for Bitcoin and Ethereum networks
-    Returns: Signed Transactions (str)
-*/
-const signTx = ( rawTransaction, privateKey, network, networkSymbol = undefined ) => {
-    assertTypes.isStringWithValue(rawTransaction)
-    assertTypes.isStringWithValue(privateKey)
-    assertTypes.isStringWithValue(network)
-
     throw new Error(`${network} is not a supported network `);
 };
 
 module.exports = {
     pubFromPriv,
-    signTx,
     validateAddress, 
     keysFromNew,
     keysFromPriv
