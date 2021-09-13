@@ -136,50 +136,9 @@ export const transactionsController = (utils, actions) => {
         timerId = setTimeout(resolvePendingTxs, 100);
     }, 1000);
 
-    const requestEthereumAccount = (callback = undefined) => {
-        utils.Ethereum.requestAccount().then(async address => {
-            let metaMaskInfo = {address}
-            if (!utils.validateTypes.isStringWithValue(address.error)){
-                metaMaskInfo.chainInfo = await utils.Ethereum.getChainInfo()
-                metaMaskInfo.tokenBalance = await utils.Ethereum.balanceOfTAU(address)
-            }
-            callback(metaMaskInfo)
-        })
-        return true;
-    }
-
-    const checkERC20Approval = (data, callback = undefined) => {
-        const { address } = data;
-        utils.Ethereum.checkERC20Approval(address).then(res => callback(res))   
-        return true;
-    }
-
-    const sendEthereumTokenApproval = (data, callback = undefined) => {
-        const {address, amount } = data;
-        utils.Ethereum.sendSwapContractApproval(address, amount).then(res => callback(res))   
-        return true;
-    }
-
-    const sendEthereumSwapTransaction = (data, callback = undefined) => {
-        const {ethAddress, amount, lamdenAddress } = data;
-        utils.Ethereum.sendSwapContractTx(ethAddress, amount, lamdenAddress).then(res => callback(res))   
-        return true;
-    }
-
-    const checkEthereumTxStatus = (data, callback = undefined) => {
-        const { hash, contractType } = data;
-        utils.Ethereum.checkTxStatus(hash, contractType).then(res => callback(res)) 
-        return true;
-    }
-
     return {
         sendLamdenTx,
-        requestEthereumAccount,
-        sendEthereumTokenApproval,
-        sendEthereumSwapTransaction,
-        checkEthereumTxStatus,
         sendCurrencyTransaction,
-        checkERC20Approval
     }
 }
 

@@ -14,14 +14,6 @@ export const accountsController = (utils) => {
         vault = getValue.vault
         hash = getValue.hash
         if (vault === "" && utils.validateTypes.isStringWithValue(hash)) accountStore = getValue.coins;
-        /********************************************************************
-         *  Setup for testing
-         ********************************************************************/
-        //Expose Ethereum Controller on window so it can be accesses durring testing
-        if (navigator.webdriver == true && hash === "" && vault === "") {
-            window.walletEthereum = utils.Ethereum
-            window.deleteCoin = deleteOne
-        }
     })
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {

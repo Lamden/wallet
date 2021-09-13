@@ -3,7 +3,7 @@ const validators = require('types-validate-assert')
 const { validateTypes } = validators
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue } from '..//utils.js';
 import Lamden from 'lamden-js'
-import Ethereum from '../crypto/ethereum'
+
 
 export const controllerUtils = (() => {
 
@@ -83,7 +83,6 @@ export const controllerUtils = (() => {
         hashStringValue,
         networkKey,
         Lamden,
-        Ethereum,
         sendMessageToApp,
         sendMessageToTab,
         removeTrailingZeros,

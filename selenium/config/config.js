@@ -39,33 +39,13 @@ def set_value_for_sender(key_value: str):
 const process = require('process');
 var path = require('path');
 
-const getMetaMaskLocation = () => {
-    let installLocations = {
-        osx: "Library/Application Support/Google/Chrome/Default/Extensions",
-        win32: "AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions",
-    }
-    if (process.platform == 'win32'){
-        return `${process.env['USERPROFILE']}\\${installLocations.win32}`
-    }
-    return `${process.env['HOME']}/${installLocations.osx}`
-}
-
 const config = {
     workingDir: process.cwd(),
     walletBuildDir: "build", //Path to where metamask is installed on your computer
     get walletPath() {
         return path.join(this.workingDir, this.walletBuildDir)
     },
-    walletExtentionID: "hiknponkciemeacgombejeookoebjdoe",
-    metamaskExtentionID: "nkbihfbeogaeaoehlefnkodbefgpgknn",
-    metamaskFolder: `${getMetaMaskLocation()}`, //Path to where metamask is installed on your computer
-    metamaskVersion: "9.2.0_0", //version of metamask (appends to metamaskFolder to create full plugin path)
-    get metamaskPath() {
-        return path.join(this.metamaskFolder, this.metamaskExtentionID, this.metamaskVersion)
-    },
-    metamaskBackupPhrase: "slab tomorrow actual evoke cattle churn brick bus toilet intact zoo erase", //The seed phrase metamask wallet to restore
-    metamaskAddress: "0x00eB12f5C96B15001bf8f32bEEd970d178719AcC", //ETH address of the seed phrase
-    metamaskPassword: "Testing0!2", //Required during install
+    walletExtentionID: "milbhnchmaidmgioekemioacdgkojndh",
     port: 5656,
     testnetMasternode: "https://testnet-master-1.lamden.io:443"
 }

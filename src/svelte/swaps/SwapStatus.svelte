@@ -1,15 +1,8 @@
 <script>
-import {getContext} from 'svelte'
     export let swap
     export let currencySymbol
     export let blockexplorer
 
-    //Components
-	import { Components }  from '../Router.svelte';
-    const { Button } = Components;
-
-    //Context
-    const { switchPage } = getContext('app_functions');
 </script>
 
 <style>
@@ -96,17 +89,5 @@ import {getContext} from 'svelte'
     {#if swap.errorMsg !== ""}
         <p><strong>Error:</strong></p>
         <p class="text-red">{swap.errorMsg}</p>
-    {/if}
-    {#if swap.status !== "success"}
-        <div class="flex flex-just-end">
-            <Button 
-                name={swap.status === 'error' ? 'retry' : "continue"}
-                classes="button__solid button_primary button__small"
-                height="unset"
-                padding="6px 10px"
-                margin={'0.5rem 0 0 0'}
-                click={() => switchPage('ContinueSwap', swap)}
-            />
-        </div>
     {/if}
 </div> 
