@@ -1,3 +1,5 @@
+import { addConsoleHandler } from "selenium-webdriver/lib/logging";
+
 export const balancesController = (utils, services, actions) => {
     let balancesStore = {};
     let updatingBalances = {status: "waiting", time: new Date()};
@@ -48,12 +50,24 @@ export const balancesController = (utils, services, actions) => {
         }
     }
 
+    const joinSocket = (account) => {
+        services.socketService.joinCurrencyBalanceFeed(account)
+        return true
+    }
+
     const joinAllSockets = (accountsList) => {
         accountsList.forEach(account => services.socketService.joinCurrencyBalanceFeed(account.vk))
+        return true
+    }
+
+    const leaveSocket = (account) => {
+        services.socketService.leaveCurrencyBalanceFeed(account)
+        return true
     }
 
     const leaveAllSockets = (accountsList) => {
         accountsList.forEach(account => services.socketService.leaveCurrencyBalanceFeed(account.vk))
+        return true
     }
 
     const updateAll = (accountsList, network) => {
@@ -110,9 +124,11 @@ export const balancesController = (utils, services, actions) => {
             try{
                 let network = utils.networks.getLamdenNetwork(networkType)
                 let netKey = network.networkKey
-        
+
                 let newValue = utils.getValueFromReturn(value)
                 if (!newValue) newValue = "0"
+
+                if (!balancesStore[netKey]) balancesStore[netKey] = {}
                 
                 balancesStore[netKey][key] = {
                     'balance': newValue,
@@ -126,14 +142,16 @@ export const balancesController = (utils, services, actions) => {
     }
 
     const getUpdate = async (account, network) => {
-        const vk = account.vk;
-        let keyToGet =  {
-            contractName: 'currency',
-            variableName: "balances",
-            key: vk
-        }
-        let balance = await network.blockExplorer_API.getKeys([keyToGet])
-        let newBalanceInfo = processBalance(balance[0], account)
+        let vk = account.vk
+        let balance = await network.blockservice_API.getCurrentKeyValue('currency', 'balances', vk)
+            .then(res => {
+                if (!res) return {value : "0"}
+                if (res.notFound) return {value : "0"}
+                return res
+            })
+
+        let newBalanceInfo = processBalance(balance, account)
+        console.log({newBalanceInfo})
         let netKey = network.networkKey
 
         if (!balancesStore[netKey]) balancesStore[netKey] = {}
@@ -186,6 +204,14 @@ export const balancesController = (utils, services, actions) => {
         return accounts
     }
 
+    const deleteOneBalance = (vk) => {
+        Object.keys(balancesStore).map(networkKey => {
+            delete balancesStore[networkKey][vk]
+        })
+        setStore(balancesStore)
+        return true
+    }
+
     setInterval(() => {
         if (updatingBalances.status === "updating" && new Date() - updatingBalances.time > 5) {
             updatingBalances.status = "waiting"
@@ -197,7 +223,10 @@ export const balancesController = (utils, services, actions) => {
         clearAllNetworks,
         clearNetwork,
         addBalances,
+        joinSocket,
         joinAllSockets,
-        leaveAllSockets
+        leaveSocket,
+        leaveAllSockets,
+        deleteOneBalance
     }
 }

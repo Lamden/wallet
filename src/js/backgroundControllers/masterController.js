@@ -21,7 +21,7 @@ export const masterController = () => {
     }
 
     utils.networks = Object.freeze(networkController(utils, services));
-    const accounts = Object.freeze(accountsController(utils));
+    const accounts = Object.freeze(accountsController(utils, services));
     const balances = Object.freeze(balancesController(utils, services, (() => {
         return {
             isWatchOnly: accounts.isWatchOnly,
@@ -61,12 +61,28 @@ export const masterController = () => {
         let accountsList = accounts.getSanatizedAccounts()
         balances.joinAllSockets(accountsList)
         tokens.joinAllTokenSockets(accountsList)
+        return true
     }
 
     const leaveSockets = () => {
         let accountsList = accounts.getSanatizedAccounts()
         balances.leaveAllSockets(accountsList)
         tokens.leaveAllTokenSockets(accountsList)
+    }
+
+    const joinTokenSocket = (tokenContractName) => {
+        let accountsList = accounts.getSanatizedAccounts()
+        tokens.joinTokenSocket(accountsList, tokenContractName)
+    }
+
+    const joinTokenSockets = (networkInfo) => {
+        let accountsList = accounts.getSanatizedAccounts()
+        tokens.joinAllTokenSockets(accountsList, networkInfo)
+    }
+
+    const leaveTokenSockets = (networkInfo) => {
+        let accountsList = accounts.getSanatizedAccounts()
+        tokens.leaveAllTokenSockets(accountsList, networkInfo)
     }
 
     const unlock = (pwd) => {
@@ -120,11 +136,27 @@ export const masterController = () => {
         return true
     }
 
-    const updateAllTokenBalances = () => {
-        tokens.refreshTokenBalances()
+    const updateAccountAndTokenBalances = () => {
+        updateAllBalances()
+        updateAllTokenBalances()
     }
 
-    const updateOneBalance = (account) => {
+    const handleSwitchNetwork = (networkInfo) => {
+        updateAllBalances()
+        updateAllTokenBalances(networkInfo)
+        joinTokenSockets(networkInfo)
+        
+        return true
+    }
+
+    const updateAllTokenBalances = (networkInfo) => {
+        tokens.refreshTokenBalances(networkInfo)
+    }
+
+    const updateOneBalance = (vk) => {
+        let account = accounts.getAccountByVK(vk)
+        console.log({vk, account})
+        if (!account) return true
         balances.updateOne(account, utils.networks.getCurrent())
         return true
     }
@@ -136,19 +168,14 @@ export const masterController = () => {
     const initiateAppTxSend = (txInfo, sender) => {
         //Validate that a physical person is sending this transaction
         let response = {status: ""};
-        let userConfirm = confirm('Send Transaction?')
-        if (userConfirm){
-            try{
-                txInfo.uid = utils.hashStringValue(new Date().toISOString());
-                let txBuilder = new utils.Lamden.TransactionBuilder(utils.networks.getCurrent(), txInfo)
-                transactions.sendLamdenTx(txBuilder, sender.origin)
-                response.status = "Transaction Sent, Awaiting Response"
-            }catch (err){
-                console.log(err)
-                response.status = `Error: Failed to create Tx - ${err}`
-            }
-        }else{
-            response.status = "Transaction cancelled by user"
+        try{
+            txInfo.uid = utils.hashStringValue(new Date().toISOString());
+            let txBuilder = new utils.Lamden.TransactionBuilder(utils.networks.getCurrent(), txInfo)
+            transactions.sendLamdenTx(txBuilder, sender.origin)
+            response.status = "Transaction Sent, Awaiting Response"
+        }catch (err){
+            console.log(err)
+            response.status = `Error: Failed to create Tx - ${err}`
         }
         return response
     }
@@ -363,15 +390,17 @@ export const masterController = () => {
             validateTokenContract: tokens.validateTokenContract,
             getTokenMeta: tokens.getTokenMeta,
             tokenExists: tokens.tokenExists,
-            refreshTokenBalances: tokens.refreshTokenBalances,
+            refreshTokenBalances: updateAllTokenBalances,
             reorderUp: tokens.reorderUp,
-            reorderDown: tokens.reorderDown
+            reorderDown: tokens.reorderDown,
+            refreshOneTokenBalances: tokens.refreshOneTokenBalances
         },
         balances,
         utils,
         createPassword,
         deleteAccount,
         updateAllBalances,
+        handleSwitchNetwork,
         updateOneBalance,
         clearNetworkBalances,
         fromAuthorizedDapp: (url) => dapps.dappExists(url),
@@ -381,6 +410,12 @@ export const masterController = () => {
         initiateAppTxSend,
         initiateDAppTxSend,
         promptApproveDapp,
-        checkSwapSeenHashes
+        checkSwapSeenHashes,
+        joinSockets,
+        leaveSockets,
+        joinTokenSockets,
+        joinTokenSocket,
+        leaveTokenSockets,
+        updateAccountAndTokenBalances
     }
 }

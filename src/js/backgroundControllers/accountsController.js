@@ -1,4 +1,4 @@
-export const accountsController = (utils) => {
+export const accountsController = (utils, services) => {
     let vault = "";
     let hash = "";
     let accountStore = [];
@@ -114,7 +114,10 @@ export const accountsController = (utils) => {
         accounts.forEach(account => {
             let res = addAccount(account)
             account.result = res
-            if (account.result.added) accountAdded = true
+            if (account.result.added) {
+                accountAdded = true
+                services.socketService.joinCurrencyBalanceFeed(account.vk)
+            }
             return account
         })
         if (accountAdded) refreshAccountStore();

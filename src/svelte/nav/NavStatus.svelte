@@ -1,11 +1,13 @@
 <script>
-    export let status
+    import { currentNetworkOnline } from '../../js/stores/stores'
+
+    $: status = $currentNetworkOnline
+    $: online = status === true
+    $: offline = status !== true
+
 </script>
 
 <style>
-.checking{
-    color: var(--font-secondary);
-}
 .online{
     color:green;
 }
@@ -14,8 +16,4 @@
 }
 </style>
 
-{#await status}
-    <div class="checking">{'checking'}</div>
-{:then online}
-    <div class="online" class:online={online=== 'online'} class:offline={online=== 'offline'}>{online}</div>
-{/await}
+<div class="online" class:online={online} class:offline={offline}>{online ? "online" : "offline"}</div>

@@ -38,11 +38,13 @@
                 resolve();
             }, 1000);
         })
-        .then(res => {
+        .then(() => {
+            chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
+            chrome.runtime.sendMessage({type: 'joinSockets'})
             setTimeout(() => {
                 SettingsStore.changePage({name: 'CoinsMain'})
                 done()
-            }, 500);            
+            }, 1000);            
         })
     });
 </script>

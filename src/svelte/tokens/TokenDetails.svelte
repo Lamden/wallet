@@ -76,7 +76,7 @@
 
     const handleRefresh = (delay = 0) => {
         if (refreshing) return
-		setTimeout(chrome.runtime.sendMessage({type: 'refreshTokenBalances'}), delay)
+		setTimeout(chrome.runtime.sendMessage({type: 'refreshOneTokenBalances', data: token.contractName}), delay)
 		refreshing = true
 		setTimeout(() => {
             refreshing = false

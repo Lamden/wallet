@@ -1,6 +1,4 @@
 <script>
-    import { getContext, onMount, afterUpdate } from 'svelte';
-
 	//Stores
     import { currentNetwork, NetworksStore } from '../../js/stores/stores.js';
     
@@ -10,24 +8,6 @@
     //Images
     import NetworkIcon from '../icons/NetworkIcon.svelte'
     import network from '../../img/menu_icons/icon_network-testnet.svg'
-
-    //Context
-    const { switchPage, themeToggle } = getContext('app_functions');
-
-    let status = 'checking'
-
-    onMount(() => {
-        ping()
-    })
-
-    afterUpdate(() => {
-        let status = 'checking'
-        ping()
-    })
-
-    const ping = async () => {
-        status = await $currentNetwork.ping() ? 'online' : 'offline'
-    }
 
     const handleClick = () => {
         if (!$currentNetwork.type === 'custom') NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
@@ -84,7 +64,7 @@ p.mainnet:hover{
             class:custom={$currentNetwork.type === 'custom'}>
         {$currentNetwork.name}
         </p>
-        <NavStatus {status} />
+        <NavStatus />
     </div>
     <div class="icon">
         {#if $currentNetwork.type === 'mainnet'}

@@ -6,6 +6,7 @@ export const createSocketService = () => {
 
     function start(){
         testnet_socket = io("ws://165.227.181.34:3535");
+        // testnet_socket = io("ws://localhost:3535");
         mainnet_socket = io("ws://165.22.47.195:3535");
         
         testnet_socket.on('connect', () => {

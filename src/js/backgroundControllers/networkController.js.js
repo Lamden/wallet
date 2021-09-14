@@ -6,6 +6,7 @@ export const networkController = (utils, services) => {
     const blockserviceIPs = {
         mainnet: 'http://165.22.47.195',
         testnet: 'http://165.227.181.34'
+        // testnet: 'http://localhost'
     }
 
     chrome.storage.local.get({"networks":{}},function(getValue) {networksStore = getValue.networks;})

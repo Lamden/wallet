@@ -111,8 +111,18 @@ export const messagesHandler = (masterController) => {
                     if (message.type === 'changeCoinNickname') sendResponse(masterController.accounts.changeAccountNickname(message.data))
                     //Call the currentNetwork API to refresh all balances in the coinStore
                     if (message.type === 'balancesStoreUpdateAll') sendResponse(masterController.updateAllBalances())
+                    // Call to update both the token and account balances
+                    if (message.type === 'updateAccountAndTokenBalances') sendResponse(masterController.updateAccountAndTokenBalances())
+                    // Call update balances and handle sockets when network switches
+                    if (message.type === 'handleSwitchNetwork') sendResponse(masterController.handleSwitchNetwork(message.data))
+                    // Call join all the balance/token update sockets and refresh balances
+                    if (message.type === 'joinSocket') sendResponse(masterController.balances.joinSocket(message.data))
+                    // Call join all the balance/token update sockets and refresh balances
+                    if (message.type === 'joinSockets') sendResponse(masterController.joinSockets())
                     //Call the currentNetwork API to refresh the balance of 1 coin/wallet in the coinStore
                     if (message.type === 'balancesStoreUpdateOne') sendResponse(masterController.updateOneBalance(message.data))
+                    //Call the currentNetwork API to refresh the balance of 1 coin/wallet in the coinStore
+                    if (message.type === 'deleteOneBalance') sendResponse(masterController.balances.deleteOneBalance(message.data))
                     //Delele all balances cache for a given network
                     if (message.type === 'balancesStoreClearNetwork') sendResponse(masterController.clearNetworkBalances())
                     //Delele balances cache for all networks
@@ -168,8 +178,20 @@ export const messagesHandler = (masterController) => {
                         return true;
                     }
                     if (message.type === 'refreshTokenBalances') {
-                        masterController.tokens.refreshTokenBalances(sendResponse)
+                        masterController.tokens.refreshTokenBalances()
                         return true;
+                    }
+                    if (message.type === 'refreshOneTokenBalances') {
+                        masterController.tokens.refreshOneTokenBalances(message.data)
+                        return true;
+                    }
+                    // Call leave all token sockets for a network
+                    if (message.type === 'leaveTokenSockets') {
+                        sendResponse(masterController.leaveTokenSockets(message.data))
+                    }
+                    // Call leave all token sockets for a network
+                    if (message.type === 'joinTokenSocket') {
+                        sendResponse(masterController.joinTokenSocket(message.data))
                     }
                 }
             }

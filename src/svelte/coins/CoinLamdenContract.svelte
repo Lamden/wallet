@@ -148,6 +148,7 @@
     }
 
     const handleNewArgValues = (e) => {
+        console.log(e.detail.argumentList)
         kwargs = e.detail.argumentList        
     }
 </script>

@@ -114,7 +114,7 @@
 
     const handleRefresh = () => {
         if (refreshing) return
-		chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin})
+		chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coin.vk})
 		refreshing = true
 		setTimeout(() => {
             refreshing = false
