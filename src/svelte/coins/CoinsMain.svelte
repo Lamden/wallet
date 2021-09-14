@@ -1,7 +1,7 @@
 <script>
 	import whitelabel from '../../../whitelabel.json'
 
-	import { onMount, getContext } from 'svelte';
+	import { getContext } from 'svelte';
 	
 	//Stores
 	import { 
@@ -47,28 +47,13 @@
 	}) : [];
 	$: hideTokens = $SettingsStore.hideTokens ? true : false;
 
-	onMount(() => {
-		handleRefresh();
-	});
-
 	const handleRefresh = () => {
 		if (refreshing) return
-		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
-		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
+		chrome.runtime.sendMessage({type: 'updateAccountAndTokenBalances'})
 		refreshing = true
 		setTimeout(() => {
 			refreshing = false
 		}, 2000);
-	}
-
-	const handleRefreshTokens = () => {
-		if (refreshing) return
-		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
-		refreshing = true
-		setTimeout(() => {
-		refreshing = false
-		}, 2000);
-		
 	}
 
 	const handleReorderToken = (e) => {

@@ -47,6 +47,7 @@ const config = {
     },
     walletExtentionID: "milbhnchmaidmgioekemioacdgkojndh",
     port: 5656,
-    testnetMasternode: "https://testnet-master-1.lamden.io:443"
+    testnetMasternode: "https://testnet-master-1.lamden.io:443",
+    testnetBlockService: "http://165.227.181.34:3535"
 }
 module.exports = config

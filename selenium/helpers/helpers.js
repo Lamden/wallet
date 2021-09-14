@@ -7,7 +7,7 @@ const http = require('http')
 const https = require('https')
 const { CryptoJS } = nodeCryptoJs;
 
-const { testnetMasternode } = config;
+const { testnetMasternode, testnetBlockService } = config;
 
 const wait_sync = (seconds) => {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, seconds);
@@ -96,7 +96,8 @@ const lockWallet = async (driver, switchback) => {
     await sleep(1000, true)
 }
 const changeToTestnet = async (driver) => {
-    await driver.findElement(By.id("nav-network-info")).click()
+    let navNetwork = await driver.wait(until.elementLocated(By.id("nav-network-info")), 5000);
+    navNetwork.click()
     await sleep(1000, true)
 }
 
@@ -287,12 +288,13 @@ const makeHttpRequest = (url, callback) => {
 const getAccountBalance = (vk) => {
     return new Promise(resolver => {
         const resolveRequest = (data) => {
+            console.log({data})
             if (typeof data.value === 'undefined') return resolver(0)
             if (!data.value) return resolver(0)
             if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
             else return resolver(parseInt(data.value)) 
         }
-        makeHttpRequest(`${testnetMasternode}/contracts/currency/balances?key=${vk}`, resolveRequest)
+        makeHttpRequest(`${testnetBlockService}/current/one/currency/balances/${vk}`, resolveRequest)
     })
 }
 
@@ -304,7 +306,7 @@ const getApprovalAmount = (sender, to) => {
             if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
             else return resolver(parseInt(data.value))  
         }
-        makeHttpRequest(`${testnetMasternode}/contracts/currency/balances?key=${sender}:${to}`, resolveRequest)
+        makeHttpRequest(`${testnetBlockService}/current/one/currency/balances/${sender}:${to}`, resolveRequest)
     })
 }
 

@@ -44,7 +44,7 @@
             if (!result || chrome.runtime.lastError) {
                 resolve(false)
             }
-            BalancesStore.refreshAllCache()
+            chrome.runtime.sendMessage({type: 'deleteOneBalance', data: selectedCoin.vk})
             resolve(result)
         })
     }

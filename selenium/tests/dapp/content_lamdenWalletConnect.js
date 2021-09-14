@@ -62,6 +62,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
         it('Rejects connection request if wallet is locked', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             let response = await helpers.sendConnectRequest(driver, connection)
+            console.log({response})
             assert.equal(response.errors.includes("Wallet is Locked"), true);
             //Unlock the wallet for rest of test cases
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)

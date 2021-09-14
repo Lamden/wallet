@@ -114,8 +114,7 @@
         Object.keys(tokenInfo).forEach(key => !tokenInfo[key] ? delete tokenInfo[key] : null)
         chrome.runtime.sendMessage({type: 'addToken', data: tokenInfo}, (result) => {
             if (result) {
-                finish({type:'success', text: `${tokenInfo.tokenName} added successfully`});
-                SettingsStore.setLastCoinAddedDate();
+                finish({type:'success', text: `${tokenInfo.tokenName} added successfully`}, tokenInfo);
             }
         })
     }
@@ -138,8 +137,9 @@
         setMessage(returnMessage)
     }
 
-    const finish = (returnMessage) => {
-        chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
+    const finish = (returnMessage, tokenInfo) => {
+        chrome.runtime.sendMessage({type: 'refreshOneTokenBalances', data: tokenInfo.contractName})
+        chrome.runtime.sendMessage({type: 'joinTokenSocket', data: tokenInfo.contractName})
         sendMessage(returnMessage);
         nextPage();
     }

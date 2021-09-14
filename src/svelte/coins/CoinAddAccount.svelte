@@ -99,6 +99,8 @@
             if (result.added){
                 returnMessage = {type:'success', text: result.reason}
                 SettingsStore.setLastCoinAddedDate();
+                chrome.runtime.sendMessage({type: 'joinSocket', data: coinInfo.vk})
+                chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coinInfo.vk})
             }
 
             if (!result.added){
@@ -116,11 +118,9 @@
         } catch (e){
             returnMessage = {type:'error', text: e}
         }
-        
     }
 
     const finish = () => {
-        chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
         sendMessage();
         nextPage();
     }

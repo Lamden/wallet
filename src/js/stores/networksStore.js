@@ -47,8 +47,15 @@ export const createNetworksStore = () => {
     const updateAllBalances = (netKey = undefined) => {
         let networkStore = get(NetworksStore);
         let currentNetwork = foundNetwork(get(NetworksStore), !netKey ? networkStore.current : netKey)
-        chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: currentNetwork})
+        chrome.runtime.sendMessage({type: 'handleSwitchNetwork', data: currentNetwork})
     }
+
+    const leaveTokenSockets = (netKey = undefined) => {
+        let networkStore = get(NetworksStore);
+        let currentNetwork = foundNetwork(get(NetworksStore), !netKey ? networkStore.current : netKey)
+        chrome.runtime.sendMessage({type: 'leaveTokenSockets', data: currentNetwork})
+    }
+    
     //Create Intial Store
     const NetworksStore = writable(startValue);
 
@@ -93,12 +100,13 @@ export const createNetworksStore = () => {
 
             //If this is already the current network then do nothing
             if (netKey !== get(NetworksStore).current){
+                leaveTokenSockets()
                 NetworksStore.update(networksStore => {
                     //If the network is found then set this as the current network
                     if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
-                    updateAllBalances(netKey)
                     return networksStore;
                 })
+                updateAllBalances(netKey)
             }
         },
         setNetworkByKey: (netKey) => {
@@ -110,10 +118,12 @@ export const createNetworksStore = () => {
             let foundNetwork = foundNetwork(get(NetworksStore), netKey)
             //If network is found, make it current
             if(foundNetwork){
+                leaveTokenSockets()
                 NetworksStore.update(networksStore => {
                     networksStore.current = netKey;
                     return networksStore;
                 })
+                updateAllBalances(netKey)
             }
 
         },
@@ -160,8 +170,9 @@ export const createNetworksStore = () => {
             if (!validateTypes.isSpecificClass(networkObj, 'Network')) return;
 
             let netKey = networkObj.url
-
+            leaveTokenSockets()
             NetworksStore.update(networksStore => {
+                
                 //Filter out the matching network.
                 networksStore.user = networksStore.user.filter(network => {
                     if (networkKey(network) === netKey) return false
@@ -174,6 +185,7 @@ export const createNetworksStore = () => {
 
                 return networksStore;
             })
+            updateAllBalances(netKey)
         }
     };
 }
@@ -230,5 +242,18 @@ export const currentNetwork = derived(
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
         if (found) return new Lamden.Network(found);
         return new Lamden.Network($NetworksStore.lamden[0])
+    }
+);
+
+//A Derrived Store that returns the currenly seletecd network object
+export const currentNetworkOnline = derived(
+	NetworksStore,
+	async ($NetworksStore, set) => {
+        // set(null)
+        let found = foundNetwork($NetworksStore, $NetworksStore.current);
+        let currentNetwork
+        if (found) currentNetwork = new Lamden.Network(found);
+        else currentNetwork = new Lamden.Network($NetworksStore.lamden[0])
+        currentNetwork.ping().then(set)
     }
 );

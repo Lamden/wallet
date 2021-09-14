@@ -1,6 +1,12 @@
-export const balancesController = (utils) => {
+import { addConsoleHandler } from "selenium-webdriver/lib/logging";
+
+export const balancesController = (utils, services, actions) => {
     let balancesStore = {};
     let updatingBalances = {status: "waiting", time: new Date()};
+
+    chrome.runtime.onSuspend.addListener(removeSocketListeners)
+    chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
+    addSocketListeners()
 
     chrome.storage.local.get({"balances":{}},function(getValue) {balancesStore = getValue.balances;})
     chrome.storage.onChanged.addListener(function(changes) {
@@ -14,6 +20,18 @@ export const balancesController = (utils) => {
     chrome.runtime.onInstalled.addListener(function(details) {
         if (details.reason === "update") clearAllNetworks()
     });
+
+    function addSocketListeners() {
+        services.socketService.testnet_socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update, 'testnet'))
+        services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update, 'mainnet'))
+        if (!actions.walletIsLocked()) joinAllSockets()
+    }
+
+    function removeSocketListeners() {
+        services.socketService.testnet_socket_off('new-state-changes-one')
+        services.socketService.mainnet_socket_off('new-state-changes-one')
+        leaveAllSockets()
+    }
 
     const updateOne = (account, network) => {
         if (updatingBalances.status === "waiting"){
@@ -32,6 +50,26 @@ export const balancesController = (utils) => {
         }
     }
 
+    const joinSocket = (account) => {
+        services.socketService.joinCurrencyBalanceFeed(account)
+        return true
+    }
+
+    const joinAllSockets = (accountsList) => {
+        accountsList.forEach(account => services.socketService.joinCurrencyBalanceFeed(account.vk))
+        return true
+    }
+
+    const leaveSocket = (account) => {
+        services.socketService.leaveCurrencyBalanceFeed(account)
+        return true
+    }
+
+    const leaveAllSockets = (accountsList) => {
+        accountsList.forEach(account => services.socketService.leaveCurrencyBalanceFeed(account.vk))
+        return true
+    }
+
     const updateAll = (accountsList, network) => {
         let keysToGet =  accountsList.map(account => {
             return{
@@ -40,11 +78,13 @@ export const balancesController = (utils) => {
                 key: account.vk
             }
         })
-        network.blockExplorer_API.getKeys(keysToGet).then(res => {
-            let newBalances = processBalances(res, accountsList, network)
-            let netKey = network.networkKey
-            balancesStore[netKey] = newBalances
-            setStore(balancesStore)
+        network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+            if (balances.length > 0){
+                let newBalances = processBalances(balances, accountsList)
+                let netKey = network.networkKey
+                balancesStore[netKey] = newBalances
+                setStore(balancesStore)
+            }
         })
     }
 
@@ -59,22 +99,59 @@ export const balancesController = (utils) => {
     const processBalances = (balances, accountList) => {
         let newBalancesObj = {}
         balances.map(balance => {
-            let vk = balance.key.split(":")[1]
+            let vk = balance.key
             let accountInfo = accountList.find(account => account.vk === vk)
             newBalancesObj[vk] = processBalance(balance, accountInfo)
         })
         return newBalancesObj;
     }
 
-    const getUpdate = async (account, network) => {
-        const vk = account.vk;
-        let keyToGet =  {
-            contractName: 'currency',
-            variableName: "balances",
-            key: vk
+    const processBalanceSocketUpdate = (update, networkType) => {
+        if (actions.walletIsLocked()) return
+        if (!update) return
+
+        update = JSON.parse(update)
+
+        const { message, room } = update
+        if (!message) return
+
+        const { key, value, keys } = message
+        if (key && value && room ){
+            if (!utils.isLamdenKey(key)) return
+            if (keys.length !== 1) return
+            if (room !== `currency.balances:${key}`) return
+
+            try{
+                let network = utils.networks.getLamdenNetwork(networkType)
+                let netKey = network.networkKey
+
+                let newValue = utils.getValueFromReturn(value)
+                if (!newValue) newValue = "0"
+
+                if (!balancesStore[netKey]) balancesStore[netKey] = {}
+                
+                balancesStore[netKey][key] = {
+                    'balance': newValue,
+                    watchOnly: actions.isWatchOnly(key)
+                }
+                setStore(balancesStore)
+            }catch(e){
+                console.log(e)
+            }
         }
-        let balance = await network.blockExplorer_API.getKeys([keyToGet])
-        let newBalanceInfo = processBalance(balance[0], account)
+    }
+
+    const getUpdate = async (account, network) => {
+        let vk = account.vk
+        let balance = await network.blockservice_API.getCurrentKeyValue('currency', 'balances', vk)
+            .then(res => {
+                if (!res) return {value : "0"}
+                if (res.notFound) return {value : "0"}
+                return res
+            })
+
+        let newBalanceInfo = processBalance(balance, account)
+        console.log({newBalanceInfo})
         let netKey = network.networkKey
 
         if (!balancesStore[netKey]) balancesStore[netKey] = {}
@@ -127,6 +204,14 @@ export const balancesController = (utils) => {
         return accounts
     }
 
+    const deleteOneBalance = (vk) => {
+        Object.keys(balancesStore).map(networkKey => {
+            delete balancesStore[networkKey][vk]
+        })
+        setStore(balancesStore)
+        return true
+    }
+
     setInterval(() => {
         if (updatingBalances.status === "updating" && new Date() - updatingBalances.time > 5) {
             updatingBalances.status = "waiting"
@@ -137,6 +222,11 @@ export const balancesController = (utils) => {
         updateOne,
         clearAllNetworks,
         clearNetwork,
-        addBalances
+        addBalances,
+        joinSocket,
+        joinAllSockets,
+        leaveSocket,
+        leaveAllSockets,
+        deleteOneBalance
     }
 }

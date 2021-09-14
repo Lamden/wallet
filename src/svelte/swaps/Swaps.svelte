@@ -71,12 +71,6 @@ strong{
                 The token swap start Sept 16th 2020 and ran through to Sept 16th 2021 and is now CLOSED.
             `}
         </div>
-        {#if $currentNetwork.type !== 'mainnet' && $currentNetwork.lamden}
-            <div class="subtext text-body1 text-warning" >
-                The Token Swap process is only available on Lamden Mainnet. <br> 
-                <strong on:click={handleNetworkChange}>Click here to change network.</strong>
-            </div>
-        {/if}
 	</div>
     <SwapsStatus />
 </div>

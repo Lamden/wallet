@@ -1,6 +1,15 @@
-export const tokenController = (utils, actions) => {
+export const tokenController = (utils, services, actions) => {
     let tokens = {};
     let token_balances = {};
+    let socketNetworks = ["mainnet", "testnet"]
+
+    chrome.runtime.onSuspend.addListener(removeSocketListeners)
+    chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
+    addSocketListeners()
+
+
+    services.socketService.testnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'testnet'))
+    services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'mainnet'))
 
     const LST002_RS_TOKEN_METADATA = [
         'token_name',
@@ -24,6 +33,18 @@ export const tokenController = (utils, actions) => {
             if (key === "token_balances") token_balances = changes[key].newValue;
         }
     });
+
+    function addSocketListeners() {
+        services.socketService.testnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'testnet'))
+        services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'mainnet'))
+        if (!actions.walletIsLocked()) joinAllTokenSockets()
+    }
+
+    function removeSocketListeners() {
+        services.socketService.testnet_socket_off('new-state-changes-one')
+        services.socketService.mainnet_socket_off('new-state-changes-one')
+        leaveAllTokenSockets()
+    }
 
     const validateTokenContract = async (contractName, callback = undefined) => {
         let contractInfo = await getContractInfo(contractName)
@@ -133,9 +154,10 @@ export const tokenController = (utils, actions) => {
             }
         })
         let tokenMeta = await getTokenMetaValues(metaKeys)
+
         let meta = {}
         tokenMeta.map(metaItem => {
-            let metaItemKey = metaItem.key.split(":")[1]
+            let metaItemKey = metaItem.key
             if (metaItemKey === "token_name") metaItemKey = "tokenName"
             if (metaItemKey === "token_symbol") metaItemKey = "tokenSymbol"
             if (metaItemKey === "token_logo_base64_svg") metaItemKey = "logo_base64_svg"
@@ -149,7 +171,7 @@ export const tokenController = (utils, actions) => {
 
     const getTokenMetaValues = async (metaKeys) => {
         let network = utils.networks.getCurrent()
-        let res = await network.blockExplorer_API.getKeys(metaKeys)
+        let res = await network.blockservice_API.getCurrentKeysValues(metaKeys)
         return res
     }
 
@@ -197,6 +219,9 @@ export const tokenController = (utils, actions) => {
         })
         if (tokens[network.networkKey].length < before){  
             saveTokensToStorage();
+
+            leaveOneTokenSockets(tokenInfo.contractName, network.type)
+
             if (callback) callback(true)
             return true
         }else{
@@ -207,22 +232,138 @@ export const tokenController = (utils, actions) => {
 
     const deleteTokenAll = async (callback = undefined) => {
         let network = utils.networks.getCurrent()
+        leaveAllTokenSockets()
         tokens[network.networkKey] = []
         saveTokensToStorage();
+        leaveAllTokenSockets();
         if (callback) callback(true)
         return true
     }
 
-    const refreshTokenBalances = async (callback = undefined) => {
-        let keysToGet = [] 
-        let accounts = actions.getSanatizedAccounts()
+    const joinTokenSocket = (accountsList, tokenContract) => {
         let network = utils.networks.getCurrent()
 
-        if (!tokens[network.networkKey]) return;
-        if (tokens[network.networkKey].length === 0) return;
+        if (!socketNetworks.includes(network.type)) return
+
+        accountsList.map(account => {
+            services.socketService.joinTokenBalanceFeed(tokenContract, account.vk, network.type)
+        })
+    }
+
+    const joinAllTokenSockets = (accountsList, networkInfo = undefined) => {
+        let network
+
+        if (networkInfo){
+            network = utils.networks.getNetwork(networkInfo)
+        }else{
+            network = utils.networks.getCurrent()
+        }
+
+        if (!socketNetworks.includes(network.type)) return
+
+        let netKey = network.networkKey
+        const {[netKey]: networkTokens} = tokens;
+
+        if (networkTokens && accountsList){
+            accountsList.map(account => {
+                networkTokens.map(token => {
+                    services.socketService.joinTokenBalanceFeed(token.contractName, account.vk, network.type)
+                })
+            })
+        }
+    }
+
+    const leaveOneTokenSockets = (tokenContract, networkType) => {
+        if (!networkType) {
+            let network = utils.networks.getCurrent()
+            networkType = network.type
+        }
+
+        if (!socketNetworks.includes(networkType)) return
+
+        let accounts = actions.getSanatizedAccounts()
 
         accounts.map(account => {
-            tokens[network.networkKey].map(token => {
+            services.socketService.leaveTokenBalanceFeed(tokenContract, account.vk, networkType)
+        })
+    }
+
+    const leaveAllTokenSockets = (accountsList, networkInfo = undefined) => {
+        let network
+
+        if (networkInfo){
+            network = utils.networks.getNetwork(networkInfo)
+        }else{
+            network = utils.networks.getCurrent()
+        }
+
+        if (!socketNetworks.includes(network.type)) return
+
+        let netKey = network.networkKey
+        const {[netKey]: networkTokens} = tokens;
+
+        if (networkTokens && accountsList){
+            accountsList.map(account => {
+                networkTokens.map(token => {
+                    services.socketService.leaveTokenBalanceFeed(token.contractName, account.vk, network.type)
+                })
+            })
+        }
+    }
+
+    const refreshOneTokenBalances = async (tokenContract) => {
+        let network = utils.networks.getCurrent()
+        let netKey = network.networkKey
+        let keysToGet = []
+
+        let accounts = actions.getSanatizedAccounts()
+
+        accounts.map(account => {
+            keysToGet.push({
+                contractName: tokenContract,
+                variableName: "balances",
+                key: account.vk
+            })
+        })
+
+        await network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+            if (!Array.isArray(balances)) return
+            try{
+                if (!token_balances[netKey]) token_balances[netKey] = {}
+
+                balances.forEach(balance => {
+                    if (!token_balances[netKey][balance.key]) token_balances[netKey][balance.key] = {}
+                    token_balances[netKey][balance.key][tokenContract] = utils.getValueFromReturn(balance.value)
+                })
+                saveTokensBalancesToStorage()
+            }catch(e){
+                console.log(e)
+            }
+        })
+
+    }
+
+    const refreshTokenBalances = async (networkInfo = undefined) => {
+        let keysToGet = [] 
+        let accounts = actions.getSanatizedAccounts()
+        let network
+        let netKey
+
+        if (networkInfo){
+            network = utils.networks.getNetwork(networkInfo)
+            netKey = network.networkKey
+        }else{
+            network = utils.networks.getCurrent()
+            netKey = network.networkKey
+        }
+        
+        const {[netKey]: networkTokens} = tokens;
+
+        if (!networkTokens) return;
+        if (networkTokens.length === 0) return;
+
+        accounts.map(account => {
+            networkTokens.map(token => {
                 keysToGet.push({
                     contractName: token.contractName,
                     variableName: "balances",
@@ -230,17 +371,63 @@ export const tokenController = (utils, actions) => {
                 })
             })
         })
-        let res = await network.blockExplorer_API.getKeys(keysToGet)
-        let newBalances = {}
-        res = res.filter(f => f.value !== null).map(balance => {
-            let contractName = balance.key.split(".")[0]
-            let vk = balance.key.split(":")[1]
-            if (!newBalances[vk]) newBalances[vk] = {}
-            newBalances[vk][contractName] = utils.getValueFromReturn(balance.value)
+
+        await network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+            try{
+                let newBalances = keysReturnToTokenStoreObject(balances)
+                token_balances[netKey] = newBalances
+                saveTokensBalancesToStorage()
+            }catch(e){
+                console.log(e)
+            }
         })
-        token_balances[network.networkKey] = newBalances
-        if (callback) callback(newBalances)
-        saveTokensBalancesToStorage()
+    }
+
+    const processTokenBalanceSocketUpdate = (update, networkType) => {
+        if (!update) return
+        if (actions.walletIsLocked()) return
+
+        update = JSON.parse(update)
+
+        const { message, room } = update
+        if (!message) return
+
+        const { key, value, keys, contractName } = message
+
+        if (key && value && room ){
+            if (!utils.isLamdenKey(key)) return
+            if (keys.length !== 1) return
+            if (room !== `${contractName}.balances:${key}`) return
+
+            try{
+                let network = utils.networks.getLamdenNetwork(networkType)
+                let netKey = network.networkKey
+        
+                let newValue = utils.getValueFromReturn(value)
+                if (!newValue) newValue = "0"
+
+                setTokenBalance(netKey, key, contractName, newValue)
+                saveTokensBalancesToStorage()
+            }catch(e){
+                console.log(e)
+            }
+        }
+    }
+
+    const keysReturnToTokenStoreObject = (balances) => {
+        let newBalances = {}
+        balances.forEach(balance => {
+            const { key, value, contractName } = balance
+            if (!newBalances[key]) newBalances[key] = {}
+            newBalances[key][contractName] = utils.getValueFromReturn(value)
+        })
+        return newBalances
+    }
+
+    const setTokenBalance = (netKey, vk, tokenContractName, newValue) => {
+        if (!token_balances[netKey]) token_balances[netKey] = {}
+        if (!token_balances[netKey][vk]) token_balances[netKey][vk] = {}
+        token_balances[netKey][vk][tokenContractName] = newValue
     }
 
     const reorderUp = (index, callback = undefined) => {
@@ -254,6 +441,7 @@ export const tokenController = (utils, actions) => {
 
     const reorderDown = (index, callback = undefined) => {
         let network = utils.networks.getCurrent()
+        
         if (!tokens[network.networkKey]){
             if (callback) callback(true)
             return true
@@ -287,7 +475,11 @@ export const tokenController = (utils, actions) => {
         validateTokenContract,
         getTokenMeta,
         tokenExists,
+        refreshOneTokenBalances,
         refreshTokenBalances,
+        joinTokenSocket,
+        joinAllTokenSockets,
+        leaveAllTokenSockets,
         reorderUp, reorderDown
     }
 }

@@ -1,8 +1,13 @@
 import { LamdenBlockexplorer_API } from '../blockExplorer_API.js'
 
-export const networkController = (utils) => {
+export const networkController = (utils, services) => {
     let networksStore = {};
     const LamdenNetworkTypes = ['mainnet','testnet']
+    const blockserviceIPs = {
+        mainnet: 'http://165.22.47.195',
+        testnet: 'http://165.227.181.34'
+        // testnet: 'http://localhost'
+    }
 
     chrome.storage.local.get({"networks":{}},function(getValue) {networksStore = getValue.networks;})
     chrome.storage.onChanged.addListener(function(changes) {
@@ -24,9 +29,19 @@ export const networkController = (utils) => {
         networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
     }
 
+    const addBlockservice = (networkObj) => {
+        if (networkObj.type === 'mainnet'){
+            networkObj.blockservice_API = services.blockservice.getBlockservice(blockserviceIPs['mainnet'], 3535)
+        }
+        if (networkObj.type === 'testnet') {
+            networkObj.blockservice_API = services.blockservice.getBlockservice(blockserviceIPs['testnet'], 3535)
+        }
+    }
+
     const addExtras = (networkObj) => {
         addNetworkKey(networkObj)
         addBlockexplorer(networkObj)
+        addBlockservice(networkObj)
         return networkObj
     }
 

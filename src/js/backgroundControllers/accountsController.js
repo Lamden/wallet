@@ -1,4 +1,4 @@
-export const accountsController = (utils) => {
+export const accountsController = (utils, services) => {
     let vault = "";
     let hash = "";
     let accountStore = [];
@@ -114,7 +114,10 @@ export const accountsController = (utils) => {
         accounts.forEach(account => {
             let res = addAccount(account)
             account.result = res
-            if (account.result.added) accountAdded = true
+            if (account.result.added) {
+                accountAdded = true
+                services.socketService.joinCurrencyBalanceFeed(account.vk)
+            }
             return account
         })
         if (accountAdded) refreshAccountStore();
@@ -308,6 +311,11 @@ export const accountsController = (utils) => {
         refreshAccountStore()
     };
 
+    const isWatchOnly = (vk) => {
+        let account = getAccountByVK(vk)
+        return account.sk === "watchOnly"
+    }
+
     return {
         createPassword,
         checkPassword,
@@ -330,6 +338,7 @@ export const accountsController = (utils) => {
         walletIsLocked,
         decryptKeys,
         signTx,
-        reorderUp, reorderDown
+        reorderUp, reorderDown,
+        isWatchOnly
     }
 }
