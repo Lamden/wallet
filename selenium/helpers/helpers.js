@@ -96,7 +96,8 @@ const lockWallet = async (driver, switchback) => {
     await sleep(1000, true)
 }
 const changeToTestnet = async (driver) => {
-    await driver.findElement(By.id("nav-network-info")).click()
+    let navNetwork = await driver.wait(until.elementLocated(By.id("nav-network-info")), 5000);
+    navNetwork.click()
     await sleep(1000, true)
 }
 
