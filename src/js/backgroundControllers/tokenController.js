@@ -154,9 +154,10 @@ export const tokenController = (utils, services, actions) => {
             }
         })
         let tokenMeta = await getTokenMetaValues(metaKeys)
+
         let meta = {}
         tokenMeta.map(metaItem => {
-            let metaItemKey = metaItem.key.split(":")[1]
+            let metaItemKey = metaItem.key
             if (metaItemKey === "token_name") metaItemKey = "tokenName"
             if (metaItemKey === "token_symbol") metaItemKey = "tokenSymbol"
             if (metaItemKey === "token_logo_base64_svg") metaItemKey = "logo_base64_svg"
@@ -170,7 +171,7 @@ export const tokenController = (utils, services, actions) => {
 
     const getTokenMetaValues = async (metaKeys) => {
         let network = utils.networks.getCurrent()
-        let res = await network.blockExplorer_API.getKeys(metaKeys)
+        let res = await network.blockservice_API.getCurrentKeysValues(metaKeys)
         return res
     }
 

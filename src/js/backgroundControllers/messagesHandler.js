@@ -193,6 +193,12 @@ export const messagesHandler = (masterController) => {
                     if (message.type === 'joinTokenSocket') {
                         sendResponse(masterController.joinTokenSocket(message.data))
                     }
+
+                    // State Queries
+                    if (message.type === 'state_currentStamps') {
+                        masterController.state.getCurrentStamps(sendResponse)
+                        return true
+                    }
                 }
             }
 

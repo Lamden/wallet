@@ -7,6 +7,7 @@ import { accountsController  } from './accountsController.js'
 import { balancesController  } from './balancesController.js'
 import { transactionsController } from './transactionsController.js'
 import { tokenController } from './tokenController.js'
+import { queryStateController } from './queryStateController.js'
 
 // Services
 import * as SocketService from '../services/sockets.js'
@@ -50,6 +51,8 @@ export const masterController = () => {
             walletIsLocked: accounts.walletIsLocked
         }
     })()));
+
+    const state = Object.freeze(queryStateController(utils))
 
     const createPassword = (string) => {
         let created = accounts.createPassword(string);
@@ -397,6 +400,7 @@ export const masterController = () => {
         },
         balances,
         utils,
+        state,
         createPassword,
         deleteAccount,
         updateAllBalances,

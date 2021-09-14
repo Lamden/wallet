@@ -1,6 +1,7 @@
 <script>
     import { getContext, onMount, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+    import { Encoder } from 'lamden-js'
     
 	//Stores
     import { BalancesStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
@@ -26,22 +27,33 @@
     $: stampLimit = 0;
 
     onMount(() => {
-        if ($currentNetwork.blockExplorer){
-            fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
-                .then(res => res.json())
-                .then(res => {
-                    stampRatio = parseInt(res.value)
-                    determineStamps()
-                })
-        }
+        chrome.runtime.sendMessage({type: 'state_currentStamps'}, (response) => {
+            if (response === null){
+                if ($currentNetwork.blockExplorer){
+                fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+                    .then(res => res.json())
+                    .then(res => {
+                        stampRatio = parseInt(res.value)
+                        determineStamps()
+                    })
+                }
+            }else{
+                stampRatio = parseInt(response)
+                determineStamps()
+            }
+            
+        })
     })
 
     const determineStamps = () => {
-        if (!selectedWallet) return
-        let maxStamps = stampRatio * 5;
+        let maxStamps = Encoder('bigNumber', stampRatio * 5) ;
         let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
-        if ((bal * stampRatio) < maxStamps) stampLimit = parseInt((bal * stampRatio) * .95 )
-        else stampLimit = parseInt(maxStamps)
+        
+        let userStampsAvailable = bal.multipliedBy(stampRatio)
+        if (maxStamps.isGreaterThan(userStampsAvailable)) {
+            stampLimit = parseInt(userStampsAvailable.toString())
+        }
+        else stampLimit = parseInt(maxStamps.toString())
     }
 
     const handleSelectedWallet = (e) => {

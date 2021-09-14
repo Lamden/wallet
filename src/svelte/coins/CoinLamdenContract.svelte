@@ -46,23 +46,37 @@
     $: stampLimit = 0
 
     onMount(() => {
+        chrome.runtime.sendMessage({type: 'state_currentStamps'}, (response) => {
+            if (response === null){
+                if ($currentNetwork.blockExplorer){
+                fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
+                    .then(res => res.json())
+                    .then(res => {
+                        stampRatio = parseInt(res.value)
+                        determineStamps()
+                    })
+                }
+            }else{
+                stampRatio = parseInt(response)
+                determineStamps()
+            }
+            
+        })
+        
         getMethods(contractName)
-        if ($currentNetwork.blockExplorer){
-            fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
-                .then(res => res.json())
-                .then(res => {
-                    stampRatio = parseInt(res.value)
-                    determineStamps()
-                })
-        }
+
 
     });
 
     const determineStamps = () => {
-        let maxStamps = stampRatio * 5;
+        let maxStamps = Encoder('bigNumber', stampRatio * 5) ;
         let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
-        if ((bal * stampRatio) < maxStamps) stampLimit = parseInt((bal * stampRatio) * .95 )
-        else stampLimit = parseInt(maxStamps)
+        
+        let userStampsAvailable = bal.multipliedBy(stampRatio)
+        if (maxStamps.isGreaterThan(userStampsAvailable)) {
+            stampLimit = parseInt(userStampsAvailable.toString())
+        }
+        else stampLimit = parseInt(maxStamps.toString())
     }
 
     const coinList = () => {
@@ -148,7 +162,6 @@
     }
 
     const handleNewArgValues = (e) => {
-        console.log(e.detail.argumentList)
         kwargs = e.detail.argumentList        
     }
 </script>
