@@ -120,7 +120,7 @@
     }
 
     const finish = () => {
-        chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
+        // chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
         sendMessage();
         nextPage();
     }

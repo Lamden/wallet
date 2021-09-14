@@ -1,7 +1,7 @@
 
 const validators = require('types-validate-assert')
 const { validateTypes } = validators
-import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue } from '..//utils.js';
+import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue, isLamdenKey } from '..//utils.js';
 import Lamden from 'lamden-js'
 
 
@@ -86,6 +86,7 @@ export const controllerUtils = (() => {
         sendMessageToApp,
         sendMessageToTab,
         removeTrailingZeros,
-        getValueFromReturn
+        getValueFromReturn,
+        isLamdenKey
     }
 })()

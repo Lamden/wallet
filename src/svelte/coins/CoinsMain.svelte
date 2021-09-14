@@ -52,6 +52,7 @@
 	});
 
 	const handleRefresh = () => {
+		/*
 		if (refreshing) return
 		chrome.runtime.sendMessage({type: 'balancesStoreUpdateAll', data: $currentNetwork.getNetworkInfo()})
 		chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
@@ -59,6 +60,7 @@
 		setTimeout(() => {
 			refreshing = false
 		}, 2000);
+		*/
 	}
 
 	const handleRefreshTokens = () => {

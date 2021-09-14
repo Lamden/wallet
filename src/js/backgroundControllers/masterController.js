@@ -8,11 +8,26 @@ import { balancesController  } from './balancesController.js'
 import { transactionsController } from './transactionsController.js'
 import { tokenController } from './tokenController.js'
 
+// Services
+import * as SocketService from '../services/sockets.js'
+import * as BlockService from '../services/blockservice.js'
+
 export const masterController = () => {
     const utils = controllerUtils
-    utils.networks = Object.freeze(networkController(utils));
+
+    const services = {
+        socketService: SocketService.createSocketService(),
+        blockservice: BlockService
+    }
+
+    utils.networks = Object.freeze(networkController(utils, services));
     const accounts = Object.freeze(accountsController(utils));
-    const balances = Object.freeze(balancesController(utils));
+    const balances = Object.freeze(balancesController(utils, services, (() => {
+        return {
+            isWatchOnly: accounts.isWatchOnly,
+            walletIsLocked: accounts.walletIsLocked
+        }
+    })()));
     const transactions = Object.freeze(transactionsController(utils, (() => {
         return {
             decryptString: accounts.decryptString,
@@ -29,9 +44,10 @@ export const masterController = () => {
             getAccountByVK: accounts.getAccountByVK
         }
     })()));
-    const tokens = Object.freeze(tokenController(utils, (() => {
+    const tokens = Object.freeze(tokenController(utils, services, (() => {
         return {
-            getSanatizedAccounts: accounts.getSanatizedAccounts
+            getSanatizedAccounts: accounts.getSanatizedAccounts,
+            walletIsLocked: accounts.walletIsLocked
         }
     })()));
 
@@ -41,13 +57,31 @@ export const masterController = () => {
         return created;
     }
 
+    const joinSockets = () => {
+        let accountsList = accounts.getSanatizedAccounts()
+        balances.joinAllSockets(accountsList)
+        tokens.joinAllTokenSockets(accountsList)
+    }
+
+    const leaveSockets = () => {
+        let accountsList = accounts.getSanatizedAccounts()
+        balances.leaveAllSockets(accountsList)
+        tokens.leaveAllTokenSockets(accountsList)
+    }
+
     const unlock = (pwd) => {
         let unlocked = accounts.unlock(pwd);
         broadcastLockStatus(unlocked);
+        if (unlocked){
+            updateAllBalances()
+            updateAllTokenBalances()
+            joinSockets()
+        }
         return unlocked;
     }
 
     const lock = () => {
+        leaveSockets()
         accounts.lock()
         broadcastLockStatus(true)
         return true
@@ -55,6 +89,7 @@ export const masterController = () => {
     const broadcastLockStatus = (status) => {
             utils.sendMessageToApp('walletIsLocked', status)
             dapps.sendMessageToAllDapps('sendWalletInfo')
+
     }
     const getWalletInfo = (dappInfo = undefined) => {
         let walletInfo = {
@@ -83,6 +118,10 @@ export const masterController = () => {
         if (typeof accountsList === 'undefined') return false
         balances.updateAll(accountsList, utils.networks.getCurrent())
         return true
+    }
+
+    const updateAllTokenBalances = () => {
+        tokens.refreshTokenBalances()
     }
 
     const updateOneBalance = (account) => {

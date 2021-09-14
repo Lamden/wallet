@@ -1,6 +1,14 @@
-export const tokenController = (utils, actions) => {
+export const tokenController = (utils, services, actions) => {
     let tokens = {};
     let token_balances = {};
+
+    chrome.runtime.onSuspend.addListener(removeSocketListeners)
+    chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
+    addSocketListeners()
+
+
+    services.socketService.testnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'testnet'))
+    services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'mainnet'))
 
     const LST002_RS_TOKEN_METADATA = [
         'token_name',
@@ -24,6 +32,18 @@ export const tokenController = (utils, actions) => {
             if (key === "token_balances") token_balances = changes[key].newValue;
         }
     });
+
+    function addSocketListeners() {
+        services.socketService.testnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'testnet'))
+        services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'mainnet'))
+        if (!actions.walletIsLocked()) joinAllTokenSockets()
+    }
+
+    function removeSocketListeners() {
+        services.socketService.testnet_socket_off('new-state-changes-one')
+        services.socketService.mainnet_socket_off('new-state-changes-one')
+        leaveAllTokenSockets()
+    }
 
     const validateTokenContract = async (contractName, callback = undefined) => {
         let contractInfo = await getContractInfo(contractName)
@@ -213,16 +233,39 @@ export const tokenController = (utils, actions) => {
         return true
     }
 
+    const joinAllTokenSockets = (accountsList) => {
+        let network = utils.networks.getCurrent()
+        let netKey = network.networkKey
+
+        accountsList.map(account => {
+            tokens[netKey].map(token => {
+                services.socketService.joinTokenBalanceFeed(token.contractName, account.vk, network.type)
+            })
+        })
+    }
+
+    const leaveAllTokenSockets = (accountsList) => {
+        let network = utils.networks.getCurrent()
+        let netKey = network.networkKey
+
+        accountsList.map(account => {
+            tokens[netKey].map(token => {
+                services.socketService.leaveTokenBalanceFeed(token.contractName, account.vk, network.type)
+            })
+        })
+    }
+
     const refreshTokenBalances = async (callback = undefined) => {
         let keysToGet = [] 
         let accounts = actions.getSanatizedAccounts()
         let network = utils.networks.getCurrent()
+        let netKey = network.networkKey
 
-        if (!tokens[network.networkKey]) return;
-        if (tokens[network.networkKey].length === 0) return;
+        if (!tokens[netKey]) return;
+        if (tokens[netKey].length === 0) return;
 
         accounts.map(account => {
-            tokens[network.networkKey].map(token => {
+            tokens[netKey].map(token => {
                 keysToGet.push({
                     contractName: token.contractName,
                     variableName: "balances",
@@ -230,17 +273,65 @@ export const tokenController = (utils, actions) => {
                 })
             })
         })
-        let res = await network.blockExplorer_API.getKeys(keysToGet)
-        let newBalances = {}
-        res = res.filter(f => f.value !== null).map(balance => {
-            let contractName = balance.key.split(".")[0]
-            let vk = balance.key.split(":")[1]
-            if (!newBalances[vk]) newBalances[vk] = {}
-            newBalances[vk][contractName] = utils.getValueFromReturn(balance.value)
+
+        await network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+            try{
+                let newBalances = keysReturnToTokenStoreObject(balances)
+                token_balances[netKey] = newBalances
+                saveTokensBalancesToStorage()
+            }catch(e){
+                console.log(e)
+            }
         })
-        token_balances[network.networkKey] = newBalances
+
         if (callback) callback(newBalances)
-        saveTokensBalancesToStorage()
+    }
+
+    const processTokenBalanceSocketUpdate = (update, networkType) => {
+        if (!update) return
+        if (actions.walletIsLocked()) return
+
+        update = JSON.parse(update)
+
+        const { message, room } = update
+        if (!message) return
+
+        const { key, value, keys, contractName } = message
+
+        if (key && value && room ){
+            if (!utils.isLamdenKey(key)) return
+            if (keys.length !== 1) return
+            if (room !== `${contractName}.balances:${key}`) return
+
+            try{
+                let network = utils.networks.getLamdenNetwork(networkType)
+                let netKey = network.networkKey
+        
+                let newValue = utils.getValueFromReturn(value)
+                if (!newValue) newValue = "0"
+
+                setTokenBalance(netKey, key, contractName, newValue)
+                saveTokensBalancesToStorage()
+            }catch(e){
+                console.log(e)
+            }
+        }
+    }
+
+    const keysReturnToTokenStoreObject = (balances) => {
+        let newBalances = {}
+        balances.forEach(balance => {
+            const { key, value, contractName } = balance
+            if (!newBalances[key]) newBalances[key] = {}
+            newBalances[key][contractName] = utils.getValueFromReturn(value)
+        })
+        return newBalances
+    }
+
+    const setTokenBalance = (netKey, vk, tokenContractName, newValue) => {
+        if (!token_balances[netKey]) token_balances[netKey] = {}
+        if (!token_balances[netKey][vk]) token_balances[netKey][vk] = {}
+        token_balances[netKey][vk][tokenContractName] = newValue
     }
 
     const reorderUp = (index, callback = undefined) => {
@@ -288,6 +379,8 @@ export const tokenController = (utils, actions) => {
         getTokenMeta,
         tokenExists,
         refreshTokenBalances,
+        joinAllTokenSockets,
+        leaveAllTokenSockets,
         reorderUp, reorderDown
     }
 }

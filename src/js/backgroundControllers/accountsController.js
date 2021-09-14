@@ -308,6 +308,11 @@ export const accountsController = (utils) => {
         refreshAccountStore()
     };
 
+    const isWatchOnly = (vk) => {
+        let account = getAccountByVK(vk)
+        return account.sk === "watchOnly"
+    }
+
     return {
         createPassword,
         checkPassword,
@@ -330,6 +335,7 @@ export const accountsController = (utils) => {
         walletIsLocked,
         decryptKeys,
         signTx,
-        reorderUp, reorderDown
+        reorderUp, reorderDown,
+        isWatchOnly
     }
 }
