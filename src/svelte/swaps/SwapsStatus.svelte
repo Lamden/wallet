@@ -2,8 +2,7 @@
     import { swapsbyCreatedDate, currentNetwork, networkKey } from '../../js/stores/stores.js'
 
     //Components
-    import { Components }  from '../Router.svelte'
-    const { SwapStatus } = Components;
+    import { SwapStatus }  from '../Router.svelte'
 
     const blockexplorers = {
         "Lamden Testnet|testnet|lamden": {
@@ -12,7 +11,7 @@
         },
         "Lamden Mainnet|mainnet|lamden": {
             "ethereum":'https://etherscan.io',
-            "lamden":"https://mainnet.lamden.io"
+            "lamden":"https://www.tauhq.com"
         },
         "custom":{
             "ethereum":"",

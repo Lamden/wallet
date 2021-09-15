@@ -68,7 +68,7 @@ strong{
 
         <div class="subtext text-body1 text-opacity-1 text-warning">
             {`
-                The token swap start Sept 16th 2020 and ran through to Sept 16th 2021 and is now CLOSED.
+                The token swap ran from Sept 16th, 2020 to Sept 16th, 2021 and is now CLOSED.
             `}
         </div>
 	</div>
