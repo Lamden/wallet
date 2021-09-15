@@ -126,8 +126,16 @@ export const masterController = () => {
                     if (!approvals[key].version) approvals[key].version = "0.0.1"
                 }
             })
+
             walletInfo.approvals = approvals
-            if (Object.keys(approvals).length > 0) walletInfo.wallets = [dappInfo.vk]
+
+            let account = accounts.getAccountByVK(dappInfo.vk)
+            if (!account) return walletInfo
+            if (account.sk !== "watchOnly"){
+                if (Object.keys(approvals).length > 0) walletInfo.wallets = [dappInfo.vk]
+            }else{
+                walletInfo.wallets = ['tracked_address']
+            }
         }
         return walletInfo
     }

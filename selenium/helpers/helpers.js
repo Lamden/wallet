@@ -288,7 +288,6 @@ const makeHttpRequest = (url, callback) => {
 const getAccountBalance = (vk) => {
     return new Promise(resolver => {
         const resolveRequest = (data) => {
-            console.log({data})
             if (typeof data.value === 'undefined') return resolver(0)
             if (!data.value) return resolver(0)
             if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
