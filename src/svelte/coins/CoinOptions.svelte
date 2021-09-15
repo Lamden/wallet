@@ -78,11 +78,19 @@
                 name: "Select from approved dApps",
                 selected: true,
             });
+            if (!hasDapps(list)){
+                list[0].name = "No Linked Account Connections Found"
+            }
             return list
         }else{
             setDappInfo(dAppInfo)
         }
         return []
+    }
+
+    const hasDapps = (dappList) => {
+        if (dappList.length === 1 && dappList[0].name === "Select from approved dApps") return false
+        return true
     }
 
     const associateDapp = (dapp) => {
@@ -143,7 +151,9 @@ p, a{
 .icon{
     width: 20px;
 }
-
+.options-box{
+    margin-top: 2rem;
+}
 h3{
     margin: 1rem 0 0;
 }
@@ -179,15 +189,17 @@ h2{
         
     {/if}
 
-    {#if dAppList.length > 0}
-        <h3>Create Linked Account</h3>
-        <DropDown
-            id={'dapps-dd'}
-            items={dAppList} 
-            label={'Currently Linked Apps'}
-            margin="0 0 2rem"
-            on:selected={(e) => associateDapp(e.detail.selected.value)}
-        />
+    {#if selectedWallet }
+        {#if selectedWallet.sk === "encrypted" }
+            <h3>{dAppInfo ? "Change Linked Account" : "Link This Account To"}</h3>
+            <DropDown
+                id={'dapps-dd'}
+                items={dAppList} 
+                label={'Currently Linked Apps'}
+                margin="0"
+                on:selected={(e) => associateDapp(e.detail.selected.value)}
+            />
+        {/if}
     {/if}
 
     <div class="options-box flex-row">
