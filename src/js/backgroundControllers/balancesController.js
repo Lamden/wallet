@@ -151,7 +151,6 @@ export const balancesController = (utils, services, actions) => {
             })
 
         let newBalanceInfo = processBalance(balance, account)
-        console.log({newBalanceInfo})
         let netKey = network.networkKey
 
         if (!balancesStore[netKey]) balancesStore[netKey] = {}
