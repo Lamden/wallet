@@ -231,6 +231,10 @@ export const messagesHandler = (masterController) => {
                 if (message.type === 'dAppSendLamdenTransaction') {
                     masterController.initiateDAppTxSend(sender, message.data, dappInfo, sendResponse)
                 }
+                //Process an account change request sent from the dApp;
+                if (message.type === 'changeLinkAccount') {
+                    masterController.promptChangeAccount(sender, dappInfo)
+                }
             }
         }
     });

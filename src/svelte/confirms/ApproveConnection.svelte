@@ -7,6 +7,7 @@
     import ApproveConnectionIntro from './ApproveConnectionIntro.svelte'
     import ApproveConnectionTrusted from './ApproveConnectionTrusted.svelte'
     import ApproveConnectionFund from './ApproveConnectionFund.svelte'
+    import ApprovConnectionAccount from './ApprovConnectionAccount.svelte';
 
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';
@@ -22,7 +23,7 @@
     let reapprove = confirmData.messageData.reapprove
 
     const setStep = (nextStep) => {
-        if (nextStep.detail > 3) approveApp()
+        if (nextStep.detail > 4) approveApp()
         else step = nextStep.detail
     };
 </script>
@@ -80,6 +81,12 @@
 
     {#if step == 3}
         <ApproveConnectionTrusted {confirmData}
+            on:setStep={setStep} 
+        />
+    {/if}
+
+    {#if step == 4}
+        <ApprovConnectionAccount {confirmData}
             on:setStep={setStep} 
         />
     {/if}

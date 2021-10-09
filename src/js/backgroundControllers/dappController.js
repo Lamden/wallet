@@ -97,10 +97,15 @@ export const dappController = (utils, actions) => {
             const dappInfo = getDappInfoByURL(confirmData.url)
             const messageData = confirmData.messageData
             let accountVk;
-            if (!dappInfo){
-                accountVk = actions.addNewLamdenAccount(messageData.appName).vk
-            }else{
-                accountVk = dappInfo.vk
+            if (approveInfo.accountInfo){
+                // link to exist account 
+                accountVk = approveInfo.accountInfo.vk
+            } else {
+                if (!dappInfo){
+                    accountVk = actions.addNewLamdenAccount(messageData.appName).vk
+                }else{
+                    accountVk = dappInfo.vk
+                }
             }
             if (accountVk){
                 addNew(confirmData.url, accountVk, messageData, approveInfo.trustedApp)

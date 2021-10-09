@@ -55,6 +55,25 @@ const lamdenWalletSendTx = (detail) => {
     });
 }
 
+const lamdenWalletChangeAccount = (detail) => {
+    chrome.runtime.sendMessage({type: 'changeLinkAccount', data: detail}, (response) => {
+        if(!chrome.runtime.lastError && response !== 'ok'){
+            getWalletInfo()
+        }
+    });
+}
+
+document.addEventListener('changeLinkAccount', (event) => {
+    const detail = event.detail
+    //If a detail value was passed validate it is a JSON string.  If not then pass back an error to the webpage
+    if (isJSON(detail)) lamdenWalletChangeAccount(detail)
+    else{
+        const errors = ['Expected event detail to be JSON string']
+        document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: {errors}}));
+        return
+    }
+});
+
 const returnTxStatusToPage = (txResult) => {
     if (typeof txResult.data === 'undefined' && typeof txResult.errors !== 'undefined'){
         txResult = { status: "error", errors: txResult.errors}

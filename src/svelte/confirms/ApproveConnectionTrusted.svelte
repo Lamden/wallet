@@ -29,8 +29,13 @@
         next();
     }
 
-    const next = () => {
+    const setChoiceExistAccount = () => {
+        setTrusted(trusted)
         dispatch('setStep', 4)
+    }
+
+    const next = () => {
+        dispatch('setStep', 5)
     }
 
     const back = () => {
@@ -171,6 +176,14 @@
                 height={'42px'}
                 margin={'0 0 0.5rem 0'}
                 click={setChoice} />
+            <Button 
+                id={'trusted-next-old-account-btn'}
+                classes={'button__solid button__primary'}
+                name="Existing Account"
+                width={'240px'}
+                height={'42px'}
+                margin={'0 0 0.5rem 0'}
+                click={setChoiceExistAccount} />
             <Button 
                 id={'trusted-back-btn'}
                 classes={'button__solid '}
