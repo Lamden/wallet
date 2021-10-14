@@ -143,7 +143,7 @@
         <div class="flex-row">
             <div class="flex-column wallet-details">
                 <div class="nickname text-body1">
-                    {#if thisNetworkApproved && dappInfo}
+                    {#if dappInfo}
                         <div class="flex-row">
                             {#if trustedApp}
                                 <div class="trusted-icon">
