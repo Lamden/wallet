@@ -323,20 +323,6 @@ export const masterController = () => {
         createPopup(windowId)
     }
 
-    const promptChangeAccount = async (sender, dappInfo) => {
-        //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
-        const wallet = accounts.getAccountByVK(dappInfo.vk)
-        const windowId = utils.createUID()
-        const appName = dappInfo.appName
-        dapps.setTxToConfirm(windowId, {
-            type: 'ChangeAccount',
-            messageData: {wallet, ...dappInfo},
-            url: sender.origin
-        });
-        createPopup(windowId)
-    }
-
-
     const createPopup = (windowId) => {
         chrome.windows.create({
             url: `/confirm.html#${windowId}`, width: 375, height: 650, type: 'popup',
@@ -436,7 +422,6 @@ export const masterController = () => {
         initiateAppTxSend,
         initiateDAppTxSend,
         promptApproveDapp,
-        promptChangeAccount,
         checkSwapSeenHashes,
         joinSockets,
         leaveSockets,
