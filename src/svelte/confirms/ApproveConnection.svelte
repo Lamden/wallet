@@ -80,13 +80,13 @@
     {/if}   
 
     {#if step == 3}
-        <ApproveConnectionTrusted {confirmData}
+        <ApprovConnectionAccount {confirmData}
             on:setStep={setStep} 
         />
     {/if}
 
     {#if step == 4}
-        <ApprovConnectionAccount {confirmData}
+        <ApproveConnectionTrusted {confirmData}
             on:setStep={setStep} 
         />
     {/if}

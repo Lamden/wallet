@@ -1,111 +1,129 @@
 <script>
-    import whitelabel from '../../../whitelabel.json'
-    
-    import { getContext } from 'svelte'
-    import { fly } from 'svelte/transition';
-    import { quintOut } from 'svelte/easing';
+    import { getContext, onMount } from 'svelte';
+
+	//Stores
+    import { currentNetwork } from '../../js/stores/stores.js';
 
     //Components
-    import Button from '../components/Button.svelte'
-    
+    import { Modals, Components, Icons } from '../Router.svelte';
+    import SmartContractIcon from '../icons/SmartContractIcon.svelte'
+
+    const { Button } = Components;
 
     //Icons
-    import SmartContractIcon from '../icons/SmartContractIcon.svelte'
     import verified_app from '../../img/menu_icons/icon_verified_app.svg'
-    import arrow_right from '../../img/menu_icons/icon_arrow-right.svg'  
+    import arrow_right from '../../img/menu_icons/icon_arrow-right.svg'   
+    import linkedAccount from '../../img/misc/linked_account.svg'
+    import logo from '../../img/logo.svg'
 
-	import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
+	//Context
+    const { setPage } = getContext('connectionOption_functions');
 
-    //Context
-    const { openNewTab, setTrusted, logoFormat } = getContext('confirm_functions');
+    //Props
+    export let dappInfo;
 
-    export let confirmData;
+    let trusted = dappInfo[$currentNetwork.type].trustedApp;
+    let sending = false;
+    let brokenLogoLink = false;
 
-    let trusted = true;
+    onMount(() => {
+        if (typeof trusted === 'undefined') {
+            if (dappInfo[$currentNetwork.type].stampPreApproval > 0){
+                trusted = true;
+            }else{
+                trusted = false;
+            }
+            handleChange();
+        }
+    })
 
-    const setChoice = () => {
-        setTrusted(trusted)
-        next();
+    const handleChange = () => {
+        sending = true;
+        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
+            sending = false;
+        })
     }
 
-    const next = () => {
-        dispatch('setStep', 5)
-    }
 
-    const back = () => {
-        dispatch('setStep', 3)
-    }    
 </script>
 
-
 <style>
-    .detail{
-        flex-grow: 1;
-        padding: 1rem;
+    #coin-dapp-trusted{
+        background: inherit;
+    }
+    .padding{
+        padding: 0.5rem 60px;
     }
     .flow1{
-        width: 100%;
-        justify-content: space-evenly;
+        width: 50%;
+        justify-content: space-around;
         align-items: center;
-        box-sizing: border-box;
-        padding: 0 15%;
-
+        margin: 2rem auto;
     }
     img{
         width: 100%;
     }
     .icon{
-        width: 30px;
+        position: relative;
+        width: 60px;
     }
     .icon > .checkmark{
         width: 50px;
+        margin: 0 auto;
     }
     .icon-arrows{
         width: 22px;
     }
-    .buttons{
-        justify-content: flex-end;
-        align-items: center;
-        flex-grow: 1;
+    p{
+        font-size: 1.1em;
+        align-self: flex-start;
+        margin: 0.25rem 0;
+        line-height: 1.4;
     }
-    .help-link{
-        text-align: center;
+    p.text{
+        font-size: 1.2em;
     }
-    strong{
-        text-decoration: underline;
-        font-weight: 400;
-        min-width: fit-content;
-    }
+
     label{
         display: flex;
-        margin: 0.5rem 0;
+        margin: 0.2rem auto;
     }
     label > input {
-        margin: 0 15px 0 0;
+        height: 14px;
+        margin-right: 10px;
     }
     label > strong {
         color: var(--font-accent);
-        align-self: center;
-        text-decoration: none;
-        margin-right: 15px;
-        font-size: 1.2em;
+        margin-right: 10px;
     }
-    p{
-        margin: 1rem 0;
-    }
-    p.choice{
-        font-size: 1em;
-        font-weight: 300;
-        margin: 0;
+    .linked-account-logo{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 22px;
     }
 </style>
-<div class="flex-column detail"
-    in:fly="{{delay: 0, duration: 300, x: 500, y: 0, opacity: 0.25, easing: quintOut}}">
 
+<div id="coin-dapp-trusted" class="flex-column">
+    <h2>Automatic Transactions</h2>
+    <p class="text-body2">
+        Automatic transactions make for a better user experience as some Apps can send frequent transactions.
+        Once automatic transactions are enabled you will no longer receive popups when <strong>{dappInfo.appName}</strong> sends transations
+        to its smart contract <strong>{dappInfo[$currentNetwork.type].contractName}</strong>.  Transactions to other contracts will always trigger a popup.
+    </p>
+    <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">
+        learn more about automatic transactions
+    </a>
     <div class="flex-row flow1">
         <div class="icon" >
-            <img src={`${confirmData.url}/${logoFormat(confirmData.messageData.logo)}`} alt="app logo" />
+            {#if !brokenLogoLink}
+                <img src={`${dappInfo.url}${dappInfo.logo}`} alt="app logo" on:error={() => brokenLogoLink = true}/>
+            {:else}
+                {@html logo}
+                <div class="linked-account-logo"> 
+                    {@html linkedAccount}
+                </div>
+            {/if}
         </div>
         <div class="icon-arrows" >
             {@html arrow_right}
@@ -131,62 +149,28 @@
         <div class="icon-arrows" >
             {@html arrow_right}
         </div>
-        <SmartContractIcon width="38px"/>
+         <div class="icon" >
+            <SmartContractIcon width="60px"/>
+        </div>    
     </div>
 
-    <div class="flex-column">
-        <p class="text-body2 weight-600">
-            Do you want to authorize 
-            <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">automatic transactions</a> 
-            for this wallet?
-        </p>
+    <div class="flex-column padding text-body2">
         <label>
-            <input id="trusted" type=radio bind:group={trusted} value={true}>
-            <strong>Yes</strong> 
-            <p class="choice">
-                Automatically approve transactions from {confirmData.messageData.appName} to its smart contract. 
-                Does not include transactions to send {confirmData.messageData.network.currencySymbol}. However, will generate 
-                <a class="text-link" href="https://docs.lamden.io/docs/wallet/transactions_overview#stamps" rel="noopener noreferrer" target="_blank">transaction costs</a>.
-            </p>
+            <input id="trusted" type="radio" bind:group={trusted} value={true} on:change={handleChange} disabled={sending}>
+            <strong>Automatic</strong>Transactions from {dappInfo.appName} to its smart contract are approved by the wallet automatically
         </label>
-
 
         <label >
-            <input id="not-trusted" type=radio bind:group={trusted} value={false}>
-            <strong>No</strong>
-            <p class="choice">Approve all transactions from {confirmData.messageData.appName} to its smart contract manually via popup window.</p>
+            <input id="not-trusted" type="radio" bind:group={trusted} value={false} on:change={handleChange} disabled={sending}>
+            <strong>Manual</strong>Approve all transactions from {dappInfo.appName} to its smart contract via a popup
         </label>
     </div>
-
-    <p class="font-primary-dim">You can adjust this option later in the account's settings.</p>
-
-    <div class="flex-column buttons">
-            <Button 
-                id={'trusted-next-btn'}
-                classes={'button__solid button__primary'}
-                name="Finish"
-                width={'240px'}
-                height={'42px'}
-                margin={'0 0 0.5rem 0'}
-                click={setChoice} />
-            <Button 
-                id={'trusted-back-btn'}
-                classes={'button__solid '}
-                name="Back"
-                width={'240px'}
-                height={'42px'}
-                margin={'0 0 0.5rem 0'}
-                click={back} />
-
-        <div class="help-link">
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link" 
-                    href="https://docs.lamden.io/docs/wallet/accounts_linked_create"
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    learn about automatic transactions
-                </a>
-            {/if} 
-        </div>  
-    </div>
-</div>    
+    <Button 
+        id={"back-btn"}
+        classes={'button__solid button__primary'} 
+        width={'260px'}
+        margin={'1rem 0'}
+        styles={'align-self: center;'}
+        name="Back" 
+        click={ () => setPage(1)} />  
+</div>

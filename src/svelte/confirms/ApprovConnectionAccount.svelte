@@ -26,14 +26,18 @@
     const { setAccount, close } = getContext('confirm_functions');
 
     export let confirmData
-
-    let vk = confirmData.messageData.wallet? confirmData.messageData.wallet.vk : undefined
+    console.log(confirmData)
+    
     let selectedAccountId; // selected account Id
 
+    $: dappInfo = $DappStore[confirmData.url];
+    $: vk = dappInfo ? dappInfo.vk : undefined
     $: accountList = $CoinStore ? getAccountList($CoinStore, $DappStore):[];
 
     const getAccountList = (CoinStore, DappStore) => {
         let accounts = []
+        console.log(dappInfo)
+        console.log(vk)
         CoinStore.map((coin, index) => {
             coin.id = index
             // return the origin linked account
@@ -65,8 +69,13 @@
     
     const next = () => {
         setAccount(accountList.find(val => val.id === selectedAccountId));
-        dispatch('setStep', 5);
-        dispatch('changeAccount', true);
+        dispatch('setStep', 4);
+    }
+
+    const back = () => {
+        let backStep = 2;
+        if (confirmData.messageData.accounts.length === 0) backStep = 1;
+        dispatch('setStep', backStep)
     }
 
     const select = (index) => {
@@ -158,11 +167,11 @@
     </div>
 
     <div class="flex-column buttons">
-        <p class="text-body2">Click Link to proceed</p>
+        <p class="text-body2">Click Next to proceed</p>
         <Button 
             id={'account-link-btn'}
             classes={'button__solid button__primary'}
-            name="Link"
+            name="Next"
             width={'240px'}
             height={'42px'}
             margin={'0 0 0.5rem 0'}
@@ -170,11 +179,11 @@
         <Button 
             id={'account-deny-btn'}
             classes={'button__solid '}
-            name="Cancel"
+            name="Back"
             width={'240px'}
             height={'42px'}
             margin={'0 0 0.5rem 0'}
-            click={close} />
+            click={back} />
     </div>
     <div class="help-link">
         {#if whitelabel.helpLinks.show}
