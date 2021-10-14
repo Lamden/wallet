@@ -72,7 +72,7 @@
                         message.type = 'success'
                     }
                     setMessage(message)
-                    setPage(4)
+                    setPage(5)
                 }
             })
         }
