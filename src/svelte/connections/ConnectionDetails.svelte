@@ -187,12 +187,12 @@
             {/if}
         </div>
         <div class="buttons">
-            {#if whitelabel.connectionDetails.buttons.options.show && thisNetworkApproved }
+            {#if whitelabel.connectionDetails.buttons.edit.show && thisNetworkApproved }
                 <div>
                     <Button
                         id={'modify-dapp-btn'} 
                         classes={'button__outlined button__overlay'}
-                        name={whitelabel.connectionDetails.buttons.options.name}
+                        name={whitelabel.connectionDetails.buttons.edit.name}
                         padding={"12px"}
                         margin={'0 15px 15px 0'}
                         click={() => openModal('ConnectionModify', dappInfo)}

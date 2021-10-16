@@ -141,7 +141,7 @@
 
 <div id="dapp-options" class="text-primary">
     {#if next}
-        <h2> {`${appName} Options`} </h2>
+        <h2> {`${appName} Edit Connection`} </h2>
         <div class="flex-row linked-account">
             <img class="app-icon" src="{dappInfo.url + dappInfo.logo}" alt="{dappInfo.appName} logo"/>
             <a href="{dappInfo.url}" class="text-link text-body1" target="_blank" rel="noopener noreferrer">{`${dappInfo.appName}`}</a>

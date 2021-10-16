@@ -17,9 +17,11 @@
     import SignOutIcon from '../icons/menu/SignOutIcon.svelte'
     import AboutIcon from '../icons/menu/AboutIcon.svelte'
     import FeedbackIcon from '../icons/menu/FeedbackIcon.svelte'
+    import AppIcon from '../icons/menu/AppIcon.svelte'
 
     const icons = {
         account: AccountsIcon,
+        app: AppIcon,
         ide: IdeIcon,
         swap: SwapIcon,
         devtools: DevToolsIcon,

@@ -56,7 +56,7 @@
                 {
                     "id": "dapp-connections", 
                     "show": true,
-                    "logo": "account", 
+                    "logo": "app", 
                     "name": "Dapp Connections", 
                     "page": {
                         "name": "ConnectionsMain"
@@ -202,8 +202,8 @@
     },
     "connectionDetails": {
         "buttons":{
-            "options":{
-                "name": "OPTIONS",
+            "edit":{
+                "name": "Edit Connection",
                 "show": true
             }
         }
