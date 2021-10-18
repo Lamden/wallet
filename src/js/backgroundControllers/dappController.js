@@ -97,10 +97,15 @@ export const dappController = (utils, actions) => {
             const dappInfo = getDappInfoByURL(confirmData.url)
             const messageData = confirmData.messageData
             let accountVk;
-            if (!dappInfo){
-                accountVk = actions.addNewLamdenAccount(messageData.appName).vk
-            }else{
-                accountVk = dappInfo.vk
+            if (approveInfo.accountInfo){
+                // link to exist account 
+                accountVk = approveInfo.accountInfo.vk
+            } else {
+                if (!dappInfo){
+                    accountVk = actions.addNewLamdenAccount(messageData.appName).vk
+                }else{
+                    accountVk = dappInfo.vk
+                }
             }
             if (accountVk){
                 addNew(confirmData.url, accountVk, messageData, approveInfo.trustedApp)
@@ -224,6 +229,7 @@ export const dappController = (utils, actions) => {
         try{
             dappsStore[dappInfo.url].vk = newVk
             chrome.storage.local.set({"dapps": dappsStore});
+            sendMessageToDapp(dappInfo.url, 'sendWalletInfo')
         }catch(e){
             return false
         }
@@ -277,12 +283,25 @@ export const dappController = (utils, actions) => {
         }
     }
 
+    const sendMessageToDapp = (dappUrl, type, data) => {
+        chrome.windows.getAll({populate:true},function(windows){
+            windows.forEach((window) => {
+                window.tabs.forEach((tab) => {
+                    let urlObj = new URL(tab.url)
+                    if (urlObj.origin === dappUrl){
+                        chrome.tabs.sendMessage(tab.id, {type, data});  
+                    }
+                });
+            });
+        });
+    }
+
     const sendMessageToAllDapps = (type, data) => {
         chrome.windows.getAll({populate:true},function(windows){
             windows.forEach((window) => {
                 window.tabs.forEach((tab) => {
                     Object.keys(dappsStore).forEach(dapp => {
-                        var urlObj = new URL(tab.url)
+                        let urlObj = new URL(tab.url)
                         if (urlObj.origin === dapp){
                             chrome.tabs.sendMessage(tab.id, {type, data});  
                         }

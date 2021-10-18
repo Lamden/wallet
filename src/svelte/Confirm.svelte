@@ -11,6 +11,7 @@
 	import ApproveConnection from './confirms/ApproveConnection.svelte'
 	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
 	import CurrencyApproval from './confirms/CurrencyApproval.svelte'
+	import ChangeAccount from './confirms/ChanageAccount.svelte'
 	
 	setContext('confirm_functions', {
 		approveApp: () => sendApproveApp(),
@@ -19,19 +20,22 @@
 		approveTx: () => sendApprovetx(),
 		close:() => closePopup(),
 		openNewTab: (url) => openNewTab(url),
-		logoFormat: (logo) => fixLogo(logo) 
+		logoFormat: (logo) => fixLogo(logo),
+		setAccount: (account) =>  accountInfo = account
 	});
 
 	const componentMap = {
 		ApproveConnection, 
 		ApproveTransaction,
-		CurrencyApproval
+		CurrencyApproval,
+		ChangeAccount
 	}
 	let confirmData;
 	
 	let confirmed = false;
 	let trustedApp = false;
 	let fundingInfo = false;
+	let accountInfo = false;
 
 	onMount(() => {		
 		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
@@ -53,7 +57,7 @@
 
 	const sendApproveApp = () => {
 		confirm();
-		chrome.runtime.sendMessage({type: 'approveDapp', data: {trustedApp, fundingInfo}})
+		chrome.runtime.sendMessage({type: 'approveDapp', data: {trustedApp, fundingInfo, accountInfo}})
 		closePopup()
 	}
 

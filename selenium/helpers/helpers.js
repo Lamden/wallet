@@ -161,6 +161,20 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true, fun
     //await sleep(1000, true)
 }
 
+const changeAccountPopup = async (driver, popupWindow, switchback) => {
+    await sleep(2000, true)
+    await switchWindow(driver, popupWindow)
+    let change_Button = await driver.wait(until.elementLocated(By.id("change-btn")), 500);
+    await change_Button.click()
+    await sleep(500, true)
+    await driver.findElement(By.xpath("//div[contains(@class,'card') and not(contains(@class,'card-selected'))]"), 500).click();
+    await sleep(500, true)
+    let link_Button = await driver.wait(until.elementLocated(By.id("account-link-btn")), 500);
+    await link_Button.click()
+    await sleep(500, true)
+    await switchWindow(driver, switchback)
+}
+
 const approveTxPopup = async (driver, popupWindow, switchback) => {
     await sleep(2000, true)
     await switchWindow(driver, popupWindow)
@@ -362,5 +376,6 @@ module.exports = {
     getApprovalAmount, getAccountBalance,
     setupSendListener,
     gotoAccountsPage,
-    setupMetamask
+    setupMetamask,
+    changeAccountPopup
 }

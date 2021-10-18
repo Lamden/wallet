@@ -127,6 +127,16 @@ import TokenDelete from './tokens/TokenDelete.svelte';
 import TokenDeleting from './tokens/TokenDeleting.svelte';
 import TokenEditDetails from './tokens/TokenEditDetails.svelte';
 
+//Connections 
+import ConnectionsMain from './connections/ConnectionsMain.svelte';
+import Connection from './connections/Connection.svelte';
+import ConnectionDetails from './connections/ConnectionDetails.svelte';
+import ConnectionModify from './connections/ConnectionModify.svelte';
+import ConnectionOption from './connections/ConnectionOption.svelte';
+import ConnectionEmpty from './connections/ConnectionEmpty.svelte';
+import ConnectionTrusted from './connections/ConnectionTrusted.svelte';
+import ConnectionRevoke from './connections/ConnectionRevoke.svelte';
+
 
 export const RestorePages = {
     RestoreMain, 
@@ -170,6 +180,7 @@ export const Pages = {
     DevToolsMain, 
     About, 
     IdeMain,
+    ConnectionsMain, ConnectionDetails,
     ...FirstRun 
 };
 
@@ -206,7 +217,8 @@ export const Modals = {
     DevToolsDeleteNetwork,
     IdeModelNewTab, 
     IdeModelSubmit, IdeSubmitContract, 
-    IdeModelMethodTx, IdeMethodTx
+    IdeModelMethodTx, IdeMethodTx,
+    ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke
 }
 
 export {
@@ -224,6 +236,7 @@ export {
     Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
-    Swaps, SwapsStatus, SwapStatus
+    Swaps, SwapsStatus, SwapStatus,
+    ConnectionsMain, Connection, ConnectionEmpty
 };
 </script>

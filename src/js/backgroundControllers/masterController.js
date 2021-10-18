@@ -166,7 +166,6 @@ export const masterController = () => {
 
     const updateOneBalance = (vk) => {
         let account = accounts.getAccountByVK(vk)
-        console.log({vk, account})
         if (!account) return true
         balances.updateOne(account, utils.networks.getCurrent())
         return true

@@ -14,7 +14,7 @@
     
     const dispatch = createEventDispatcher();
     const next = () => {
-        dispatch('setStep', 4)
+        dispatch('setStep', 5)
     }
         
     //Context

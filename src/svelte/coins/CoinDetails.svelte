@@ -1,12 +1,11 @@
 <script> 
     import whitelabel from '../../../whitelabel.json'
     
-    import { setContext, getContext, onMount } from 'svelte';
+    import { getContext, onMount } from 'svelte';
 
     //Stores
     import { 
         CoinStore,
-        DappStore, 
         SettingsStore, 
         currentNetwork, 
         BalancesStore,
@@ -14,21 +13,20 @@
         PendingTxStore } from '../../js/stores/stores.js';
 
     //Components
-    import Charms  from '../components/Charms.svelte'
     import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
     const { Button } = Components;
     
     
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';
-    import dapp_default_bg from '../../img/backgrounds/dapp_default_bg.jpeg';
-    import verified_app from '../../img/menu_icons/icon_verified_app.svg'    
 
     //Icons
     import RefreshIcon from '../icons/RefreshIcon.svelte'
     import SendIcon from '../icons/SendIcon.svelte'
     import CopyIcon from '../icons/CopyIcon.svelte'
     import SettingsIcon from '../icons/SettingsIcon.svelte'
+    import PopoutIcon from '../icons/PopoutIcon.svelte'
+    import CheckmarkIcon from '../icons/CheckmarkIcon.svelte'
     
     //Utils
     import { copyToClipboard, displayBalanceToFixed } from '../../js/utils.js'
@@ -37,8 +35,8 @@
     const { switchPage, openModal, closeModal } = getContext('app_functions');
 
     let refreshing = false;
-    let brokenLogoLink = false;
-    let brokenBGLink = false;
+    let copiedButton = false;
+    let copiedIcon = false;
     let currentNetworkKey = networkKey($currentNetwork)
 
     let sendPages = {
@@ -50,10 +48,7 @@
     ]
 
     $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
-    $: dappInfo = $DappStore[getDappInfo($DappStore)] || undefined
-    $: dappLogo = dappInfo ? dappInfo.logo || false : false;
-    $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
-    $: symbol = coin.symbol;
+    $: background =  hero_bg
     $: balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
@@ -64,9 +59,6 @@
         })
         return pendingList
     }
-    $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
-    $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
-    $: stampRatio = 1
 
 	onMount(() => {
         $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
@@ -79,19 +71,6 @@
                 .catch((err) => brokenBGLink = true)
         }
     });
-
-    const getDappInfo = (dappStore) => {
-        return Object.keys(dappStore).find(f => dappStore[f].vk === coin.vk)
-    }
-
-    const copyWalletAddress = () => {
-        copyToClipboard(coin.vk)
-        openModal('MessageBox', {
-            text: "Account Address Copied",
-            type: "success",
-            buttons: buttons
-        })
-    }
 
     const fetchTransactions = () => {
         if ($currentNetwork.blockExplorer){
@@ -121,7 +100,14 @@
             balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8)
 		}, 2000);
     }
-    
+
+    const handleAddressCopy = (type) => {
+        copyToClipboard(coin.vk)
+        if (type == "icon") copiedIcon = true
+        if (type == "button") copiedButton = true
+        setTimeout(() => {copiedButton = false; copiedIcon = false}, 2000)
+    }
+
     currentNetwork.subscribe(newNetwork => {
 		if (networkKey(newNetwork) !== currentNetworkKey){
 			currentNetworkKey = networkKey(newNetwork)
@@ -131,6 +117,11 @@
 </script>
 
 <style>
+    hr{
+        height: 0px;
+        border: 1px solid var(--divider-dark);
+        width: 100%;
+    }
     h2{
         margin: 0;
     }
@@ -148,10 +139,6 @@
 
     .wallet-details{
         flex-grow: 1;
-    }
-
-    .dapp-logo{
-        width: 125px;
     }
 
     .nickname{
@@ -181,22 +168,28 @@
         margin: 10px 0px;
     }
 
-    .dapp-name{
-        margin: 0;
-    }
-
-    .trusted-icon{
-        width: 22px;
-        margin-right: 10px;
-        align-self: center;
-    }
-
     .refresh-icon{
         width: 40px;
     }
 
     .text-huge:first-child{
         margin-right: 10px;
+    }
+
+    .account-address{
+        margin: 1rem 0 2rem;
+    }
+
+    .account-vk{
+        width: 175px;
+        margin-left: 1em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .icon-copy{
+        margin: 0 1em 0 0.5em;
     }
 
     @media only screen and (max-width: 970px) {
@@ -209,22 +202,11 @@
 </style>
 
 <div id="coin-details" class="flex-column text-primary">
-	<div class="hero-rec flex-column" style="background-image: url({background});">
+	<div class="hero-rec flex-column" style="background-image: url({hero_bg});">
         <div class="flex-row">
             <div class="flex-column wallet-details">
                 <div class="nickname text-body1">
-                    {#if thisNetworkApproved && dappInfo}
-                        <div class="flex-row">
-                            {#if trustedApp}
-                                <div class="trusted-icon">
-                                    {@html verified_app}
-                                </div>
-                            {/if}
-                            <h2 class="dapp-name">{dappInfo.appName}</h2>
-                        </div>
-                    {:else}
-                        <h2>{coin.nickname}</h2>
-                    {/if}
+                    <h2>{coin.nickname}</h2>
                 </div>
                 <div class="text-overlay text-body1"> {$currentNetwork.currencySymbol} </div>
                 <div class="flex-row balance-total">
@@ -238,11 +220,6 @@
                 </div>
                 
             </div>
-            {#if thisNetworkApproved && dappLogo }
-                {#if !brokenLogoLink}
-                    <img class="dapp-logo" src={`${dappInfo.url}${dappLogo}`} alt="dapp-logo" on:error={() => brokenLogoLink = true} />
-                {/if}
-            {/if}
         </div>
 
         <div class="buttons">
@@ -266,13 +243,17 @@
                 <Button
                     id={'copy-address-btn'} 
                     classes={'button__outlined button__overlay'}
-                    click={copyWalletAddress} 
+                    click={() => handleAddressCopy("button")} 
                     name={whitelabel.accountDetails.buttons.copy.name}
                     padding={"12px"}
                     margin={'0 15px 15px 0'}
                 >
                     <div slot="icon-before">
-                        <CopyIcon width="12px" color="var(--color-white)" />
+                        {#if copiedButton}
+                            <CheckmarkIcon width="13px" color="var(--success-color)"/>
+                        {:else}
+                            <CopyIcon width="12px" color="var(--color-white)" />
+                        {/if}
                     </div>
                 </Button> 
             {/if}
@@ -291,40 +272,24 @@
                 </Button> 
             {/if}
             </div>
-            {#if thisNetworkApproved && $currentNetwork.lamden}
-                <div>
-                    <Button
-                        id={'dapp-options-btn'} 
-                        classes={'button__outlined button__overlay'}
-                        name="dApp Settings"
-                        padding={"12px"}
-                        margin={'0 0 15px 0'}
-                        click={() => openModal('CoinDappOptions', {coin, dappInfo, startPage: 1})}
-                    >
-                        <div slot="icon-before">
-                            <SettingsIcon width="15px" color="var(--color-white)" />
-                        </div>
-                    </Button> 
-                </div>
-            {/if}
-            {#if thisNetworkApproved && dappInfo} 
-                <p class="text-body2 text-green">
-                    Account linked to  
-                    <a href="{dappInfo.url}" class="text-link" target="_blank" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
-                </p>
-            {/if}
-            {#if !thisNetworkApproved && dappInfo} 
-                <p class="text-body2 text-warning">
-                    You have not approved for this app for {$currentNetwork.name}. Vist 
-                    <a href="{dappInfo.url}" class="text-link" target="_blank" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
-                    to create account link.
-                </p>
-            {/if}
         
     </div>
-    {#if thisNetworkApproved && $currentNetwork.lamden}
-        <Charms dappInfo={dappInfo} />
-    {/if}
+    <div class="flex-row flex-align-center account-address text-body1">
+        <strong>Account Address:</strong>
+        <span class="account-vk">{coin.vk}</span>
+        <div class="icon-copy" 
+            on:click={() => handleAddressCopy("icon")} 
+            title="copy account address"
+        >
+            {#if !copiedIcon}
+                <CopyIcon width="18px" color="var(--font-primary)" />
+            {:else}
+                <CheckmarkIcon width="18px" color="var(--success-color)"/>
+            {/if}
+        </div>
+        <PopoutIcon width="20px" url={`https://www.tauhq.com/addresses/${coin.vk}`}/>
+    </div>
+    <hr>
 
     <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions} />
 

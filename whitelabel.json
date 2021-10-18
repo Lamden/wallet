@@ -54,6 +54,15 @@
                     }
                 },
                 {
+                    "id": "dapp-connections", 
+                    "show": true,
+                    "logo": "app", 
+                    "name": "Dapp Connections", 
+                    "page": {
+                        "name": "ConnectionsMain"
+                    }
+                },
+                {
                     "id": "smart-contracts", 
                     "show": true,
                     "logo": "ide", 
@@ -174,6 +183,28 @@
             "token_amount":{
                 "title": "Amount",
                 "show" : true
+            }
+        }
+    },
+    "connections": {
+        "logo": {
+            "show":true
+        },
+        "account": {
+            "title": "Linked Account",
+            "show":true
+        },
+        "connection_info":{
+            "title": "Dapp Name",
+            "show" : true,
+            "show_network_name": false
+        }
+    },
+    "connectionDetails": {
+        "buttons":{
+            "edit":{
+                "name": "Edit Connection",
+                "show": true
             }
         }
     },
