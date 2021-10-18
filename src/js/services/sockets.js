@@ -43,6 +43,7 @@ export const createSocketService = () => {
 
     // Global Joins and Leaves
     function joinBalanceFeed_Mainnet(contract, variable, key){
+        // console.log(`join-${contract}.${variable}:${key}`)
         mainnet_socket.emit('join', `${contract}.${variable}:${key}`)
     }
 
@@ -51,6 +52,7 @@ export const createSocketService = () => {
     }
 
     function leaveBalanceFeed_Mainnet(contract, variable, key){
+        // console.log(`leave-${contract}.${variable}:${key}`)
         mainnet_socket.emit('leave', `${contract}.${variable}:${key}`)
     }
 
