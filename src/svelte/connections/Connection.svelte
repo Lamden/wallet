@@ -20,6 +20,7 @@
     import CheckmarkIcon from '../icons/CheckmarkIcon.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
     import PopoutIcon from '../icons/PopoutIcon.svelte';
+import { currentNetwork } from '../../js/stores/stores';
 
     // Props
     export let dapp;
@@ -34,6 +35,7 @@
     $: dappLogo = dapp ? dapp.logo || false : false;
     $: dappLogoSrc = dappLogo ? `${dapp.url}${dappLogo}` : undefined;
     $: brokenIconLink = checkIfLogoURLBroken(dappLogoSrc);
+    $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -166,7 +168,7 @@
                     <CheckmarkIcon width="18px" color="var(--success-color)"/>
                 {/if}
             </div>
-            <PopoutIcon width="20px" url={`https://www.tauhq.com/addresses/${dapp.vk}`}/>
+            <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${dapp.vk}`}/>
         </div>
         <div class="buttons flex flex-align-center">
             <Button 					

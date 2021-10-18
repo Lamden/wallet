@@ -224,8 +224,6 @@ export const dappController = (utils, actions) => {
     
     const reassignLink = (data) => {
         const { dappInfo, newVk } = data;
-        let userConfirm = confirm(`Associate this wallet with ${dappInfo.appName}?`)
-        if (!userConfirm) return 'canceled';
         try{
             dappsStore[dappInfo.url].vk = newVk
             chrome.storage.local.set({"dapps": dappsStore});

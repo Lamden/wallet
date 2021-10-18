@@ -54,7 +54,8 @@
         })
     }
 
-    const associateDapp = (wallet) => {
+    const associateDapp = (selected) => {
+        let wallet = selected.value
         if (wallet){
             if (initialVK === wallet.vk) return
             let data = {
@@ -62,17 +63,15 @@
                 newVk: wallet.vk
             }
             chrome.runtime.sendMessage({type: 'reassignDappAccess', data}, (dappAdded) => {
-                if (dappAdded !== 'canceled'){
-                    if (!dappAdded || chrome.runtime.lastError) {
-                        message.text = 'Unable to create dApp relationship'
-                        message.type = 'error'
-                    }else{
-                        message.text = `This wallet is now associated with ${dappInfo.appName}`
-                        message.type = 'success'
-                    }
-                    setMessage(message)
-                    setPage(5)
+                if (!dappAdded || chrome.runtime.lastError) {
+                    message.text = 'Unable to create dApp relationship'
+                    message.type = 'error'
+                }else{
+                    message.text = `This wallet is now associated with ${wallet.nickname}`
+                    message.type = 'success'
                 }
+                setMessage(message)
+                setPage(5)
             })
         }
     }
@@ -150,7 +149,7 @@
             id={'wallets-dd'}
             items={coinList()} 
             label={'Selected Account'}
-            on:selected={(e) => associateDapp(e.detail.selected.value)}
+            on:selected={(e) => associateDapp(e.detail.selected)}
         />
         {#if selectedWallet}
             <p class="dapp-info text-subtitle2">

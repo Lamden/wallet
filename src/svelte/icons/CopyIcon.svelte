@@ -9,6 +9,7 @@
 <style>
     svg:hover > path{
         fill: var(--accent-color);
+        cursor: pointer;
     }
 </style>
 

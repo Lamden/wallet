@@ -44,7 +44,7 @@
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
     $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
     $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
-    $: addressLink = dappInfo ? `${$currentNetwork.blockExplorer}/addresses/${dappInfo.vk}`: undefined;
+    $: addressLookupURL = dappInfo ? $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer : undefined;
 
 	onMount(() => {
         if (background.includes('http')){
@@ -140,8 +140,12 @@
         word-break: break-word;
     }
 
+    strong{
+        margin: 1rem 0;
+    }
     .current-linked-account{
-        margin-top: 1rem;
+        margin-left: 1em;
+        margin-bottom: 1rem;
     }
 
     .account-buttons{
@@ -149,8 +153,8 @@
     }
 
     .account-vk{
-        width: 175px;
         margin-left: 1em;
+        width: 175px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -222,10 +226,11 @@
             {/if}
     </div>
     {#if thisNetworkApproved && dappLinkedAccount}
+        <strong class="text-accent text-body1">Currently Linked To</strong>
         <div class="flex-row flex-align-center current-linked-account text-body1">
-            <strong>Currently Linked Account:</strong>
+            <span>{dappInfo.appName}</span>
             <span class="account-vk">{dappLinkedAccount}</span>
-            <PopoutIcon width="20px" url={`https://www.tauhq.com/addresses/${dappInfo.vk}`}/>
+            <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${dappInfo.vk}`}/>
         </div>
         <div class="flex-row flex-align-center account-buttons">
             <Button 					

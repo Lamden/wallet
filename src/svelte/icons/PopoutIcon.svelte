@@ -14,8 +14,11 @@
 </script>
 
 <style>
-    svg:hover > path{
+    div:hover > svg > path{
         fill: var(--accent-color);
+    }
+    div:hover{
+        cursor: pointer;
     }
 </style>
 

@@ -52,6 +52,7 @@
     $: balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
+    $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
     $: pendingTxList = () => {
         let pendingList = []
         $PendingTxStore.forEach(tx => {
@@ -176,18 +177,21 @@
         margin-right: 10px;
     }
 
+    .account-vk{
+        margin-left: 1em;
+    }
+
     .account-address{
         margin: 1rem 0 2rem;
     }
 
     .account-vk{
-        width: 175px;
         margin-left: 1em;
+        width: 175px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
     .icon-copy{
         margin: 0 1em 0 0.5em;
     }
@@ -274,8 +278,8 @@
             </div>
         
     </div>
+    <strong class="text-accent text-body1">Account Address</strong>
     <div class="flex-row flex-align-center account-address text-body1">
-        <strong>Account Address:</strong>
         <span class="account-vk">{coin.vk}</span>
         <div class="icon-copy" 
             on:click={() => handleAddressCopy("icon")} 
@@ -287,7 +291,7 @@
                 <CheckmarkIcon width="18px" color="var(--success-color)"/>
             {/if}
         </div>
-        <PopoutIcon width="20px" url={`https://www.tauhq.com/addresses/${coin.vk}`}/>
+        <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${coin.vk}`}/>
     </div>
     <hr>
 
