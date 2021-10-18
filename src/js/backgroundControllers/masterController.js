@@ -330,13 +330,15 @@ export const masterController = () => {
 
     const deleteAccount = (data) => {
         const { account, string } = data;
-        if (accounts.checkPassword(string)){
-            if (accounts.deleteOne(account)) {
-                dapps.deleteDapp(account.vk)
+        if (dapps.getDappInfoByVK(account.vk)) {
+            return "used"
+        }else{
+            if (accounts.checkPassword(string)){
+                accounts.deleteOne(account)
                 return true
             }
+            return false
         }
-        return false
     }
 
     const checkSwapSeenHashes = (data, callback = undefined) => {
