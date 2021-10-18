@@ -38,7 +38,6 @@
 
 <style>
 .menus{
-    position: fixed;
     padding: 21px 0px 0px 40px;
     width: 46px;
 }

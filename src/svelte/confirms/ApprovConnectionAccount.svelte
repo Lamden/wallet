@@ -26,7 +26,6 @@
     const { setAccount, close } = getContext('confirm_functions');
 
     export let confirmData
-    console.log(confirmData)
     
     let selectedAccountId; // selected account Id
 
@@ -36,8 +35,6 @@
 
     const getAccountList = (CoinStore, DappStore) => {
         let accounts = []
-        console.log(dappInfo)
-        console.log(vk)
         CoinStore.map((coin, index) => {
             coin.id = index
             // return the origin linked account

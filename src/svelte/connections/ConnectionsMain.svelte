@@ -24,6 +24,7 @@
 .connectionsmain{
 	display: flex;
 	flex-direction: column;
+	justify-content: flex-start;
 }
 .header{
 	display: flex;
@@ -53,7 +54,7 @@
 
 .header-account{
 	justify-content: flex-end;
-	margin-right: 28px;  
+	margin-right: 186px;
 	width: 203px;
 }
 

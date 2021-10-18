@@ -22,22 +22,25 @@
     import hero_bg from '../../img/backgrounds/hero_bg.png';
     import dapp_default_bg from '../../img/backgrounds/dapp_default_bg.jpeg';
     import verified_app from '../../img/menu_icons/icon_verified_app.svg';
-    import copyWhite from '../../img/menu_icons/icon_copy_white.svg';
-    import copyGreen from '../../img/menu_icons/icon_copy_green.svg';
 
     //Icons
+    import CheckmarkIcon from '../icons/CheckmarkIcon.svelte';
+    import CopyIcon from '../icons/CopyIcon.svelte';
     import SettingsIcon from '../icons/SettingsIcon.svelte'
+    import PopoutIcon from '../icons/PopoutIcon.svelte'
 
     //Context
     const { openModal } = getContext('app_functions');
 
     let brokenLogoLink = false;
     let brokenBGLink = false;
-    let copySuccessful = false
+    let copied = false
+
 
     $: dapp = $SettingsStore.currentPage.data
     $: dappInfo = $DappStore[dapp.url]
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
+    $: dappLinkedAccount = dappInfo ? dappInfo.vk : false;
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
     $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
     $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
@@ -52,10 +55,11 @@
                 .catch((err) => brokenBGLink = true)
         }
     });
-    
-    const copyWalletAddress = () => {
-        copyToClipboard(dappInfo.vk)
-        copySuccessful = true;
+
+    const handleAddressCopy = () => {
+        copyToClipboard(dapp.vk)
+        copied = true;
+        setTimeout(() => copied = false, 2000)
     }
 
 </script>
@@ -68,7 +72,7 @@
         margin: 0;
     }
     .hero-rec{
-        min-height: 247px;
+        height: 380px;
         padding: 40px 40px 26px;
     }
 
@@ -136,6 +140,22 @@
         word-break: break-word;
     }
 
+    .current-linked-account{
+        margin-top: 1rem;
+    }
+
+    .account-buttons{
+        margin-bottom: 1rem;
+    }
+
+    .account-vk{
+        width: 175px;
+        margin-left: 1em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
 </style>
 
 <div id="dapp-details" class="flex-column text-primary">
@@ -165,17 +185,6 @@
                             <p>Contract Name:</p>
                             <p>{dappInfo[$currentNetwork.type].contractName}</p>
                         </div>
-                        <div class="flex-row align-center">
-                            <p>Account Address:</p>
-                            <a class="text-link" href={addressLink} rel="noopener noreferrer" target="_blank">{dappInfo.vk}</a>
-                            <div class="icon copy" on:click={copyWalletAddress}>
-                                {#if copySuccessful}
-                                    {@html copyGreen}
-                                {:else}
-                                    {@html copyWhite}
-                                {/if}
-                            </div>
-                        </div>
                     {/if}
                 </div>
             {/if}
@@ -204,12 +213,6 @@
                 </div>
             {/if}
         </div>
-            {#if thisNetworkApproved && dappInfo} 
-                <p class="text-body2 text-green">
-                    Account linked to  
-                    <a href="{dappInfo.url}" class="text-link" target="_blank" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
-                </p>
-            {/if}
             {#if !thisNetworkApproved && dappInfo} 
                 <p class="text-body2 text-warning">
                     You have not approved for this app for {$currentNetwork.name}. Vist 
@@ -218,8 +221,41 @@
                 </p>
             {/if}
     </div>
+    {#if thisNetworkApproved && dappLinkedAccount}
+        <div class="flex-row flex-align-center current-linked-account text-body1">
+            <strong>Currently Linked Account:</strong>
+            <span class="account-vk">{dappLinkedAccount}</span>
+            <PopoutIcon width="20px" url={`https://www.tauhq.com/addresses/${dappInfo.vk}`}/>
+        </div>
+        <div class="flex-row flex-align-center account-buttons">
+            <Button 					
+                id={'change-account-btn'} 
+                classes={'button__small button__primary run-button'}
+                height={'unset'}
+                padding={"1em 2em"}
+                margin={'1rem 0 1rem'}
+                name={"copy account"}
+                click={handleAddressCopy}>
+                    <div slot="icon-before">
+                        {#if copied}
+                            <CheckmarkIcon width="13px"/>
+                        {:else}
+                            <CopyIcon width="13px" />
+                        {/if}
+                    </div>
+            </Button>
+            <Button 					
+                id={'change-account-btn'} 
+                classes={'button__small button__primary run-button'}
+                height={'unset'}
+                padding={"1em 2em"}
+                margin={'1rem 0 1rem 1em'}
+                name={"change account"}
+                click={() => openModal('ConnectionModify', dappInfo)} />
+        </div>
+        
+    {/if}
     {#if thisNetworkApproved && $currentNetwork.lamden}
         <Charms dappInfo={dappInfo} />
     {/if}
-
 </div>

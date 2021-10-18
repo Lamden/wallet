@@ -5,6 +5,10 @@
 	import { fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
+    //Components
+	import { Components }  from '../Router.svelte'
+	const { Button } = Components;
+
     //Utils
     import { copyToClipboard } from '../../js/utils.js'  
 
@@ -15,6 +19,7 @@
     //Icons
     import CheckmarkIcon from '../icons/CheckmarkIcon.svelte';
     import CopyIcon from '../icons/CopyIcon.svelte';
+    import PopoutIcon from '../icons/PopoutIcon.svelte';
 
     // Props
     export let dapp;
@@ -51,6 +56,8 @@
 <style>
 .row-box{
     padding: 1.25rem 28px 0.25rem 16px;
+    justify-content: flex-start;
+    box-sizing: border-box;
 }
 .coin-main-row{
     margin-bottom: 0.5rem;
@@ -88,15 +95,21 @@
 }
 
 .icon-copy{
-    width: 10px;
-    height: 10px;
-    margin-left: 8px;
+    margin: 0 1em 0 0.5em;
 }
 
 .account{
     justify-content: flex-end;
-	width: 90px;
     flex-grow: 1;
+    margin-right: 50px;
+}
+
+.account-vk{
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 </style>
@@ -139,8 +152,8 @@
                 </div>
             </div>
         </div>
-        <div class="account flex-row">
-            <div class="text text-body1">
+        <div class="account flex-row flex-align-center">
+            <div class="account-vk text text-body1">
                 {dapp.vk}
             </div>
             <div class="icon-copy" 
@@ -148,11 +161,19 @@
                 title="copy account address"
             >
                 {#if !copied}
-                    <CopyIcon width="9px" color="var(--font-primary)"/>
+                    <CopyIcon width="18px" color="var(--font-primary)" />
                 {:else}
-                    <CheckmarkIcon width="10px" color="var(--success-color)"/>
+                    <CheckmarkIcon width="18px" color="var(--success-color)"/>
                 {/if}
             </div>
+            <PopoutIcon width="20px" url={`https://www.tauhq.com/addresses/${dapp.vk}`}/>
+        </div>
+        <div class="buttons flex flex-align-center">
+            <Button 					
+                id={'details-btn'} 
+                classes={'button__outlined button__overlay'}
+                name={"Details"}
+                click={() => switchPage('ConnectionDetails', dapp)} />
         </div>
     </div>
 </div>

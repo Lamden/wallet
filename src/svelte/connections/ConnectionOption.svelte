@@ -55,7 +55,6 @@
     }
 
     const associateDapp = (wallet) => {
-        console.log(wallet)
         if (wallet){
             if (initialVK === wallet.vk) return
             let data = {
