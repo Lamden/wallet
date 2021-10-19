@@ -169,10 +169,12 @@
             {/each}
         </div>
         <div class="buttons flex-column back">
-            <Button classes={'button__solid'} 
+            <Button 
+                id={'dapp-options-save-btn'}
+                classes={'button__solid'} 
                 width={'232px'}
                 margin={'0 0 0 0'}
-                name="Back" 
+                name="Save" 
                 click={ ()=> { closeModal() } }
             />    
         </div>

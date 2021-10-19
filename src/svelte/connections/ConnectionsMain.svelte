@@ -20,44 +20,50 @@
 
 </script>
 
-<style>
-.connectionsmain{
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-}
-.header{
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	padding: 0.5rem 0;
-	margin-bottom: 0.5rem;
-}
-.header-accounts{
-	margin-top: 2rem;
-}
+	<style>
+	.connectionsmain{
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		max-width: 1024px;
+	}
+	.header{
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		padding: 0.5rem 0;
+		margin-bottom: 0.5rem;
+		color: var(--font-secondary);
+	}
+	.header-accounts{
+		margin-top: 2rem;
+	}
 
-.divider{
-	border-bottom: 1px solid var(--divider-light);
-}
+	.divider{
+		border-bottom: 1px solid var(--divider-light);
+	}
 
-.header-text{
-	display: flex;
-	align-items: center;
-}
+	.header-text{
+		display: flex;
+		align-items: center;
+	}
 
-.header-name{
-    width: 234px;
-	margin-left: 84px;
-	flex-grow: 1;
-}
+	.header-name{
+		margin-left: 84px;
+		flex-grow: 1;
+		white-space: nowrap;
+	}
 
-.header-account{
-	justify-content: flex-end;
-	margin-right: 186px;
-	width: 203px;
-}
+	.header-account{
+		justify-content: flex-end;
+		white-space: nowrap;
+	}
 
+	@media (min-width: 550px) {
+        .header-account{
+			margin-right: 28px;
+        }
+    }
 </style>
 
 <div class="connectionsmain text-primary">
@@ -74,7 +80,7 @@
 		</div>	
 		{#each dappStorage as dapp (dapp.id) }
 			<Connection {dapp} />
-			<CoinDivider />
+			<CoinDivider percent={false}/>
 		{/each}
 	{/if}
 </div>

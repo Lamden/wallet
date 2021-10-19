@@ -193,6 +193,8 @@
 		display:flex;
 		padding-top: 97px;
 		flex-grow: 1;
+		max-width: 1920px;
+    	margin: 0 auto;
 	}
 
 	.main-layout{
@@ -209,9 +211,10 @@
 	}
 
 	.content-pane{
-		padding: 21px 61px 0;
+		padding: 21px 30px 0;
 		flex-grow: 1;
 		box-sizing: border-box;
+		max-width: 1612px;
 	}
 	.components{
 		flex-grow: 1;
@@ -233,10 +236,22 @@
 		top: 1px;
 	}
 
+	@media (min-width: 550px) {
+        .content-pane{
+			margin-right: 28px;
+        }
+    }
+
 	@media (min-width: 900px) {
 		.menu-pane{
 			width: 280px;
 			min-width: 280px;
 		}
 	}
+
+	@media (min-width: 1920px) {
+		.container {
+			margin: 0 auto;
+		}
+    }
 </style>

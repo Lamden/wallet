@@ -152,7 +152,7 @@
         </div>
         <div class="buttons flex-column">
             <input  class="button__solid submit submit-button submit-button-text submit"
-                    class:button_red={passwordOkay}
+                    class:button__red={passwordOkay}
                     class:button__primary={!passwordOkay}
                     type="submit" 
                     value={passwordOkay ? "Revoke Access" : "Validate Wallet Password"}>

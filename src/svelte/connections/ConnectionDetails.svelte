@@ -159,6 +159,14 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .responsive{
+        height: 10px;
+    }
+    @media (min-width: 550px) {
+        .responsive{
+            height: inherit;
+        }
+    }
 
 </style>
 
@@ -235,27 +243,30 @@
         <div class="flex-row flex-align-center account-buttons">
             <Button 					
                 id={'change-account-btn'} 
-                classes={'button__small button__primary run-button'}
+                classes={'button__small button__primary run-button responsive'}
                 height={'unset'}
                 padding={"1em 2em"}
                 margin={'1rem 0 1rem'}
                 name={"copy account"}
+                responsive
                 click={handleAddressCopy}>
-                    <div slot="icon-before">
+                    <div slot="icon-before" class="responsive" >
                         {#if copied}
-                            <CheckmarkIcon width="13px"/>
+                            <CheckmarkIcon width="13px" responsive/>
                         {:else}
-                            <CopyIcon width="13px" />
+                            <CopyIcon width="13px" responsive/>
                         {/if}
                     </div>
             </Button>
             <Button 					
                 id={'change-account-btn'} 
-                classes={'button__small button__primary run-button'}
+                classes={'button__small button__primary run-button responsive'}
                 height={'unset'}
                 padding={"1em 2em"}
                 margin={'1rem 0 1rem 1em'}
+                responsive
                 name={"change account"}
+
                 click={() => openModal('ConnectionModify', dappInfo)} />
         </div>
         

@@ -7,7 +7,7 @@
 
     //Components
     import Button from '../components/Button.svelte'
-    import ApprovConnectionAccount from './ApprovConnectionAccount.svelte';
+    import ApproveConnectionAccount from './ApproveConnectionAccount.svelte';
     
     import logo from '../../img/logo.svg'
 
@@ -176,7 +176,7 @@
             </div>
         </div>
     {:else}
-        <ApprovConnectionAccount {confirmData}
+        <ApproveConnectionAccount {confirmData}
             on:changeAccount={changeAccount} 
         />
     {/if}

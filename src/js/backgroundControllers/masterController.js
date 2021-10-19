@@ -288,7 +288,8 @@ export const masterController = () => {
         }else{
             const windowId = utils.createUID()
             messageData.network = utils.networks.getLamdenNetwork(messageData.networkType)
-            messageData.accounts = balances.addBalances(accounts.getSanatizedAccounts(), messageData.network.networkKey)
+            messageData.accounts = accounts.getSanatizedAccounts()
+            console.log(messageData.accounts)
             if (reapprove) {
                 messageData.reapprove = reapprove
                 messageData.oldConnection = dappInfo

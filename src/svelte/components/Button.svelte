@@ -12,12 +12,22 @@
     export let disabled = false;
     export let tabIndex;
     export let spellcheck = true;
+    export let responsive = false
 </script>
 
 <style>
-.text-button{
-    margin: 0 6px;
-}
+    .text-button{
+        margin: 0 6px;
+    }
+    .responsive{
+        font-size: 10px;
+    }
+    @media (min-width: 550px) {
+        .responsive{
+            font-size: 14px;
+        }
+
+    }
 
 </style>
 
@@ -29,7 +39,7 @@
         tabIndex={tabIndex}
         type="button"
     >
-    <slot name="icon-before"></slot>
-    <div class="text-button"> {name} </div>
+    <slot name="icon-before" ></slot>
+    <div class="text-button" class:responsive={responsive}> {name} </div>
     <slot name="icon-after"></slot>
  </button>

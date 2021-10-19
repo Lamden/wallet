@@ -59,6 +59,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             `);
             assert.equal(response.errors.includes("Expected event detail to be JSON string"), true);
         });
+
         it('Rejects connection request if wallet is locked', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             let response = await helpers.sendConnectRequest(driver, connection)
@@ -66,7 +67,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.errors.includes("Wallet is Locked"), true);
             //Unlock the wallet for rest of test cases
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
-        });
+        })
         it('Rejects an empty connection request', async function() {
             let connection = {}
             let response = await helpers.sendConnectRequest(driver, connection)
@@ -285,6 +286,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             assert.equal(response.errors.length, 1);
             assert.equal(response.errors.includes("'charm[0]' formatAs value '[object Object]' is invalid. Only acceptable values are number,string."), true);
         });
+
         it('POPUP: Returns message when connection denied', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)

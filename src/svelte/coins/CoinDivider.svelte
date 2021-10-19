@@ -1,4 +1,5 @@
 <script>
+    export let percent = true;
 </script>
 
 <style>
@@ -49,5 +50,7 @@
 <div class="divider-box">
     <div class="name divider"></div>
     <div class="amount divider"></div>
-    <div class="percent divider"></div>
+    {#if percent}
+        <div class="percent divider"></div>
+    {/if}
 </div>

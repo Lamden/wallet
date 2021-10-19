@@ -269,6 +269,13 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
     opacity: 0.75;
 }
 
+.text-ellipsis{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block!important;
+    white-space: nowrap;
+}
+
 .weight-100{
     font-weight: 100;
 }
@@ -729,7 +736,24 @@ input.submit-button:disabled{
 .button__small.button__primary{
     color: var(--button-primary-text-color);
     background-color: var(--button-primary-color);
+
 }
+
+.button__small.button__primary.responsive{
+    width: unset;
+    height: unset!important;
+    font-size: 12px!important;
+    padding: 0.5rem 0.75rem!important;
+}
+
+@media (min-width: 550px) {
+    .button__small.button__primary.responsive{
+        padding: 1em 2em!important;
+        font-size: unset;
+    }
+}
+
+
 
 .reorder-button{
     margin: 0 1px;
