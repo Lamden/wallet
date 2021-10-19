@@ -44,7 +44,7 @@
             if (!result || chrome.runtime.lastError) {
                 resolve(false)
             }
-            chrome.runtime.sendMessage({type: 'deleteOneBalance', data: selectedCoin.vk})
+            if (result !== "used") chrome.runtime.sendMessage({type: 'deleteOneBalance', data: selectedCoin.vk})
             resolve(result)
         })
     }

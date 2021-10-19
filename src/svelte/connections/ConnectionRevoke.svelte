@@ -18,7 +18,7 @@
 
     //Context
     const { appHome } = getContext('app_functions');
-    const { setMessage, setPage, home, close } = getContext('coinDappOptions_functions');
+    const { setMessage, setPage } = getContext('connectionOption_functions');
 
     //DOM Nodes
     let formObj, passwordObj;
@@ -162,7 +162,7 @@
                     width={'260px'}
                     margin={'10px 0 0 0'}
                     name="Back" 
-                    click={() => home()} />  
+                    click={() => setPage(1)} />  
         </div>
     </form>
 </div>

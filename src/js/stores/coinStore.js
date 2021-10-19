@@ -46,8 +46,7 @@ export const createCoinStore = () => {
         set,
         update,
         getByVk: (vk) => {
-            if (validateTypes.isStringWithValue(vk)) return;
-
+            if (!validateTypes.isStringWithValue(vk)) return;
             let foundAccount = get(CoinStore).find(account => account.vk === vk)
             return foundAccount
         }

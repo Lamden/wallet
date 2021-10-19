@@ -26,7 +26,10 @@ export const networkController = (utils, services) => {
     }
 
     const addBlockexplorer = (networkObj) => {
-        networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
+        if (networkObj.blockExplorer){
+            networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
+        }
+        
     }
 
     const addBlockservice = (networkObj) => {
@@ -57,7 +60,7 @@ export const networkController = (utils, services) => {
 
     const getNetwork = (networkInfo) => {
         let network = new utils.Lamden.Network(networkInfo)
-        return addNetworkKey(network)
+        return addExtras(network)
     }
 
     const getLamdenNetwork = (networkType) => {

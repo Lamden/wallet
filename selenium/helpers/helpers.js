@@ -103,10 +103,10 @@ const changeToTestnet = async (driver) => {
 
 const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
-    await driver.findElement(By.id("coin-nickname-1")).click()
+    await driver.findElement(By.id("dapp-connections")).click()
+    await driver.wait(until.elementLocated(By.id("dapp-appname-0")), 5000).click()
     await sleep(500, true)
-    let btn = await driver.findElement(By.xpath("//div[contains(text(),'dApp Settings')]"))
-    await driver.executeScript("arguments[0].click();", btn);
+    await driver.findElement(By.id("modify-dapp-btn")).click()
     await sleep(500, true)
     await driver.findElement(By.id("preapproval-btn")).click()
     await sleep(500, true)
@@ -115,7 +115,7 @@ const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
     await driver.findElement(By.id("back-btn")).click() 
     await sleep(500, true)
-    await driver.findElement(By.id("cancel-modal-btn")).click()
+    await driver.findElement(By.id("dapp-options-save-btn")).click()
     await sleep(500, true)
     await driver.findElement(By.id("accounts")).click()
     await sleep(1000, true)
@@ -129,26 +129,18 @@ const hashStringValue = (string)  => {
     return CryptoJS.MD5(string).toString(CryptoJS.enc.Hex)
 }
 
-const approvePopup = async (driver, popupWindow, switchback, trusted = true, fund= {show: true, amount: 0}) => {
+const approvePopup = async (driver, popupWindow, switchback, trusted = true) => {
     await sleep(2000, true)
     await switchWindow(driver, popupWindow)
     let infoNext_Button = await driver.wait(until.elementLocated(By.id("info-next-btn")), 5000);
     await infoNext_Button.click()
     await sleep(500, true)
-    if (fund.show){
-        if (fund.amount > 0){
-            let fundInput = await driver.findElement(By.id('fund-amount-input'))
-            fundInput.sendKeys(fund.amount)
-            await sleep(500, true)
-            await driver.findElement(By.className('custom-select')).click()
-            await sleep(500, true)
-            await driver.findElement(By.xpath("//div[contains(text(),'My TAU Address')]")).click()
-            await sleep(500, true)
-        }
-        let fundNext_Button = await driver.wait(until.elementLocated(By.id("fund-next-btn")), 5000);
-        await fundNext_Button.click()
-        await sleep(500, true)
-    }
+
+    accountCard = await driver.wait(until.elementLocated(By.id("account-0")), 5000);
+    await accountCard.click()
+
+    accountLink_Button = await driver.wait(until.elementLocated(By.id("account-link-btn")), 5000);
+    await accountLink_Button.click()
 
     if (!trusted){
         let trusted_Radio = await driver.wait(until.elementLocated(By.id("not-trusted")), 5000);
@@ -159,6 +151,20 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true, fun
     await sleep(500, true)
     await switchWindow(driver, switchback)
     //await sleep(1000, true)
+}
+
+const changeAccountPopup = async (driver, popupWindow, switchback) => {
+    await sleep(2000, true)
+    await switchWindow(driver, popupWindow)
+    let change_Button = await driver.wait(until.elementLocated(By.id("change-btn")), 500);
+    await change_Button.click()
+    await sleep(500, true)
+    await driver.findElement(By.xpath("//div[contains(@class,'card') and not(contains(@class,'card-selected'))]"), 500).click();
+    await sleep(500, true)
+    let link_Button = await driver.wait(until.elementLocated(By.id("account-link-btn")), 500);
+    await link_Button.click()
+    await sleep(500, true)
+    await switchWindow(driver, switchback)
 }
 
 const approveTxPopup = async (driver, popupWindow, switchback) => {
@@ -362,5 +368,6 @@ module.exports = {
     getApprovalAmount, getAccountBalance,
     setupSendListener,
     gotoAccountsPage,
-    setupMetamask
+    setupMetamask,
+    changeAccountPopup
 }

@@ -59,21 +59,17 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.errors[0].includes('You must be an authorized dApp'), true)
         });
         it('Create wallet connection to our test dApp website ', async function() {
-            let funding = {show: true, amount: 5};
             this.timeout(30000);
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.approvePopup(driver, 2, 1, false, funding)
+            await helpers.approvePopup(driver, 2, 1, false)
             let response = await helpers.getWalletResponse(driver)
+
             connectionInfo = response
-            console.log({connectionInfo})
             assert.equal(response.errors, null);
             await helpers.sleep(2000, false)
-            let balance = await helpers.getAccountBalance(connectionInfo.wallets[0])
-            console.log({balance})
-            assert.equal(balance, funding.amount);
             
-        });/*
+        });
         it('Reject tx with missing networkType', async function() {
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
             transaction.networkType = null 
@@ -199,6 +195,6 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.contractName, dappsInfo.nonStandardTransactionInfo.contractName);
             assert.equal(result.txInfo.methodName, transaction.methodName);
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);       
-        });*/
+        });
     })
 })

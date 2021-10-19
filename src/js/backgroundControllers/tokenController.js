@@ -358,7 +358,7 @@ export const tokenController = (utils, services, actions) => {
         }
         
         const {[netKey]: networkTokens} = tokens;
-
+        
         if (!networkTokens) return;
         if (networkTokens.length === 0) return;
 

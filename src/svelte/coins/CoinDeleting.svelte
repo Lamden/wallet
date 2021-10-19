@@ -17,7 +17,7 @@
 
     const successResult= {
         title: 'Account Deleted',
-        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Account deleted successfully`,
+        subtitle: `${coin.nickname} (${coin.vk.substring(0,8)}...) - Account deleted successfully`,
         message: "Successful Deletion",
         type: 'success',
         buttons
@@ -25,8 +25,16 @@
 
     const failedResult= {
         title: 'Delete Failed',
-        subtitle: `${coin.nickname} - ${coin.name} ${coin.symbol} Account failed to delete`,
+        subtitle: `${coin.nickname} (${coin.vk.substring(0,8)}...) - Account failed to delete`,
         message: "Something went wrong while removing this Account",
+        type: 'error',
+        buttons
+    }
+
+    const usedResult= {
+        title: 'Cannot Delete',
+        subtitle: `${coin.nickname} (${coin.vk.substring(0,8)}...) - is linked to apps.`,
+        message: "Unlink this account from all app and try again.",
         type: 'error',
         buttons
     }
@@ -36,7 +44,10 @@
             deleteCoin(resolve)
         })
         .then(res => {
-            setResult(res ? successResult : failedResult)
+            if (res === "used") setResult(usedResult)
+            else{
+                setResult(res ? successResult : failedResult)
+            }
             setPage(5)
         })
         .catch(err => {

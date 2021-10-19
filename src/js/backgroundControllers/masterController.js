@@ -166,7 +166,6 @@ export const masterController = () => {
 
     const updateOneBalance = (vk) => {
         let account = accounts.getAccountByVK(vk)
-        console.log({vk, account})
         if (!account) return true
         balances.updateOne(account, utils.networks.getCurrent())
         return true
@@ -289,7 +288,8 @@ export const masterController = () => {
         }else{
             const windowId = utils.createUID()
             messageData.network = utils.networks.getLamdenNetwork(messageData.networkType)
-            messageData.accounts = balances.addBalances(accounts.getSanatizedAccounts(), messageData.network.networkKey)
+            messageData.accounts = accounts.getSanatizedAccounts()
+            console.log(messageData.accounts)
             if (reapprove) {
                 messageData.reapprove = reapprove
                 messageData.oldConnection = dappInfo
@@ -331,13 +331,15 @@ export const masterController = () => {
 
     const deleteAccount = (data) => {
         const { account, string } = data;
-        if (accounts.checkPassword(string)){
-            if (accounts.deleteOne(account)) {
-                dapps.deleteDapp(account.vk)
+        if (dapps.getDappInfoByVK(account.vk)) {
+            return "used"
+        }else{
+            if (accounts.checkPassword(string)){
+                accounts.deleteOne(account)
                 return true
             }
+            return false
         }
-        return false
     }
 
     const checkSwapSeenHashes = (data, callback = undefined) => {
