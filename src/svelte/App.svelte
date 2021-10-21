@@ -207,7 +207,7 @@
 	.menu-pane{
 		width: 83px;
 		min-width: 83px;
-		z-index: 29;
+		z-index: 28;
 	}
 
 	.content-pane{
