@@ -212,6 +212,7 @@
 
 	.content-pane{
 		padding: 21px 30px 0;
+		
 		flex-grow: 1;
 		box-sizing: border-box;
 		max-width: 1612px;

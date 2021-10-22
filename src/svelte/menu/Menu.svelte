@@ -40,6 +40,7 @@
 .menus{
     padding: 21px 0px 0px 40px;
     width: 46px;
+    position: fixed;
 }
 
 @media (min-width: 900px) {

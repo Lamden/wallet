@@ -227,7 +227,7 @@
         </div>
             {#if !thisNetworkApproved && dappInfo} 
                 <p class="text-body2 text-warning">
-                    You have not approved for this app for {$currentNetwork.name}. Vist 
+                    You have not approved for this DApp for {$currentNetwork.name}. Vist 
                     <a href="{dappInfo.url}" class="text-link" target="_blank" rel="noopener noreferrer">{`${dappInfo.url}`}</a>
                     to create account link.
                 </p>

@@ -33,8 +33,8 @@
 
     const usedResult= {
         title: 'Cannot Delete',
-        subtitle: `${coin.nickname} (${coin.vk.substring(0,8)}...) - is linked to apps.`,
-        message: "Unlink this account from all app and try again.",
+        subtitle: `${coin.nickname} (${coin.vk.substring(0,8)}...) - is linked to DApps.`,
+        message: "Unlink this account from all DApps, on all networks and try again.",
         type: 'error',
         buttons
     }

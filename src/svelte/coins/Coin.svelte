@@ -10,6 +10,7 @@
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
+    import { CoinDivider }  from '../Router.svelte'
 
     //Utils
     import { 
@@ -20,7 +21,9 @@
         formatValue, 
         stringToFixed, 
         getTokenBalance, 
-        copyToClipboard } from '../../js/utils.js'  
+        copyToClipboard, 
+        toBigNumber
+    } from '../../js/utils.js'  
 
     //Images
     import logo from '../../img/logo.svg'
@@ -54,7 +57,9 @@
     $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : '0'
     $: percent = typeof $balanceTotal[netKey] === 'undefined' ? "" : toPercentString();
 
-    $: tokenBalance = token && coin ? displayBalance(stringToFixed(getTokenBalance(netKey, coin.vk, token.contractName, $TokenBalancesStore), 8)) : "0"
+    $: tokenBalance = token && coin ? getTokenBalance(netKey, coin.vk, token.contractName, $TokenBalancesStore) : "0"
+    $: tokenBalanceString = stringToFixed(displayBalance(tokenBalance), 8)
+    $: hasVisibleBalance = toBigNumber(tokenBalanceString).isGreaterThan(0)
 
     afterUpdate(() => {
         balance = BalancesStore.getBalance($currentNetwork, coin.vk)
@@ -150,74 +155,76 @@
     margin-left: 8px;
 }
 </style>
-
-<div 
-    id={`coin-row-${coin.id}`} 
-    bind:this={divElm}
-    class="row-box flex-column" 
-    on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
-    in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
-    >
-    <div class="coin-main-row flex-row flex-center-center">
-        {#if whitelabel.mainPage.logo.show}
-            <div class="logo flex-center-center">
-                <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/>
-            </div>
-        {/if}
-        {#if whitelabel.mainPage.account_info.show}
-            <div class="name text text-body1">
-                <div class="name-box">
-                    <div id={`coin-nickname-${coin.id}`}  class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
-                        {`${coin.nickname}`}
-                    </div>
-                </div>
-            </div>
-        {/if}
-        {#if whitelabel.mainPage.amount.show}
-                <div class="amount flex-column">
-                    {#if token}
-                        <div class="token-balance text-body1">{`${tokenBalance} ${token.tokenSymbol}`}</div>
-                    {/if}
-                    <div class="text-primary-dim text-body1"
-                    >
-                        {`${balanceStr} ${$currentNetwork.currencySymbol}`}
-                    </div>
-                </div>
-
-        {/if}
-        
-        {#if whitelabel.mainPage.portfolio.show && !token}
-            {#if watching}
-                <div class="text-body2 text-primary-dim watching-text percent ">{"watching"}</div>
-            {:else}
-                <div class="percent text text-body1  weight-200"> {`${percent}`}</div>
-            {/if}
-        {/if}
-    </div>
-    <div class="flex-row flex-center-end">
-        {#if !token}
-            <div class="flex-row show-on-hover">
-                <button class="button__small reorder-button" on:click={handleReorderUp}>
-                    <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
-                </button>
-                <button class="button__small reorder-button" on:click={handleReorderDown}>
-                    <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
-                </button>
-            </div>    
-        {/if}
-        <button class="button__small address flex-row" 
-                class:success={copied} 
-                on:click={handleAddressCopy} 
-                title="copy account address"
+{#if !token || (token && hasVisibleBalance)}
+    <div 
+        id={`coin-row-${coin.id}`} 
+        bind:this={divElm}
+        class="row-box flex-column" 
+        on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
+        in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
         >
-            {formatAccountAddress(coin.vk, 10, 4)}
-            <div class="icon-copy">
-                {#if !copied}
-                    <CopyIcon width="9px" color="var(--font-primary)"/>
+        <div class="coin-main-row flex-row flex-center-center">
+            {#if whitelabel.mainPage.logo.show}
+                <div class="logo flex-center-center">
+                    <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/>
+                </div>
+            {/if}
+            {#if whitelabel.mainPage.account_info.show}
+                <div class="name text text-body1">
+                    <div class="name-box">
+                        <div id={`coin-nickname-${coin.id}`}  class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
+                            {`${coin.nickname}`}
+                        </div>
+                    </div>
+                </div>
+            {/if}
+            {#if whitelabel.mainPage.amount.show}
+                    <div class="amount flex-column">
+                        {#if token}
+                            <div class="token-balance text-body1">{`${tokenBalanceString} ${token.tokenSymbol}`}</div>
+                        {/if}
+                        <div class="text-primary-dim text-body1"
+                        >
+                            {`${balanceStr} ${$currentNetwork.currencySymbol}`}
+                        </div>
+                    </div>
+
+            {/if}
+            
+            {#if whitelabel.mainPage.portfolio.show && !token}
+                {#if watching}
+                    <div class="text-body2 text-primary-dim watching-text percent ">{"watching"}</div>
                 {:else}
-                    <CheckmarkIcon width="10px" color="var(--success-color)"/>
+                    <div class="percent text text-body1  weight-200"> {`${percent}`}</div>
                 {/if}
-            </div>
-        </button>
+            {/if}
+        </div>
+        <div class="flex-row flex-center-end">
+            {#if !token}
+                <div class="flex-row show-on-hover">
+                    <button class="button__small reorder-button" on:click={handleReorderUp}>
+                        <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
+                    </button>
+                    <button class="button__small reorder-button" on:click={handleReorderDown}>
+                        <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
+                    </button>
+                </div>    
+            {/if}
+            <button class="button__small address flex-row" 
+                    class:success={copied} 
+                    on:click={handleAddressCopy} 
+                    title="copy account address"
+            >
+                {formatAccountAddress(coin.vk, 10, 4)}
+                <div class="icon-copy">
+                    {#if !copied}
+                        <CopyIcon width="9px" color="var(--font-primary)"/>
+                    {:else}
+                        <CheckmarkIcon width="10px" color="var(--success-color)"/>
+                    {/if}
+                </div>
+            </button>
+        </div>
     </div>
-</div>
+    <CoinDivider />
+{/if}
