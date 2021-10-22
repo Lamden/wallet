@@ -6,7 +6,7 @@
 
     //Components
     import { Components } from '../Router.svelte';
-    const { InputBox, Button, TokenEditDetails, Loading} = Components;
+    const { InputBox, Button, TokenEditDetails, Loading, DropDown} = Components;
 
     //Misc
     import { getLogoFromURL } from '../../js/utils.js'
@@ -24,14 +24,20 @@
     let error = null
     let contractChecker
     let contractValid = null
+    let addType = 1
     
     let tokenMeta = undefined
     let newTokenMeta = undefined; 
 
     let loadingData = false;
+    let isLoadingTokens = false;
 
     $: hasNameAndSymbol = newTokenMeta ? newTokenMeta.tokenName && newTokenMeta.tokenSymbol : false;
     $: buttonDisabled = (!contractValid && !tokenMeta ) || error || !hasNameAndSymbol
+    $: buttonGroup = [
+            {id:"add-existing-token-btn", name: 'Add Existing', click: () => handleButtonGroupChange(1), class: addType === 1 ? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
+            {id:"add-custom-token-btn", name: 'Add Custom', click: () =>  handleButtonGroupChange(2), class: addType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
+        ]
     
     const returnMessageButtons = [
             {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
@@ -58,10 +64,15 @@
     }
 
     const handleSubmit = async (e) => {
-        if (newTokenMeta.logo_url && !newTokenMeta.logo_base64_svg && !newTokenMeta.logo_base64_png) {
-           newTokenMeta=  await getLogoFromURL(newTokenMeta, MAX_IMAGE_SIZE)
+        try {
+            if (newTokenMeta.logo_url && !newTokenMeta.logo_base64_svg && !newTokenMeta.logo_base64_png) {
+                newTokenMeta=  await getLogoFromURL(newTokenMeta, MAX_IMAGE_SIZE)
+            }
+            addToken(newTokenMeta)
+        } catch (err) {
+            console.log(err)
+            error = "Unable to retrieve the token logo from its url"
         }
-        addToken(newTokenMeta)
     }
 
     const handleInputKeyUp = () => {
@@ -103,6 +114,8 @@
         loadingData = true;
         chrome.runtime.sendMessage({type: 'getTokenMeta', data: contract}, (result) => {
             loadingData = false;
+            // Cancel fetching meta when the selected contract has been changed. 
+            if(contract !== contractName) return;
             if (result){
                 tokenMeta = result
                 createNewMetaObject()
@@ -143,6 +156,48 @@
         sendMessage(returnMessage);
         nextPage();
     }
+
+    const handleContractSelect = (e) => {
+        clearTokenMeta()
+        error = null
+        contractValid = false
+        tokenMeta = undefined;
+        contractName = e.detail.selected.name
+        if (contractName.length > 0){
+            tokenExists(contractName).then(exists => {
+                if (!exists){
+                    validateTokenContract()
+                }else{
+                    error = "Token already in Wallet"
+                }
+            })
+        }
+    }
+
+    const handleButtonGroupChange = (type) => {
+        addType = type
+        clearTokenMeta()
+        error = null
+        contractValid = false
+        tokenMeta = undefined;
+    }
+
+    /**
+     * Fetch existing token list form the Rocketswap API.
+     * @link https://rocketswap.exchange
+     */
+     const getTokenList = async () => {
+        isLoadingTokens = true;
+        const api = "https://rocketswap.exchange:2053/api/token_list";
+        const tokens = await fetch(api).then(res => res.json());
+        isLoadingTokens = false;
+        return tokens.map(item => {
+            return {
+                name: item.contract_name,
+                value: item
+            }
+        });
+    }
 </script>
 
 <style>
@@ -161,44 +216,101 @@
         width: 50px;
     }
 
+    .header{
+        margin-top: 30px;
+    }
+
+    .button-group{
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        box-shadow: var(--box-shadow-2);
+        -webkit-box-shadow: var(--box-shadow-2);
+        -moz-box-shadow: var(--box-shadow-2);
+
+    }
+
+    .error-msg{
+        margin-bottom: 1rem;
+    }
 </style>
 
 <div class="flex-column" >
-    <h3 class="header">Enter Token Information</h3>
-    <div class="flex-row flex-align-center">
-        <InputBox
-            id={"contract_name"}
-            margin="0 0 2rem 0"
-            on:changed={handleContractInput}
-            on:keyup={handleInputKeyUp}
-            warningMsg={error || ""}
-            placeholder={`Enter Token Contract Name`}
-            label={"Contract Name"}
-        />
-        <div class="loading-box flex-row flex-center-center">
-            {#if loadingData}
-                <Loading width="30px" mainStyle="margin: -16px 0 0 12px;"/>
+    <h3 class="header">Choose Action</h3>
+    <div class="button-group flex-row">
+        {#each buttonGroup as button, index}
+            <Button
+                id={button.id} 
+                classes={`button__solid ${button.class}`} 
+                width={'222px'}
+                name={button.name}
+                click={button.click}
+                tabIndex={"-1"} />
+        {/each}        
+    </div>
+
+    {#if isLoadingTokens && addType === 1}
+        <Loading message={'Loading Tokens'} />
+    {:else}
+        <div class="flex-row flex-align-center">
+            {#if addType === 1}
+                {#await getTokenList()}
+                    <DropDown  
+                        items={[]}
+                        id={'contract_name'} 
+                        label={'Please select a token'}
+                        margin="0 0 1rem 0"
+                        on:selected={ handleContractSelect }
+                    />
+                {:then res}
+                    <DropDown  
+                        items={res}
+                        id={'contract_name'} 
+                        label={'Please select a token'}
+                        margin="0 0 1rem 0"
+                        on:selected={ handleContractSelect }
+                    />
+                {/await}
             {/if}
+            {#if addType === 2}
+                <InputBox
+                    id={"contract_name"}
+                    margin="0 0 2rem 0"
+                    on:changed={handleContractInput}
+                    on:keyup={handleInputKeyUp}
+                    warningMsg={error || ""}
+                    placeholder={`Enter Token Contract Name`}
+                    label={"Contract Name"}
+                />
+            {/if}
+            <div class="loading-box flex-row flex-center-center">
+                {#if loadingData}
+                    <Loading width="30px" mainStyle="margin: -16px 0 0 12px;"/>
+                {/if}
+            </div>
         </div>
-    </div>
 
-    <div class:token-meta-box-dim={error !== null || !tokenMeta}>
-        <TokenEditDetails 
-            tokenMeta={newTokenMeta} 
-            on:changed={handleTokenDetailsChanged} 
-            disableInputs={!contractValid && !tokenMeta} 
-            {error}
-        />
-    </div>
+        {#if error && addType === 1}
+            <div id="dropdown-error" class="text-warning error-msg">{error}</div>
+        {/if}
 
-    <div class={"button-box flex-column"}>
-        <Button 
-            id={"add-token-btn"}
-            classes={'button__solid button__primary'} 
-            width={'260px'}
-            name={"Add Token"} 
-            click={handleSubmit}
+        <div class:token-meta-box-dim={error !== null || !tokenMeta}>
+            <TokenEditDetails 
+                tokenMeta={newTokenMeta} 
+                on:changed={handleTokenDetailsChanged} 
+                disableInputs={!contractValid && !tokenMeta} 
+                {error}
+            />
+        </div>
 
-            disabled={buttonDisabled}/>  
-    </div>
+        <div class={"button-box flex-column"}>
+            <Button 
+                id={"add-token-btn"}
+                classes={'button__solid button__primary'} 
+                width={'260px'}
+                name={"Add Token"} 
+                click={handleSubmit}
+
+                disabled={buttonDisabled}/>  
+        </div>
+    {/if}
 </div>

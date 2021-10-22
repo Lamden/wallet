@@ -10,12 +10,27 @@ const openAddAccountsAndTokens = async (driver) => {
     await driver.findElement(By.id('accounts')).click();
     await driver.findElement(By.id('add-btn')).click();
 }
+/**
+ * @param {Object} driver Selenium Driver
+ * @param {Object} token Token Info
+ * @param {number} type 0: existing tokens; 1: custom token. 
+ */
 
-const addToken_ShowDetails = async (driver, token) => {
+const addToken_ShowDetails = async (driver, token, type) => {
     await openAddAccountsAndTokens(driver)
-    await driver.findElement(By.className('select-selected')).click()
+    await driver.findElement(By.id('options-currently-selected')).click()
     await helpers.sleep(500, true)
-    await driver.findElement(By.id("select-option-1")).click()
+    await driver.findElement(By.xpath("//*[@id='options-currently-selected']/following-sibling::div[1]/div[@id='select-option-1']")).click()
+    let id = type === 0?"add-existing-token-btn": "add-custom-token-btn"
+    await driver.findElement(By.id(id)).click()
+
+    if(type === 0){
+        await helpers.sleep(10000, true)
+        await driver.findElement(By.id('contract_name-currently-selected')).click()
+        await helpers.sleep(1000, true)
+        await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option') and text()='${token.contractName}']`)).click()
+        return
+    }
     await helpers.sleep(500, true)
     await driver.findElement(By.id("contract_name")).sendKeys(`${token.contractName}\n`)
 }
@@ -88,6 +103,12 @@ const validateInputError = async (driver, errorShouldBe) => {
     assert.equal(errorShouldBe, errorIs);
 }
 
+const validateDropdownError = async (driver, errorShouldBe) => {
+    let inputMessage = await driver.findElement(By.id('dropdown-error'))
+    let errorIs = await inputMessage.getAttribute("innerText")
+    assert.equal(errorShouldBe, errorIs);
+}
+
 const changeTokenName = async (driver, newName) => {
     let input = await driver.findElement(By.id("input-token-name"))
     await input.clear()
@@ -131,7 +152,7 @@ const refreshTokenInfoButton = async (driver) => {
 }
 
 const addToken = async (driver, token) => {
-        await addToken_ShowDetails(driver, token)
+        await addToken_ShowDetails(driver, token, 1)
         await helpers.sleep(3000)
         await addToken_Save(driver, token)
         await helpers.sleep(1000)
@@ -187,5 +208,6 @@ module.exports = {
     validateTokenOnAccountsScreen,
     refreshTokenInfoButton,
     validateTokenNotOnAccountsScreen,
-    validateTransacationFormDetails
+    validateTransacationFormDetails,
+    validateDropdownError
 }
