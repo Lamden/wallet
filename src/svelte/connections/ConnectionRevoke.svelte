@@ -32,14 +32,13 @@
         {id: 'close-btn', name: 'ok', click: () => appHome(), class: 'button__solid button__primary'}
     ]
     let message = {buttons, type: 'success'}
-    let allNetworks = ['mockchain', 'testnet', 'mainnet']
 
     const handleSubmit = (form) => {
         if (passwordOkay){
             if (formObj.checkValidity()){
                 let networks = [$currentNetwork.type]
                 if (revokeAllAccess){
-                    networks = allNetworks
+                    networks = [$currentNetwork.type]
                 }
                 chrome.runtime.sendMessage({type: 'revokeDappAccess', data: {dappInfo, networks}}, (response) => {
                     if (!response || chrome.runtime.lastError){

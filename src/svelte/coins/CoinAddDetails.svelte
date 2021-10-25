@@ -58,7 +58,7 @@
 <div  class="coin-add-details flex-column" >
     <h2 class="header">Add New Account or Token</h2>
     <div class="text-subtitle3">
-        Select an item to add from the drop down.
+        Select an item to add from the drop-down menu.
     </div>
     <DropDown  
         items={optionsList}

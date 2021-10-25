@@ -50,8 +50,7 @@
             Restoring Accounts to Your {whitelabel.companyName} Wallet is Quick & Easy
         </h2>
         <div class="subtext text-body1 text-opacity-1">
-            It only takes a few minutes, please have your original Keystore file ready,
-            and be prepared to provide the password for it.
+            It only takes a few minutes, so please have your original keystore file ready, and be prepared to provide the password for it.
         </div>
         <div class="buttons">
             <Button

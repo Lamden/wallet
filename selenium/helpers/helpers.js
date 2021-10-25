@@ -311,6 +311,7 @@ const getApprovalAmount = (sender, to) => {
             if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
             else return resolver(parseInt(data.value))  
         }
+        console.log(`${testnetBlockService}/current/one/currency/balances/${sender}:${to}`)
         makeHttpRequest(`${testnetBlockService}/current/one/currency/balances/${sender}:${to}`, resolveRequest)
     })
 }

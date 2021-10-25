@@ -57,7 +57,7 @@
                     "id": "dapp-connections", 
                     "show": true,
                     "logo": "app", 
-                    "name": "Dapp Connections", 
+                    "name": "DApp Connections", 
                     "page": {
                         "name": "ConnectionsMain"
                     }
@@ -195,7 +195,7 @@
             "show":true
         },
         "connection_info":{
-            "title": "Dapp Name",
+            "title": "DApp Name",
             "show" : true,
             "show_network_name": false
         }

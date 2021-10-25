@@ -212,7 +212,6 @@
                 <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'tansfer_from')} >transfer from</button>
             </div>
             -->
-			<CoinDivider />
         {/each}
     </div>
     <!--

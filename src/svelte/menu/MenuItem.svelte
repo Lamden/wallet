@@ -53,7 +53,7 @@
     top: inherit;
     left: 50px;
     z-index: 100;
-    width: 110px;
+    width: 120px;
     background-color: var(--color-grey-2);
     color: var(--font-primary);
     border-radius: 0 4px 4px 0;

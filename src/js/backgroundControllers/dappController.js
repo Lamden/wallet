@@ -17,6 +17,10 @@ export const dappController = (utils, actions) => {
             if (prevVer <= "0.12.0" && currVer > prevVer){
                 initiateTrustedApp()
             }
+            console.log({prevVer, currVer})
+            if (prevVer <= "1.8.0" && currVer > prevVer){
+                purgeDappConnections()
+            }
         }
     });
 
@@ -215,11 +219,36 @@ export const dappController = (utils, actions) => {
             data.networks.forEach(networkType => {
                 delete dappsStore[data.dappInfo.url][networkType]
             })
+            let allnetworks = utils.networks.getAll()
+            let hasConnection = false
+            allnetworks.forEach(network => {
+                if (dappsStore[data.dappInfo.url][network.type]) hasConnection = true
+            })
+            if (!hasConnection) delete dappsStore[data.dappInfo.url]
             chrome.storage.local.set({"dapps": dappsStore});
         }catch(e){
             return false
         }
         return true
+    }
+
+    const purgeDappConnections = () => {
+        let changed = false
+        let allnetworks = utils.networks.getAll()
+
+        Object.keys(dappsStore).forEach(dappURL => {
+
+            let hasConnection = false
+            allnetworks.forEach(network => {
+                if (dappsStore[dappURL][network.type]) hasConnection = true
+            })
+            if (!hasConnection) {
+                delete dappsStore[dappURL]
+                changed = true
+            }
+        })
+
+        if (changed) chrome.storage.local.set({"dapps": dappsStore});
     }
     
     const reassignLink = (data) => {

@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -11,7 +11,6 @@
     "test-firstrun-new": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_CreateWallet.js",
     "test-firstrun-restore": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_RestoreWallet.js",
     "test-dapps": "mocha --recursive --timeout 30000 selenium/tests/dapp/*.js",
-    "test-dapps-change-account": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletChangeAccount.js",
     "test-dapps-wallet-connect": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletConnect.js",
     "test-dapps-get-info": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
     "test-dapps-sendtx": "mocha --timeout 30000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
@@ -27,7 +26,7 @@
     "url": "https://github.com/Lamden/wallet.git"
   },
   "devDependencies": {
-    "chromedriver": "^93.0.1",
+    "chromedriver": "^94.0.0",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",

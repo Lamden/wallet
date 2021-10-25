@@ -112,7 +112,7 @@
 <div id="coin-dapp-trusted" class="flex-column">
     <h2>Automatic Transactions</h2>
     <p class="text-body2">
-        Automatic transactions make for a better user experience as some Apps can send frequent transactions.
+        Automatic transactions make for a better user experience as some DApps can send frequent transactions.
         Once automatic transactions are enabled you will no longer receive popups when <strong>{dappInfo.appName}</strong> sends transations
         to its smart contract <strong>{dappInfo[$currentNetwork.type].contractName}</strong>.  Transactions to other contracts will always trigger a popup.
     </p>
