@@ -20,7 +20,7 @@ export const createTokenBalancesStore = () => {
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'token_balances') {
-                if (JSON.tokenBalanceTotal(changes[key].newValue) !== JSON.stringify(get(TokenBalancesStore))) {
+                if (JSON.stringify(changes[key].newValue) !== JSON.stringify(get(TokenBalancesStore))) {
                     TokenBalancesStore.set(changes[key].newValue)
                 }
             }
@@ -65,8 +65,6 @@ export const tokenBalanceTotal = derived(TokenBalancesStore, ($TokenBalancesStor
             })
         })
     })
-    console.log({totals})
-    
 
     return totals;
 });
