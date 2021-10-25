@@ -58,8 +58,9 @@
     $: percent = typeof $balanceTotal[netKey] === 'undefined' ? "" : toPercentString();
 
     $: tokenBalance = token && coin ? getTokenBalance(netKey, coin.vk, token.contractName, $TokenBalancesStore) : "0"
-    $: tokenBalanceString = stringToFixed(displayBalance(tokenBalance), 8)
-    $: hasVisibleBalance = toBigNumber(tokenBalanceString).isGreaterThan(0)
+    $: tokenBalanceTruncated = stringToFixed(tokenBalance.toString(), 8)
+    $: tokenBalanceString = displayBalance(tokenBalanceTruncated)
+    $: hasVisibleBalance = toBigNumber(tokenBalanceTruncated).isGreaterThan(0)
 
     afterUpdate(() => {
         balance = BalancesStore.getBalance($currentNetwork, coin.vk)

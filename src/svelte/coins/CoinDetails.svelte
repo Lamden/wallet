@@ -62,7 +62,6 @@
     }
 
 	onMount(() => {
-        $currentNetwork.API.getVariable('stamp_cost', 'S', 'value').then(res => stampRatio = res)
         if ($currentNetwork.blockExplorer) fetchTransactions();
         if (background.includes('http')){
             fetch(background)
