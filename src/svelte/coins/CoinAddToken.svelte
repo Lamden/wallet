@@ -114,6 +114,7 @@
             loadingData = false;
             if (result){
                 tokenMeta = result
+                tokenMeta["custom"] = true
                 createNewMetaObject()
             }
         })

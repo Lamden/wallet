@@ -383,6 +383,24 @@ const stringToFixed = (value, precision) => {
 	}
 }
 
+/**
+ * Fetch tokeninfo from rocketswap by contract name.
+ * @param {string} contractName Token contract name.
+ */
+const getTokenFromRocketswap = async (contractName) => {
+    const api = `https://rocketswap.exchange:2053/api/token/${contractName}`;
+    const result = await fetch(api).then(res => res.json());
+    const meta = {
+        contractName: result.token.contract_name,
+        tokenName: result.token.token_name,
+        tokenSymbol: result.token.token_symbol,
+        logo_base64_svg: result.token.token_base64_svg,
+        logo_base64_png: result.token.token_base64_png,
+        logo_url: result.token.token_logo_url
+    }
+    return meta;
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -397,5 +415,6 @@ module.exports = {
     toBigNumber,
     getTokenTotalBalance,
     getTokenBalance, formatAccountAddress,
-    dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL
+    dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL,
+    getTokenFromRocketswap
   }
