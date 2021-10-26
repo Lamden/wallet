@@ -31,6 +31,7 @@
 
     let loadingData = false;
     let isLoadingTokens = false;
+    let validating = false;
 
     $: tokenList = getTokenList();
     $: network = $currentNetwork.type;
@@ -111,8 +112,6 @@
         loadingData = true;
         chrome.runtime.sendMessage({type: 'getTokenMeta', data: contract}, (result) => {
             loadingData = false;
-            // Cancel fetching meta when the selected contract has been changed. 
-            if(contract !== contractName) return;
             if (result){
                 tokenMeta = result
                 createNewMetaObject()
@@ -163,7 +162,19 @@
         if (contractName.length > 0){
             tokenExists(contractName).then(exists => {
                 if (!exists){
-                    validateTokenContract()
+                    validating = true
+                    const nameToCheck = contractName.slice();
+                    chrome.runtime.sendMessage({type: 'validateTokenContract', data: nameToCheck}, (result) => {
+                        validating = false
+                        contractValid = result
+                        if (contractValid){
+                            tokenMeta = e.detail.selected.value
+                            newTokenMeta = tokenMeta
+                        } else {
+                            error = "Invalid Token Contract"
+                            clearTokenMeta()
+                        }
+                    })
                 }else{
                     error = "Token already in Wallet"
                 }
@@ -191,7 +202,7 @@
         isLoadingTokens = false;
         return tokens.map(item => {
             return {
-                name: `${item.contract_name} (${item.token_symbol})`,
+                name: `${item.token_name} (${item.token_symbol})`,
                 token: true,
                 value: {
                     contractName: item.contract_name,
@@ -257,13 +268,12 @@
                 tabIndex={"-1"} />
         {/each}        
     </div>
-
-    {#if isLoadingTokens && addType === 1 && network === "mainnet"}
-        <Loading message={'Loading Tokens'} />
-    {:else}
-        <div class="flex-row flex-align-center">
-            {#if addType === 1}
-                {#if network === "mainnet"}
+    {#if addType === 1}
+        {#if network === "mainnet"}
+            {#if isLoadingTokens}
+                <Loading message={'Loading Tokens'} />
+            {:else}
+                <div class="flex-row flex-align-center">
                     {#await tokenList}
                         <DropDown  
                             items={[]}
@@ -281,44 +291,55 @@
                             on:selected={ handleContractSelect }
                         />
                     {/await}
+                    <div class="loading-box flex-row flex-center-center">
+                        {#if validating}
+                            <Loading width="30px" mainStyle="margin: -16px 0 0 12px;"/>
+                        {/if}
+                    </div>
+                </div>
+                {#if error}
+                    <div id="dropdown-error" class="text-warning error-msg">{error}</div>
                 {/if}
-                {#if network === "testnet"}
-                    <h4 class="existing-testnet-text text-primary-dim">Not available on TESTNET. Use ADD CUSTOM instead.</h4>
-                {/if}
+                <div class={"button-box flex-column"}>
+                    <Button 
+                        id={"add-token-btn"}
+                        classes={'button__solid button__primary'} 
+                        width={'260px'}
+                        name={"Add Token"} 
+                        click={handleSubmit}
+                        disabled={buttonDisabled}/>  
+                </div>
             {/if}
-            {#if addType === 2}
-                <InputBox
-                    id={"contract_name"}
-                    margin="0 0 2rem 0"
-                    on:changed={handleContractInput}
-                    on:keyup={handleInputKeyUp}
-                    warningMsg={error || ""}
-                    placeholder={`Enter Token Contract Name`}
-                    label={"Contract Name"}
-                />
-            {/if}
+        {/if}
+        {#if network === "testnet"}
+            <h4 class="existing-testnet-text text-primary-dim">Not available on TESTNET. Use ADD CUSTOM instead.</h4>
+        {/if}
+    {/if}
+    {#if addType === 2}
+        <div class="flex-row flex-align-center">
+            <InputBox
+                id={"contract_name"}
+                margin="0 0 2rem 0"
+                on:changed={handleContractInput}
+                on:keyup={handleInputKeyUp}
+                warningMsg={error || ""}
+                placeholder={`Enter Token Contract Name`}
+                label={"Contract Name"}
+            />
             <div class="loading-box flex-row flex-center-center">
                 {#if loadingData}
                     <Loading width="30px" mainStyle="margin: -16px 0 0 12px;"/>
                 {/if}
             </div>
         </div>
-
-        {#if error && addType === 1}
-            <div id="dropdown-error" class="text-warning error-msg">{error}</div>
-        {/if}
-
-        {#if !(network === "testnet" && addType === 1)}
-            <div class:token-meta-box-dim={error !== null || !tokenMeta}>
-                <TokenEditDetails 
-                    tokenMeta={newTokenMeta} 
-                    on:changed={handleTokenDetailsChanged} 
-                    disableInputs={!contractValid && !tokenMeta} 
-                    {error}
-                />
-            </div>
-        {/if}
-
+        <div class:token-meta-box-dim={error !== null || !tokenMeta}>
+            <TokenEditDetails 
+                tokenMeta={newTokenMeta} 
+                on:changed={handleTokenDetailsChanged} 
+                disableInputs={!contractValid && !tokenMeta} 
+                {error}
+            />
+        </div>
         <div class={"button-box flex-column"}>
             <Button 
                 id={"add-token-btn"}
@@ -326,7 +347,6 @@
                 width={'260px'}
                 name={"Add Token"} 
                 click={handleSubmit}
-
                 disabled={buttonDisabled}/>  
         </div>
     {/if}

@@ -28,7 +28,7 @@ const addToken_ShowDetails = async (driver, token, type) => {
         await helpers.sleep(10000, true)
         await driver.findElement(By.id('contract_name-currently-selected')).click()
         await helpers.sleep(1000, true)
-        await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option') and text()='${item.contract_name} (${item.token_symbol})']`)).click()
+        await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option') and text()='${item.token_name} (${item.token_symbol})']`)).click()
         return
     }
     await helpers.sleep(500, true)

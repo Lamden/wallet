@@ -68,22 +68,6 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.validateTokenLogo(driver, token)
             await tokenHelpers.addToken_Save(driver, token)
         });
-        it('Can change Token Name from what was taken from contract', async function() {
-            let token = existingTokenInfo.token_5_svg
-            await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(4000)
-            token.tokenName = 'Super Token'
-            await tokenHelpers.changeTokenName(driver, 'Super Token')
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        it('Can change Token Symbol from what was taken from contract', async function() {
-            let token = existingTokenInfo.token_6_png
-            await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(4000)
-            token.tokenSymbol = 'SUPER'
-            await tokenHelpers.changeTokenSymbol(driver, 'SUPER')
-            await tokenHelpers.addToken_Save(driver, token)
-        });
     })
 
     context('add existing tokens - negative', function() {

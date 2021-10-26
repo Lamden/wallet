@@ -191,7 +191,7 @@ label{
                 <div id={`select-option-${index}`} class="items" class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
                      {#if item.token}
-                        <TokenLogo verticalAlign="middle" tokenMeta={item.value} width="24px" alt=""/>
+                        <TokenLogo verticalAlign="middle" tokenMeta={item.value} width="20px" alt=""/>
                      {/if}
                     {item.name}
                 </div>
