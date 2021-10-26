@@ -2,6 +2,7 @@
 
 <script>
     import { createEventDispatcher, onMount, afterUpdate, beforeUpdate} from 'svelte';
+    import TokenLogo from './TokenLogo.svelte';
     const dispatch = createEventDispatcher();
 
     //Props
@@ -176,13 +177,23 @@ label{
              class:open={!hideBox}
              on:click={() => toggleBox()}
              >
-            {selectElm.options.length > 0 ? displayItems[selectElm.selectedIndex].name : defaultText}
+            {#if selectElm.options.length > 0}
+                {#if displayItems[selectElm.selectedIndex].token}
+                    <TokenLogo verticalAlign="middle" tokenMeta={displayItems[selectElm.selectedIndex].value} width="24px" alt=""/>
+                {/if}
+                {displayItems[selectElm.selectedIndex].name}
+            {:else}
+                {defaultText}
+            {/if}
         </div>
         <div class="select-items" class:select-hide={hideBox} style={`max-height: ${boxHeight};`}>
             {#each displayItems as item, index }
                 <div id={`select-option-${index}`} class="items" class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
-                     {item.name}
+                     {#if item.token}
+                        <TokenLogo verticalAlign="middle" tokenMeta={item.value} width="24px" alt=""/>
+                     {/if}
+                    {item.name}
                 </div>
             {/each}  
         </div>

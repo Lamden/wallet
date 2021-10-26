@@ -32,6 +32,8 @@
     let loadingData = false;
     let isLoadingTokens = false;
 
+    $: tokenList = getTokenList();
+    $: network = $currentNetwork.type;
     $: hasNameAndSymbol = newTokenMeta ? newTokenMeta.tokenName && newTokenMeta.tokenSymbol : false;
     $: buttonDisabled = (!contractValid && !tokenMeta ) || error || !hasNameAndSymbol
     $: buttonGroup = [
@@ -64,15 +66,10 @@
     }
 
     const handleSubmit = async (e) => {
-        try {
-            if (newTokenMeta.logo_url && !newTokenMeta.logo_base64_svg && !newTokenMeta.logo_base64_png) {
-                newTokenMeta=  await getLogoFromURL(newTokenMeta, MAX_IMAGE_SIZE)
-            }
-            addToken(newTokenMeta)
-        } catch (err) {
-            console.log(err)
-            error = "Unable to retrieve the token logo from its url"
+        if (newTokenMeta.logo_url && !newTokenMeta.logo_base64_svg && !newTokenMeta.logo_base64_png) {
+            newTokenMeta=  await getLogoFromURL(newTokenMeta, MAX_IMAGE_SIZE)
         }
+        addToken(newTokenMeta)
     }
 
     const handleInputKeyUp = () => {
@@ -162,7 +159,7 @@
         error = null
         contractValid = false
         tokenMeta = undefined;
-        contractName = e.detail.selected.name
+        contractName = e.detail.selected.value.contractName
         if (contractName.length > 0){
             tokenExists(contractName).then(exists => {
                 if (!exists){
@@ -179,7 +176,8 @@
         clearTokenMeta()
         error = null
         contractValid = false
-        tokenMeta = undefined;
+        tokenMeta = undefined
+        contractName = undefined
     }
 
     /**
@@ -193,8 +191,16 @@
         isLoadingTokens = false;
         return tokens.map(item => {
             return {
-                name: item.contract_name,
-                value: item
+                name: `${item.contract_name} (${item.token_symbol})`,
+                token: true,
+                value: {
+                    contractName: item.contract_name,
+                    tokenName: item.token_name,
+                    tokenSymbol: item.token_symbol,
+                    logo_base64_svg: item.token_base64_svg,
+                    logo_base64_png: item.token_base64_png,
+                    logo_url: item.token_logo_url
+                },
             }
         });
     }
@@ -232,6 +238,10 @@
     .error-msg{
         margin-bottom: 1rem;
     }
+
+    .existing-testnet-text{
+        margin-bottom: 1.6rem;
+    }
 </style>
 
 <div class="flex-column" >
@@ -248,28 +258,33 @@
         {/each}        
     </div>
 
-    {#if isLoadingTokens && addType === 1}
+    {#if isLoadingTokens && addType === 1 && network === "mainnet"}
         <Loading message={'Loading Tokens'} />
     {:else}
         <div class="flex-row flex-align-center">
             {#if addType === 1}
-                {#await getTokenList()}
-                    <DropDown  
-                        items={[]}
-                        id={'contract_name'} 
-                        label={'Please select a token'}
-                        margin="0 0 1rem 0"
-                        on:selected={ handleContractSelect }
-                    />
-                {:then res}
-                    <DropDown  
-                        items={res}
-                        id={'contract_name'} 
-                        label={'Please select a token'}
-                        margin="0 0 1rem 0"
-                        on:selected={ handleContractSelect }
-                    />
-                {/await}
+                {#if network === "mainnet"}
+                    {#await tokenList}
+                        <DropDown  
+                            items={[]}
+                            id={'contract_name'} 
+                            label={'Please select a token'}
+                            margin="0 0 1rem 0"
+                            on:selected={ handleContractSelect }
+                        />
+                    {:then res}
+                        <DropDown  
+                            items={res}
+                            id={'contract_name'} 
+                            label={'Please select a token'}
+                            margin="0 0 1rem 0"
+                            on:selected={ handleContractSelect }
+                        />
+                    {/await}
+                {/if}
+                {#if network === "testnet"}
+                    <h4 class="existing-testnet-text text-primary-dim">Not available on TESTNET. Use ADD CUSTOM instead.</h4>
+                {/if}
             {/if}
             {#if addType === 2}
                 <InputBox
@@ -293,14 +308,16 @@
             <div id="dropdown-error" class="text-warning error-msg">{error}</div>
         {/if}
 
-        <div class:token-meta-box-dim={error !== null || !tokenMeta}>
-            <TokenEditDetails 
-                tokenMeta={newTokenMeta} 
-                on:changed={handleTokenDetailsChanged} 
-                disableInputs={!contractValid && !tokenMeta} 
-                {error}
-            />
-        </div>
+        {#if !(network === "testnet" && addType === 1)}
+            <div class:token-meta-box-dim={error !== null || !tokenMeta}>
+                <TokenEditDetails 
+                    tokenMeta={newTokenMeta} 
+                    on:changed={handleTokenDetailsChanged} 
+                    disableInputs={!contractValid && !tokenMeta} 
+                    {error}
+                />
+            </div>
+        {/if}
 
         <div class={"button-box flex-column"}>
             <Button 
