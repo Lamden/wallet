@@ -114,7 +114,6 @@
             loadingData = false;
             if (result){
                 tokenMeta = result
-                tokenMeta["custom"] = true
                 createNewMetaObject()
             }
         })
@@ -170,6 +169,7 @@
                         contractValid = result
                         if (contractValid){
                             tokenMeta = e.detail.selected.value
+                            tokenMeta["rocketswap"] = true
                             newTokenMeta = tokenMeta
                         } else {
                             error = "Invalid Token Contract"

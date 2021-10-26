@@ -80,7 +80,7 @@
 
     const getTokenMeta = (contract) => {
         loadingData = true;
-        if (token.custom) {
+        if (!token.rocketswap) {
             chrome.runtime.sendMessage({type: 'getTokenMeta', data: token.contractName}, (result) => {
                 loadingData = false;
                 if (result) applyTokenMeta({contractName:token.contractName,  ...result})
