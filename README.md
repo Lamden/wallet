@@ -8,11 +8,11 @@
 git clone https://github.com/Lamden/wallet.git
 cd wallet
 ```
-### Install package dependancies
+### Install package dependencies
 ```
 sudo npm install
 ```
-### build plugin
+### Build plugin
 ```
 npm run build
 ```
