@@ -45,7 +45,7 @@ const config = {
     get walletPath() {
         return path.join(this.workingDir, this.walletBuildDir)
     },
-    walletExtentionID: "gmghfifbnkgcmcldhhohppiijbcjbmck", //"gmghfifbnkgcmcldhhohppiijbcjbmck",
+    walletExtentionID: "milbhnchmaidmgioekemioacdgkojndh", //"gmghfifbnkgcmcldhhohppiijbcjbmck",
     port: 5656,
     testnetMasternode: "https://testnet-master-1.lamden.io:443",
     testnetBlockService: "http://165.227.181.34:3535"

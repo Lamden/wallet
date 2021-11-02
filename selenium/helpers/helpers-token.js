@@ -26,7 +26,7 @@ const addToken_ShowDetails = async (driver, token, type) => {
     await driver.findElement(By.id(id)).click()
 
     if(type === 0){
-        await helpers.sleep(6000, true)
+        await helpers.sleep(8000, true)
         await driver.findElement(By.id('contract_name-currently-selected')).click()
         await helpers.sleep(1000, true)
         await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option')]/div[text()='${token.tokenName} (${token.tokenSymbol})']`)).click()
@@ -40,7 +40,7 @@ const addToken_Save = async (driver, token) => {
     let addbutton = await driver.findElement(By.id("add-token-btn"))
     assert.equal(await addbutton.isEnabled(), true);
     await addbutton.click()
-    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 15000);
+    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 18000);
     let message = await messageField.getAttribute("innerText")
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
