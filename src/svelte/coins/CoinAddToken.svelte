@@ -167,7 +167,7 @@
                     chrome.runtime.sendMessage({type: 'validateTokenContract', data: nameToCheck}, (result) => {
                         validating = false
                         contractValid = result
-                        if (contractValid){
+                        if (contractValid && addType === 1){
                             tokenMeta = e.detail.selected.value
                             tokenMeta["rocketswap"] = true
                             newTokenMeta = tokenMeta
@@ -197,11 +197,14 @@
      * @link https://rocketswap.exchange
      */
      const getTokenList = async () => {
+        let tokenlist = [];
         isLoadingTokens = true;
         const api = "https://rocketswap.exchange:2053/api/token_list";
         const tokens = await fetch(api).then(res => res.json());
         isLoadingTokens = false;
-        return tokens.map(item => {
+
+        // weed out all the coins that have no market.
+        tokenlist = tokens.filter(token => token.has_market).map(item => {
             return {
                 name: `${item.token_name} (${item.token_symbol})`,
                 token: true,
@@ -215,6 +218,8 @@
                 },
             }
         });
+        tokenlist.sort((a, b) => a.value.tokenName.localeCompare(b.value.tokenName));
+        return tokenlist;
     }
 </script>
 

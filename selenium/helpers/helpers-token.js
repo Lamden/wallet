@@ -17,6 +17,7 @@ const openAddAccountsAndTokens = async (driver) => {
  */
 
 const addToken_ShowDetails = async (driver, token, type) => {
+    await helpers.sleep(500, true)
     await openAddAccountsAndTokens(driver)
     await driver.findElement(By.id('options-currently-selected')).click()
     await helpers.sleep(500, true)
@@ -25,10 +26,10 @@ const addToken_ShowDetails = async (driver, token, type) => {
     await driver.findElement(By.id(id)).click()
 
     if(type === 0){
-        await helpers.sleep(10000, true)
+        await helpers.sleep(6000, true)
         await driver.findElement(By.id('contract_name-currently-selected')).click()
         await helpers.sleep(1000, true)
-        await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option') and text()='${item.token_name} (${item.token_symbol})']`)).click()
+        await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option')]/div[text()='${token.tokenName} (${token.tokenSymbol})']`)).click()
         return
     }
     await helpers.sleep(500, true)
@@ -39,10 +40,11 @@ const addToken_Save = async (driver, token) => {
     let addbutton = await driver.findElement(By.id("add-token-btn"))
     assert.equal(await addbutton.isEnabled(), true);
     await addbutton.click()
-    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 5000);
+    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 15000);
     let message = await messageField.getAttribute("innerText")
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
+    await helpers.sleep(500, true)
     await validateTokenOnAccountsScreen(driver, token)
 }
 
@@ -75,7 +77,7 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
 
-    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 10000);
+    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 5000);
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {
@@ -87,8 +89,8 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
 const validateTokenLogoInBox = async (driver, token, overrideLogoType=undefined) => {
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
-    helpers.sleep(10000, true)
-    let input = await driver.wait(until.elementLocated(By.css(`.token-logo-box #token-logo-${token.tokenSymbol}-${type}`)), 10000);  
+    helpers.sleep(15000, true)
+    let input = await driver.wait(until.elementLocated(By.css(`.token-logo-box #token-logo-${token.tokenSymbol}-${type}`)), 15000);  
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {
@@ -130,7 +132,7 @@ const cancelTokenOptionsModal = async (driver) => {
 }
 
 const uploadImage = async (driver, imagePath ) => {
-    let filePicker = await driver.wait(until.elementLocated(By.id(`filePicker`)), 10000);
+    let filePicker = await driver.wait(until.elementLocated(By.id(`filePicker`)), 15000);
     await filePicker.sendKeys(path.join(config.workingDir, imagePath))
 }
 
@@ -142,7 +144,7 @@ const validateImageTooLargeError = async (driver) => {
 }
 
 const clearUploadImage = async (driver) => {
-    let clearButton = await driver.wait(until.elementLocated(By.className(`clear-button`)), 10000);
+    let clearButton = await driver.wait(until.elementLocated(By.className(`clear-button`)), 15000);
     await clearButton.click()
 }
 
@@ -178,6 +180,13 @@ const gotoTokenOptions = async (driver, token) => {
     await driver.wait(until.elementLocated(By.id(`modify-token-btn`)), 2000).click();
 }
 
+const validateSimpleTransacationFormDetails = async (driver, token) => {
+    helpers.sleep(1000)
+    let tokenInput = await driver.findElement(By.id("tokeninput"));
+    let tokenInputValue = await tokenInput.getText();
+    assert.equal(tokenInputValue, token.tokenName);
+}
+
 const validateTransacationFormDetails = async (driver, token, method) => {
     helpers.sleep(1000)
     let contractInput = await driver.findElement(By.id("contract-input"))
@@ -209,5 +218,6 @@ module.exports = {
     refreshTokenInfoButton,
     validateTokenNotOnAccountsScreen,
     validateTransacationFormDetails,
-    validateDropdownError
+    validateDropdownError,
+    validateSimpleTransacationFormDetails
 }

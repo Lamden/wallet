@@ -20,6 +20,7 @@
     export let sideBox = false;
     export let boxHeight = "242px";
     export let bgStyle = "primary";
+    export let logoWidth = "20px"
 
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
@@ -88,6 +89,8 @@ label{
 .select-selected {
     border: 1px solid var(--input-outline);;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
 }
 
 .select-selected.open {
@@ -112,7 +115,7 @@ label{
     margin-top: -5px;
 }
 
-.select-items div,.select-selected {
+.select-items > div,.select-selected {
     max-width: 100%;
 
     white-space: nowrap;
@@ -147,6 +150,11 @@ label{
     display: none;
 }
 
+.items {
+    display: flex;
+    align-items: center;
+}
+
 .items:hover {
     background-color: var(--bg-secondary-hover);
     border-radius: 0px;
@@ -179,9 +187,13 @@ label{
              >
             {#if selectElm.options.length > 0}
                 {#if displayItems[selectElm.selectedIndex].token}
-                    <TokenLogo verticalAlign="middle" tokenMeta={displayItems[selectElm.selectedIndex].value} width="24px" alt=""/>
+                    <div>
+                        <TokenLogo margin="0 10px 0 0" tokenMeta={displayItems[selectElm.selectedIndex].value} width={logoWidth} alt=""/>
+                    </div>
                 {/if}
-                {displayItems[selectElm.selectedIndex].name}
+                <div>
+                    {displayItems[selectElm.selectedIndex].name}
+                </div>
             {:else}
                 {defaultText}
             {/if}
@@ -191,9 +203,11 @@ label{
                 <div id={`select-option-${index}`} class="items" class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
                      {#if item.token}
-                        <TokenLogo verticalAlign="middle" tokenMeta={item.value} width="20px" alt=""/>
+                        <div>
+                            <TokenLogo margin="0 10px 0 0" tokenMeta={item.value} width={logoWidth} alt=""/>
+                        </div>
                      {/if}
-                    {item.name}
+                    <div>{item.name}</div>
                 </div>
             {/each}  
         </div>
