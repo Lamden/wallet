@@ -1,10 +1,10 @@
 <script>
-    import { setContext, getContext } from 'svelte';
+    import { setContext, getContext, onMount } from 'svelte';
     import { Encoder } from 'lamden-js'
 
     //Components
     import { Modals, Components }  from '../Router.svelte'
-    const { CoinLamdenContract } = Modals
+    const { CoinLamdenContract, CoinLamdenSimpleContract } = Modals
     const { Button } = Components
 
     //Stores
@@ -18,7 +18,7 @@
 
 	setContext('tx_functions', {
 		nextPage: () => nextPage(),
-        back: () => currentStep = currentStep -1,
+        back: () => back(),
         home: () => currentStep = 1
 	});
 
@@ -26,6 +26,7 @@
     export let modalData;
 
     let steps = [
+        {page: 'CoinLamdenSimpleContract', back: -1, cancelButton: true},
         {page: 'CoinLamdenContract', back: -1, cancelButton: true},
         {page: 'CoinConfirmTx', back: 0, cancelButton: true},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
@@ -33,13 +34,15 @@
     ]
     let buttons = [
             {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
-            {name: 'New Transaction', click: () => currentStep = 1, class: 'button__solid'}
+            {name: 'New Transaction', click: () =>  reset(), class: 'button__solid'}
         ]
     let currentStep = 1;
     
     let error, status = "";
     let txData = {};
     let resultInfo = {};
+    let txui = "simple";  // "simple", "advanced";
+    let initstep = 1;
 
     $: netKey = networkKey($currentNetwork)
     $: token = modalData.token;
@@ -52,8 +55,39 @@
         selected: true
     }]
 
+    onMount(() => {
+        if (txMethod === "transfer") {
+            currentStep = 1;
+            initstep = 1;
+        } else {
+            currentStep = 2;
+            initstep = 2;
+        }
+    });
+
+    const reset = () => {
+        if (txMethod === "transfer") {
+            currentStep = 1;
+            initstep = 1;
+        } else {
+            currentStep = 2;
+            initstep = 2;
+        }
+    }
     const nextPage = () => {
         currentStep = currentStep + 1
+    }
+
+    const back = () => {
+        if (currentStep === 3){
+            if (txui === "simple") {
+                currentStep = 1
+            } else {
+                currentStep = 2
+            }
+            return
+        }
+        currentStep = currentStep -1
     }
 
     const createAccountList = (netKey, tokenBalancesStore, coinsDropDown) => {
@@ -66,23 +100,31 @@
             if (balance.isGreaterThan(0)) return true
             return false
         }).map(c => {
+            let selected = false
+            let name = ""
             if (c.value && coin){
-                c.selected = c.value.network === coin.network && c.value.symbol === coin.symbol && c.value.vk === coin.vk
+                selected = c.value.network === coin.network && c.value.symbol === coin.symbol && c.value.vk === coin.vk
             }
-            c.name = `
+            name = `
                 ${formatAccountAddress(c.value.vk, 10, 4)} - ${c.value.nickname}:
                 ${displayBalanceToFixed(tokenBalancesStore[netKey][c.value.vk][token.contractName], 8)} 
                 ${token.tokenSymbol}
             `
-            return c
+            return {
+                ...c,
+                name,
+                selected
+            }
         })
         return returnList
     }
 
     const saveTxDetails = (e) => {
         txData = {...e.detail};
-        currentStep = currentStep + 1; 
-        
+        if(e.type === "contractDetails") {
+            txui = "advanced";
+        }
+        currentStep = 3; 
     }
 
     const createTxDetails = () => {
@@ -108,15 +150,26 @@
     }
 </script>
 {#if accountList}
-    <CoinLamdenContract 
-        {coin} 
-        {accountList}
-        startingContract={token.contractName}
-        startingMethod={txMethod}
-        currentPage={steps[currentStep - 1].page} 
-        on:contractDetails={(e) => saveTxDetails(e)} 
-    />
-    {#if currentStep > 1}
+    {#if currentStep === 1}
+        <CoinLamdenSimpleContract 
+            {token} 
+            {accountList}
+            startingContract={token.contractName}
+            currentPage={steps[currentStep - 1].page} 
+            on:contractSimpleDetails={(e) => saveTxDetails(e)} 
+        />
+    {/if}
+    {#if currentStep === 2}
+        <CoinLamdenContract 
+            {coin} 
+            {accountList}
+            startingContract={token.contractName}
+            startingMethod={txMethod}
+            currentPage={steps[currentStep - 1].page} 
+            on:contractDetails={(e) => saveTxDetails(e)} 
+        />
+    {/if} 
+    {#if currentStep > 2}
         <svelte:component this={Modals[steps[currentStep - 1].page]} 
                         result={resultInfo} 
                         {coin} 
