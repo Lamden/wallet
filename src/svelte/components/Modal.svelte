@@ -41,19 +41,24 @@
 	flex-direction: column;
 	align-items: center;
 	position: absolute;
-	overflow: visible;
 	left: 50%;
-	/*top: calc(100vh - 45vh); */
-	/*max-height: calc(100vh - 4em);*/
-	transform: translate(-50%, 0px);
+	top: 0px;
+	transform: translate(-50%, 0);
+	overflow: visible;
 	padding: 30px 55px;
-	margin: 20px 0;
 	background: var(--bg-primary);
 	box-shadow: var(--box-shadow-4);
     -webkit-box-shadow: var(--box-shadow-4);
     -moz-box-shadow: var(--box-shadow-4);
 	border-radius: 4px;
 	z-index: 60;
+}
+
+@media (min-height: 768px) {
+	.modal {
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
 }
 
 </style>

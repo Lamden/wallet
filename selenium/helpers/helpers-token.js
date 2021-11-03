@@ -10,12 +10,28 @@ const openAddAccountsAndTokens = async (driver) => {
     await driver.findElement(By.id('accounts')).click();
     await driver.findElement(By.id('add-btn')).click();
 }
+/**
+ * @param {Object} driver Selenium Driver
+ * @param {Object} token Token Info
+ * @param {number} type 0: existing tokens; 1: custom token. 
+ */
 
-const addToken_ShowDetails = async (driver, token) => {
-    await openAddAccountsAndTokens(driver)
-    await driver.findElement(By.className('select-selected')).click()
+const addToken_ShowDetails = async (driver, token, type) => {
     await helpers.sleep(500, true)
-    await driver.findElement(By.id("select-option-1")).click()
+    await openAddAccountsAndTokens(driver)
+    await driver.findElement(By.id('options-currently-selected')).click()
+    await helpers.sleep(500, true)
+    await driver.findElement(By.xpath("//*[@id='options-currently-selected']/following-sibling::div[1]/div[@id='select-option-1']")).click()
+    let id = type === 0?"add-existing-token-btn": "add-custom-token-btn"
+    await driver.findElement(By.id(id)).click()
+
+    if(type === 0){
+        await helpers.sleep(2000, true)
+        await driver.findElement(By.id('contract_name-currently-selected')).click()
+        await helpers.sleep(1000, true)
+        await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option')]/div[text()='${token.tokenName} (${token.tokenSymbol})']`)).click()
+        return
+    }
     await helpers.sleep(500, true)
     await driver.findElement(By.id("contract_name")).sendKeys(`${token.contractName}\n`)
 }
@@ -24,10 +40,11 @@ const addToken_Save = async (driver, token) => {
     let addbutton = await driver.findElement(By.id("add-token-btn"))
     assert.equal(await addbutton.isEnabled(), true);
     await addbutton.click()
-    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 5000);
+    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 18000);
     let message = await messageField.getAttribute("innerText")
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
+    await helpers.sleep(500, true)
     await validateTokenOnAccountsScreen(driver, token)
 }
 
@@ -57,14 +74,17 @@ const validateTokenSymbol = async (driver, token) => {
 }
 
 const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
+
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
 
-    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 10000);
+    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 5000);
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {
-        if (type === "urlB64") assert.equal(src, token.logo_base64_url);
+        if (type === "urlB64") {
+            assert.equal(src, token.logo_base64_url)
+        }
         else assert.equal(src, token.logo);
     }
 }
@@ -72,8 +92,8 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
 const validateTokenLogoInBox = async (driver, token, overrideLogoType=undefined) => {
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
-    helpers.sleep(10000, true)
-    let input = await driver.wait(until.elementLocated(By.css(`.token-logo-box #token-logo-${token.tokenSymbol}-${type}`)), 10000);  
+    helpers.sleep(15000, true)
+    let input = await driver.wait(until.elementLocated(By.css(`.token-logo-box #token-logo-${token.tokenSymbol}-${type}`)), 15000);  
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {
@@ -84,6 +104,12 @@ const validateTokenLogoInBox = async (driver, token, overrideLogoType=undefined)
 
 const validateInputError = async (driver, errorShouldBe) => {
     let inputMessage = await driver.findElement(By.className('inputbox-message'))
+    let errorIs = await inputMessage.getAttribute("innerText")
+    assert.equal(errorShouldBe, errorIs);
+}
+
+const validateDropdownError = async (driver, errorShouldBe) => {
+    let inputMessage = await driver.findElement(By.id('dropdown-error'))
     let errorIs = await inputMessage.getAttribute("innerText")
     assert.equal(errorShouldBe, errorIs);
 }
@@ -109,7 +135,7 @@ const cancelTokenOptionsModal = async (driver) => {
 }
 
 const uploadImage = async (driver, imagePath ) => {
-    let filePicker = await driver.wait(until.elementLocated(By.id(`filePicker`)), 10000);
+    let filePicker = await driver.wait(until.elementLocated(By.id(`filePicker`)), 15000);
     await filePicker.sendKeys(path.join(config.workingDir, imagePath))
 }
 
@@ -121,7 +147,7 @@ const validateImageTooLargeError = async (driver) => {
 }
 
 const clearUploadImage = async (driver) => {
-    let clearButton = await driver.wait(until.elementLocated(By.className(`clear-button`)), 10000);
+    let clearButton = await driver.wait(until.elementLocated(By.className(`clear-button`)), 15000);
     await clearButton.click()
 }
 
@@ -131,7 +157,7 @@ const refreshTokenInfoButton = async (driver) => {
 }
 
 const addToken = async (driver, token) => {
-        await addToken_ShowDetails(driver, token)
+        await addToken_ShowDetails(driver, token, 1)
         await helpers.sleep(3000)
         await addToken_Save(driver, token)
         await helpers.sleep(1000)
@@ -155,6 +181,13 @@ const gotoTokenDetails = async (driver, token) => {
 
 const gotoTokenOptions = async (driver, token) => {
     await driver.wait(until.elementLocated(By.id(`modify-token-btn`)), 2000).click();
+}
+
+const validateSimpleTransacationFormDetails = async (driver, token) => {
+    helpers.sleep(1000)
+    let tokenInput = await driver.findElement(By.id("tokeninput"));
+    let tokenInputValue = await tokenInput.getText();
+    assert.equal(tokenInputValue, token.tokenName);
 }
 
 const validateTransacationFormDetails = async (driver, token, method) => {
@@ -187,5 +220,7 @@ module.exports = {
     validateTokenOnAccountsScreen,
     refreshTokenInfoButton,
     validateTokenNotOnAccountsScreen,
-    validateTransacationFormDetails
+    validateTransacationFormDetails,
+    validateDropdownError,
+    validateSimpleTransacationFormDetails
 }

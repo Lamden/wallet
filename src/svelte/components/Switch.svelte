@@ -33,7 +33,7 @@
   bottom: 0;
   height: 14px;
   width: 34px;
-  background-color: var(--primary-color);
+  background-color: rgb(204, 204, 204, 0.24);
   transition: .4s;
 }
 
@@ -50,7 +50,7 @@
 }
 
 input:checked + .slider {
-  background-color: rgb(204, 204, 204, 0.24);
+  background-color: var(--primary-color);
   box-shadow: 0px 1px 2px rgba(48, 79, 254, 0.54);
 }
 
@@ -73,6 +73,6 @@ input:checked + .slider:before {
 </style>
 
 <label class="switch">
-  <input type="checkbox" bind:checked={checked} on:click={() => dispatchState()}>
+  <input type="checkbox" bind:checked={checked} on:change={() => dispatchState()}>
   <span class="slider round"></span>
 </label>

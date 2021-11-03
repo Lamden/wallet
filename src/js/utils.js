@@ -334,15 +334,23 @@ const resizeImage = (image, MAX_IMAGE_SIZE) => {
 }
 
 const getLogoFromURL = async (tokenInfo, MAX_IMAGE_SIZE) => {
-    const acceptedImageTypes = ["image/jpeg", "image/png", "image/svg"]
-    let blob = await fetch(tokenInfo.logo_url).then(res => res.blob())
-    if (acceptedImageTypes.includes(blob.type)){
-        let file = await readBlobToFile(blob)
-        let image = await readFileToImage(file)
-        if (image.width >= MAX_IMAGE_SIZE || image.height >= MAX_IMAGE_SIZE) {
-            file = await readBlobToFile(resizeImage(image, MAX_IMAGE_SIZE))
+    try{
+        const acceptedImageTypes = ["image/jpeg", "image/png", "image/svg"]
+        let blob = await fetch(tokenInfo.logo_url).then(res => res.blob())
+        if (acceptedImageTypes.includes(blob.type)){
+            let file = await readBlobToFile(blob)
+            let image = await readFileToImage(file)
+            if (image.width >= MAX_IMAGE_SIZE || image.height >= MAX_IMAGE_SIZE) {
+                file = await readBlobToFile(resizeImage(image, MAX_IMAGE_SIZE))
+            }
+            tokenInfo.logo_base64_url = file
+            delete tokenInfo.logo_url
+            return tokenInfo
         }
-        tokenInfo.logo_base64_url = file
+    } catch {
+        // set default logo
+        const genericIcon_base64_svg = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiPjxjaXJjbGUgc3Ryb2tlPSJub25lIiBmaWxsPSIjOGU3Yjk4IiByPSI0OCUiIGN4PSI1MCUiIGN5PSI1MCUiPjwvY2lyY2xlPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwIDUwKSBzY2FsZSgwLjY5IDAuNjkpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoLTUwIC01MCkiIHN0eWxlPSJmaWxsOiNmZmZmZmYiPjxzdmcgZmlsbD0iI2ZmZmZmZiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdmVyc2lvbj0iMS4xIiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOmdlb21ldHJpY1ByZWNpc2lvbjt0ZXh0LXJlbmRlcmluZzpnZW9tZXRyaWNQcmVjaXNpb247aW1hZ2UtcmVuZGVyaW5nOm9wdGltaXplUXVhbGl0eTsiIHZpZXdCb3g9IjAgMCA1OCA4OCIgeD0iMHB4IiB5PSIwcHgiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgogICAKICAgIC5maWwwIHtmaWxsOiNmZmZmZmZ9CiAgIAogIDwvc3R5bGU+PC9kZWZzPjxnPjxwYXRoIGNsYXNzPSJmaWwwIiBkPSJNMCAyNGMwLC0zMSA1OCwtMzMgNTgsLTEgMCwxOSAtMTksMTggLTIzLDM2IC0yLDkgLTE0LDggLTE0LC0yIDAsLTE3IDE0LC0xOCAyMCwtMjkgNCwtOCAtMywtMTYgLTExLC0xNiAtMTcsMCAtMTEsMTkgLTIyLDE5IC00LDAgLTgsLTMgLTgsLTd6bTI4IDY0Yy0xMiwwIC0xMSwtMTggMCwtMTggMTIsMCAxMiwxOCAwLDE4eiI+PC9wYXRoPjwvZz48L3N2Zz48L2c+PC9zdmc+"
+        tokenInfo.logo_base64_svg = genericIcon_base64_svg
         delete tokenInfo.logo_url
         return tokenInfo
     }
@@ -376,6 +384,24 @@ const stringToFixed = (value, precision) => {
 	}
 }
 
+/**
+ * Fetch tokeninfo from rocketswap by contract name.
+ * @param {string} contractName Token contract name.
+ */
+const getTokenFromRocketswap = async (contractName) => {
+    const api = `https://rocketswap.exchange:2053/api/token/${contractName}`;
+    const result = await fetch(api).then(res => res.json());
+    const meta = {
+        contractName: result.token.contract_name,
+        tokenName: result.token.token_name,
+        tokenSymbol: result.token.token_symbol,
+        logo_base64_svg: result.token.token_base64_svg,
+        logo_base64_png: result.token.token_base64_png,
+        logo_url: result.token.token_logo_url
+    }
+    return meta;
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -390,5 +416,6 @@ module.exports = {
     toBigNumber,
     getTokenTotalBalance,
     getTokenBalance, formatAccountAddress,
-    dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL
+    dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL,
+    getTokenFromRocketswap
   }

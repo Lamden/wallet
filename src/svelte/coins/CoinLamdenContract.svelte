@@ -127,6 +127,7 @@
     }
 
     const handleNext = () => {
+        console.log(kwargs);
         if (validateFields()){
             dispatch('contractDetails', {
                 sender: selectedWallet,

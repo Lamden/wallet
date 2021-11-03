@@ -2,6 +2,7 @@
 
 <script>
     import { createEventDispatcher, onMount, afterUpdate, beforeUpdate} from 'svelte';
+    import TokenLogo from './TokenLogo.svelte';
     const dispatch = createEventDispatcher();
 
     //Props
@@ -19,6 +20,7 @@
     export let sideBox = false;
     export let boxHeight = "242px";
     export let bgStyle = "primary";
+    export let logoWidth = "20px"
 
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
@@ -87,6 +89,8 @@ label{
 .select-selected {
     border: 1px solid var(--input-outline);;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
 }
 
 .select-selected.open {
@@ -111,7 +115,7 @@ label{
     margin-top: -5px;
 }
 
-.select-items div,.select-selected {
+.select-items > div,.select-selected {
     max-width: 100%;
 
     white-space: nowrap;
@@ -146,6 +150,11 @@ label{
     display: none;
 }
 
+.items {
+    display: flex;
+    align-items: center;
+}
+
 .items:hover {
     background-color: var(--bg-secondary-hover);
     border-radius: 0px;
@@ -176,13 +185,29 @@ label{
              class:open={!hideBox}
              on:click={() => toggleBox()}
              >
-            {selectElm.options.length > 0 ? displayItems[selectElm.selectedIndex].name : defaultText}
+            {#if selectElm.options.length > 0}
+                {#if displayItems[selectElm.selectedIndex].token}
+                    <div>
+                        <TokenLogo margin="0 10px 0 0" tokenMeta={displayItems[selectElm.selectedIndex].value} width={logoWidth} alt=""/>
+                    </div>
+                {/if}
+                <div>
+                    {displayItems[selectElm.selectedIndex].name}
+                </div>
+            {:else}
+                {defaultText}
+            {/if}
         </div>
         <div class="select-items" class:select-hide={hideBox} style={`max-height: ${boxHeight};`}>
             {#each displayItems as item, index }
                 <div id={`select-option-${index}`} class="items" class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
-                     {item.name}
+                     {#if item.token}
+                        <div>
+                            <TokenLogo margin="0 10px 0 0" tokenMeta={item.value} width={logoWidth} alt=""/>
+                        </div>
+                     {/if}
+                    <div>{item.name}</div>
                 </div>
             {/each}  
         </div>

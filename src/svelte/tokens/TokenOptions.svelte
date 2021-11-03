@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     //Utils
-    import { copyToClipboard, displayBalance, getLogoFromURL } from '../../js/utils.js'
+    import { copyToClipboard, displayBalance, getLogoFromURL, getTokenFromRocketswap } from '../../js/utils.js'
 
 	//Stores
     import { currentNetwork } from '../../js/stores/stores.js';
@@ -80,10 +80,17 @@
 
     const getTokenMeta = (contract) => {
         loadingData = true;
-        chrome.runtime.sendMessage({type: 'getTokenMeta', data: token.contractName}, (result) => {
-            loadingData = false;
-            if (result) applyTokenMeta({contractName:token.contractName,  ...result})
-        })
+        if (!token.rocketswap) {
+            chrome.runtime.sendMessage({type: 'getTokenMeta', data: token.contractName}, (result) => {
+                loadingData = false;
+                if (result) applyTokenMeta({contractName:token.contractName,  ...result})
+            })
+        } else {
+            getTokenFromRocketswap(token.contractName).then(result => {
+                loadingData = false;
+                applyTokenMeta({contractName:token.contractName,  ...result})
+            })
+        }
     }
 
     const applyTokenMeta = async (tokenInfo, contractName) => {

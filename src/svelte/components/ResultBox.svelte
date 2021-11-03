@@ -8,6 +8,9 @@
     import successCircle from '../../img/menu_icons/icon_success_circle.svg';
     import caution from '../../img/menu_icons/icon_caution.svg';
 
+    //Stores
+    import { currentNetwork } from '../../js/stores/stores.js';
+
     //Props
     export let result;
 
@@ -69,6 +72,13 @@ h3#results-subtitle{
         <div class="icon">{@html icon}</div>
         <p id={'results-message'} class="text-body1">{resultMessage}</p>
     </div>
+    {#if result.txHash}
+        <div>
+            <a class="text-link" target="_blank" rel="noopener noreferrer" href={`${$currentNetwork.blockExplorer}/transactions/${result.txHash}`}>
+                Click here to view transaction details.
+            </a>
+        </div>
+    {/if}
     {#if errorInfo}
         <div class="error-info text-body1 flex-column">
             <div class="flex-column">

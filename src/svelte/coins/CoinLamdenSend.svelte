@@ -5,7 +5,7 @@
     import { currentPage } from '../Router.svelte'
     //Components
     import { Modals, Components }  from '../Router.svelte'
-    const { CoinLamdenContract } = Modals
+    const { CoinLamdenContract, CoinLamdenSimpleContract } = Modals
     const { Button } = Components
 
     //Context
@@ -13,7 +13,7 @@
 
 	setContext('tx_functions', {
 		nextPage: () => nextPage(),
-        back: () => currentStep = currentStep -1,
+        back: () => back(),
         home: () => currentStep = 1
 	});
 
@@ -21,6 +21,7 @@
     export let modalData;
 
     let steps = [
+        {page: 'CoinLamdenSimpleContract', back: -1, cancelButton: true},
         {page: 'CoinLamdenContract', back: -1, cancelButton: true},
         {page: 'CoinConfirmTx', back: 0, cancelButton: true},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
@@ -35,6 +36,7 @@
     let error, status = "";
     let txData = {};
     let resultInfo = {};
+    let txui = "simple";  // "simple", "advanced";
 
     $: coin = modalData.coin;
 
@@ -42,10 +44,24 @@
         currentStep = currentStep + 1
     }
 
+    const back = () => {
+        if (currentStep === 3){
+            if (txui === "simple") {
+                currentStep = 1
+            } else {
+                currentStep = 2
+            }
+            return
+        }
+        currentStep = currentStep -1
+    }
+
     const saveTxDetails = (e) => {
         txData = {...e.detail};
-        currentStep = currentStep + 1; 
-        
+        if(e.type === "contractDetails") {
+            txui = "advanced";
+        }
+        currentStep = 3; 
     }
 
     const createTxDetails = () => {
@@ -66,17 +82,27 @@
     const resultDetails = (e) => {
         resultInfo = e.detail.resultInfo;
         resultInfo.buttons = buttons;
+        resultInfo.txHash = e.detail.txHash;
         if (resultInfo.stampsUsed > 0) modalData.refreshTx();
         nextPage();
     }
 </script>
 
-<CoinLamdenContract 
-    {coin} 
-    currentPage={steps[currentStep - 1].page} 
-    on:contractDetails={(e) => saveTxDetails(e)} 
-/>
-{#if currentStep > 1}
+{#if currentStep === 1}
+    <CoinLamdenSimpleContract 
+        {coin} 
+        currentPage={steps[currentStep - 1].page} 
+        on:contractSimpleDetails={(e) => saveTxDetails(e)} 
+    />
+{/if}
+{#if currentStep === 2}
+    <CoinLamdenContract 
+        {coin} 
+        currentPage={steps[currentStep - 1].page} 
+        on:contractDetails={(e) => saveTxDetails(e)} 
+    />
+{/if}
+{#if currentStep > 2}
     <svelte:component this={Modals[steps[currentStep - 1].page]} 
                       result={resultInfo} 
                       {coin} 

@@ -33,7 +33,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
     context('upload token logos', function() {
         it('Can upload a png to change icon', async function() {
             let token = tokenInfo.token_1_svg
-            await tokenHelpers.addToken_ShowDetails(driver, token)
+            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
             await helpers.sleep(3000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.pngLogo)
             token.logo = tokenImages.pngLogoBase64
@@ -44,7 +44,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
         });
         it('Can upload an svg to change icon', async function() {
             let token = tokenInfo.token_3_url
-            await tokenHelpers.addToken_ShowDetails(driver, token)
+            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
             await helpers.sleep(3000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.svgLogo)
             token.logo = tokenImages.svgLogoBase64
@@ -55,7 +55,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
         });
         it('Can upload an image and then revert back to contract standard', async function() {
             let token = tokenInfo.token_4_placeholder
-            await tokenHelpers.addToken_ShowDetails(driver, token)
+            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
             await helpers.sleep(3000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.svgLogo)
             await tokenHelpers.validateTokenLogo(driver, {...token, logo: tokenImages.svgLogoBase64, logo_type: "svg"})
@@ -70,7 +70,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
     context('upload token logos - negative', function() {
         it('Will display size requirements if picture too large', async function() {
             let token = tokenInfo.token_5_svg
-            await tokenHelpers.addToken_ShowDetails(driver, token)
+            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
             await helpers.sleep(3000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.pngLogoTooLarge)
             await tokenHelpers.validateImageTooLargeError(driver)
