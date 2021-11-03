@@ -83,11 +83,13 @@
         contractValid = false
         tokenMeta = undefined;
         contractName = e.detail.target.value
+        loadingData = true;
         if (contractName.length > 0){
             tokenExists(contractName).then(exists => {
                 if (!exists){
                     validateTokenContract()
                 }else{
+                    loadingData = false;
                     error = "Token already in Wallet"
                 }
             })
@@ -100,6 +102,7 @@
         error = null
         const nameToCheck = contractName.slice();
         chrome.runtime.sendMessage({type: 'validateTokenContract', data: nameToCheck}, (result) => {
+            loadingData = false;
             contractValid = result
             if (contractValid) getTokenMeta(nameToCheck)
             else {
@@ -233,10 +236,21 @@
         justify-content: flex-end;
         align-items: center;
         padding-bottom: 20px;
+        margin-top: 2rem;
     }
 
     .loading-box{
         width: 50px;
+        position: absolute;
+        top: 50%;
+        right: 40px;
+    }
+
+    .loading-box-add-custom{
+        width: 22px;
+        position: absolute;
+        top: 47%;
+        right: 13px;
     }
 
     .header{
@@ -268,7 +282,7 @@
             <Button
                 id={button.id} 
                 classes={`button__solid ${button.class}`} 
-                width={'222px'}
+                width={'100%'}
                 name={button.name}
                 click={button.click}
                 tabIndex={"-1"} />
@@ -279,7 +293,7 @@
             {#if isLoadingTokens}
                 <Loading message={'Loading Tokens'} />
             {:else}
-                <div class="flex-row flex-align-center">
+                <div class="flex-row flex-align-center" style="position: relative;">
                     {#await tokenList}
                         <DropDown  
                             items={[]}
@@ -306,14 +320,15 @@
                 {#if error}
                     <div id="dropdown-error" class="text-warning error-msg">{error}</div>
                 {/if}
-                <div class={"button-box flex-column"}>
+                <div class={"button-box flex-column"} >
                     <Button 
                         id={"add-token-btn"}
                         classes={'button__solid button__primary'} 
                         width={'260px'}
-                        name={"Add Token"} 
+                        name={validating ? "Getting Data" : "Add Token"} 
                         click={handleSubmit}
                         disabled={buttonDisabled}/>  
+                        
                 </div>
             {/if}
         {/if}
@@ -322,19 +337,20 @@
         {/if}
     {/if}
     {#if addType === 2}
-        <div class="flex-row flex-align-center">
+        <div class="flex-row flex-align-center" style="position: relative;">
             <InputBox
                 id={"contract_name"}
                 margin="0 0 2rem 0"
+                width="100%"
                 on:changed={handleContractInput}
                 on:keyup={handleInputKeyUp}
                 warningMsg={error || ""}
                 placeholder={`Enter Token Contract Name`}
                 label={"Contract Name"}
             />
-            <div class="loading-box flex-row flex-center-center">
+            <div class="loading-box-add-custom flex-row flex-center-center">
                 {#if loadingData}
-                    <Loading width="30px" mainStyle="margin: -16px 0 0 12px;"/>
+                    <Loading width="22px" mainStyle="margin: -16px 0 0 12px;"/>
                 {/if}
             </div>
         </div>

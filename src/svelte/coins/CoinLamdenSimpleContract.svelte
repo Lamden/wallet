@@ -50,8 +50,8 @@
     $: accounts = creacteAccounts($coinsDropDown, $BalancesStore, $TokenBalancesStore, contractName);
     $: toAccounts = creacteToAccounts($coinsDropDown, from);
     $: buttonGroup = [
-            {id:"external-account-btn", name: 'External Account', click: () => receiverType = 1, class: receiverType === 1 ? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
-            {id:"my-account-btn", name: 'My Account', click: () =>  receiverType = 2, class: receiverType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
+            {id:"external-account-btn", name: 'An External Account', click: () => receiverType = 1, class: receiverType === 1 ? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
+            {id:"my-account-btn", name: 'One of My Accounts', click: () =>  receiverType = 2, class: receiverType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: tokens = from? createTokensDropDown(from.vk, BalancesStore) : [];
 
@@ -266,7 +266,7 @@
             <Button
                 id={button.id} 
                 classes={`button__solid ${button.class}`} 
-                width={'222px'}
+                width={'100%'}
                 name={button.name}
                 click={button.click}
                 tabIndex={"-1"} />
@@ -328,7 +328,7 @@
         id="amount"
         width="100%"
         bind:value={amount}
-        label={"AMOUNT"}
+        label={"Amount"}
         margin="0 0 2rem 0"
         inputType={"number"}
         required={true}
