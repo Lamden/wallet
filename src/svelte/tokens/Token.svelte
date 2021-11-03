@@ -64,7 +64,6 @@
 <div 
     id={`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`} 
     class="row-box flex-row" 
-    on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
     in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
     >
     {#if whitelabel.mainPage.token_columns.token_logo.show}

@@ -17,7 +17,6 @@ export const dappController = (utils, actions) => {
             if (prevVer <= "0.12.0" && currVer > prevVer){
                 initiateTrustedApp()
             }
-            console.log({prevVer, currVer})
             if (prevVer <= "1.8.0" && currVer > prevVer){
                 purgeDappConnections()
             }

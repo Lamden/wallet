@@ -362,7 +362,7 @@ const stringToFixed = (value, precision) => {
 	if (Encoder.BigNumber.isBigNumber(value) && precision ) {
         value = value.toFixed(precision)
     }
-	if (!value) return "0.0"
+	if (!value || isNaN(value)) return "0.0"
 		try {
 			var values = value.split('.')
 		} catch {

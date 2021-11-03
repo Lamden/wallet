@@ -59,6 +59,7 @@
     }
 
     const determineStamps = () => {
+        if (!selectedWallet) return
         let maxStamps = Encoder('bigNumber', stampRatio * 5) ;
         let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
         
