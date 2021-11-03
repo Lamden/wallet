@@ -40,7 +40,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Can add a token with url icon from rocketswap', async function() {
             let token = existingTokenInfo.token_url
             await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(20000)
+            await helpers.sleep(5000)
             token.logo_type = "urlB64"
             await tokenHelpers.addToken_Save(driver, token)
         });

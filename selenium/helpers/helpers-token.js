@@ -26,7 +26,7 @@ const addToken_ShowDetails = async (driver, token, type) => {
     await driver.findElement(By.id(id)).click()
 
     if(type === 0){
-        await helpers.sleep(8000, true)
+        await helpers.sleep(2000, true)
         await driver.findElement(By.id('contract_name-currently-selected')).click()
         await helpers.sleep(1000, true)
         await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option')]/div[text()='${token.tokenName} (${token.tokenSymbol})']`)).click()
@@ -74,6 +74,7 @@ const validateTokenSymbol = async (driver, token) => {
 }
 
 const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
+
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
 
@@ -81,7 +82,9 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {
-        if (type === "urlB64") assert.equal(src, token.logo_base64_url);
+        if (type === "urlB64") {
+            assert.equal(src, token.logo_base64_url)
+        }
         else assert.equal(src, token.logo);
     }
 }
