@@ -271,7 +271,7 @@ p{
 				<CoinDivider />
 			{/each}
 		{/if}
-		{#if coinStorage.length > 0}
+		{#if coinsTracked.length > 0}
 			<div class="header header-accounts header-text text-body1 divider ">
 				<div class="logo-space header-name header-text">Watched Accounts</div>
 				<div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
