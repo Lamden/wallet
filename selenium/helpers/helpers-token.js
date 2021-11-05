@@ -7,6 +7,7 @@ const path = require('path')
 const placeholder_base64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiPjxjaXJjbGUgc3Ryb2tlPSJub25lIiBmaWxsPSIjOGU3Yjk4IiByPSI0OCUiIGN4PSI1MCUiIGN5PSI1MCUiPjwvY2lyY2xlPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwIDUwKSBzY2FsZSgwLjY5IDAuNjkpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoLTUwIC01MCkiIHN0eWxlPSJmaWxsOiNmZmZmZmYiPjxzdmcgZmlsbD0iI2ZmZmZmZiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdmVyc2lvbj0iMS4xIiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOmdlb21ldHJpY1ByZWNpc2lvbjt0ZXh0LXJlbmRlcmluZzpnZW9tZXRyaWNQcmVjaXNpb247aW1hZ2UtcmVuZGVyaW5nOm9wdGltaXplUXVhbGl0eTsiIHZpZXdCb3g9IjAgMCA1OCA4OCIgeD0iMHB4IiB5PSIwcHgiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgogICAKICAgIC5maWwwIHtmaWxsOiNmZmZmZmZ9CiAgIAogIDwvc3R5bGU+PC9kZWZzPjxnPjxwYXRoIGNsYXNzPSJmaWwwIiBkPSJNMCAyNGMwLC0zMSA1OCwtMzMgNTgsLTEgMCwxOSAtMTksMTggLTIzLDM2IC0yLDkgLTE0LDggLTE0LC0yIDAsLTE3IDE0LC0xOCAyMCwtMjkgNCwtOCAtMywtMTYgLTExLC0xNiAtMTcsMCAtMTEsMTkgLTIyLDE5IC00LDAgLTgsLTMgLTgsLTd6bTI4IDY0Yy0xMiwwIC0xMSwtMTggMCwtMTggMTIsMCAxMiwxOCAwLDE4eiI+PC9wYXRoPjwvZz48L3N2Zz48L2c+PC9zdmc+"
 
 const openAddAccountsAndTokens = async (driver) => {
+    await helpers.sleep(1000);
     await driver.findElement(By.id('accounts')).click();
     await driver.findElement(By.id('add-btn')).click();
 }
@@ -27,7 +28,7 @@ const addToken_ShowDetails = async (driver, token, type) => {
 
     if(type === 0){
         await helpers.sleep(2000, true)
-        await driver.findElement(By.id('contract_name-currently-selected')).click()
+        await driver.wait(until.elementLocated(By.id('contract_name-currently-selected')), 25000).click();
         await helpers.sleep(1000, true)
         await driver.findElement(By.xpath(`//*[starts-with(@id,'select-option')]/div[text()='${token.tokenName} (${token.tokenSymbol})']`)).click()
         return
@@ -38,9 +39,9 @@ const addToken_ShowDetails = async (driver, token, type) => {
 
 const addToken_Save = async (driver, token) => {
     let addbutton = await driver.findElement(By.id("add-token-btn"))
-    assert.equal(await addbutton.isEnabled(), true);
+    await driver.wait(until.elementIsEnabled(addbutton, 15000))
     await addbutton.click()
-    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 18000);
+    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
     let message = await messageField.getAttribute("innerText")
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
@@ -83,7 +84,7 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {
         if (type === "urlB64") {
-            assert.equal(src, token.logo_base64_url)
+            assert.equal(src.indexOf("data:image/jpeg;base64") !== -1, true)
         }
         else assert.equal(src, token.logo);
     }
