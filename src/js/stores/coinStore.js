@@ -63,6 +63,7 @@ export const coinsDropDown = derived(CoinStore, ($CoinStore) => {
         selected: true
     }]
     $CoinStore.map(c => {
+        if (c.value && c.value.sk === "watchOnly") return;
         returnList.push({
             value: c,
             name: `${formatAccountAddress(c.vk, 10,4)} - ${c.nickname}`,
