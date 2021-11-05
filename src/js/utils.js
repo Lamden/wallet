@@ -205,6 +205,7 @@ const stripTrailingZero = (value) => {
 const displayBalance = (value) => {
     if (!value) return '0'
     if (!Encoder.BigNumber.isBigNumber(value)) value = Encoder('bigNumber', value)
+    value = Encoder('bigNumber', stringToFixed(value.toString(), 8))
     return value.toFormat({  decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
 }
 
@@ -247,15 +248,15 @@ const getKeyValue = async (networkObj, contractName, variableName, key, format =
 const displayBalanceToFixed = (value, precision) => displayBalance(stringToFixed(value, precision))
 
 const getTokenTotalBalance = (netKey, contractName, tokenBalanceTotals) => {
-    if (!tokenBalanceTotals) return "0"
-    if (!tokenBalanceTotals[netKey]) return "0"
-    return tokenBalanceTotals[netKey][contractName] || "0"
+    if (!tokenBalanceTotals) return Encoder('bigNumber', 0)
+    if (!tokenBalanceTotals[netKey]) return Encoder('bigNumber', 0)
+    return Encoder('bigNumber', tokenBalanceTotals[netKey][contractName]) || Encoder('bigNumber', 0)
 }
 const getTokenBalance = (netKey, vk, contractName, tokenBalancesStore) => {
-    if (!tokenBalancesStore[netKey]) return "0"
-    if (!tokenBalancesStore[netKey][vk]) return "0"
-    if (!tokenBalancesStore[netKey][vk][contractName]) return "0"
-    return tokenBalancesStore[netKey][vk][contractName]
+    if (!tokenBalancesStore[netKey]) return Encoder('bigNumber', 0)
+    if (!tokenBalancesStore[netKey][vk]) return Encoder('bigNumber', 0)
+    if (!tokenBalancesStore[netKey][vk][contractName]) return Encoder('bigNumber', 0)
+    return Encoder('bigNumber', tokenBalancesStore[netKey][vk][contractName])
 }
 
 const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
@@ -361,7 +362,7 @@ const stringToFixed = (value, precision) => {
 	if (Encoder.BigNumber.isBigNumber(value) && precision ) {
         value = value.toFixed(precision)
     }
-	if (!value) return "0.0"
+	if (!value || isNaN(value)) return "0.0"
 		try {
 			var values = value.split('.')
 		} catch {

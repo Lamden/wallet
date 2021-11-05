@@ -53,12 +53,10 @@
                     .then(res => res.json())
                     .then(res => {
                         stampRatio = parseInt(res.value)
-                        determineStamps()
                     })
                 }
             }else{
                 stampRatio = parseInt(response)
-                determineStamps()
             }
             
         })
@@ -68,8 +66,10 @@
 
     });
 
-    const determineStamps = () => {
-        let maxStamps = Encoder('bigNumber', stampRatio * 5) ;
+    const determineStamps = async () => {
+        if (!selectedWallet) return
+
+        let maxStamps = await getStampCost(contractName, methodName)
         let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
         
         let userStampsAvailable = bal.multipliedBy(stampRatio)
@@ -77,7 +77,29 @@
             stampLimit = parseInt(userStampsAvailable.toString())
         }
         else stampLimit = parseInt(maxStamps.toString())
+
+        console.log({stampLimit})
     }
+
+    const getStampCost = async (contractName, method) => {
+        if (!contractName) return 0
+        if (!methodName) return 0
+
+        return await fetch(`${$currentNetwork.blockExplorer}/api/stamps/${contractName}/${method}`)
+        .then(res => res.json())
+		.then((stampsInfo) => {
+            console.log({stampsInfo})
+			if (!stampsInfo) {
+				return Encoder('bigNumber', 50)
+			}else{
+                return  Encoder('bigNumber', stampsInfo.max)
+            }
+		})
+		.catch(() => {
+			return Encoder('bigNumber', 50)
+		})
+
+	}
 
     const coinList = () => {
         let returnList = $coinsDropDown.filter(f => f.value && f.value.sk !== "watchOnly").map(c => {
@@ -110,6 +132,7 @@
         MethodArgsStore.set(method.arguments);
         methodName = method.name
         kwargs = [];
+        determineStamps()
     }
 
     const saveArgValue = (arg, e) => {

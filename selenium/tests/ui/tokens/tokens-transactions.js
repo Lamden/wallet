@@ -28,7 +28,9 @@ const whitelabel = require('../../../../whitelabel.json')
             await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false)
         });
     
-        after(() => driver && driver.quit());
+        after(() => {
+            driver && driver.quit()
+        });
     
         context('test-setup', function() {
             it('Add a token to wallet, for testing', async function() {

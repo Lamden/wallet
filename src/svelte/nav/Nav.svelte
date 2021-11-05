@@ -18,7 +18,7 @@
         right: 0;
         height: 97px;
         background-color: var(--bg-primary);
-        z-index: 25;
+        z-index: 29;
         border-bottom: 1px solid var(--divider-light);
         max-width: 1920px;
     }

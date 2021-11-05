@@ -70,9 +70,7 @@
             Backing Up Your {whitelabel.companyName} Wallet is Very Important
         </h2>
         <div class="subtext text-body1 text-opacity-1">
-            All of the information for your Accounts is stored in this browser. 
-            We highly recommend creating a KeyStore file so that you can recover 
-            your accounts if anythign happens to this computer.
+            All of the information for your Accounts is stored in this browser. We highly recommend creating a keystore file so that you can recover your Accounts if anything happens to this computer.
         </div>
         <div class="buttons">
         	<Button

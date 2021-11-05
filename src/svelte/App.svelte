@@ -207,11 +207,12 @@
 	.menu-pane{
 		width: 83px;
 		min-width: 83px;
-		z-index: 29;
+		z-index: 28;
 	}
 
 	.content-pane{
 		padding: 21px 30px 0;
+		
 		flex-grow: 1;
 		box-sizing: border-box;
 		max-width: 1612px;

@@ -268,7 +268,6 @@ p{
 			</div>	
 			{#each coinStorage as coin (coin.id) }
 				<Coin {coin} on:reorderAccount={handleReorderAccount}/>
-				<CoinDivider />
 			{/each}
 		{/if}
 		{#if coinStorage.length > 0}

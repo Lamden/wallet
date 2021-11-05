@@ -333,7 +333,9 @@ export const tokenController = (utils, services, actions) => {
 
                 balances.forEach(balance => {
                     if (!token_balances[netKey][balance.key]) token_balances[netKey][balance.key] = {}
-                    token_balances[netKey][balance.key][tokenContract] = utils.getValueFromReturn(balance.value)
+                    let newBal = utils.getValueFromReturn(balance.value)
+                    if (!newBal) newBal = "0"
+                    token_balances[netKey][balance.key][tokenContract] = newBal
                 })
                 saveTokensBalancesToStorage()
             }catch(e){
@@ -419,7 +421,9 @@ export const tokenController = (utils, services, actions) => {
         balances.forEach(balance => {
             const { key, value, contractName } = balance
             if (!newBalances[key]) newBalances[key] = {}
-            newBalances[key][contractName] = utils.getValueFromReturn(value)
+            let newBalance = utils.getValueFromReturn(value)
+            if (!newBalance) newBalance = "0"
+            newBalances[key][contractName] = newBalance
         })
         return newBalances
     }

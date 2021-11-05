@@ -46,6 +46,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
      })
 
     context('lamdenWalletSendTx', function() {
+        
         it('Returns error if event detail is not a JSON string', async function() {
             let transaction = ""
             let response = await helpers.sendTx(driver, transaction, true)
@@ -145,14 +146,16 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(result.txInfo.stampLimit, transaction.stampLimit);     
         });
         it('Sends Currency/Approval transaction after Popup', async function() {
-            this.timeout(30000);
+            this.timeout(60000);
             let currentApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
+            console.log({currentApprovalAmount})
             let transaction = helpers.getInstance(dappsInfo.approvalTransaction)
             await helpers.sendTx(driver, transaction, false)
             await helpers.approveApprovalPopup(driver, 2, 1)
             await helpers.getTxResult(driver)
-            await helpers.sleep(2000)
+            await helpers.sleep(30000)
             let afterApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
+            console.log({afterApprovalAmount})
             assert.equal(afterApprovalAmount, currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount);
         });
         it('sends a transactions successfully after Trusted App', async function() {

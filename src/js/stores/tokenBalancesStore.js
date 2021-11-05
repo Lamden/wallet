@@ -65,6 +65,6 @@ export const tokenBalanceTotal = derived(TokenBalancesStore, ($TokenBalancesStor
             })
         })
     })
-
+    
     return totals;
 });
