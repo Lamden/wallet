@@ -102,13 +102,12 @@
 	}
 
     const coinList = () => {
-        let returnList = $coinsDropDown.map(c => {
+        let returnList = $coinsDropDown.filter(f => f.value && f.value.sk !== "watchOnly").map(c => {
             if (c.value){
                 c.selected = c.value.network === coin.network && c.value.symbol === coin.symbol && c.value.vk === coin.vk
             }
             return c
         })
-        returnList.shift()
         return returnList
     }
 

@@ -23,7 +23,7 @@
     
     let selectedAccountVk = null; // selected account Id
 
-    $: accountList = confirmData.messageData.accounts
+    $: accountList = confirmData.messageData.accounts? confirmData.messageData.accounts.filter(f => f.sk !== "watchOnly") : []
 
     const next = () => {
         setAccount(accountList.find(account => account.vk === selectedAccountVk));

@@ -34,14 +34,14 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Can add a token with png icon from rocketswap', async function() {
             let token = existingTokenInfo.token_png
             await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.addToken_Save(driver, token)
         });
         /*
         it('Can add a token with url icon from rocketswap', async function() {
             let token = existingTokenInfo.token_url
             await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(5000)
+            await helpers.sleep(4000)
             token.logo_type = "urlB64"
             await tokenHelpers.addToken_Save(driver, token)
         });
@@ -52,7 +52,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Will display error in the bellow of dropdown if token already added', async function() {
             let token = existingTokenInfo.token_png
             await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateDropdownError(driver, "Token already in Wallet")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
@@ -64,7 +64,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await helpers.sleep(2000)
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
             await tokenHelpers.validateTokenSymbol(driver, token)
             await tokenHelpers.validateTokenLogo(driver, token)
@@ -73,7 +73,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Can add a token with png icon from contract', async function() {
             let token = tokenInfo.token_2_png
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
             await tokenHelpers.validateTokenSymbol(driver, token)
             await tokenHelpers.validateTokenLogo(driver, token)
@@ -82,7 +82,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Can add a token with url icon from contract', async function() {
             let token = tokenInfo.token_3_url
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
             await tokenHelpers.validateTokenSymbol(driver, token)
             await tokenHelpers.validateTokenLogo(driver, token)
@@ -92,7 +92,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Displays placeholder token icon if no icon found in contract or uploaded', async function() {
             let token = tokenInfo.token_4_placeholder
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateTokenName(driver, token)
             await tokenHelpers.validateTokenSymbol(driver, token)
             await tokenHelpers.validateTokenLogo(driver, token)
@@ -101,7 +101,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Can change Token Name from what was taken from contract', async function() {
             let token = tokenInfo.token_5_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             token.tokenName = 'Super Token'
             await tokenHelpers.changeTokenName(driver, 'Super Token')
             await tokenHelpers.addToken_Save(driver, token)
@@ -109,7 +109,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Can change Token Symbol from what was taken from contract', async function() {
             let token = tokenInfo.token_6_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             token.tokenSymbol = 'SUPER'
             await tokenHelpers.changeTokenSymbol(driver, 'SUPER')
             await tokenHelpers.addToken_Save(driver, token)
@@ -120,21 +120,21 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
         it('Will display error in inputbox if token already added', async function() {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateInputError(driver, "Token already in Wallet")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
         it('Will display error in inputbox if token contract is invalid', async function() {
             let token = tokenInfo.invalid_token_contract
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             await tokenHelpers.validateInputError(driver, "Invalid Token Contract")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
         it('Add Button disabled if required information no found in token contract', async function() {
             let token = tokenInfo.token_no_values
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(20000)
+            await helpers.sleep(4000)
             let addbutton = await driver.findElement(By.id("add-token-btn"))
             assert.equal(await addbutton.isEnabled(), false);
         });

@@ -37,7 +37,7 @@
 
 	let refreshing = false;
 	let orderingLocked = false;
-	$: coinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
+	$: coinStorage = $CoinStore ? [...$CoinStore].filter(c => c.sk !== "watchOnly").map((coin, index) => {
 		coin.id = index
 		return coin
 	}) : [];
@@ -46,6 +46,10 @@
 		return token
 	}) : [];
 	$: hideTokens = $SettingsStore.hideTokens ? true : false;
+	$: coinsTracked = $CoinStore ? [...$CoinStore].filter(c => c.sk === "watchOnly").map((coin, index) => {
+		coin.id = index
+		return coin
+	}) : [];
 
 	const handleRefresh = () => {
 		if (refreshing) return
@@ -151,6 +155,12 @@
 	flex-grow: 1;
 }
 
+.header-msg{
+	padding-left: 15px;
+	flex-grow: 1;
+	font-size: 14px;
+}
+
 .header-percent{
 	justify-content: flex-end;
 	margin-right: 28px;  
@@ -244,9 +254,7 @@ p{
 				{/each}
 			{/if}
 		{/if}
-		{#if coinStorage.length === 0}
-			<CoinEmpty />
-		{:else}
+		{#if coinStorage.length !== 0}
 			<div class="header header-accounts header-text text-body1 divider ">
 				{#if whitelabel.mainPage.account_info.show}
 					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
@@ -261,6 +269,19 @@ p{
 			{#each coinStorage as coin (coin.id) }
 				<Coin {coin} on:reorderAccount={handleReorderAccount}/>
 			{/each}
+		{/if}
+		{#if coinsTracked.length > 0}
+			<div class="header header-accounts header-text text-body1 divider ">
+				<div class="logo-space header-name header-text">Watched Accounts</div>
+				<div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
+			</div>	
+			{#each coinsTracked as coin (coin.id) }
+				<Coin {coin} on:reorderAccount={handleReorderAccount}/>
+				<CoinDivider />
+			{/each}
+		{/if}
+		{#if coinStorage.length === 0}
+			<CoinEmpty />
 		{/if}
 	{/if}
 </div>
