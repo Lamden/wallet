@@ -136,6 +136,9 @@
 .header-accounts{
 	margin-top: 2rem;
 }
+.header-watched{
+	margin-top: 4rem;
+}
 
 .divider{
 	border-bottom: 1px solid var(--divider-light);
@@ -271,7 +274,7 @@ p{
 			{/each}
 		{/if}
 		{#if coinsTracked.length > 0}
-			<div class="header header-accounts header-text text-body1 divider ">
+			<div class="header header-watched header-text text-body1 divider ">
 				<div class="logo-space header-name header-text">Watched Accounts</div>
 				<div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
 			</div>	
