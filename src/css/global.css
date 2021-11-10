@@ -20,6 +20,7 @@ body{
     --secondary-color: #303030;
     --overlay-color: #FFF;
     --accent-color: #4FB8FF;
+    --accent-color-dim: #4fb8ff47;
 
     --color-white: #FFF;
     --color-grey-1: #262626;
@@ -97,6 +98,7 @@ body{
     --secondary-color: #303030;
     --overlay-color: #FFF;
     --accent-color: #4FB8FF;
+    --accent-color-dim: #4fb8ffad;
 
     --color-grey-1: #f6f6f6;
     --color-grey-2: #ececec;
