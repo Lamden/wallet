@@ -276,7 +276,7 @@ p{
 				<div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
 			</div>	
 			{#each coinsTracked as coin (coin.id) }
-				<Coin {coin} on:reorderAccount={handleReorderAccount}/>
+				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
 				<CoinDivider />
 			{/each}
 		{/if}

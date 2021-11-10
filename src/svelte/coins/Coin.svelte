@@ -8,9 +8,14 @@
     //Stores
     import { currentNetwork, BalancesStore, balanceTotal, networkKey, TokenBalancesStore } from '../../js/stores/stores.js';
 
+    //Images
+    import arrowIn from '../../img/arrow_in.svg';
+    import arrowOut from '../../img/arrow_out.svg';
+
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
-    import { CoinDivider }  from '../Router.svelte'
+    import { CoinDivider, Components}  from '../Router.svelte'
+    const { Identicons } = Components;
 
     //Utils
     import { 
@@ -38,6 +43,7 @@
     // Props
     export let coin;
     export let token;
+    export let refreshTx;
 
     const formats = {
         'number': {default: 0},
@@ -49,7 +55,7 @@
     let copied = false;
 
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, openModal } = getContext('app_functions');
     
     $: netKey = networkKey($currentNetwork)
     $: watching = coin.sk === "watchOnly"
@@ -84,6 +90,23 @@
     }
     const handleReorderDown = () => {
         dispatch('reorderAccount', {id: coin.id, direction: "down"})
+    }
+
+    const handleSend = () => {
+        if(token){
+            openModal('TokenLamdenSend', {
+                token, 
+                coin,
+                txMethod: "transfer",
+                refreshTx: () => refreshTx()
+            })
+        } else {
+            openModal("CoinLamdenSend", { coin, refreshTx: () => refreshTx() })
+        }
+    }
+
+    const handleReceive = () => {
+        openModal("CoinLamdenReceive", {coin})
     }
     
 </script>
@@ -155,6 +178,16 @@
     height: 10px;
     margin-left: 8px;
 }
+.coin-btn{
+    padding: 2px 6px;
+    margin-left: 5px;
+}
+
+.coin-btn > .icon{
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+}
 </style>
 {#if !token || (token && hasVisibleBalance)}
     <div 
@@ -167,7 +200,7 @@
         <div class="coin-main-row flex-row flex-center-center">
             {#if whitelabel.mainPage.logo.show}
                 <div class="logo flex-center-center">
-                    <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/>
+                    <Identicons margin="0 36px 0 0" iconValue={coin.vk} width="32px"/>
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}
@@ -210,6 +243,16 @@
                         <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
                     </button>
                 </div>    
+            {/if}
+            {#if coin.sk !== "watchOnly"}
+                <button class="button__small coin-btn flex-row" on:click={handleSend}>
+                    Send
+                    <div class="icon">{@html arrowOut}</div>
+                </button>
+                <button class="button__small coin-btn flex-row" on:click={handleReceive}>
+                    Receive
+                    <div class="icon">{@html arrowIn}</div>
+                </button>
             {/if}
             <button class="button__small address flex-row" 
                     class:success={copied} 

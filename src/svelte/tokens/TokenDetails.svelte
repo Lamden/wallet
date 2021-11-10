@@ -204,7 +204,7 @@
     </div>
     <div>
         {#each accountList as account}
-            <Coin coin={account} {token}/>
+            <Coin coin={account} {token} refreshTx={() => handleRefresh(8000)}/>
             <!--
             <div class="flex-row flex-center-end" style="margin-right: 28px;">
                 <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'transfer')} >transfer</button>
