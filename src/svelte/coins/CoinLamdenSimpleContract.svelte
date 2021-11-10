@@ -99,6 +99,7 @@
     const creacteAccounts = (coinsDropDown, balancesStore, tokenBalancesStore, contract) => {
         let returnList = coinsDropDown.filter(f => {
             if (!f.value) return false
+            if (f.value.sk === "watchOnly") return false
             if (contract === "currency") {
                 if (!balancesStore[netKey][f.value.vk]) return false
                 let balance = Encoder('bigNumber', balancesStore[netKey][f.value.vk]["balance"])

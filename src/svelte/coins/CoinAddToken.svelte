@@ -168,6 +168,7 @@
                     validating = true
                     const nameToCheck = contractName.slice();
                     chrome.runtime.sendMessage({type: 'validateTokenContract', data: nameToCheck}, (result) => {
+                        if (nameToCheck !== contractName) return
                         validating = false
                         contractValid = result
                         if (contractValid && addType === 1){

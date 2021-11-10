@@ -45,7 +45,7 @@
     }
 
     const coinList = () => {
-        return $CoinStore.map(c => {
+        return $CoinStore.filter(c => c.sk !== "watchOnly").map(c => {
             return {
                 value: c,
                 name: `${c.nickname} - ${c.vk.substring(0, 70 - c.nickname.length)}...`,
