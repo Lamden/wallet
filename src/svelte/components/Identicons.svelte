@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<script src="./jdenticon.min.js" async integrity="sha384-l0/0sn63N3mskDgRYJZA6Mogihu0VY3CusdLMiwpJ9LFPklOARUcOiWEIGGmFELx" crossorigin="anonymous" on:load={jdenticonLoaded}></script>
+	<script src="./jdenticon.min.js" async on:load={jdenticonLoaded}></script>
 </svelte:head>
 
 {#if showIcons}

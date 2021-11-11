@@ -160,8 +160,6 @@
 }
 
 .address{
-    padding: 2px 6px;
-    margin-left: 5px;
     background: var(--bg-secondary);
     cursor: pointer;
     border-radius: 16px;
@@ -179,8 +177,9 @@
     margin-left: 8px;
 }
 .coin-btn{
-    padding: 2px 6px;
+    padding: 6px 12px;
     margin-left: 5px;
+    font-size: 1em;
 }
 
 .coin-btn > .icon{
@@ -254,12 +253,12 @@
                     <div class="icon">{@html arrowIn}</div>
                 </button>
             {/if}
-            <button class="button__small address flex-row" 
+            <button class="button__small address coin-btn flex-row" 
                     class:success={copied} 
                     on:click={handleAddressCopy} 
                     title="copy account address"
             >
-                {formatAccountAddress(coin.vk, 10, 4)}
+                {formatAccountAddress(coin.vk, 7, 0)}
                 <div class="icon-copy">
                     {#if !copied}
                         <CopyIcon width="9px" color="var(--font-primary)"/>

@@ -54,6 +54,11 @@
         cursor: pointer;
         height: 30px;
     }
+    .icon-copy{
+        width: 10px;
+        height: 10px;
+        margin-left: 8px;
+    }
 </style>
     <div class="receive flex-column flex-center-center">
         <strong class="nickname">{coin.nickname}</strong>
