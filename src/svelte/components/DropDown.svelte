@@ -208,7 +208,7 @@ label{
             {#each displayItems as item, index }
                 <div id={`select-option-${index}`} class="items" class:same-as-selected={selectElm.selectedIndex === index}
                      on:click={() => handleClick(selectElm.options[index], index)}>
-                     {#if item.token}if
+                     {#if item.token}
                         <div>
                             <TokenLogo margin="0 10px 0 0" tokenMeta={item.value} width={logoWidth} alt=""/>
                         </div>

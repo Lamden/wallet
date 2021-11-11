@@ -134,7 +134,7 @@
 	margin-bottom: 0.5rem;
 }
 .header-accounts{
-	margin-top: 2rem;
+	margin-top: 4rem;
 }
 
 .divider{
@@ -181,7 +181,7 @@ p{
 	flex-grow: 1;
 }
 .logo-space{
-	margin-left: 84px;
+	margin-left: 128px;
 }
 .hide-tokens-button{
 	padding: 2px 6px;

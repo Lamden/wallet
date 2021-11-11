@@ -127,8 +127,11 @@
 .logo{
     display: flex;
     justify-content: center;
-    width: 68px;
-    height: 35px;
+    margin: 0 50px 0 0;
+    padding: 5px;
+    background: black;
+    border-radius: 999px;
+    border: 3px solid var(--color-grey-3);
 }
 
 .name{
@@ -199,7 +202,7 @@
         <div class="coin-main-row flex-row flex-center-center">
             {#if whitelabel.mainPage.logo.show}
                 <div class="logo flex-center-center">
-                    <Identicons margin="0 36px 0 0" iconValue={coin.vk} width="32px"/>
+                    <Identicons margin="0" iconValue={coin.vk} width="50px"/>
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}
@@ -244,11 +247,11 @@
                 </div>    
             {/if}
             {#if coin.sk !== "watchOnly"}
-                <button class="button__small coin-btn flex-row" on:click={handleSend}>
+                <button id="send-btn" class="button__small coin-btn flex-row" on:click={handleSend}>
                     Send
                     <div class="icon">{@html arrowOut}</div>
                 </button>
-                <button class="button__small coin-btn flex-row" on:click={handleReceive}>
+                <button id="receive-btn" class="button__small coin-btn flex-row" on:click={handleReceive}>
                     Receive
                     <div class="icon">{@html arrowIn}</div>
                 </button>

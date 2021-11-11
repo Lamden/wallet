@@ -32,6 +32,7 @@ const switchWindow = async (driver, windowNum) => {
 }
 
 const gotoAccountsPage = async (driver) => {
+    await sleep(1000, true)
     await driver.findElement(By.id('accounts')).click();
 }
 
@@ -98,7 +99,7 @@ const lockWallet = async (driver, switchback) => {
 const changeToTestnet = async (driver) => {
     let navNetwork = await driver.wait(until.elementLocated(By.id("nav-network-info")), 5000);
     navNetwork.click()
-    await sleep(1000, true)
+    await sleep(2000, true)
 }
 
 const setAsTrustedDapp = async (driver) => {

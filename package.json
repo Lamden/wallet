@@ -19,6 +19,8 @@
     "test-tokens-upload": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-upload-images.js",
     "test-tokens-edit": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-edit.js",
     "test-tokens-transactions": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-transactions.js",
+    "test-coin": "mocha --timeout 30000 selenium/tests/ui/coin/*.js",
+    "test-coin-btn": "mocha --timeout 30000 selenium/tests/ui/coin/coin-btn.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
