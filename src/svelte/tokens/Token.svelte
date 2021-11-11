@@ -68,7 +68,7 @@
     >
     {#if whitelabel.mainPage.token_columns.token_logo.show}
         <div class="logo flex-center-center" style={`height: ${logoSize};`}>
-            <TokenLogo tokenMeta={token} width={logoSize} margin="0 75px 0 0" />
+            <TokenLogo tokenMeta={token} width={logoSize} margin="0 76px 0 0" />
         </div>
     {/if}
     {#if whitelabel.mainPage.token_columns.token_name.show}

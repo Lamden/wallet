@@ -37,19 +37,19 @@
 
 	let refreshing = false;
 	let orderingLocked = false;
-	$: coinStorage = $CoinStore ? [...$CoinStore].filter(c => c.sk !== "watchOnly").map((coin, index) => {
+	$: coinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
 		coin.id = index
 		return coin
-	}) : [];
+	}).filter(c => c.sk !== "watchOnly") : [];
 	$: tokenStorage = $TokenStore[networkKey($currentNetwork)] ? [...$TokenStore[networkKey($currentNetwork)]].map((token, index) => {
 		token.id = index
 		return token
 	}) : [];
 	$: hideTokens = $SettingsStore.hideTokens ? true : false;
-	$: coinsTracked = $CoinStore ? [...$CoinStore].filter(c => c.sk === "watchOnly").map((coin, index) => {
+	$: coinsTracked = $CoinStore ? [...$CoinStore].map((coin, index) => {
 		coin.id = index
 		return coin
-	}) : [];
+	}).filter(c => c.sk === "watchOnly") : [];
 
 	const handleRefresh = () => {
 		if (refreshing) return
@@ -181,7 +181,7 @@ p{
 	flex-grow: 1;
 }
 .logo-space{
-	margin-left: 128px;
+	margin-left: 131px;
 }
 .hide-tokens-button{
 	padding: 2px 6px;
@@ -267,7 +267,7 @@ p{
 				{/if}
 			</div>	
 			{#each coinStorage as coin (coin.id) }
-				<Coin {coin} on:reorderAccount={handleReorderAccount}/>
+				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
 			{/each}
 		{/if}
 		{#if coinsTracked.length > 0}
