@@ -287,8 +287,17 @@ export const accountsController = (utils, services) => {
             if (callback) callback(true)
             return true
         }
-        moveArrayItemToNewIndex(index, index - 1)
-        if (callback) callback(true)
+
+        let accountType = accountStore[index].sk === "watchOnly" ? "watchOnly" : "encrypted";
+
+        for (let i=1; i < accountStore.length; i++){
+            let nextAccountType = accountStore[index - i].sk === "watchOnly" ? "watchOnly" : "encrypted"
+            if (accountType === nextAccountType) {
+                moveArrayItemToNewIndex(index, index - i)
+                if (callback) callback(true)
+                return true
+            } 
+        }
     }
 
     const reorderDown = (index, callback = undefined) => {
@@ -296,8 +305,17 @@ export const accountsController = (utils, services) => {
             if (callback) callback(true)
             return true
         }
-        moveArrayItemToNewIndex(index, index + 1)
-        if (callback) callback(true)
+
+        let accountType = accountStore[index].sk === "watchOnly" ? "watchOnly" : "encrypted";
+
+        for (let i=1; i <= accountStore.length - 1 - index; i++){
+            let nextAccountType = accountStore[index + i].sk === "watchOnly" ? "watchOnly" : "encrypted"
+            if (accountType === nextAccountType) {
+                moveArrayItemToNewIndex(index, index + i)
+                if (callback) callback(true)
+                return true
+            } 
+        }
     }
 
     const moveArrayItemToNewIndex = (old_index, new_index) => {

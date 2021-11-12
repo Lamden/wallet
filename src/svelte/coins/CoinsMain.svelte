@@ -64,7 +64,7 @@
 		let { id, direction } = e.detail
 		if (direction == "up" && !orderingLocked){
 			orderingLocked = true;
-			chrome.runtime.sendMessage({type: 'tokensReorderUp', data: id}, (success) => {
+			chrome.runtime.sendMessage({type: 'c', data: id}, (success) => {
 				if (id !== 0) scrollWindow(-41)
 				orderingLocked = false;
 			})
@@ -84,7 +84,7 @@
 		if (direction == "up" && !orderingLocked){
 			orderingLocked = true;
 			chrome.runtime.sendMessage({type: 'accountsReorderUp', data: id}, (success) => {
-				if (id !== 0) scrollWindow(-90)
+				if (id !== 0) scrollWindow(-130)
 				orderingLocked = false;
 			})
 		}
@@ -92,7 +92,7 @@
 		if (direction == "down" && !orderingLocked){
 			orderingLocked = true;
 			chrome.runtime.sendMessage({type: 'accountsReorderDown', data: id}, (success) => {
-				if (id + 1 < coinStorage.length)scrollWindow(90)
+				if (id + 1 < coinStorage.length)scrollWindow(130)
 				orderingLocked = false;
 			})
 		}
