@@ -3,6 +3,7 @@
 <script>
     import { createEventDispatcher, onMount, afterUpdate, beforeUpdate} from 'svelte';
     import TokenLogo from './TokenLogo.svelte';
+    import Identicons from './identicons.svelte';
     const dispatch = createEventDispatcher();
 
     //Props
@@ -191,6 +192,11 @@ label{
                         <TokenLogo margin="0 10px 0 0" tokenMeta={displayItems[selectElm.selectedIndex].value} width={logoWidth} alt=""/>
                     </div>
                 {/if}
+                {#if displayItems[selectElm.selectedIndex].value && displayItems[selectElm.selectedIndex].value.vk}
+                    <div>
+                        <Identicons margin="0 10px 0 0" iconValue={displayItems[selectElm.selectedIndex].value.vk} />
+                    </div>
+                {/if}
                 <div>
                     {displayItems[selectElm.selectedIndex].name}
                 </div>
@@ -205,6 +211,11 @@ label{
                      {#if item.token}
                         <div>
                             <TokenLogo margin="0 10px 0 0" tokenMeta={item.value} width={logoWidth} alt=""/>
+                        </div>
+                     {/if}
+                     {#if item.value && item.value.vk}
+                        <div>
+                            <Identicons margin="0 10px 0 0" iconValue={item.value.vk} />
                         </div>
                      {/if}
                     <div>{item.name}</div>

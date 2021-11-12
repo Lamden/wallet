@@ -5,7 +5,7 @@
 
     //Components
 	import { Components }  from '../Router.svelte'
-	const { Button } = Components;
+	const { Button, Identicons } = Components;
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js'  
@@ -212,6 +212,9 @@
         </div>
         <div class="account-info flex-column">
             <div class="account flex-row flex-align-center">
+                <div>
+                    <Identicons iconValue={linkedAccountVK} />
+                </div>
                 <div class="account-vk text text-body1 weight-300 text-ellipsis">
                     {linkedAccountVK}
                 </div>

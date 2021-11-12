@@ -6,6 +6,7 @@ let config = require("../../../config/config")
 let walletInfo = require("../../../fixtures/walletInfo")
 
 let chromeOptions = new chrome.Options();
+chromeOptions.addArguments("lang=en-us");
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('FirstRun_CreateWallet - Complete First Run Setup', function () {

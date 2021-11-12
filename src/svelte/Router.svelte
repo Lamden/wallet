@@ -42,6 +42,7 @@ import CoinEditNickname from './coins/CoinEditNickname.svelte';
 import CoinDelete from './coins/CoinDelete.svelte'; 
 import CoinDeleting from './coins/CoinDeleting.svelte'; 
 import CoinHistory from  './coins/CoinHistory.svelte'; 
+import CoinLamdenReceive from './coins/CoinLamdenReceive.svelte';
 
 //Backup and Restore
 import Backup from './backup_restore/Backup.svelte';
@@ -92,7 +93,8 @@ import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
 import TokenLogo from './components/TokenLogo.svelte'
 import LightDarkToggle from './components/LightDarkToggle.svelte'
-
+import Identicons from './components/Identicons.svelte';
+import QR from './components/QR.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -201,7 +203,9 @@ export const Components = {
     Transaction,
     Kwargs, Kwarg,
     TokenLogo, TokenEditDetails,
-    LightDarkToggle
+    LightDarkToggle,
+    Identicons,
+    QR
 };
 
 export const Modals = {
@@ -209,7 +213,7 @@ export const Modals = {
     CoinModify, CoinOptions, CoinDelete, CoinDeleting, CoinEditNickname,
     TokenModify, TokenOptions, TokenDelete, TokenDeleting,
     CoinDappOptions, CoinDappSettings, CoinDappTrusted, CoinDappRevoke,
-    CoinLamdenContract, CoinLamdenSimpleContract,
+    CoinLamdenContract, CoinLamdenSimpleContract, CoinLamdenReceive,
     CoinAdd, CoinAddDetails,
     CoinConfirmTx,
     CoinSendingTx,

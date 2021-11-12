@@ -160,7 +160,7 @@
             "show": true
         },
         "account_info":{
-            "title": "Account Name",
+            "title": "My Accounts",
             "show" : true,
             "show_network_name": false
         },
@@ -177,7 +177,7 @@
                 "show" : true
             },
             "token_name":{
-                "title": "Token Name",
+                "title": "My Tokens",
                 "show" : true
             },
             "token_amount":{
