@@ -4,8 +4,11 @@
 	export let margin = '0 10px';
 
 	let showIcons = false
-	
+
+	$: value = iconValue;
+
 	function jdenticonLoaded(){
+		window.jdenticon_config = { replaceMode: "observe"}
 		showIcons = true
 	}
 </script>
@@ -15,5 +18,5 @@
 </svelte:head>
 
 {#if showIcons}
-	<svg style={`margin: ${margin};`} data-jdenticon-value={iconValue} width={width} />
+	<svg style={`margin: ${margin};`} data-jdenticon-value={value} width={width} />
 {/if}
