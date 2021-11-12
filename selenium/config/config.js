@@ -38,14 +38,15 @@ def set_value_for_sender(key_value: str):
 
 const process = require('process');
 var path = require('path');
+const chromeConfig = require('./chrome_config.json');
 
 const config = {
     workingDir: process.cwd(),
-    walletBuildDir: "build", //Path to where metamask is installed on your computer
+    walletBuildDir: "build", 
     get walletPath() {
         return path.join(this.workingDir, this.walletBuildDir)
     },
-    walletExtentionID: "gmghfifbnkgcmcldhhohppiijbcjbmck", //"gmghfifbnkgcmcldhhohppiijbcjbmck",
+    walletExtentionID: chromeConfig.walletExtentionID,
     port: 5656,
     testnetMasternode: "https://testnet-master-1.lamden.io:443",
     testnetBlockService: "http://165.227.181.34:3535"

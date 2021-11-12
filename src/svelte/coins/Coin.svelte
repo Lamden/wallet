@@ -113,7 +113,7 @@
 
 <style>
 .row-box{
-    padding: 1.25rem 28px 0.25rem 16px;
+    padding: 1.25rem 28px 0.25rem 0;
 }
 .coin-main-row{
     margin-bottom: 0.5rem;
@@ -127,7 +127,7 @@
 .logo{
     display: flex;
     justify-content: center;
-    margin: 0 50px 0 0;
+    margin: 0 33px 0 0;
     padding: 5px;
     background: black;
     border-radius: 999px;
@@ -206,7 +206,7 @@
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}
-                <div class="name text text-body1">
+                <div class="name text text-body1 weight-300">
                     <div class="name-box">
                         <div id={`coin-nickname-${coin.id}`}  class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
                             {`${coin.nickname}`}
@@ -228,9 +228,7 @@
             {/if}
             
             {#if whitelabel.mainPage.portfolio.show && !token}
-                {#if watching}
-                    <div class="text-body2 text-primary-dim watching-text percent ">{"watching"}</div>
-                {:else}
+                {#if !watching}
                     <div class="percent text text-body1  weight-200"> {`${percent}`}</div>
                 {/if}
             {/if}
@@ -272,5 +270,4 @@
             </button>
         </div>
     </div>
-    <CoinDivider />
 {/if}

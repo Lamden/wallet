@@ -22,7 +22,7 @@
     // Props
     export let token;
 
-    let logoSize = "38px"
+    let logoSize = "30px"
 
     $: balance = getTokenTotalBalance(networkKey($currentNetwork), token.contractName, $tokenBalanceTotal)
 
@@ -36,7 +36,7 @@
 
 <style>
 .row-box{
-    padding: 1rem 28px 1rem 16px;
+    padding: 1rem 28px 0 16px;
 }
 
 .text{
@@ -68,11 +68,11 @@
     >
     {#if whitelabel.mainPage.token_columns.token_logo.show}
         <div class="logo flex-center-center" style={`height: ${logoSize};`}>
-            <TokenLogo tokenMeta={token} width={logoSize} margin="0 76px 0 0" />
+            <TokenLogo tokenMeta={token} width={logoSize} margin="0 44px 0 0" />
         </div>
     {/if}
     {#if whitelabel.mainPage.token_columns.token_name.show}
-        <div class="name nickname text text-body2" on:click={() => switchPage('TokenDetails', token)}>
+        <div class="name nickname text text-body2 weight-300" on:click={() => switchPage('TokenDetails', token)}>
             {`${token.tokenName}`}
         </div>
     {/if}

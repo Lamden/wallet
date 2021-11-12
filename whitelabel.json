@@ -181,7 +181,6 @@
                 "show" : true
             },
             "token_amount":{
-                "title": "Amount",
                 "show" : true
             }
         }

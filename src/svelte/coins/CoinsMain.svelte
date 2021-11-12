@@ -132,6 +132,7 @@
 	width: 100%;
 	padding: 0.5rem 0;
 	margin-bottom: 0.5rem;
+	font-weight: 800;
 }
 .header-accounts{
 	margin-top: 4rem;
@@ -141,27 +142,23 @@
 }
 
 .divider{
-	border-bottom: 1px solid var(--divider-light);
+	border-bottom: 2px solid var(--divider-light);
 }
-
+.header-name{
+	width: 100%;
+}
 .header-text{
 	display: flex;
 	align-items: center;
-}
-
-.header-name{
-    width: 234px;
-}
-
-.header-amount{
-	padding-left: 15px;
-	flex-grow: 1;
 }
 
 .header-msg{
 	padding-left: 15px;
 	flex-grow: 1;
 	font-size: 14px;
+	color: var(--accent-color-dim);
+	display: block;
+    text-align: end;
 }
 
 .header-percent{
@@ -183,9 +180,7 @@ p{
 	align-items: flex-end;
 	flex-grow: 1;
 }
-.logo-space{
-	margin-left: 131px;
-}
+
 .hide-tokens-button{
 	padding: 2px 6px;
 }
@@ -238,14 +233,8 @@ p{
 			{:else}
 				<div class="header header-text divider text-body1">
 					{#if whitelabel.mainPage.token_columns.token_name.show}
-						<div class:logo-space={whitelabel.mainPage.logo.show} 
-							class="header-name header-text">
+						<div class="header-name header-text">
 							{whitelabel.mainPage.token_columns.token_name.title}
-						</div>
-					{/if}
-					{#if whitelabel.mainPage.token_columns.token_amount.show}
-						<div class="header-amount header-text">
-							{whitelabel.mainPage.token_columns.token_amount.title}
 						</div>
 					{/if}
 					{#if whitelabel.mainPage.token_columns.token_amount.show}
@@ -258,9 +247,9 @@ p{
 			{/if}
 		{/if}
 		{#if coinStorage.length !== 0}
-			<div class="header header-accounts header-text text-body1 divider ">
+			<div class="header header-accounts header-text text-body1 divider weight-800">
 				{#if whitelabel.mainPage.account_info.show}
-					<div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
+					<div class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
 				{/if}
 				{#if whitelabel.mainPage.amount.show}
 					<div class="header-amount header-text">{whitelabel.mainPage.amount.title}</div>
@@ -271,11 +260,12 @@ p{
 			</div>	
 			{#each coinStorage as coin (coin.id) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
+				<CoinDivider />
 			{/each}
 		{/if}
 		{#if coinsTracked.length > 0}
-			<div class="header header-watched header-text text-body1 divider ">
-				<div class="logo-space header-name header-text">Watched Accounts</div>
+			<div class="header header-watched header-text text-body1 divider weight-800">
+				<div class="header-name header-text">Watched Accounts</div>
 				<div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
 			</div>	
 			{#each coinsTracked as coin (coin.id) }

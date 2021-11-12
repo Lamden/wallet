@@ -203,7 +203,7 @@
             {/await}
         </div>
         <div class="name text text-body1">
-            <div class="name-box text-ellipsis">
+            <div class="name-box text-ellipsis weight-300">
                 <div id={`dapp-appname-${dapp.id}`}  class="nickname text-body1" on:click={() => switchPage('ConnectionDetails', dapp)}>
                     {`${dapp.appName}`}
                 </div>
