@@ -64,7 +64,7 @@
 		let { id, direction } = e.detail
 		if (direction == "up" && !orderingLocked){
 			orderingLocked = true;
-			chrome.runtime.sendMessage({type: 'c', data: id}, (success) => {
+			chrome.runtime.sendMessage({type: 'tokensReorderUp', data: id}, (success) => {
 				if (id !== 0) scrollWindow(-41)
 				orderingLocked = false;
 			})
