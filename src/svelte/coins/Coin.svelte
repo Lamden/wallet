@@ -8,9 +8,14 @@
     //Stores
     import { currentNetwork, BalancesStore, balanceTotal, networkKey, TokenBalancesStore } from '../../js/stores/stores.js';
 
+    //Images
+    import arrowIn from '../../img/arrow_in.svg';
+    import arrowOut from '../../img/arrow_out.svg';
+
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
-    import { CoinDivider }  from '../Router.svelte'
+    import { CoinDivider, Components}  from '../Router.svelte'
+    const { Identicons } = Components;
 
     //Utils
     import { 
@@ -38,6 +43,7 @@
     // Props
     export let coin;
     export let token;
+    export let refreshTx;
 
     const formats = {
         'number': {default: 0},
@@ -49,7 +55,7 @@
     let copied = false;
 
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, openModal } = getContext('app_functions');
     
     $: netKey = networkKey($currentNetwork)
     $: watching = coin.sk === "watchOnly"
@@ -85,12 +91,29 @@
     const handleReorderDown = () => {
         dispatch('reorderAccount', {id: coin.id, direction: "down"})
     }
+
+    const handleSend = () => {
+        if(token){
+            openModal('TokenLamdenSend', {
+                token, 
+                coin,
+                txMethod: "transfer",
+                refreshTx: () => refreshTx()
+            })
+        } else {
+            openModal("CoinLamdenSend", { coin, refreshTx: () => refreshTx() })
+        }
+    }
+
+    const handleReceive = () => {
+        openModal("CoinLamdenReceive", {coin})
+    }
     
 </script>
 
 <style>
 .row-box{
-    padding: 1.25rem 28px 0.25rem 16px;
+    padding: 1.25rem 28px 0.25rem 0;
 }
 .coin-main-row{
     margin-bottom: 0.5rem;
@@ -104,8 +127,11 @@
 .logo{
     display: flex;
     justify-content: center;
-    width: 68px;
-    height: 35px;
+    margin: 0 33px 0 0;
+    padding: 5px;
+    background: black;
+    border-radius: 999px;
+    border: 3px solid var(--color-grey-3);
 }
 
 .name{
@@ -137,8 +163,6 @@
 }
 
 .address{
-    padding: 2px 6px;
-    margin-left: 5px;
     background: var(--bg-secondary);
     cursor: pointer;
     border-radius: 16px;
@@ -155,6 +179,17 @@
     height: 10px;
     margin-left: 8px;
 }
+.coin-btn{
+    padding: 6px 12px;
+    margin-left: 5px;
+    font-size: 1em;
+}
+
+.coin-btn > .icon{
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+}
 </style>
 {#if !token || (token && hasVisibleBalance)}
     <div 
@@ -167,11 +202,11 @@
         <div class="coin-main-row flex-row flex-center-center">
             {#if whitelabel.mainPage.logo.show}
                 <div class="logo flex-center-center">
-                    <CryptoLogos {coin} styles={`width: 32px; margin: 0 36px 0 0;`}/>
+                    <Identicons margin="0" iconValue={coin.vk} width="50px"/>
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}
-                <div class="name text text-body1">
+                <div class="name text text-body1 weight-300">
                     <div class="name-box">
                         <div id={`coin-nickname-${coin.id}`}  class="nickname text-body1 " on:click={() => switchPage('CoinDetails', coin)}>
                             {`${coin.nickname}`}
@@ -193,9 +228,7 @@
             {/if}
             
             {#if whitelabel.mainPage.portfolio.show && !token}
-                {#if watching}
-                    <div class="text-body2 text-primary-dim watching-text percent ">{"watching"}</div>
-                {:else}
+                {#if !watching}
                     <div class="percent text text-body1  weight-200"> {`${percent}`}</div>
                 {/if}
             {/if}
@@ -211,12 +244,22 @@
                     </button>
                 </div>    
             {/if}
-            <button class="button__small address flex-row" 
+            {#if coin.sk !== "watchOnly"}
+                <button id="send-btn" class="button__small coin-btn flex-row" on:click={handleSend}>
+                    Send
+                    <div class="icon">{@html arrowOut}</div>
+                </button>
+                <button id="receive-btn" class="button__small coin-btn flex-row" on:click={handleReceive}>
+                    Receive
+                    <div class="icon">{@html arrowIn}</div>
+                </button>
+            {/if}
+            <button class="button__small address coin-btn flex-row" 
                     class:success={copied} 
                     on:click={handleAddressCopy} 
                     title="copy account address"
             >
-                {formatAccountAddress(coin.vk, 10, 4)}
+                {formatAccountAddress(coin.vk, 7, 0)}
                 <div class="icon-copy">
                     {#if !copied}
                         <CopyIcon width="9px" color="var(--font-primary)"/>
@@ -227,5 +270,4 @@
             </button>
         </div>
     </div>
-    <CoinDivider />
 {/if}

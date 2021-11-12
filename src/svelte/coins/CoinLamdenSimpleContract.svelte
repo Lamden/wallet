@@ -119,13 +119,13 @@
                 }
                 if (contract === "currency"){
                     item.name = `
-                        ${formatAccountAddress(c.value.vk, 10, 4)} - ${c.value.nickname}:
+                        ${formatAccountAddress(c.value.vk, 8, 0)} - ${c.value.nickname}:
                         ${displayBalanceToFixed(balancesStore[netKey][c.value.vk]?balancesStore[netKey][c.value.vk]["balance"]:"0", 8)}
                         ${currencySymbol}
                     `
                 } else {
                     item.name = `
-                        ${formatAccountAddress(c.value.vk, 10, 4)} - ${c.value.nickname}:
+                        ${formatAccountAddress(c.value.vk, 8, 0)} - ${c.value.nickname}:
                         ${displayBalanceToFixed(tokenBalancesStore[netKey][c.value.vk]?tokenBalancesStore[netKey][c.value.vk][contract]:"0", 8)}
                         ${tokenSymbol}
                     ` 
@@ -277,7 +277,7 @@
         {#if type === "token"}
             <label class="inputbox-label"> Token </label>
             <div class="mainbox" id="tokeninput">
-                <TokenLogo width={"20px"} tokenMeta={token} />
+                <TokenLogo margin="0 10px 0 0" width={"20px"} tokenMeta={token} />
                 {`${token.tokenName}`}
             </div>
         {:else}

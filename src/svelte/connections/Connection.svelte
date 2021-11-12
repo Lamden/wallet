@@ -5,7 +5,7 @@
 
     //Components
 	import { Components }  from '../Router.svelte'
-	const { Button } = Components;
+	const { Button, Identicons } = Components;
 
     //Utils
     import { copyToClipboard } from '../../js/utils.js'  
@@ -203,7 +203,7 @@
             {/await}
         </div>
         <div class="name text text-body1">
-            <div class="name-box text-ellipsis">
+            <div class="name-box text-ellipsis weight-300">
                 <div id={`dapp-appname-${dapp.id}`}  class="nickname text-body1" on:click={() => switchPage('ConnectionDetails', dapp)}>
                     {`${dapp.appName}`}
                 </div>
@@ -212,6 +212,9 @@
         </div>
         <div class="account-info flex-column">
             <div class="account flex-row flex-align-center">
+                <div>
+                    <Identicons iconValue={linkedAccountVK} />
+                </div>
                 <div class="account-vk text text-body1 weight-300 text-ellipsis">
                     {linkedAccountVK}
                 </div>

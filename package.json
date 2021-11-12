@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "1.8.6",
+  "version": "1.8.9",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -19,6 +19,8 @@
     "test-tokens-upload": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-upload-images.js",
     "test-tokens-edit": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-edit.js",
     "test-tokens-transactions": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-transactions.js",
+    "test-coin": "mocha --timeout 30000 selenium/tests/ui/coin/*.js",
+    "test-coin-btn": "mocha --timeout 30000 selenium/tests/ui/coin/coin-btn.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -45,6 +47,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
+    "easyqrcodejs": "^4.4.6",
     "lamden-js": "^1.6.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",

@@ -33,7 +33,6 @@
 		width: 100%;
 		padding: 0.5rem 0;
 		margin-bottom: 0.5rem;
-		color: var(--font-secondary);
 	}
 	.header-accounts{
 		margin-top: 2rem;
@@ -70,7 +69,7 @@
 	{#if dappStorage.length === 0}
 		<ConnectionEmpty />
 	{:else}
-		<div class="header header-accounts header-text text-body1 divider ">
+		<div class="header header-accounts header-text text-body1 divider weight-800">
 			{#if whitelabel.connections.connection_info.show}
 				<div class:logo-space={whitelabel.connections.logo.show} class="header-name header-text">{whitelabel.connections.connection_info.title}</div>
 			{/if}

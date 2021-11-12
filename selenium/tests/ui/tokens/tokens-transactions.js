@@ -44,9 +44,9 @@ const whitelabel = require('../../../../whitelabel.json')
                 let token = tokenInfo.token_1_svg
                 await helpers.sleep(500)
                 await tokenHelpers.gotoTokenDetails(driver, token)
-                await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
+                await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 10000).click();
                 await helpers.sleep(500);
-                await driver.wait(until.elementLocated(By.id('external-account-btn')), 5000).click();
+                await driver.wait(until.elementLocated(By.id('external-account-btn')), 10000).click();
                 await tokenHelpers.validateSimpleTransacationFormDetails(driver, token, 'transfer')
                 await tokenHelpers.cancelTransferModal(driver)
                 await helpers.gotoAccountsPage(driver)

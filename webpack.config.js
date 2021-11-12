@@ -95,16 +95,20 @@ var options = {
       "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
     }),
     new CopyWebpackPlugin([{
-      from: "src/manifest.json",
-      transform: function (content, path) {
-        // generates the manifest file using the package.json informations
-        return Buffer.from(JSON.stringify({
-          description: process.env.npm_package_description,
-          version: process.env.npm_package_version,
-          ...JSON.parse(content.toString())
-        }))
+        from: "src/manifest.json",
+        transform: function (content, path) {
+          // generates the manifest file using the package.json informations
+          return Buffer.from(JSON.stringify({
+            description: process.env.npm_package_description,
+            version: process.env.npm_package_version,
+            ...JSON.parse(content.toString())
+          }))
+        }
+      },
+      {
+        from: "src/jdenticon.min.js"
       }
-    }]),
+    ]),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "popup.html"),
       filename: "popup.html",

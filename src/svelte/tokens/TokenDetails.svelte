@@ -38,6 +38,7 @@
     const { switchPage, openModal, closeModal } = getContext('app_functions');
 
     let refreshing = false;
+    let orderingLocked = false;
 
     let buttons = [
         {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__primary'},
@@ -47,7 +48,8 @@
     $: tokens = $TokenStore[netKey] || []
     $: token = tokens.find(f => f.contractName === $SettingsStore.currentPage.data.contractName) || $SettingsStore.currentPage.data;
     $: balance = displayBalance(stringToFixed(getTokenTotalBalance(netKey, token.contractName, $tokenBalanceTotal), 8))
-    $: accountList = createAccountList($TokenBalancesStore)
+    $: accountList = createAccountList($TokenBalancesStore).filter( c => c.sk !== "watchOnly" )
+    $: coinsTracked = createAccountList($TokenBalancesStore).filter( c => c.sk === "watchOnly" )
 
 	onMount(() => { 
         null
@@ -91,6 +93,25 @@
             refreshTx: () => handleRefresh(8000)
         })
     }
+
+    const handleReorderAccount = (e, coins) => {
+		let { id, direction } = e.detail
+		if (direction == "up" && !orderingLocked){
+			orderingLocked = true;
+			chrome.runtime.sendMessage({type: 'accountsReorderUp', data: id}, (success) => {
+				if (id !== 0) scrollWindow(-90)
+				orderingLocked = false;
+			})
+		}
+
+		if (direction == "down" && !orderingLocked){
+			orderingLocked = true;
+			chrome.runtime.sendMessage({type: 'accountsReorderDown', data: id}, (success) => {
+				if (id + 1 < coins.length)scrollWindow(90)
+				orderingLocked = false;
+			})
+		}
+	}
 </script>
 
 <style>
@@ -130,6 +151,49 @@
 
     .text-huge:first-child{
         margin-right: 10px;
+    }
+
+    .header{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        padding: 0.5rem 0;
+        margin-bottom: 0.5rem;
+    }
+    .header-accounts-tracked{
+        margin-top: 4rem;
+    }
+    .divider{
+        border-bottom: 1px solid var(--divider-light);
+    }
+
+    .header-text{
+        display: flex;
+        align-items: center;
+    }
+
+    .header-name{
+        width: 234px;
+    }
+
+    .header-amount{
+        padding-left: 15px;
+        flex-grow: 1;
+    }
+
+    .header-msg{
+        padding-left: 15px;
+        flex-grow: 1;
+        font-size: 14px;
+    }
+
+    .header-percent{
+        justify-content: flex-end;
+        margin-right: 28px;  
+        width: 203px;
+    }
+    .logo-space{
+        margin-left: 129px;
     }
 
     @media only screen and (max-width: 970px) {
@@ -202,23 +266,27 @@
             {/if}
         </div>
     </div>
-    <div>
-        {#each accountList as account}
-            <Coin coin={account} {token}/>
-            <!--
-            <div class="flex-row flex-center-end" style="margin-right: 28px;">
-                <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'transfer')} >transfer</button>
-                <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'approve')} >approve</button>
-                <button class="button__text details-button text-body2" on:click={() => handleOpenTxWindow(account, 'tansfer_from')} >transfer from</button>
-            </div>
-            -->
+    {#if accountList.length !== 0}
+        <div class="header header-accounts header-text text-body1 divider ">
+            {#if whitelabel.mainPage.account_info.show}
+                <div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
+            {/if}
+            {#if whitelabel.mainPage.amount.show}
+                <div class="header-amount header-text">{whitelabel.mainPage.amount.title}</div>
+            {/if}
+        </div>	
+        {#each accountList as coin (coin.id) }
+            <Coin {coin} {token} refreshTx={handleRefresh} on:reorderAccount={(e) => { handleReorderAccount(e, accountList) }}/>
         {/each}
-    </div>
-    <!--
-    {#if thisNetworkApproved && $currentNetwork.lamden}
-        <Charms dappInfo={dappInfo} />
     {/if}
-
-    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions} /> 
-    -->
+    {#if coinsTracked.length > 0}
+        <div class="header header-accounts-tracked header-text text-body1 divider ">
+            <div class="logo-space header-name header-text">Watched Accounts</div>
+            <div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
+        </div>	
+        {#each coinsTracked as coin (coin.id) }
+            <Coin {coin} {token} refreshTx={handleRefresh} on:reorderAccount={(e) => { handleReorderAccount(e, accountList) }}/>
+            <CoinDivider />
+        {/each}
+    {/if}
 </div>

@@ -7,6 +7,7 @@ const config = require("../../../config/config")
 const walletInfo = require("../../../fixtures/walletInfo")
 
 let chromeOptions = new chrome.Options();
+chromeOptions.addArguments("lang=en-us");
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file', function () {

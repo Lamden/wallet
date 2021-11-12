@@ -209,6 +209,57 @@ const cancelTransferModal = async (driver) => {
     await driver.findElement(By.id("transfer-modal-cancel")).click()
 }
 
+const openAccountsScreen = async (driver) => {
+    await driver.findElement(By.id('accounts')).click();
+}
+
+const openCoinReceiveModal = async (driver) => {
+    await driver.findElement(By.id('receive-btn')).click();
+}
+
+const openCoinSendModal = async (driver) => {
+    await driver.findElement(By.id('send-btn')).click();
+}
+
+const validateCoinNickname = async (driver, name) => {
+    let nickname = await driver.findElement(By.className("receive")).findElement(By.className("nickname")).getText()
+    assert.equal(nickname, name);
+}
+
+const validateCoinQR = async (driver, name) => {
+    let qr = await driver.findElements(By.className("qr-container"))
+    if (qr.length === 0) {
+        assert.fail()
+    }
+}
+
+const validateCoinAddress = async (driver, address) => {
+    let ar = await driver.findElement(By.className("receive")).findElement(By.className("address")).getText()
+    assert.equal(ar, address);
+}
+
+const closeReceiveModal = async (driver) => {
+    await driver.findElement(By.id("lamden-close")).click()
+}
+
+const validateCloseReceiveModal = async (driver) => {
+    let modal = await driver.findElements(By.className("modal"))
+    if (modal.length > 0) {
+        assert.fail("Close modal failed")
+    }
+}
+
+const validateCoinTokenName = async (driver, name) => {
+    let tokenname = await driver.findElement(By.xpath("//*[@id='tokendrop-currently-selected']/div[2]")).getText()
+    assert.equal(tokenname, name)
+}
+
+const validateCoinFromAddress = async (driver, address) => {
+    //*[@id="sender-currently-selected"]/div[1]/svg
+    let ar = await driver.findElement(By.xpath('//*[@id="sender-currently-selected"]/div[1]/*[name()="svg"]')).getAttribute("data-jdenticon-value")
+    assert.equal(ar, address);
+}
+
 module.exports = {
     addToken_ShowDetails, addToken_Save,
     validateTokenName, validateTokenSymbol, validateTokenLogo, validateInputError, validateTokenLogoInBox,
@@ -223,5 +274,15 @@ module.exports = {
     validateTokenNotOnAccountsScreen,
     validateTransacationFormDetails,
     validateDropdownError,
-    validateSimpleTransacationFormDetails
+    validateSimpleTransacationFormDetails,
+    openAccountsScreen,
+    openCoinReceiveModal,
+    validateCoinNickname,
+    validateCoinQR,
+    validateCoinAddress,
+    closeReceiveModal,
+    validateCloseReceiveModal,
+    openCoinSendModal,
+    validateCoinTokenName,
+    validateCoinFromAddress
 }
