@@ -53,6 +53,7 @@ import BackupViewKeys from './backup_restore/BackupViewKeys.svelte';
 import BackupKeystorePassword from './backup_restore/BackupKeystorePassword.svelte';
 import BackupKeystoreCreate from './backup_restore/BackupKeystoreCreate.svelte';
 import BackupKeystoreComplete from './backup_restore/BackupKeystoreComplete.svelte';
+import BackupNotificationModal from './backup_restore/BackupNotificationModal.svelte'; 
 import Restore from './backup_restore/Restore.svelte';
 import RestoreMain from './backup_restore/RestoreMain.svelte';
 import RestoreUpload from './backup_restore/RestoreUpload.svelte';
@@ -223,7 +224,8 @@ export const Modals = {
     IdeModelNewTab, 
     IdeModelSubmit, IdeSubmitContract, 
     IdeModelMethodTx, IdeMethodTx,
-    ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke
+    ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke,
+    BackupNotificationModal
 }
 
 export {

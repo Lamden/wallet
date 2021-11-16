@@ -7,7 +7,7 @@
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import { SettingsStore, currentPage, clicked, currentThemeName } from '../js/stores/stores.js';
+	import { needsBackup, SettingsStore, currentPage, clicked, currentThemeName } from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
@@ -39,6 +39,7 @@
 			//Make sure the wallet was actually unlocked by the user
 			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 				walletIsLocked = locked;
+				if(!walletIsLocked) refreshed = true;
 			})
 		}
 	}
@@ -59,6 +60,9 @@
 				switchPage(redirect[$currentPage.name])
 			}
 			refreshed = false;
+			if ($needsBackup){
+				openModal("BackupNotificationModal", {});
+			}
 		}
 	})
 
@@ -166,7 +170,6 @@
 								</div>
 							{/if}
 						</div>
-
 						{#if showModal}
 							<Modal>
 								<svelte:component this={Modals[currentModal]} {modalData} {closeModal}/>
