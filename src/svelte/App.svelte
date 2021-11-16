@@ -66,7 +66,7 @@
 	})
 
 	afterUpdate(() => {
-		if(walletIsLocked && $currentPage.name === "CoinsMain") refreshed = true;
+		if(walletIsLocked && !firstRun) refreshed = true;
 	})
 
 	onDestroy(() =>{

@@ -29,21 +29,21 @@ describe('Testing Backup', function () {
     after(() => driver && driver.quit());
 
     context('Backup notification', function() {
-        it('Renders Backup notification modal when user log in', async function() {
+        it('Renders Backup notification modal when user logs in', async function() {
             await helpers.lockWallet(driver, 0)
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 0)
             let modal = await driver.findElement(By.className("notification"))
             await modal.findElement(By.css("h2")).getAttribute('innerText').then(text => {
                 assert.equal(text, 'Your Backup is out of Date');
             })
-            driver.findElement(By.id('backup-btn')).getAttribute('innerText').then(text => {
-                assert.equal(text, 'Backup');
+            await driver.findElement(By.id('backup-btn')).getAttribute('innerText').then(text => {
+                assert.equal(text, 'BACKUP');
             })
-            driver.findElement(By.id('help-btn')).getAttribute('innerText').then(text => {
-                assert.equal(text, 'Help');
+            await driver.findElement(By.id('help-btn')).getAttribute('innerText').then(text => {
+                assert.equal(text, 'HELP');
             })
-            driver.findElement(By.id('ignore-btn')).getAttribute('innerText').then(text => {
-                assert.equal(text, 'Ignore');
+            await driver.findElement(By.id('ignore-btn')).getAttribute('innerText').then(text => {
+                assert.equal(text, 'IGNORE');
             })
         });
         it('Renders Backup notification modal after refreshing page', async function() {
@@ -53,14 +53,14 @@ describe('Testing Backup', function () {
             await modal.findElement(By.css("h2")).getAttribute('innerText').then(text => {
                 assert.equal(text, 'Your Backup is out of Date');
             })
-            driver.findElement(By.id('backup-btn')).getAttribute('innerText').then(text => {
-                assert.equal(text, 'Backup');
+            await driver.findElement(By.id('backup-btn')).getAttribute('innerText').then(text => {
+                assert.equal(text, 'BACKUP');
             })
-            driver.findElement(By.id('help-btn')).getAttribute('innerText').then(text => {
-                assert.equal(text, 'Help');
+            await driver.findElement(By.id('help-btn')).getAttribute('innerText').then(text => {
+                assert.equal(text, 'HELP');
             })
-            driver.findElement(By.id('ignore-btn')).getAttribute('innerText').then(text => {
-                assert.equal(text, 'Ignore');
+            await driver.findElement(By.id('ignore-btn')).getAttribute('innerText').then(text => {
+                assert.equal(text, 'IGNORE');
             })
         });
     })

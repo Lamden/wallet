@@ -79,7 +79,7 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
 
-    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 5000);
+    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 8000);
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {

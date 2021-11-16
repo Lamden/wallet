@@ -52,6 +52,12 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     }
 }
 
+const ignoreBackupModal = async (driver) => {
+    await driver.findElement(By.id('trusted')).click();
+    await sleep(500, true)
+    await driver.findElement(By.id('ignore-btn')).click();
+    await sleep(1000, true)
+}
 
 const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true, testnet=true) => {
     await switchWindow(driver, 0)      
@@ -371,5 +377,6 @@ module.exports = {
     setupSendListener,
     gotoAccountsPage,
     setupMetamask,
-    changeAccountPopup
+    changeAccountPopup,
+    ignoreBackupModal
 }

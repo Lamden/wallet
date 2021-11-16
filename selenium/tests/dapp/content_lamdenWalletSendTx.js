@@ -126,7 +126,9 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
             assert.equal(response.data.errors[0], "Wallet is Locked");
-            await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)         
+            await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
+            await helpers.switchWindow(driver, 0)
+            await helpers.ignoreBackupModal(driver)         
         });/*
         it('sends a transactions successfully after popup approval', async function() {
             this.timeout(10000);
