@@ -1,6 +1,6 @@
 <script>
 	import whitelabel from '../../whitelabel.json'
-	import { onMount, onDestroy, setContext, beforeUpdate } from 'svelte';
+	import { onMount, onDestroy, setContext, beforeUpdate, afterUpdate } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	//Utils
@@ -39,7 +39,6 @@
 			//Make sure the wallet was actually unlocked by the user
 			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 				walletIsLocked = locked;
-				if(!walletIsLocked) refreshed = true;
 			})
 		}
 	}
@@ -64,6 +63,10 @@
 				openModal("BackupNotificationModal", {});
 			}
 		}
+	})
+
+	afterUpdate(() => {
+		if(walletIsLocked && $currentPage.name === "CoinsMain") refreshed = true;
 	})
 
 	onDestroy(() =>{
