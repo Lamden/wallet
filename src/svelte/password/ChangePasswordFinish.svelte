@@ -22,6 +22,7 @@
         text-align: center;
         font-size: 20px;
         font-weight: 500;
+        margin-bottom: 5rem;
     }
     .header{
         display: flex;
@@ -50,7 +51,7 @@
             </div>
         </div>
     </LeftSideFullPage>
-    <h6>Change Password</h6>
+    <h6 class="text-green">Password Changed!</h6>
     <Button
         id={'change-done-btn'} 
         width={'347px'}

@@ -22,12 +22,15 @@
 
     let checked = true;
 
+    $: numOfCheckedAccounts = 0
+
 	onMount(() => {
         steps.update(current => {
             current.currentStep = 3;
             return current
         });
         handleChange();
+        numOfCheckedAccounts = keys.keyList.filter(f => f.checked).length
     });
 
     const nextStep = () => {
@@ -37,9 +40,24 @@
 
     const handleChange = () => {
         for (const i in keys.keyList){
-            keys.keyList[i].checked = checked;
+            keys.keyList[i].checked = keyIsWatchOnly(keys.keyList[i].sk) ? false : true
         }
+        numOfCheckedAccounts = keys.keyList.filter(f => f.checked).length
+        let numOfWatchedOnlyAccounts = keys.keyList.filter(f => keyIsWatchOnly(f.sk)).length
+        let totalGoodAccounts = keys.keyList.length - numOfWatchedOnlyAccounts
+
+        if (numOfCheckedAccounts === 0 || numOfCheckedAccounts !==  totalGoodAccounts) checked = false
     }
+
+    const handleChangeOne = () => {
+        numOfCheckedAccounts = keys.keyList.filter(f => f.checked).length
+        let numOfWatchedOnlyAccounts = keys.keyList.filter(f => keyIsWatchOnly(f.sk)).length
+        let totalGoodAccounts = keys.keyList.length - numOfWatchedOnlyAccounts
+
+        if (numOfCheckedAccounts !==  totalGoodAccounts) checked = false
+    }
+
+    const keyIsWatchOnly = (sk) => sk.includes('watchOnly')
 
     
 </script>
@@ -84,7 +102,6 @@
     display: flex;
     height: 88px;
     border-bottom: 1px dashed var(--divider-dark);
-    align-items: center;
     flex-grow: 1;
     overflow: hidden;
 }
@@ -131,7 +148,6 @@ p{
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 </style>
 
 
@@ -148,7 +164,8 @@ p{
                     width="100%"
                     styles={'margin-bottom: 16px;'}
                     name="Restore Accounts"
-                    click={() => nextStep()} />
+                    click={() => nextStep()} 
+                    disabled={numOfCheckedAccounts === 0} />
 
             <Button id={'cancel-btn'}
                     width="100%"
@@ -186,7 +203,7 @@ p{
             <div class="flex-row key-row">
                 <div class="checkbox-box">
                     <label class="chk-container text-body2" id={`chkbox-${i}`}>
-                        <input id={`chkbox-${i}`} type="checkbox" bind:checked={keys.keyList[i].checked}>
+                        <input id={`chkbox-${i}`} type="checkbox" bind:checked={keys.keyList[i].checked} disabled={keyIsWatchOnly(key.sk)} on:change={handleChangeOne}>
                         <span class="chk-checkmark"></span>
                     </label>
                 </div>
@@ -194,8 +211,11 @@ p{
                     <p>{`${key.name} (${key.symbol})`}</p>
                     <p class="nickname text-secondary">{`${key.nickname}`}</p>
                 </div>
-                <div id={`div-address-${i}`} class="address">
+                <div id={`div-address-${i}`} class="flex flex-column flex-align-start flex-just-center address">
                     <p>{`${key.vk}`}</p>
+                    {#if keyIsWatchOnly(key.sk)}
+                        <p class="text-warning">{'No Private key found for this account'}</p>
+                    {/if}
                 </div>
             </div>
         {/each}
