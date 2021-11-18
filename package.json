@@ -22,6 +22,7 @@
     "test-coin": "mocha --timeout 30000 selenium/tests/ui/coin/*.js",
     "test-coin-btn": "mocha --timeout 30000 selenium/tests/ui/coin/coin-btn.js",
     "test-coin-backup-notification": "mocha --timeout 30000 selenium/tests/ui/coin/coin-backup-notification.js",
+    "test-coin-changepassword": "mocha --timeout 30000 selenium/tests/ui/coin/coin-changepassword.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {

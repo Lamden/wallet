@@ -60,6 +60,13 @@ export const masterController = () => {
         return created;
     }
 
+    const changePassword = (obj) => {
+        let {oldpd, newpd} = obj;
+        let created = accounts.changePassword(oldpd, newpd);
+        if (created) broadcastLockStatus(created);
+        return created;
+    }
+
     const joinSockets = () => {
         let accountsList = accounts.getSanatizedAccounts()
         balances.joinAllSockets(accountsList)
@@ -412,6 +419,7 @@ export const masterController = () => {
         utils,
         state,
         createPassword,
+        changePassword,
         deleteAccount,
         updateAllBalances,
         handleSwitchNetwork,

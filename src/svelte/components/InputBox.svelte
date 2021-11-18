@@ -24,8 +24,10 @@
     export let bgStyle = "primary"
     export let errorMsg = ""
     export let warningMsg = ""
-
+    export let disabledPWShowBtn = true
     export let thisInput;
+
+    let pwShow = false;
 
     const dispatchChanged = (e) => {
         dispatch('changed', e);
@@ -43,8 +45,31 @@
         dispatch('mouseup', e);
     }
 
+    const handleShow = () => {
+        if (pwShow){
+            thisInput.type = "password"
+        } else {
+            thisInput.type = "text"
+        }
+        pwShow = !pwShow
+    }
+
+    $: showtext = pwShow? "Hide" : "Show";
+    
+
 </script>
 
+<style>
+    .password-btn{
+        position: absolute;
+        display: relative;
+        right: 0;
+        top: 50%;
+        margin-right: 8px;
+        text-decoration: underline;
+        color: #5CC8E2;
+    }
+</style>
 <div class="inputbox" style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle});`}>
     {#if label !== ""}
         <label class="inputbox-label"> {label} </label>
@@ -75,6 +100,9 @@
             spellcheck={spellcheck}
             {disabled}
             autofocus={autofocus}  />
+        {#if !disabledPWShowBtn}
+            <span class="password-btn" on:click={handleShow}>{showtext}</span>
+        {/if}
     {/if}
     {#if inputType === "number"}
         <!-- svelte-ignore a11y-autofocus -->

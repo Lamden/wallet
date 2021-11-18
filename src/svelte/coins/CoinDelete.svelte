@@ -105,7 +105,7 @@ form{
     <h2> Delete Account </h2>
     <div class="text-body2">
         {`Deleting this Account will remove it from your ${whitelabel.companyName} Wallet. If you have currency on it, remember to`}
-        <span class="text-accent back-it-up" on:click={() => switchPage('Backup')}> back it up</span> 
+        <span class="text-accent back-it-up" on:click={() => switchPage('BackupMain')}> back it up</span> 
     </div>
 
     {#if tauBalance > 0}
@@ -114,7 +114,7 @@ form{
             <p class="caution text-body2">
                 This account has a <strong>MainNet</strong> balance of <strong class="underline">{tauBalance.toLocaleString('en')} TAU</strong>.
                 After deleting this account you  <strong >WILL</strong> lose access to this TAU.
-                Createing a backup of your account first is <strong class="underline linked" on:click={() => switchPage('Backup')}>STRONGLY RECOMMENDED.</strong>
+                Createing a backup of your account first is <strong class="underline linked" on:click={() => switchPage('BackupMain')}>STRONGLY RECOMMENDED.</strong>
             </p>
         </div>
     {/if}
@@ -127,7 +127,7 @@ form{
                 <strong>{dappInfo.appName}</strong> 
                 (<a class="text-link" href="{dappInfo.url}">{dappInfo.url}</a>).
                 You <strong >WILL</strong> lose all assocations with its smart contract.
-                Createing a backup of your account first is <strong class="underline linked" on:click={() => switchPage('Backup')}>STRONGLY RECOMMENDED.</strong>
+                Createing a backup of your account first is <strong class="underline linked" on:click={() => switchPage('BackupMain')}>STRONGLY RECOMMENDED.</strong>
             </p>
         </div>
     {/if}

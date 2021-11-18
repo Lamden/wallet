@@ -141,6 +141,16 @@ import ConnectionEmpty from './connections/ConnectionEmpty.svelte';
 import ConnectionTrusted from './connections/ConnectionTrusted.svelte';
 import ConnectionRevoke from './connections/ConnectionRevoke.svelte';
 
+// Settings
+import Settings from './misc/Settings.svelte';
+
+// ChangePassword
+import ChangePassword from './password/ChangePassword.svelte';
+import ChangePasswordSlot from './password/ChangePasswordSlot.svelte';
+import ChangePasswordFinish from './password/ChangePasswordFinish.svelte';
+
+// Layouts
+import LeftSideFullPage from './layouts/LeftSideFullPage.svelte';
 
 export const RestorePages = {
     RestoreMain, 
@@ -174,6 +184,8 @@ export const FirstRun = {
 };
 
 export const Pages = { 
+    ChangePasswordSlot, ChangePasswordFinish,
+    Settings, ChangePassword,
     CoinsMain, CoinDetails, 
     TokenDetails,
     LockScreen, 
@@ -225,7 +237,12 @@ export const Modals = {
     IdeModelSubmit, IdeSubmitContract, 
     IdeModelMethodTx, IdeMethodTx,
     ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke,
-    BackupNotificationModal
+    BackupNotificationModal,
+    Settings
+}
+
+export const Layouts = {
+    LeftSideFullPage
 }
 
 export {
@@ -244,6 +261,9 @@ export {
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
     Swaps, SwapsStatus, SwapStatus,
-    ConnectionsMain, Connection, ConnectionEmpty
+    ConnectionsMain, Connection, ConnectionEmpty,
+    ChangePassword,
+    LeftSideFullPage,
+    ChangePasswordSlot, ChangePasswordFinish
 };
 </script>

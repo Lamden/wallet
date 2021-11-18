@@ -33,6 +33,31 @@ export const accountsController = (utils, services) => {
             return false
         }
     }
+    const changePassword = (oldpd, newpd) => {
+        try{
+            if (utils.validateTypes.isStringWithValue(oldpd) && utils.validateTypes.isStringWithValue(newpd)){
+                current = oldpd
+                let accounts = utils.stripRef(accountStore).map( account => {
+                    let decryptedKey;
+                    if (account.sk === "watchOnly") return account
+                    decryptedKey = decryptString(account.sk);
+                    if (decryptedKey) account.sk = decryptedKey
+                    else throw("Old password error")
+                    return account
+                })
+                current = newpd
+                accounts.forEach(account => {
+                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk)
+                })
+                accountStore = accounts
+                setVaultStorage()
+                return true;
+            }
+            return false
+        } catch (e){
+            return false
+        }
+    }
     const checkPassword = (string) => {
         return string === current
     }
@@ -52,6 +77,7 @@ export const accountsController = (utils, services) => {
     const decryptedKeys = () => {
         return utils.stripRef(accountStore).map( account => {
             let decryptedKey;
+            if (account.sk === "watchOnly") return account
             try{
                 decryptedKey = decryptString(account.sk);
             } catch (e) {}
@@ -335,6 +361,7 @@ export const accountsController = (utils, services) => {
     }
 
     return {
+        changePassword,
         createPassword,
         checkPassword,
         firstRun,

@@ -15,11 +15,11 @@
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
         changeStep: (step) => {
-            if (step === 0 && currentStep === 0) switchPage('Restore');
+            if (step === 0 && currentStep === 0) switchPage('Settings');
             else if (step === 0) currentStep = back;
             else currentStep = step;
         },
-        cancel: () => switchPage('Restore')
+        cancel: () => switchPage('Settings')
 	});
 
     let file;

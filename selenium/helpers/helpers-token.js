@@ -46,6 +46,7 @@ const addToken_Save = async (driver, token) => {
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
     await helpers.sleep(500, true)
+    await helpers.ignoreBackupModal(driver)
     await validateTokenOnAccountsScreen(driver, token)
 }
 

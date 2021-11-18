@@ -159,6 +159,7 @@
 	color: var(--accent-color-dim);
 	display: block;
     text-align: end;
+	white-space: nowrap;
 }
 
 .header-percent{
@@ -258,7 +259,7 @@ p{
 					<div class="header-percent header-text">{whitelabel.mainPage.portfolio.title}</div>
 				{/if}
 			</div>	
-			{#each coinStorage as coin (coin.id) }
+			{#each coinStorage as coin (coin.vk) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
 				<CoinDivider />
 			{/each}
@@ -268,7 +269,7 @@ p{
 				<div class="header-name header-text">Watched Accounts</div>
 				<div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
 			</div>	
-			{#each coinsTracked as coin (coin.id) }
+			{#each coinsTracked as coin (coin.vk) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
 				<CoinDivider />
 			{/each}

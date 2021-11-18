@@ -11,7 +11,7 @@
 
     setContext('functions', {
         changeStep: (step) => {
-            if (step === 0 && currentStep === 0) switchPage('Backup');
+            if (step === 0 && currentStep === 0) switchPage('Settings');
             else if (step === 0) currentStep = back;
             else currentStep = step;
         },

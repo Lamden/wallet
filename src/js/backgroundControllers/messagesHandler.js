@@ -78,6 +78,8 @@ export const messagesHandler = (masterController) => {
             if (isFromApp){
                 //Create password on initial "firstRun" setup
                 if(message.type === 'createPassword') sendResponse(masterController.createPassword(message.data))
+                //Change password
+                if(message.type === 'changePassword') sendResponse(masterController.changePassword(message.data))
                 //Check if the wallet has been setup yet
                 if(message.type === 'isFirstRun')sendResponse(masterController.accounts.firstRun())
                 //Unlock the wallet

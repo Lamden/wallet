@@ -30,5 +30,5 @@
             classes={'button__solid'} 
             width={'232px'}
             name="Restore a Wallet" 
-            click={() => switchPage('Restore')} />
+            click={() => switchPage('RestoreMain')} />
 </div>

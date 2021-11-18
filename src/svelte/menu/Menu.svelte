@@ -18,6 +18,7 @@
     import AboutIcon from '../icons/menu/AboutIcon.svelte'
     import FeedbackIcon from '../icons/menu/FeedbackIcon.svelte'
     import AppIcon from '../icons/menu/AppIcon.svelte'
+    import SettingsIcon from '../icons/SettingsIcon.svelte'
 
     const icons = {
         account: AccountsIcon,
@@ -29,7 +30,8 @@
         restore: RestoreIcon,
         signout: SignOutIcon,
         about: AboutIcon,
-        feedback: FeedbackIcon
+        feedback: FeedbackIcon,
+        setting: SettingsIcon
     }
 
     let menus = whitelabel.menu
