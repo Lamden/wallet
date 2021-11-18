@@ -106,12 +106,14 @@
     }
     .header-name{
         margin-left: 77px;
-        opacity: 0.6;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        font-size: 22px;
     }
 </style>
 <div class="wrap">
-    <div class="header text-subtitle2 divider">
-        <div class="header-name">Account Settings</div>
+    <div class="header text-body1 divider">
+        <div class="header-name text-primary weight-800">Account Settings</div>
     </div>	
     {#each settings as setting}
         <div class="flex setting">

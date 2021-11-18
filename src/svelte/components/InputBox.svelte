@@ -62,12 +62,12 @@
 <style>
     .password-btn{
         position: absolute;
-        display: relative;
         right: 0;
         top: 50%;
         margin-right: 8px;
         text-decoration: underline;
         color: #5CC8E2;
+        cursor: pointer;
     }
 </style>
 <div class="inputbox" style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle});`}>

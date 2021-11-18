@@ -48,6 +48,9 @@
     a:active{
         text-decoration: underline;
     }
+    h6{
+        margin-bottom: 5rem;
+    }
 </style>
 <div class="header">
     <NavLogo />
@@ -61,7 +64,7 @@
             <div class="text-body1 text-warning warning weight-400">Lamden is not responsible for lost or stolen passwords.</div>
         </div>
     </LeftSideFullPage>
-    <h6>Change Password</h6>
+    <h6 class="text-green">Password Changed!</h6>
     <Button
         id={'change-done-btn'} 
         width={'347px'}
