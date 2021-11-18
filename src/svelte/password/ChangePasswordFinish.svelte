@@ -22,6 +22,7 @@
         text-align: center;
         font-size: 20px;
         font-weight: 500;
+        margin-bottom: 5rem;
     }
     .header{
         display: flex;
@@ -35,21 +36,8 @@
         height: 97px;
         border-bottom: 1px solid var(--divider-light);
     }
-    .warning{
-        margin-top: 1.5rem;
-        line-height: 24px;
-    }
     .desc{
         line-height: 24px;
-    }
-    .link{
-        color: var(--font-accent);
-    }
-    a:active{
-        text-decoration: underline;
-    }
-    h6{
-        margin-bottom: 5rem;
     }
 </style>
 <div class="header">
@@ -59,9 +47,8 @@
     <LeftSideFullPage title={"Password Safety"}>
         <div slot="body">
             <div class="text-body1 weight-400 desc">
-                For maximun security we suggest creating a complex password and storing it in a password manager such as <a class="text-link weight-700 link" href="https://www.lastpass.com/" target="_blank">LastPass</a>. 
+                You've successfully changed your wallet password! The next time you sign in, you’ll be asked for your new password.
             </div>
-            <div class="text-body1 text-warning warning weight-400">Lamden is not responsible for lost or stolen passwords.</div>
         </div>
     </LeftSideFullPage>
     <h6 class="text-green">Password Changed!</h6>
