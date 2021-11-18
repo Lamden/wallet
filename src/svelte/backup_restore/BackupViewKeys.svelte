@@ -166,7 +166,7 @@ p{
                     </div>
                     <div class="flex-column result-box text-body3 text-secondary">
                         <p>{`Account Address: ${coin.vk}`}</p>
-                        <p class=" text-secondary">{`Private Key: ${watchOnly(coin.sk) ? "Key is Watch Only" : coin.sk}`}</p>
+                        <p class=" text-secondary">{`Private Key: ${watchOnly(coin.sk) ? "Account is Watch Only. You do not own the private key." : coin.sk}`}</p>
                     </div>
                 </div>
             {/each}
