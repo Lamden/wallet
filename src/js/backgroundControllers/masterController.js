@@ -60,6 +60,13 @@ export const masterController = () => {
         return created;
     }
 
+    const changePassword = (obj) => {
+        let {oldpd, newpd} = obj;
+        let created = accounts.changePassword(oldpd, newpd);
+        if (created) broadcastLockStatus(created);
+        return created;
+    }
+
     const joinSockets = () => {
         let accountsList = accounts.getSanatizedAccounts()
         balances.joinAllSockets(accountsList)
@@ -176,11 +183,13 @@ export const masterController = () => {
     }
 
     const initiateAppTxSend = (txInfo, sender) => {
+        console.log({txInfo, sender})
         //Validate that a physical person is sending this transaction
         let response = {status: ""};
         try{
             txInfo.uid = utils.hashStringValue(new Date().toISOString());
             let txBuilder = new utils.Lamden.TransactionBuilder(utils.networks.getCurrent(), txInfo)
+            console.log(txBuilder.getAllInfo())
             transactions.sendLamdenTx(txBuilder, sender.origin)
             response.status = "Transaction Sent, Awaiting Response"
         }catch (err){
@@ -412,6 +421,7 @@ export const masterController = () => {
         utils,
         state,
         createPassword,
+        changePassword,
         deleteAccount,
         updateAllBalances,
         handleSwitchNetwork,

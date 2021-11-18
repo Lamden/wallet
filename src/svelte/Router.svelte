@@ -53,6 +53,7 @@ import BackupViewKeys from './backup_restore/BackupViewKeys.svelte';
 import BackupKeystorePassword from './backup_restore/BackupKeystorePassword.svelte';
 import BackupKeystoreCreate from './backup_restore/BackupKeystoreCreate.svelte';
 import BackupKeystoreComplete from './backup_restore/BackupKeystoreComplete.svelte';
+import BackupNotificationModal from './backup_restore/BackupNotificationModal.svelte'; 
 import Restore from './backup_restore/Restore.svelte';
 import RestoreMain from './backup_restore/RestoreMain.svelte';
 import RestoreUpload from './backup_restore/RestoreUpload.svelte';
@@ -140,6 +141,16 @@ import ConnectionEmpty from './connections/ConnectionEmpty.svelte';
 import ConnectionTrusted from './connections/ConnectionTrusted.svelte';
 import ConnectionRevoke from './connections/ConnectionRevoke.svelte';
 
+// Settings
+import Settings from './misc/Settings.svelte';
+
+// ChangePassword
+import ChangePassword from './password/ChangePassword.svelte';
+import ChangePasswordSlot from './password/ChangePasswordSlot.svelte';
+import ChangePasswordFinish from './password/ChangePasswordFinish.svelte';
+
+// Layouts
+import LeftSideFullPage from './layouts/LeftSideFullPage.svelte';
 
 export const RestorePages = {
     RestoreMain, 
@@ -173,6 +184,8 @@ export const FirstRun = {
 };
 
 export const Pages = { 
+    ChangePasswordSlot, ChangePasswordFinish,
+    Settings, ChangePassword,
     CoinsMain, CoinDetails, 
     TokenDetails,
     LockScreen, 
@@ -223,7 +236,13 @@ export const Modals = {
     IdeModelNewTab, 
     IdeModelSubmit, IdeSubmitContract, 
     IdeModelMethodTx, IdeMethodTx,
-    ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke
+    ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke,
+    BackupNotificationModal,
+    Settings
+}
+
+export const Layouts = {
+    LeftSideFullPage
 }
 
 export {
@@ -242,6 +261,9 @@ export {
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
     Swaps, SwapsStatus, SwapStatus,
-    ConnectionsMain, Connection, ConnectionEmpty
+    ConnectionsMain, Connection, ConnectionEmpty,
+    ChangePassword,
+    LeftSideFullPage,
+    ChangePasswordSlot, ChangePasswordFinish
 };
 </script>

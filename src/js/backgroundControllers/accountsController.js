@@ -33,13 +33,38 @@ export const accountsController = (utils, services) => {
             return false
         }
     }
+    const changePassword = (oldpd, newpd) => {
+        try{
+            if (utils.validateTypes.isStringWithValue(oldpd) && utils.validateTypes.isStringWithValue(newpd)){
+                current = oldpd
+                let accounts = utils.stripRef(accountStore).map( account => {
+                    let decryptedKey;
+                    if (account.sk === "watchOnly") return account
+                    decryptedKey = decryptString(account.sk);
+                    if (decryptedKey) account.sk = decryptedKey
+                    else throw("Old password error")
+                    return account
+                })
+                current = newpd
+                accounts.forEach(account => {
+                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk)
+                })
+                accountStore = accounts
+                setVaultStorage()
+                return true;
+            }
+            return false
+        } catch (e){
+            return false
+        }
+    }
     const checkPassword = (string) => {
         return string === current
     }
 
     const createKeystore = (info) => {
         return JSON.stringify({
-            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: decryptedKeys()}),
+            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: decryptedKeys().filter(f => !f.sk.includes("watchOnly"))}),
             w: info.hint === "" ? "" : utils.encryptStrHash(info.obscure, info.hint),
         });
     }
@@ -52,6 +77,7 @@ export const accountsController = (utils, services) => {
     const decryptedKeys = () => {
         return utils.stripRef(accountStore).map( account => {
             let decryptedKey;
+            if (account.sk === "watchOnly") return account
             try{
                 decryptedKey = decryptString(account.sk);
             } catch (e) {}
@@ -274,7 +300,11 @@ export const accountsController = (utils, services) => {
 
     const signTx = (txBuilder) => {
         let account = getAccountByVK(txBuilder.sender)
+        console.log(account)
         if (!account) throw new Error(`Error: Account address ${xBuilder.sender} not in wallet.`)
+        console.log("here")
+        let sk = decryptString(account.sk)
+        console.log(sk)
         txBuilder.sign(decryptString(account.sk))
     }
 
@@ -335,6 +365,7 @@ export const accountsController = (utils, services) => {
     }
 
     return {
+        changePassword,
         createPassword,
         checkPassword,
         firstRun,

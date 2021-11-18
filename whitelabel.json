@@ -96,21 +96,12 @@
             "show": true,
             "items":[
                 {
-                    "id": "backup", 
+                    "id": "settings", 
                     "show": true,
-                    "logo": "backup", 
-                    "name": "Backup Wallet", 
+                    "logo": "setting", 
+                    "name": "Account Settings", 
                     "page": {
-                        "name": "Backup"
-                    }
-                },
-                {
-                    "id": "restore", 
-                    "show": true,
-                    "logo": "restore", 
-                    "name": "Restore Wallet", 
-                    "page": {
-                        "name": "Restore"
+                        "name": "Settings"
                     }
                 },
                 {

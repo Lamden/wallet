@@ -3,20 +3,8 @@
 	export let width = "20px"
 	export let margin = '0 10px';
 
-	let showIcons = false
-
 	$: value = iconValue;
 
-	function jdenticonLoaded(){
-		window.jdenticon_config = { replaceMode: "observe"}
-		showIcons = true
-	}
 </script>
 
-<svelte:head>
-	<script src="./jdenticon.min.js" async on:load={jdenticonLoaded}></script>
-</svelte:head>
-
-{#if showIcons}
-	<svg style={`margin: ${margin};`} data-jdenticon-value={value} width={width} />
-{/if}
+<svg style={`margin: ${margin};`} data-jdenticon-value={value} width={width} />

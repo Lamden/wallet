@@ -5,6 +5,7 @@ const path = require('path')
 const config = require('../config/config')
 const http = require('http')
 const https = require('https')
+const assert = require('assert');
 const { CryptoJS } = nodeCryptoJs;
 
 const { testnetMasternode, testnetBlockService } = config;
@@ -44,6 +45,7 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     await driver.findElement(By.id('save-pwd')).click()
     await driver.findElement(By.id('i-understand')).click()
     await sleep(5000)
+    await ignoreBackupModal(driver)
     if (testnet) await changeToTestnet(driver)
     await driver.findElement(By.id('refresh-icon')).click()
     await sleep(3000, true)
@@ -52,10 +54,15 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     }
 }
 
+const ignoreBackupModal = async (driver) => {
+    await validBackupModal(driver)
+    await driver.findElement(By.id('ignore-btn')).click();
+    await sleep(1000, true)
+}
 
 const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true, testnet=true) => {
-    await switchWindow(driver, 0)      
-    await driver.findElement(By.id('restore-wallet')).click();
+    await switchWindow(driver, 0)
+    await driver.wait(until.elementLocated(By.id("restore-wallet")), 5000).click();
     await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
     await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
     await driver.findElement(By.id('save-pwd')).click()
@@ -70,6 +77,7 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await sleep(2000)
     await driver.findElement(By.id('home-btn')).click()
     await sleep(4000)
+    await ignoreBackupModal(driver)
     if (testnet) {
         await changeToTestnet(driver)
         await sleep(2000)
@@ -91,7 +99,9 @@ const unlockWallet = async (driver, walletPassword, switchback) => {
 
 const lockWallet = async (driver, switchback) => {
     await switchWindow(driver, 0) 
-    await driver.findElement(By.css("div.brand.clickable")).click()
+    await sleep(1000)
+    let element = await driver.findElement(By.css("div.brand.clickable"))
+    driver.executeScript("arguments[0].click();", element)
     await driver.findElement(By.id('lock')).click()
     await switchWindow(driver, switchback) 
     await sleep(1000, true)
@@ -355,7 +365,62 @@ const setupMetamask = async (driver, kovan = true) => {
     }
 }
 
+const validBackupModal = async (driver) => {
+    let modal = await driver.wait(until.elementLocated(By.className(`notification`)), 25000);
+    await modal.findElement(By.css("h2")).getAttribute('innerText').then(text => {
+        assert.equal(text, 'Your Backup is out of Date');
+    })
+    await driver.findElement(By.id('backup-btn')).getAttribute('innerText').then(text => {
+        assert.equal(text, 'BACKUP');
+    })
+    await driver.findElement(By.id('help-btn')).getAttribute('innerText').then(text => {
+        assert.equal(text, 'HELP');
+    })
+    await driver.findElement(By.id('ignore-btn')).getAttribute('innerText').then(text => {
+        assert.equal(text, 'IGNORE');
+    })
+}
+
+const addAccount = async (driver) => {
+    await driver.findElement(By.id('accounts')).click();
+    await driver.findElement(By.id('add-btn')).click();
+    await driver.findElement(By.css('.submit-button')).click();
+    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
+    let message = await messageField.getAttribute("innerText")
+    assert.equal(message, `Added New Lamden Account to your wallet`);
+    await driver.findElement(By.id("home-btn")).click()
+    await sleep(500, true)
+    await ignoreBackupModal(driver)
+}
+
+const addTrackedAccount = async (driver, address) => {
+    await driver.findElement(By.id('accounts')).click();
+    await driver.findElement(By.id('add-btn')).click();
+    await driver.findElement(By.id('track-address-btn')).click();
+    await driver.findElement(By.id("public-key")).sendKeys(address)
+    await driver.findElement(By.css('.submit-button')).click();
+    let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
+    let message = await messageField.getAttribute("innerText")
+    assert.equal(message, `Added New Lamden Account to your wallet`);
+    await driver.findElement(By.id("home-btn")).click()
+    await sleep(500, true)
+    let emts = await driver.findElements(By.className("notification"))
+    assert.equal(0, emts.length)
+}
+
+const changePassword = async (driver, oldpd, newpd, confirmpd) => {
+    await sleep(500)
+    await driver.findElement(By.id("settings")).click();
+    await driver.findElement(By.id("change-btn")).click();
+    await sleep(500)
+    await driver.executeScript(`document.getElementById('pwd1-input').value='${oldpd}'`)
+    await driver.findElement(By.id("pwd2-input")).sendKeys(newpd);
+    await driver.executeScript(`document.getElementById('pwd3-input').value='${confirmpd}'`)
+    await driver.findElement(By.id("change-pw-btn")).click();
+}
+
 module.exports = {
+    changePassword,
     sleep,
     switchWindow,
     completeFirstRunSetup, completeFirstRunSetupRestore, changeToTestnet, setAsTrustedDapp,
@@ -371,5 +436,9 @@ module.exports = {
     setupSendListener,
     gotoAccountsPage,
     setupMetamask,
-    changeAccountPopup
+    changeAccountPopup,
+    ignoreBackupModal,
+    validBackupModal,
+    addAccount,
+    addTrackedAccount
 }

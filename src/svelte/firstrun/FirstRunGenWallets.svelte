@@ -50,6 +50,7 @@
             }else{
                 if (result.added){
                 SettingsStore.setLastCoinAddedDate();
+                SettingsStore.setLastCoinAddedType("normal")
                 resolve()
                 }
                 message = result.reason

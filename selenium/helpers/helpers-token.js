@@ -46,6 +46,7 @@ const addToken_Save = async (driver, token) => {
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
     await helpers.sleep(500, true)
+    await helpers.ignoreBackupModal(driver)
     await validateTokenOnAccountsScreen(driver, token)
 }
 
@@ -79,7 +80,7 @@ const validateTokenLogo = async (driver, token, overrideLogoType=undefined) => {
     let type = token.logo_type;
     if (overrideLogoType) type = overrideLogoType
 
-    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 5000);
+    let input = await driver.wait(until.elementLocated(By.id(`token-logo-${token.tokenSymbol}-${type}`)), 8000);
     let src = await input.getAttribute("src")
     if (type === "placeholder") assert.equal(src, placeholder_base64); 
     else  {

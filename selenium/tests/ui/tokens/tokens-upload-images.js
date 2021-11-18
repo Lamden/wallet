@@ -34,7 +34,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
         it('Can upload a png to change icon', async function() {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(3000, true)
+            await helpers.sleep(8000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.pngLogo)
             token.logo = tokenImages.pngLogoBase64
             await tokenHelpers.validateTokenLogo(driver, token, "png")
@@ -45,7 +45,7 @@ describe('Testing Token Integration - Upload Logo Images', function () {
         it('Can upload an svg to change icon', async function() {
             let token = tokenInfo.token_3_url
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(3000, true)
+            await helpers.sleep(8000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.svgLogo)
             token.logo = tokenImages.svgLogoBase64
             await tokenHelpers.validateTokenLogo(driver, token, "svg")
@@ -54,9 +54,10 @@ describe('Testing Token Integration - Upload Logo Images', function () {
             await tokenHelpers.addToken_Save(driver, token)
         });
         it('Can upload an image and then revert back to contract standard', async function() {
+            this.timeout(60000)
             let token = tokenInfo.token_4_placeholder
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(3000, true)
+            await helpers.sleep(8000, true)
             await tokenHelpers.uploadImage(driver, tokenImages.svgLogo)
             await tokenHelpers.validateTokenLogo(driver, {...token, logo: tokenImages.svgLogoBase64, logo_type: "svg"})
             await tokenHelpers.clearUploadImage(driver)

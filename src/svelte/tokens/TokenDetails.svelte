@@ -185,6 +185,7 @@
         padding-left: 15px;
         flex-grow: 1;
         font-size: 14px;
+        white-space: nowrap;
     }
 
     .header-percent{

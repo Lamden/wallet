@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "1.8.9",
+  "version": "1.9.0",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -21,6 +21,8 @@
     "test-tokens-transactions": "mocha --timeout 30000 selenium/tests/ui/tokens/tokens-transactions.js",
     "test-coin": "mocha --timeout 30000 selenium/tests/ui/coin/*.js",
     "test-coin-btn": "mocha --timeout 30000 selenium/tests/ui/coin/coin-btn.js",
+    "test-coin-backup-notification": "mocha --timeout 30000 selenium/tests/ui/coin/coin-backup-notification.js",
+    "test-coin-changepassword": "mocha --timeout 30000 selenium/tests/ui/coin/coin-changepassword.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {

@@ -1,12 +1,12 @@
 <script>
-    import { getContext, setContext } from 'svelte';
+    import { getContext, setContext, afterUpdate} from 'svelte';
     
     //Components
     import { Modals, Components } from '../Router.svelte';
     const { Button } = Components;
 
 	//Context
-    const { closeModal } = getContext('app_functions');
+    const { closeModal, setAccountAdded } = getContext('app_functions');
 
 	setContext('coinadd_functions', {
         detailsPage: () => currentStep = 1,
@@ -15,6 +15,10 @@
         setMessage: (msg) => message = msg
     });
     
+    afterUpdate(() => {
+        if (currentStep === 2 && message.type === "success") setAccountAdded()
+    })
+
     let message = {};
     let steps = [
         {page: 'CoinAddDetails', cancelButton: true},

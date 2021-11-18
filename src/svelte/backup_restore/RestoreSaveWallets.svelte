@@ -53,6 +53,7 @@
             if (!result.error) {
                 keys.keyList = result
                 SettingsStore.setLastCoinAddedDate();
+                SettingsStore.setLastCoinAddedType("normal")
                 chrome.runtime.sendMessage({type: 'updateAccountAndTokenBalances'})
             } else keys.error = result.error
             done = true;

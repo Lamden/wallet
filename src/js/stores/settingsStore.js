@@ -90,6 +90,12 @@ const createSettingsStore = () => {
                 return settingsStore;
             }) 
         },
+        setLastCoinAddedType: (type) => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.lastCoinAddedType = type
+                return settingsStore;
+            }) 
+        },
         dismissWarning: () => {
             SettingsStore.update(settingsStore => {
                 settingsStore.dismissWarning = true;

@@ -1,16 +1,19 @@
+<svelte:head>
+	<script src="./jdenticon.min.js" async on:load={jdenticonLoaded}></script>
+</svelte:head>
 <script>
 	import whitelabel from '../../whitelabel.json'
-	import { onMount, onDestroy, setContext, beforeUpdate } from 'svelte';
+	import { onMount, onDestroy, setContext, beforeUpdate, afterUpdate } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	//Utils
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import { SettingsStore, currentPage, clicked, currentThemeName } from '../js/stores/stores.js';
+	import { needsBackup, SettingsStore, currentPage, clicked, currentThemeName } from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu, Components, Modals }  from './Router.svelte'
+	import { Pages, FirstRun, Nav, Menu, Components, Modals, LeftSideFullPage}  from './Router.svelte'
 	const { Modal, Loading, LightDarkToggle } = Components;
 
 	//Images
@@ -20,14 +23,13 @@
 	export let refreshed;
 
 	let showModal = false;
+	let accountAdded = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap']
+	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap', 'ChangePassword']
 	const redirect = {
 		'ContinueSwap': 'Swaps',
 		'SwapsMain': 'Swaps',
-		'BackupMain': 'Backup',
-		'RestoreMain': 'Restore',
 		'FirstRunRestoreMain': 'FirstRunMain'
 	}
 
@@ -39,6 +41,7 @@
 			//Make sure the wallet was actually unlocked by the user
 			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 				walletIsLocked = locked;
+				if (walletIsLocked && $currentPage.name === 'ChangePassword') SettingsStore.changePage({name: 'CoinsMain'})
 			})
 		}
 	}
@@ -59,6 +62,17 @@
 				switchPage(redirect[$currentPage.name])
 			}
 			refreshed = false;
+			if ($needsBackup){
+				openModal("BackupNotificationModal", {});
+			}
+		}
+	})
+
+	afterUpdate(() => {
+		if(walletIsLocked && !firstRun) refreshed = true;
+		if(!showModal && accountAdded && $SettingsStore.lastCoinAddedType === 'normal' && $needsBackup) {
+			openModal("BackupNotificationModal", {});
+			accountAdded = false;
 		}
 	})
 
@@ -74,7 +88,8 @@
 		firstRun: () => firstRun ? true : false,
 		appHome: () => switchPage('CoinsMain'),
 		checkFirstRun: () => checkFirstRun(),
-		themeToggle: themeToggle
+		themeToggle: themeToggle,
+		setAccountAdded: () => accountAdded = true
 	});
 
 
@@ -85,6 +100,7 @@
 				SettingsStore.changePage({name: 'CoinsMain'})
 			}
 			firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
+			if (firstRun) accountAdded = true
 		})
 	}
 
@@ -134,6 +150,9 @@
 		return JSON.parse(localStorage.getItem("lighttheme"))
 	}
 
+	function jdenticonLoaded(){
+		window.jdenticon_config = { replaceMode: "observe"}
+	}
 </script>
 
 <div class="container">
@@ -143,7 +162,9 @@
 		{:else}
 			{#if !walletIsLocked}
 				{#if fullPage.includes($currentPage.name)}
-					<svelte:component this={Pages[$currentPage.name]}/>
+					<div class="fullpage">
+						<svelte:component this={Pages[$currentPage.name]}/>
+					</div>
 				{:else}
 					<Nav />
 					<div class="main-layout">
@@ -166,7 +187,6 @@
 								</div>
 							{/if}
 						</div>
-
 						{#if showModal}
 							<Modal>
 								<svelte:component this={Modals[currentModal]} {modalData} {closeModal}/>
@@ -189,6 +209,11 @@
 
 
 <style>
+	.fullpage{
+		flex: 1;
+		display: flex;
+		justify-content: center;
+	}
 	.container {
 		display:flex;
 		padding-top: 97px;

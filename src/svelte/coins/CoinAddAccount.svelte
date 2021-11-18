@@ -98,7 +98,9 @@
         chrome.runtime.sendMessage({type: 'accountsAddOne', data: coinInfo}, (result) => {
             if (result.added){
                 returnMessage = {type:'success', text: result.reason}
-                SettingsStore.setLastCoinAddedDate();
+                if (coinInfo.sk !== 'watchOnly') SettingsStore.setLastCoinAddedDate();
+                let type = coinInfo.sk === 'watchOnly'? 'watchOnly' : 'normal'; 
+                SettingsStore.setLastCoinAddedType(type)
                 chrome.runtime.sendMessage({type: 'joinSocket', data: coinInfo.vk})
                 chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coinInfo.vk})
             }
