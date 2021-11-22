@@ -43,6 +43,7 @@ import CoinDelete from './coins/CoinDelete.svelte';
 import CoinDeleting from './coins/CoinDeleting.svelte'; 
 import CoinHistory from  './coins/CoinHistory.svelte'; 
 import CoinLamdenReceive from './coins/CoinLamdenReceive.svelte';
+import ConiLamdenSendWarningBox from './coins/ConiLamdenSendWarningBox.svelte';
 
 //Backup and Restore
 import Backup from './backup_restore/Backup.svelte';
@@ -222,6 +223,7 @@ export const Components = {
 };
 
 export const Modals = {
+    ConiLamdenSendWarningBox,
     CoinLamdenSend, TokenLamdenSend,
     CoinModify, CoinOptions, CoinDelete, CoinDeleting, CoinEditNickname,
     TokenModify, TokenOptions, TokenDelete, TokenDeleting,

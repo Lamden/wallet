@@ -8,6 +8,9 @@
     const { CoinLamdenContract, CoinLamdenSimpleContract } = Modals
     const { Button } = Components
 
+    //Utils
+    import { isLamdenKey } from '../../js/utils.js';
+
     //Context
 	const { closeModal } = getContext('app_functions');
 
@@ -23,6 +26,7 @@
     let steps = [
         {page: 'CoinLamdenSimpleContract', back: -1, cancelButton: true},
         {page: 'CoinLamdenContract', back: -1, cancelButton: true},
+        {page: 'ConiLamdenSendWarningBox', back: -1, cancelButton: true},
         {page: 'CoinConfirmTx', back: 0, cancelButton: true},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
         {page: 'ResultBox', back: -1, cancelButton: false}
@@ -31,6 +35,14 @@
             {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
             {name: 'New Transaction', click: () => currentStep = 1, class: 'button__solid'}
         ]
+    let message = {
+            title: "Are you sure to continue?",
+            text: "The receiving address is not Lamben's address. This may cause you to lose your funds!",
+            buttons: [
+                {name: 'Continue', click: () => nextPage(), class: 'button__solid button__primary'},
+                {name: 'Back', click: () => back(), class: 'button__solid button_secondary'
+            }]
+        }
     let currentStep = 1;
     
     let error, status = "";
@@ -61,7 +73,14 @@
         if(e.type === "contractDetails") {
             txui = "advanced";
         }
-        currentStep = 3; 
+        if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
+            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not Lamben's address. This may cause you to lose your funds!`
+            if (!isLamdenKey(txData.txInfo.kwargs.to)) {
+                currentStep = 3
+                return
+            }
+        }
+        currentStep = 4; 
     }
 
     const createTxDetails = () => {
@@ -106,7 +125,8 @@
     <svelte:component this={Modals[steps[currentStep - 1].page]} 
                       result={resultInfo} 
                       {coin} 
-                      {txData} 
+                      {txData}
+                      {message}
                       txDetails={createTxDetails()}
                       on:txResult={(e) => resultDetails(e)}/>
 {/if}

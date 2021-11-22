@@ -154,7 +154,7 @@
     }
 
     const handleReceiverAddrSelect = (e) => {
-        to = e.detail.selected.value.vk;
+        to = e.detail.selected.value.vk.trim();
     }
 
     const handleTokenSelect = (e) => {
@@ -167,13 +167,13 @@
             dispatch('contractSimpleDetails', {
                 sender: from,
                 txInfo: {
-                    senderVk: from.vk,
+                    senderVk: from.vk.trim(),
                     stampLimit: stampLimit,
                     contractName: contractName, 
                     methodName: "transfer", 
                     kwargs: {
                         amount: Encoder("float", amount),
-                        to: Encoder("str", to)
+                        to: Encoder("str", to.trim())
                     }
                 }
             })

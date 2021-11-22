@@ -34,7 +34,7 @@
     }
 
     const back = () => {
-        dispatch('setStep', 3)
+        dispatch('setStep', 2)
     }    
 </script>
 
