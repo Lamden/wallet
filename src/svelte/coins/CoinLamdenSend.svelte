@@ -74,7 +74,7 @@
             txui = "advanced";
         }
         if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
-            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not Lamben's address. This may cause you to lose your funds!`
+            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`
             if (!isLamdenKey(txData.txInfo.kwargs.to)) {
                 currentStep = 3
                 return
