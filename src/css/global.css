@@ -26,6 +26,7 @@ body{
     --color-grey-1: #262626;
     --color-grey-2: #383838;
     --color-grey-3: #4a4a4a;
+    --color-grey-6: #7b7b7b;
 
     --bg-primary: #151515; 
     --bg-secondary: var(--color-grey-1);   
@@ -103,6 +104,7 @@ body{
     --color-grey-1: #f6f6f6;
     --color-grey-2: #ececec;
     --color-grey-3: #dcdcdc;
+    --color-grey-6: #b3b3b3;
 
     --bg-primary: #fff; 
     --bg-secondary: var(--color-grey-1);   
@@ -155,6 +157,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 .flex-row{
     display: flex;
     flex-direction: row;
+}
+
+.flex-align-start{
+    align-items: flex-start;
 }
 
 .flex-align-center{
@@ -1073,6 +1079,10 @@ input.submit-button:disabled{
   .chk-container input:checked ~ .chk-checkmark {
     background-color: var(--primary-color);
   }
+
+  .chk-container input:disabled ~ .chk-checkmark {
+    background-color: var(--primary-color);
+  }
   
   .chk-checkmark:after {
     content: "";
@@ -1081,7 +1091,7 @@ input.submit-button:disabled{
   }
 
   .chk-container input:disabled ~ .chk-checkmark {
-    background-color: var(--font-secondary);
+    background-color: var(--color-grey-3);
 }
   
 

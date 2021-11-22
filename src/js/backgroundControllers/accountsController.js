@@ -64,7 +64,7 @@ export const accountsController = (utils, services) => {
 
     const createKeystore = (info) => {
         return JSON.stringify({
-            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: decryptedKeys()}),
+            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: decryptedKeys().filter(f => !f.sk.includes("watchOnly"))}),
             w: info.hint === "" ? "" : utils.encryptStrHash(info.obscure, info.hint),
         });
     }
@@ -300,7 +300,11 @@ export const accountsController = (utils, services) => {
 
     const signTx = (txBuilder) => {
         let account = getAccountByVK(txBuilder.sender)
+        console.log(account)
         if (!account) throw new Error(`Error: Account address ${xBuilder.sender} not in wallet.`)
+        console.log("here")
+        let sk = decryptString(account.sk)
+        console.log(sk)
         txBuilder.sign(decryptString(account.sk))
     }
 

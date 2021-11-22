@@ -11,6 +11,14 @@
     import RestoreIcon from '../icons/menu/RestoreIcon.svelte';
     import ChangePasswordIcon from '../icons/menu/ChangePassword.svelte';
 
+    //Stores
+	import { CoinStore} from '../../js/stores/stores.js';
+
+    $: numOfAccounts = $CoinStore ? [...$CoinStore].map((coin, index) => {
+		coin.id = index
+		return coin
+	}).filter(c => !c.sk.includes("watchOnly")).length : 0;
+
     //Context
     const { switchPage } = getContext('app_functions');
 
@@ -21,6 +29,7 @@
         desc: "All of the information for your Accounts is stored in this browser. We highly recommend creating a keystore file so that you can recover your Accounts if anything happens to this computer.",
         btnName: "Backup Wallet",
         page: "BackupMain"
+
     },{
         id: "restore-btn",
         logo: "restore",
@@ -97,12 +106,14 @@
     }
     .header-name{
         margin-left: 77px;
-        opacity: 0.6;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        font-size: 22px;
     }
 </style>
 <div class="wrap">
-    <div class="header text-subtitle2 divider">
-        <div class="header-name">Account Settings</div>
+    <div class="header text-body1 divider">
+        <div class="header-name text-primary weight-800">Account Settings</div>
     </div>	
     {#each settings as setting}
         <div class="flex setting">
@@ -112,6 +123,10 @@
             <div class="setting-content">
                 <div class="text-body1 setting-title weight-400">{setting.title}</div>
                 <div class="text-body2 text-primary setting-desc">{setting.desc}</div>
+                {#if setting.id === "backup-btn" && numOfAccounts === 0}
+                    <div class="text-body2 text-warning setting-desc">You have no accounts to backup</div>
+                {/if}
+
                 <Button
                     id={setting.id} 
                     width={'232px'}
@@ -119,8 +134,11 @@
                     classes={'button__solid button__primary'}
                     name={setting.btnName}
                     click={ ()=> btnAction(setting.page)}
+                    disabled={setting.id === "backup-btn" ? numOfAccounts === 0 : false}
                 >
                 </Button>
+                
+
             </div>
         </div>
     {/each}

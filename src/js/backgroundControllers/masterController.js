@@ -183,11 +183,13 @@ export const masterController = () => {
     }
 
     const initiateAppTxSend = (txInfo, sender) => {
+        console.log({txInfo, sender})
         //Validate that a physical person is sending this transaction
         let response = {status: ""};
         try{
             txInfo.uid = utils.hashStringValue(new Date().toISOString());
             let txBuilder = new utils.Lamden.TransactionBuilder(utils.networks.getCurrent(), txInfo)
+            console.log(txBuilder.getAllInfo())
             transactions.sendLamdenTx(txBuilder, sender.origin)
             response.status = "Transaction Sent, Awaiting Response"
         }catch (err){
