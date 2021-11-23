@@ -11,7 +11,7 @@
     import { TokenBalancesStore, currentNetwork, networkKey, coinsDropDown  } from '../../js/stores/stores.js'
 
     //Misc
-    import { displayBalanceToFixed, formatAccountAddress } from '../../js/utils.js'
+    import { displayBalanceToFixed, formatAccountAddress, isLamdenKey } from '../../js/utils.js'
 
     //Context
 	const { closeModal } = getContext('app_functions');
@@ -28,6 +28,7 @@
     let steps = [
         {page: 'CoinLamdenSimpleContract', back: -1, cancelButton: true},
         {page: 'CoinLamdenContract', back: -1, cancelButton: true},
+        {page: 'ConiLamdenSendWarningBox', back: -1, cancelButton: true},
         {page: 'CoinConfirmTx', back: 0, cancelButton: true},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
         {page: 'ResultBox', back: -1, cancelButton: false}
@@ -43,6 +44,15 @@
     let resultInfo = {};
     let txui = "simple";  // "simple", "advanced";
     let initstep = 1;
+
+    let message = {
+        title: "Are you sure to continue?",
+        text: "The receiving address is not Lamben's address. This may cause you to lose your funds!",
+        buttons: [
+            {name: 'Continue', click: () => nextPage(), class: 'button__solid button__primary'},
+            {name: 'Back', click: () => back(), class: 'button__solid button_secondary'
+        }]
+    }
 
     $: netKey = networkKey($currentNetwork)
     $: token = modalData.token;
@@ -94,6 +104,7 @@
         if (!tokenBalancesStore[netKey] || !coinsDropDown) return emptyAccountDropDown
         let returnList = coinsDropDown.filter(f => {
             if (!f.value) return false
+            if (f.value.sk === "watchOnly") return false
             if (!tokenBalancesStore[netKey][f.value.vk]) return false
             if (!tokenBalancesStore[netKey][f.value.vk][token.contractName]) return false
             let balance = Encoder('bigNumber', tokenBalancesStore[netKey][f.value.vk][token.contractName])
@@ -124,7 +135,16 @@
         if(e.type === "contractDetails") {
             txui = "advanced";
         }
-        currentStep = 3; 
+
+        if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
+            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not Lamben's address. This may cause you to lose your funds!`
+            if (!isLamdenKey(txData.txInfo.kwargs.to)) {
+                currentStep = 3
+                return
+            }
+        }
+
+        currentStep = 4; 
     }
 
     const createTxDetails = () => {
@@ -175,6 +195,7 @@
                         {coin} 
                         {accountList}
                         {txData} 
+                        {message}
                         txDetails={createTxDetails()}
                         on:txResult={(e) => resultDetails(e)}/>
     {/if}

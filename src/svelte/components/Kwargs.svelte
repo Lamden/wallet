@@ -18,7 +18,7 @@
 
     const handleArgChanged = (e) => {
         argumentList.forEach(arg => {
-            if (arg.name === "to" && arg.type === "str") arg.value = arg.value.trim()
+            if (arg.value && arg.name === "to" && arg.type === "str") arg.value = arg.value.trim()
         });
         dispatch('newArgValues', {argumentList, methodIndex})
     }

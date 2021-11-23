@@ -76,6 +76,37 @@ const whitelabel = require('../../../../whitelabel.json')
                 await helpers.sleep(500)
                 await helpers.gotoAccountsPage(driver)
             });
+            it('Simple Transaction UI: Renders confirm modal if receiving address is not Lamdenkey', async function() {
+                const to = 'xxxxxx'
+                let token = tokenInfo.token_1_svg
+                await helpers.sleep(500)
+                await tokenHelpers.gotoTokenDetails(driver, token)
+                await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
+                await helpers.sleep(4000);
+                await driver.wait(until.elementLocated(By.id('amount')), 5000).sendKeys(`1`);
+                await driver.wait(until.elementLocated(By.id('receiver-input')), 5000).sendKeys(to);
+                await driver.wait(until.elementLocated(By.id('lamden-tx-next-btn')), 5000).click();
+                const text = await driver.wait(until.elementLocated(By.css('.notification .msg')), 5000).getText();
+                assert.equal(`The receiving address ${to} is not Lamben's address. This may cause you to lose your funds!`, text)
+                await tokenHelpers.cancelTransferModal(driver)
+                await helpers.gotoAccountsPage(driver)
+            });
+            it('Advanced Transaction UI: Renders confirm modal if receiving address is not Lamdenkey', async function() {
+                const to = 'xxxxxx'
+                let token = tokenInfo.token_1_svg
+                await helpers.sleep(500)
+                await tokenHelpers.gotoTokenDetails(driver, token)
+                await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
+                await driver.wait(until.elementLocated(By.id('advanced')), 5000).click();
+                await helpers.sleep(4000);
+                await driver.wait(until.elementLocated(By.id('kwarg-0')), 5000).sendKeys(`1`);
+                await driver.wait(until.elementLocated(By.id('kwarg-1')), 5000).sendKeys(to);
+                await driver.wait(until.elementLocated(By.id('lamden-tx-next-btn')), 5000).click();
+                const text = await driver.wait(until.elementLocated(By.css('.notification .msg')), 5000).getText();
+                assert.equal(`The receiving address ${to} is not Lamben's address. This may cause you to lose your funds!`, text)
+                await tokenHelpers.cancelTransferModal(driver)
+                await helpers.gotoAccountsPage(driver)
+            });
         })
     
         context('token approve', function() {

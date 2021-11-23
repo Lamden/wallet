@@ -73,7 +73,7 @@
         let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
         
         let userStampsAvailable = bal.multipliedBy(stampRatio)
-        if (maxStamps.isGreaterThan(userStampsAvailable)) {
+        if (maxStamps !== 0 && maxStamps.isGreaterThan(userStampsAvailable)) {
             stampLimit = parseInt(userStampsAvailable.toString())
         }
         else stampLimit = parseInt(maxStamps.toString())
@@ -285,7 +285,7 @@
                 width={'232px'}
                 margin={'0 0 17px 0'}
                 name="Next" 
-                click={() => handleNext(2)} />
+                click={() => handleNext()} />
     </div>
 </div>
 
