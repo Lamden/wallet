@@ -47,7 +47,7 @@
 
     let message = {
         title: "Are you sure to continue?",
-        text: "The receiving address is not Lamben's address. This may cause you to lose your funds!",
+        text: "",
         buttons: [
             {name: 'Continue', click: () => nextPage(), class: 'button__solid button__primary'},
             {name: 'Back', click: () => back(), class: 'button__solid button_secondary'
@@ -137,7 +137,7 @@
         }
 
         if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
-            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not Lamben's address. This may cause you to lose your funds!`
+            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`
             if (!isLamdenKey(txData.txInfo.kwargs.to)) {
                 currentStep = 3
                 return

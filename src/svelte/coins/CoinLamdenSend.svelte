@@ -37,7 +37,7 @@
         ]
     let message = {
             title: "Are you sure to continue?",
-            text: "The receiving address is not Lamben's address. This may cause you to lose your funds!",
+            text: "",
             buttons: [
                 {name: 'Continue', click: () => nextPage(), class: 'button__solid button__primary'},
                 {name: 'Back', click: () => back(), class: 'button__solid button_secondary'
