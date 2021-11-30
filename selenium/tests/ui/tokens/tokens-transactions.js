@@ -87,7 +87,7 @@ const whitelabel = require('../../../../whitelabel.json')
                 await driver.wait(until.elementLocated(By.id('receiver-input')), 5000).sendKeys(to);
                 await driver.wait(until.elementLocated(By.id('lamden-tx-next-btn')), 5000).click();
                 const text = await driver.wait(until.elementLocated(By.css('.notification .msg')), 5000).getText();
-                assert.equal(`The receiving address ${to} is not Lamben's address. This may cause you to lose your funds!`, text)
+                assert.equal(`The receiving address ${to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`, text)
                 await tokenHelpers.cancelTransferModal(driver)
                 await helpers.gotoAccountsPage(driver)
             });
@@ -103,7 +103,7 @@ const whitelabel = require('../../../../whitelabel.json')
                 await driver.wait(until.elementLocated(By.id('kwarg-1')), 5000).sendKeys(to);
                 await driver.wait(until.elementLocated(By.id('lamden-tx-next-btn')), 5000).click();
                 const text = await driver.wait(until.elementLocated(By.css('.notification .msg')), 5000).getText();
-                assert.equal(`The receiving address ${to} is not Lamben's address. This may cause you to lose your funds!`, text)
+                assert.equal(`The receiving address ${to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`, text)
                 await tokenHelpers.cancelTransferModal(driver)
                 await helpers.gotoAccountsPage(driver)
             });

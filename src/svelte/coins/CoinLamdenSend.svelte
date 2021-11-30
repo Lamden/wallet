@@ -57,7 +57,7 @@
     }
 
     const back = () => {
-        if (currentStep === 3){
+        if (currentStep === 3 || currentStep === 4){
             if (txui === "simple") {
                 currentStep = 1
             } else {

@@ -33,10 +33,10 @@ describe('Testing Coin Button', function () {
     });
 
     context('test-setup', function() {
-        // it('Add a token to wallet, for testing', async function() {
-        //     let token = tokenInfo.token_1_svg
-        //     await tokenHelpers.addToken(driver, token)
-        // })
+        it('Add a token to wallet, for testing', async function() {
+            let token = tokenInfo.token_1_svg
+            await tokenHelpers.addToken(driver, token)
+        })
         it('Loads Test Website', async function() {
             await driver.executeScript(`window.open('http://localhost:${config.port}','_blank');`);
             await helpers.switchWindow(driver, 1)
@@ -54,61 +54,61 @@ describe('Testing Coin Button', function () {
         })
     })
 
-    // context('coin send button', function() {
-    //     it('Render TX UI modal on accouts page', async function() {
-    //         await tokenHelpers.openAccountsScreen(driver)
-    //         await helpers.sleep(500)
-    //         await tokenHelpers.openCoinSendModal(driver)
-    //         await helpers.sleep(500)
-    //         let name = "dTau"
-    //         await tokenHelpers.validateCoinTokenName(driver, name)
-    //         await tokenHelpers.validateCoinFromAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
-    //         await tokenHelpers.cancelTransferModal(driver)
-    //         await helpers.sleep(1000)
-    //     });
-    //     it('Render TX UI modal on token details screen', async function() {
-    //         let token = tokenInfo.token_1_svg
-    //         await tokenHelpers.gotoTokenDetails(driver, token)
-    //         await helpers.sleep(500)
-    //         await tokenHelpers.openCoinSendModal(driver)
-    //         await helpers.sleep(500)
-    //         let tokenName = await driver.findElement(By.id("tokeninput")).getText()
-    //         assert.equal(tokenName, "Pooch")
-    //         await tokenHelpers.validateCoinFromAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
-    //         await tokenHelpers.cancelTransferModal(driver)
-    //         await helpers.sleep(1000)
-    //     });
-    // })
+    context('coin send button', function() {
+        it('Render TX UI modal on accouts page', async function() {
+            await tokenHelpers.openAccountsScreen(driver)
+            await helpers.sleep(500)
+            await tokenHelpers.openCoinSendModal(driver)
+            await helpers.sleep(500)
+            let name = "dTau"
+            await tokenHelpers.validateCoinTokenName(driver, name)
+            await tokenHelpers.validateCoinFromAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
+            await tokenHelpers.cancelTransferModal(driver)
+            await helpers.sleep(1000)
+        });
+        it('Render TX UI modal on token details screen', async function() {
+            let token = tokenInfo.token_1_svg
+            await tokenHelpers.gotoTokenDetails(driver, token)
+            await helpers.sleep(500)
+            await tokenHelpers.openCoinSendModal(driver)
+            await helpers.sleep(500)
+            let tokenName = await driver.findElement(By.id("tokeninput")).getText()
+            assert.equal(tokenName, "Pooch")
+            await tokenHelpers.validateCoinFromAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
+            await tokenHelpers.cancelTransferModal(driver)
+            await helpers.sleep(1000)
+        });
+    })
 
-    // context('coin receive button', function() {
-    //     it('Render receive modal', async function() {
-    //         await tokenHelpers.openAccountsScreen(driver)
-    //         await helpers.sleep(500)
-    //         await tokenHelpers.openCoinReceiveModal(driver)
-    //         await helpers.sleep(500)
-    //         let name = "My TAU Address"
-    //         await tokenHelpers.validateCoinNickname(driver, name)
-    //         await tokenHelpers.validateCoinQR(driver)
-    //         await tokenHelpers.validateCoinAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
-    //         await tokenHelpers.closeReceiveModal(driver)
-    //         await helpers.sleep(1000)
-    //     });
-    //     it('Close receive modal', async function() {
-    //         await tokenHelpers.openAccountsScreen(driver)
-    //         await helpers.sleep(500)
-    //         await tokenHelpers.openCoinReceiveModal(driver)
-    //         await helpers.sleep(500)
-    //         await tokenHelpers.closeReceiveModal(driver)
-    //         await helpers.sleep(1000)
-    //         await tokenHelpers.validateCloseReceiveModal(driver)
-    //     });
-    // })
+    context('coin receive button', function() {
+        it('Render receive modal', async function() {
+            await tokenHelpers.openAccountsScreen(driver)
+            await helpers.sleep(500)
+            await tokenHelpers.openCoinReceiveModal(driver)
+            await helpers.sleep(500)
+            let name = "My TAU Address"
+            await tokenHelpers.validateCoinNickname(driver, name)
+            await tokenHelpers.validateCoinQR(driver)
+            await tokenHelpers.validateCoinAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
+            await tokenHelpers.closeReceiveModal(driver)
+            await helpers.sleep(1000)
+        });
+        it('Close receive modal', async function() {
+            await tokenHelpers.openAccountsScreen(driver)
+            await helpers.sleep(500)
+            await tokenHelpers.openCoinReceiveModal(driver)
+            await helpers.sleep(500)
+            await tokenHelpers.closeReceiveModal(driver)
+            await helpers.sleep(1000)
+            await tokenHelpers.validateCloseReceiveModal(driver)
+        });
+    })
 
     context('coin connections button', function() {
         it('Render dapp details page', async function() {
             await tokenHelpers.openAccountsScreen(driver)
-            await helpers.sleep(500)
-            await driver.findElement(By.css(".dapps > span:nth-child(1)")).click()
+            await helpers.sleep(1000)
+            await driver.wait(until.elementLocated(By.css(".dapps > span:nth-child(1)")), 10000).click();
             await helpers.sleep(500)
             const appname = await driver.findElement(By.css(".current-linked-account > span:nth-child(1)")).getAttribute('innerText');
             assert.equal(appname, dappsInfo.basicConnectionInfo.appName)
