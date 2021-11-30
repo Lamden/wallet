@@ -121,6 +121,7 @@
             required={required}
             {disabled}
             autofocus={autofocus}  />
+            <slot name="button"></slot>
     {/if}
     {#if inputType === "textarea"}
         <!-- svelte-ignore a11y-autofocus -->
