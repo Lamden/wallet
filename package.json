@@ -6,7 +6,7 @@
   "license": "",
   "scripts": {
     "build": "node utils/build.js",
-    "tests": "mocha --recursive --timeout 30000 selenium/tests/",
+    "tests": "mocha --recursive --timeout 30000 --retries 3 selenium/tests/",
     "test-firstrun": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/*.js",
     "test-firstrun-new": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_CreateWallet.js",
     "test-firstrun-restore": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_RestoreWallet.js",
@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "easyqrcodejs": "^4.4.6",
+    "faunadb": "^4.4.1",
     "lamden-js": "^1.6.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",
