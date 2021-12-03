@@ -12,6 +12,7 @@ export { DappStore, dappsDropDown } from './dappStore.js';
 export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList, currentNetworkOnline } from './networksStore.js';
 export { FilesStore, activeTab }  from './filesStore.js';
 export { CacheStore }  from './cacheStore.js';
+export { EventsStore }  from './eventStore.js';
 
 //MISC Stores
 export const CURRENT_KS_VERSION = writable("1.0");

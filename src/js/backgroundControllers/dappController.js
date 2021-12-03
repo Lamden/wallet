@@ -1,4 +1,4 @@
-export const dappController = (utils, actions) => {
+export const dappController = (utils, funa, actions) => {
     let dappsStore = {};
     let txToConfirm = {};
     const validateTypes = utils.validateTypes
@@ -20,6 +20,7 @@ export const dappController = (utils, actions) => {
             if (prevVer <= "1.8.0" && currVer > prevVer){
                 purgeDappConnections()
             }
+            funa.fetchUpdates()
         }
     });
 

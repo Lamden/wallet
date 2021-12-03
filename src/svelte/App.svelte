@@ -10,7 +10,7 @@
 	import { keysFromNew, pubFromPriv } from '../js/crypto/wallets.js';
 		
 	//Stores
-	import { needsBackup, SettingsStore, currentPage, clicked, currentThemeName } from '../js/stores/stores.js';
+	import { needsBackup, SettingsStore, currentPage, clicked, currentThemeName, EventsStore } from '../js/stores/stores.js';
 
 	//Components
 	import { Pages, FirstRun, Nav, Menu, Components, Modals, LeftSideFullPage}  from './Router.svelte'
@@ -35,6 +35,18 @@
 
 	$: walletIsLocked = true;
 	$: firstRun = undefined;
+	$: newEvent = getNewEvent($EventsStore, $SettingsStore);
+
+	const getNewEvent = (eventsStore, settingsStore) => {
+		if (Array.isArray(eventsStore)) {
+			let event = eventsStore.find(event => event.id === settingsStore.lastSeenEventId);
+			let stamps = event? event.date_added : 0;
+			let arr = eventsStore.filter(e => e.date_added > stamps).sort((a, b) => b.date_added - a.date_added);
+			return arr.length >0 ? arr[0] : false;
+		} else {
+			return false;
+		}
+	}
 
 	const walletIsLockedListener = (message, sender, sendResponse) => {
 		if (message.type === 'walletIsLocked') {
@@ -63,8 +75,16 @@
 			}
 			refreshed = false;
 			if ($needsBackup){
+				if (newEvent) {
+					chrome.browserAction.setBadgeText({
+						'text': '1'
+					});
+				}
 				openModal("BackupNotificationModal", {});
-			}
+			} 
+		}
+		if(SettingsStore.initialized() && !$needsBackup && newEvent){
+			openModal("WhatsnewModal", newEvent)
 		}
 	})
 
@@ -89,7 +109,13 @@
 		appHome: () => switchPage('CoinsMain'),
 		checkFirstRun: () => checkFirstRun(),
 		themeToggle: themeToggle,
-		setAccountAdded: () => accountAdded = true
+		setAccountAdded: () => accountAdded = true,
+		resetBadger: (eventid) => {
+			SettingsStore.setLastSeenEventId(eventid);
+			chrome.browserAction.setBadgeText({
+				'text': ''
+			});
+		},
 	});
 
 
