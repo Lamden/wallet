@@ -1,12 +1,12 @@
 {
   "name": "lamden-wallet",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "A wallet for interacting with contracts on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
   "scripts": {
     "build": "node utils/build.js",
-    "tests": "mocha --recursive --timeout 30000 --retries 3 selenium/tests/",
+    "tests": "npm run build && mocha --recursive --timeout 30000 selenium/tests/",
     "test-firstrun": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/*.js",
     "test-firstrun-new": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_CreateWallet.js",
     "test-firstrun-restore": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_RestoreWallet.js",
