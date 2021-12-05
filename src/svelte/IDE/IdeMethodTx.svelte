@@ -34,12 +34,12 @@
                     .then(res => res.json())
                     .then(res => {
                         stampRatio = parseInt(res.value)
-                        determineStamps()
+                        // determineStamps()
                     })
                 }
             }else{
                 stampRatio = parseInt(response)
-                determineStamps()
+                // determineStamps()
             }
             
         })
