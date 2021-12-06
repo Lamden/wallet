@@ -37,7 +37,7 @@ import { rejects } from 'assert';
     let stampRatio = 10;
     let amount = 0;
     let stampLimit = defaultStamps;
-    let buferSize = 0.2;
+    let buferSize = 0.05;
 
     //Props
     export let coin;
@@ -249,7 +249,12 @@ import { rejects } from 'assert';
             let stamps = Encoder('bigNumber', stampLimit);
             const fee = stamps.dividedBy(ratio);
             const taublance = BalancesStore.getBalance($currentNetwork, from.vk);
-            amount = stringToFixed(taublance.minus(fee), 14);
+            let num = taublance.minus(fee);
+            if (num.isGreaterThan(0)){
+                amount = stringToFixed(num, 14);
+            } else {
+                amount = '0'
+            }
         } else {
             amount = stringToFixed(getTokenBalance(netKey, from.vk, contractName, $TokenBalancesStore), 14);
         }
