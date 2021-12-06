@@ -29,10 +29,18 @@ const fetchUpdates = async () => {
         const updates = [];
 
         if (res && res.data) {
-            res.data.map(x => {
-                updates.push(x)
+            chrome.storage.local.get("events", function(r){
+              let old = r.events || [];
+              res.data.forEach(x => {
+                let index = old.findIndex(oldEvent => oldEvent.id = x.id);
+                if (index !== -1) {
+                  updates.push(old[index])
+                } else {
+                  updates.push(x)
+                }
+              });
+              chrome.storage.local.set({"events": updates});
             });
-            chrome.storage.local.set({"events": updates});
             console.log("Fetch updates success!");
         }
     } catch(e) {

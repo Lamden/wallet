@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 export const createEventStore = () => {
     let initialized = false;
@@ -33,9 +33,33 @@ export const createEventStore = () => {
     return {
         subscribe,
         set,
-        update
+        update,
+        setEventStatus: (id, status) => {
+            EventStore.update(eventStore => {
+                let index = eventStore.findIndex(x => x.id === id );
+                if (index === -1) return;
+                eventStore[index].viewed = status;
+                chrome.storage.local.set({"events": eventStore});
+                return eventStore;
+            }) 
+        }
     };
 }
 
 //Event Stores
 export const EventsStore = createEventStore();
+
+export const newEventNum = derived(
+	EventsStore,
+	$EventsStore => {
+        let num = 0;
+        if (Array.isArray($EventsStore)) {
+            $EventsStore.forEach(e => {
+                if (!e.viewed) {
+                    num = num + 1;
+                }
+            })
+        }
+        return num;
+    }
+);

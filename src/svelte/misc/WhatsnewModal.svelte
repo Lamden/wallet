@@ -12,7 +12,7 @@
     const { Button } = Components;
 
     //Context
-    const { closeModal, switchPage , getModalData, resetBadger} = getContext('app_functions');
+    const { closeModal, switchPage , getModalData } = getContext('app_functions');
 
     const newsIcons = {
         feature: FeatureIcon,
@@ -24,11 +24,6 @@
 
     const getLogo = () => {
         return event.type === "announcement" ? "announce" : event.type === "hotfix" ? "fix" : "feature"
-    }
-
-    const close = () => {
-        resetBadger(event.id);
-        closeModal()
     }
 
 </script>
@@ -100,7 +95,7 @@
                 margin={'0'}
                 classes={'button__solid button__secondary'}
                 name="Close"
-                click={close}
+                click={closeModal}
             >
             </Button> 
     </div>

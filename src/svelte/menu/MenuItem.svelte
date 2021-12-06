@@ -2,7 +2,7 @@
     import { getContext  } from 'svelte';
 
     //Stores
-	import { currentPage, needsBackup } from '../../js/stores/stores.js';
+	import { currentPage, needsBackup, newEventNum} from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -14,7 +14,8 @@
     let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
 
     $: isSelected = $currentPage.name === menuItem.page.name;
-    $: backupPage = menuItem.name === 'Backup Wallet'
+    $: backupPage = menuItem.name === 'Backup Wallet';
+    $: whatsnew = menuItem.name === "What's New";
 
     const menuAction = () => {
         if (menuItem.page.name === "LockScreen") {
@@ -98,6 +99,10 @@
     color: var(--font-warning);
 }
 
+.badger{
+    display: none;
+}
+
 @media (min-width: 900px) {
     .floating-label{
         display: none;
@@ -119,6 +124,19 @@
         height: 14px;
         margin-right: 15px;
     }
+    .badger{
+        display: block;
+        background: #4FB8FF;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 18px;
+        font-weight: 500;
+        position: absolute;
+        right: 24px;
+        font-size: 12px;
+    }
 }
 </style>
 
@@ -136,5 +154,8 @@
     <div class="floating-label text-subtitle2 ">
         {menuItem.name}
     </div>
+    {#if whatsnew && $newEventNum > 0}
+        <div class="badger">{$newEventNum}</div>
+    {/if}
 </div>
 

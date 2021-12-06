@@ -1,5 +1,5 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, onMount } from 'svelte';
 
     // Components
 	import { Components }  from '../Router.svelte'
@@ -11,12 +11,17 @@
     import AnnounceIcon from '../icons/whatsnew/AnnounceIcon.svelte';
 
     //Stores
-	import { EventsStore} from '../../js/stores/stores.js';
+	import { EventsStore } from '../../js/stores/stores.js';
 
     //Context
     const { switchPage } = getContext('app_functions');
 
     $: news = createNews($EventsStore);
+
+
+    onMount(() => {
+        $EventsStore.forEach(e => EventsStore.setEventStatus(e.id, true))
+    })
 
     const createNews = (eventsStore) => {
         let arr = [];

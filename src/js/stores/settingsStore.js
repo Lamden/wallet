@@ -96,12 +96,6 @@ const createSettingsStore = () => {
                 return settingsStore;
             }) 
         },
-        setLastSeenEventId: (id) => {
-            SettingsStore.update(settingsStore => {
-                settingsStore.lastSeenEventId = id
-                return settingsStore;
-            }) 
-        },
         dismissWarning: () => {
             SettingsStore.update(settingsStore => {
                 settingsStore.dismissWarning = true;
