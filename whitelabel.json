@@ -54,6 +54,15 @@
                     }
                 },
                 {
+                    "id": "news", 
+                    "show": true,
+                    "logo": "news", 
+                    "name": "What's New", 
+                    "page": {
+                        "name": "News"
+                    }
+                },
+                {
                     "id": "dapp-connections", 
                     "show": true,
                     "logo": "app", 

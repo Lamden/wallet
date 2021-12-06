@@ -62,7 +62,7 @@ const ignoreBackupModal = async (driver) => {
 
 const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true, testnet=true) => {
     await switchWindow(driver, 0)
-    await driver.wait(until.elementLocated(By.id("restore-wallet")), 5000).click();
+    await driver.wait(until.elementLocated(By.id("restore-wallet")), 10000).click();
     await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
     await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
     await driver.findElement(By.id('save-pwd')).click()

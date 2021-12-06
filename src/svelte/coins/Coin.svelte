@@ -6,7 +6,7 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { currentNetwork, BalancesStore, balanceTotal, networkKey, TokenBalancesStore } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, balanceTotal, networkKey, TokenBalancesStore, DappStore } from '../../js/stores/stores.js';
 
     //Images
     import arrowIn from '../../img/arrow_in.svg';
@@ -15,7 +15,7 @@
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
     import { CoinDivider, Components}  from '../Router.svelte'
-    const { Identicons } = Components;
+    const { Identicons, TokenLogo } = Components;
 
     //Utils
     import { 
@@ -56,6 +56,8 @@
 
     //Context
     const { switchPage, openModal } = getContext('app_functions');
+
+    const genericIcon_base64_svg = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiPjxjaXJjbGUgc3Ryb2tlPSJub25lIiBmaWxsPSIjOGU3Yjk4IiByPSI0OCUiIGN4PSI1MCUiIGN5PSI1MCUiPjwvY2lyY2xlPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwIDUwKSBzY2FsZSgwLjY5IDAuNjkpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoLTUwIC01MCkiIHN0eWxlPSJmaWxsOiNmZmZmZmYiPjxzdmcgZmlsbD0iI2ZmZmZmZiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdmVyc2lvbj0iMS4xIiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOmdlb21ldHJpY1ByZWNpc2lvbjt0ZXh0LXJlbmRlcmluZzpnZW9tZXRyaWNQcmVjaXNpb247aW1hZ2UtcmVuZGVyaW5nOm9wdGltaXplUXVhbGl0eTsiIHZpZXdCb3g9IjAgMCA1OCA4OCIgeD0iMHB4IiB5PSIwcHgiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgogICAKICAgIC5maWwwIHtmaWxsOiNmZmZmZmZ9CiAgIAogIDwvc3R5bGU+PC9kZWZzPjxnPjxwYXRoIGNsYXNzPSJmaWwwIiBkPSJNMCAyNGMwLC0zMSA1OCwtMzMgNTgsLTEgMCwxOSAtMTksMTggLTIzLDM2IC0yLDkgLTE0LDggLTE0LC0yIDAsLTE3IDE0LC0xOCAyMCwtMjkgNCwtOCAtMywtMTYgLTExLC0xNiAtMTcsMCAtMTEsMTkgLTIyLDE5IC00LDAgLTgsLTMgLTgsLTd6bTI4IDY0Yy0xMiwwIC0xMSwtMTggMCwtMTggMTIsMCAxMiwxOCAwLDE4eiI+PC9wYXRoPjwvZz48L3N2Zz48L2c+PC9zdmc+";
     
     $: netKey = networkKey($currentNetwork)
     $: watching = coin.sk === "watchOnly"
@@ -67,6 +69,12 @@
     $: tokenBalanceTruncated = stringToFixed(tokenBalance.toString(), 8)
     $: tokenBalanceString = displayBalance(tokenBalanceTruncated)
     $: hasVisibleBalance = toBigNumber(tokenBalanceTruncated).isGreaterThan(0)
+
+
+    $: dapps = $DappStore ? Object.values($DappStore).filter(app => !!app[$currentNetwork.type] && app.vk === coin.vk).map((app, index) => {
+		app.id = index
+		return app
+	}) : []
 
     afterUpdate(() => {
         balance = BalancesStore.getBalance($currentNetwork, coin.vk)
@@ -108,7 +116,6 @@
     const handleReceive = () => {
         openModal("CoinLamdenReceive", {coin})
     }
-    
 </script>
 
 <style>
@@ -190,13 +197,45 @@
     height: 12px;
     margin-left: 8px;
 }
+
+.dapps{
+    margin: 0 8px;   
+}
+
+.dapps .avatar{
+    display: inline-block;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: var(--bg-secondary);
+    overflow: hidden;
+    cursor: pointer;
+}
+.dapps .avatar:not(:first-child) {
+    margin-left: -8px;
+}
+
+.dapps .avatar:hover{
+    position: relative;
+    width: 25px;
+    height: 25px;
+    z-index: 635;
+}
+.dapps .avatar img{
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+}
+
 </style>
 {#if !token || (token && hasVisibleBalance)}
     <div 
         id={`coin-row-${coin.id}`} 
         bind:this={divElm}
-        class="row-box flex-column" 
-        on:click={ /*() => switchPage('CoinDetails', coin)*/ null}
+        class="row-box flex-column"
         in:fly="{{delay: 0, duration: 500, x: 0, y: 25, opacity: 0.0, easing: quintOut}}"
         >
         <div class="coin-main-row flex-row flex-center-center">
@@ -242,9 +281,16 @@
                     <button class="button__small reorder-button" on:click={handleReorderDown}>
                         <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
                     </button>
-                </div>    
+                </div>   
             {/if}
             {#if coin.sk !== "watchOnly"}
+                <div class="dapps">
+                    {#each dapps as dapp (dapp.appName)}
+                        <span class="avatar" on:click={() => switchPage('ConnectionDetails', dapp)}>
+                            <img src={`${dapp.url}${dapp.logo}`} alt="" /> 
+                        </span>
+                    {/each}
+                </div> 
                 <button id="send-btn" class="button__small coin-btn flex-row" on:click={handleSend}>
                     Send
                     <div class="icon">{@html arrowOut}</div>

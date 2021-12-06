@@ -145,6 +145,10 @@ import ConnectionRevoke from './connections/ConnectionRevoke.svelte';
 // Settings
 import Settings from './misc/Settings.svelte';
 
+// What's News
+import News from './misc/News.svelte';
+import WhatsnewModal from  './misc/WhatsnewModal.svelte';
+
 // ChangePassword
 import ChangePassword from './password/ChangePassword.svelte';
 import ChangePasswordSlot from './password/ChangePasswordSlot.svelte';
@@ -187,6 +191,7 @@ export const FirstRun = {
 export const Pages = { 
     ChangePasswordSlot, ChangePasswordFinish,
     Settings, ChangePassword,
+    News,
     CoinsMain, CoinDetails, 
     TokenDetails,
     LockScreen, 
@@ -240,7 +245,8 @@ export const Modals = {
     IdeModelMethodTx, IdeMethodTx,
     ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke,
     BackupNotificationModal,
-    Settings
+    Settings,
+    WhatsnewModal
 }
 
 export const Layouts = {

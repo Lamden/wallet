@@ -8,6 +8,7 @@ const helpers = require('../../../helpers/helpers')
 const tokenHelpers = require('../../../helpers/helpers-token')
 let walletInfo = require("../../../fixtures/walletInfo")
 var validators = require('types-validate-assert');
+let dappsInfo = require("../../../fixtures/dappsInfo.json")
 let tokenInfo = require("../../../fixtures/tokenInfo.json")
 
 let chromeOptions = new chrome.Options();
@@ -17,6 +18,7 @@ describe('Testing Coin Button', function () {
     var driver;
 
     before(async function() {
+        httpServer = await helpers.startServer(config.port)
         driver = await new Builder()
                 .forBrowser('chrome')
                 .setChromeOptions(chromeOptions)
@@ -26,12 +28,29 @@ describe('Testing Coin Button', function () {
         await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
     });
 
-    after(() => driver && driver.quit());
+    after(() => {
+        return helpers.closeTest(driver, httpServer)
+    });
 
     context('test-setup', function() {
         it('Add a token to wallet, for testing', async function() {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken(driver, token)
+        })
+        it('Loads Test Website', async function() {
+            await driver.executeScript(`window.open('http://localhost:${config.port}','_blank');`);
+            await helpers.switchWindow(driver, 1)
+            await driver.findElement(By.id('wallet-tests')).then(element => {
+                assert.ok(element)
+            })
+        });
+        it('Add a dapp connection, for testing', async function() {
+            let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
+            connection.charms = dappsInfo.charmsInfo
+            connection.background = dappsInfo.background
+            await helpers.sendConnectRequest(driver, connection, false)
+            await helpers.approvePopup(driver, 2, 1, true, {show: false})
+            await helpers.switchWindow(driver, 0)
         })
     })
 
@@ -82,6 +101,17 @@ describe('Testing Coin Button', function () {
             await tokenHelpers.closeReceiveModal(driver)
             await helpers.sleep(1000)
             await tokenHelpers.validateCloseReceiveModal(driver)
+        });
+    })
+
+    context('coin connections button', function() {
+        it('Render dapp details page', async function() {
+            await tokenHelpers.openAccountsScreen(driver)
+            await helpers.sleep(1000)
+            await driver.wait(until.elementLocated(By.css(".dapps > span:nth-child(1)")), 10000).click();
+            await helpers.sleep(500)
+            const appname = await driver.findElement(By.css(".current-linked-account > span:nth-child(1)")).getAttribute('innerText');
+            assert.equal(appname, dappsInfo.basicConnectionInfo.appName)
         });
     })
 })
