@@ -42,19 +42,28 @@
         align-items: center;
     }
     .msg{
-        margin: 1.6rem 0 1rem 0;
+        margin: 2em 0 0;
         text-align: center;
     }
     .buttons{
         flex-grow: 1;
         flex-direction: column;
         display: flex;
-        padding-top: 1rem;
+        padding-top: 2em;
         justify-content: center;
         align-items: center;
     }
     .logo{
         margin-top: 0.75rem;
+    }
+    .version{
+        margin: 0;
+    }
+    h2{
+        margin-bottom: 0;
+    }
+    p{
+        margin: 0 0 1em;
     }
 </style>
 
@@ -64,10 +73,11 @@
     </div>
     <h2>
         {event.title} 
-        {#if event.version}
-            {event.version}
-        {/if}
     </h2>
+    {#if event.version}
+        <p class="version text-secondary text-center text-body1"> {`v${event.version}`}</p>  
+    {/if}
+
     {#if event.body}
     <div class="text-body1 msg">
         {#each event.body as body}
@@ -78,7 +88,7 @@
     <div class="buttons">
             <Button
                 width={'232px'}
-                margin={'0 0 30px 0'}
+                margin={'0 0 1.5em 0'}
                 classes={`button__solid button__primary`}
                 name={"More Info"}
                 click={ ()=> switchPage("News")}
@@ -87,7 +97,7 @@
             <Button
                 id={'ignore-btn'} 
                 width={'232px'}
-                margin={'0 0 17px 0'}
+                margin={'0'}
                 classes={'button__solid button__secondary'}
                 name="Close"
                 click={close}
