@@ -86,11 +86,8 @@
         padding: 0 0 0 37px;
         border-bottom: 2px dashed var(--divider-dark);
     }
-    .news-date{
+    .news-info{
         margin-bottom: 1.5rem;
-    }
-    .news-version{
-        margin-top: 1.5rem;
     }
     .header{
         line-height: 24px;
@@ -117,13 +114,45 @@
             <div class="news-content">
                 <div class="text-body1 news-title weight-400">{item.title}</div>
                 <div class="text-body2 text-primary news-desc">
-                    <div class="news-date">{formatTimestamp(item.date_added)}</div>
-                        {#each item.body as body}
-                            <p>{body}</p>
-                        {/each}
+                    <div class="news-info">
+                        <div>{formatTimestamp(item.date_added)}</div>
                         {#if item.version}
-                            <div class="news-version">Version: {item.version}</div>
+                            <div>Version: {item.version}</div>
                         {/if}
+                    </div>
+                    {#each item.body as body}
+                        <p>{body}</p>
+                    {/each}
+                    {#if item.new_features}
+                        <h4>New Features</h4>
+                        <div class="text-body1 msg">
+                            <ul>
+                            {#each item.new_features as feature }
+                                <li><p>{feature}</p></li>
+                            {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if item.changes}
+                        <h4>Changes</h4>
+                        <div class="text-body1 msg">
+                            <ul>
+                            {#each item.changes as change }
+                                <li><p>{change}</p></li>
+                            {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if item.fixes}
+                        <h4>Bug Fixes</h4>
+                        <div class="text-body1 msg">
+                            <ul>
+                            {#each item.fixes as fix }
+                                <li><p>{fix}</p></li>
+                            {/each}
+                            </ul>
+                        </div>
+                    {/if}
                     </div>
                 <div class="news-buttons">
                     {#each item.buttons as btn}
