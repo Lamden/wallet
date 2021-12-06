@@ -6,7 +6,7 @@
 	//Utils
     import { encodeLocaleDateTime, encodeUTCDateTime } from '../../js/utils.js'
 
-	export let dateISO = new Date(new Date().toLocaleString()).toISOString();
+	export let dateISO = new Date(new Date()).toISOString();
 
 	export let id = '';
 	export let label = '';
@@ -40,7 +40,7 @@
 	}
 
 	onMount(() => {
-		dateISO = new Date(new Date().toLocaleString()).toISOString();
+		dateISO = new Date(new Date()).toISOString();
 		dateValues = encodeLocaleDateTime(dateISO);
 		dispatch('changed')
 	})

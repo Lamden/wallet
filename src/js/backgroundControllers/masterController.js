@@ -8,10 +8,12 @@ import { balancesController  } from './balancesController.js'
 import { transactionsController } from './transactionsController.js'
 import { tokenController } from './tokenController.js'
 import { queryStateController } from './queryStateController.js'
+import { eventController } from './eventController.js'
 
 // Services
 import * as SocketService from '../services/sockets.js'
 import * as BlockService from '../services/blockservice.js'
+import fauna from '../services/fauna.js'
 
 export const masterController = () => {
     const utils = controllerUtils
@@ -36,7 +38,7 @@ export const masterController = () => {
             signTx: accounts.signTx
         }
     })()));
-    const dapps = Object.freeze(dappController(utils, (() => {
+    const dapps = Object.freeze(dappController(utils, fauna, (() => {
         return {
             walletIsLocked: accounts.walletIsLocked,
             addNewLamdenAccount: accounts.addNewLamdenAccount,
@@ -51,6 +53,7 @@ export const masterController = () => {
             walletIsLocked: accounts.walletIsLocked
         }
     })()));
+    const events = Object.freeze(eventController(fauna));
 
     const state = Object.freeze(queryStateController(utils))
 
@@ -102,6 +105,7 @@ export const masterController = () => {
             updateAllBalances()
             updateAllTokenBalances()
             joinSockets()
+            fauna.fetchUpdates()
         }
         return unlocked;
     }
@@ -416,6 +420,9 @@ export const masterController = () => {
             reorderUp: tokens.reorderUp,
             reorderDown: tokens.reorderDown,
             refreshOneTokenBalances: tokens.refreshOneTokenBalances
+        },
+        "events": {
+            autoFetchUpdates: events.autoFetchUpdates
         },
         balances,
         utils,

@@ -17,7 +17,8 @@
     const { DropDown, InputBox, Button, TokenLogo } = Components;
 
     //Utils
-    import { displayBalanceToFixed, formatAccountAddress, getTokenBalance } from '../../js/utils.js'
+    import { displayBalanceToFixed, formatAccountAddress, getTokenBalance, stringToFixed} from '../../js/utils.js'
+import { rejects } from 'assert';
 
     //Context
 	const { nextPage } = getContext('tx_functions');
@@ -31,9 +32,12 @@
     let from;
     let to;
     // default 50
-    let stampLimit = 50;
-    let stampRatio = 1;
+    let defaultStamps = 50;
+    let updateStamplimitSuccess = false;
+    let stampRatio = 10;
     let amount = 0;
+    let stampLimit = defaultStamps;
+    let buferSize = 0.05;
 
     //Props
     export let coin;
@@ -54,22 +58,15 @@
             {id:"my-account-btn", name: 'One of My Accounts', click: () =>  receiverType = 2, class: receiverType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: tokens = from? createTokensDropDown(from.vk, BalancesStore) : [];
+    $: blockserviceUrl = $currentNetwork.type === "mainnet" ? "http://165.22.47.195:3535" : "http://165.227.181.34:3535";
 
     onMount(() => {
-        chrome.runtime.sendMessage({type: 'state_currentStamps'}, (response) => {
-            if (response === null){
-                if ($currentNetwork.blockExplorer){
-                fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
-                    .then(res => res.json())
-                    .then(res => {
-                        stampRatio = parseInt(res.value)
-                    })
-                }
-            }else{
-                stampRatio = parseInt(response)
-            }
-            
-        })        
+        fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
+            .then(res => res.json())
+            .then(res => {
+                stampRatio = parseInt(res.value)
+            })   
+        updateMaxStamps();
     });
 
     const createTokensDropDown = () => {
@@ -150,6 +147,7 @@
     }
 
     const handleSenderAddrSelect = (e) => {
+        amount = 0;
         from = e.detail.selected.value;
     }
 
@@ -160,6 +158,8 @@
     const handleTokenSelect = (e) => {
         contractName = e.detail.selected.value.contractName;
         tokenSymbol = e.detail.selected.value.tokenSymbol;
+        amount = 0;
+        updateMaxStamps();
     }
 
     const handleNext = () => {
@@ -223,6 +223,42 @@
 
         return true
     }
+
+    const updateMaxStamps = () => {
+        updateStamplimitSuccess = false;
+        fetch(`${$currentNetwork.blockExplorer}/api/stamps/${contractName}/transfer`)
+            .then(res => {
+                if(res.status !== 200) {
+                    rejects("fetch error")
+                }
+                return res.json()
+            })
+            .then(res => {
+                let maxStamps = parseInt(res.max);
+                stampLimit = Math.ceil(maxStamps + maxStamps * buferSize);
+                updateStamplimitSuccess = true;
+            }).catch(e => {
+                console.log(e);
+                stampLimit = defaultStamps;
+                updateStamplimitSuccess = true;
+            })
+    }
+    const maxAmount = () => {
+        if (contractName === "currency") {
+            let ratio = Encoder('bigNumber', stampRatio)
+            let stamps = Encoder('bigNumber', stampLimit);
+            const fee = stamps.dividedBy(ratio);
+            const taublance = BalancesStore.getBalance($currentNetwork, from.vk);
+            let num = taublance.minus(fee);
+            if (num.isGreaterThan(0)){
+                amount = stringToFixed(num, 14);
+            } else {
+                amount = '0'
+            }
+        } else {
+            amount = stringToFixed(getTokenBalance(netKey, from.vk, contractName, $TokenBalancesStore), 14);
+        }
+    } 
 </script>
 
 <style>
@@ -257,6 +293,15 @@
     }
     #dropdown-error{
         margin-top: 0.2rem;
+    }
+    .max-btn{
+        position: absolute;
+        right: 0;
+        top: 50%;
+        margin-right: 8px;
+        text-decoration: underline;
+        color: #5CC8E2;
+        cursor: pointer;
     }
 </style>
 
@@ -333,7 +378,9 @@
         margin="0 0 2rem 0"
         inputType={"number"}
         required={true}
-    />
+    >
+        <span slot="button" class="max-btn" on:click={maxAmount}>Max</span>
+    </InputBox>
     <div id="advanced" on:click={ () => { nextPage() } }>
         <span class="text-accent">Click Here To Send An Advanced Transaction</span>
     </div>
@@ -342,7 +389,8 @@
                 classes={'button__solid button__primary'} 
                 width={'232px'}
                 margin={'0 0 17px 0'}
-                name="Next" 
+                name="Next"
+                disabled={!updateStamplimitSuccess}
                 click={() => handleNext()} />
     </div>
 </div>
