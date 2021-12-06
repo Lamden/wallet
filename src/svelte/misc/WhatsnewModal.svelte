@@ -14,8 +14,6 @@
     //Context
     const { closeModal, switchPage , getModalData, resetBadger} = getContext('app_functions');
 
-    let helpLink = "https://docs.lamden.io/docs/develop/wallet_api/overview";
-
     const newsIcons = {
         feature: FeatureIcon,
         fix: FixIcon,
@@ -28,26 +26,9 @@
         return event.type === "announcement" ? "announce" : event.type === "hotfix" ? "fix" : "feature"
     }
 
-    const toBackup = () => {
-        switchPage("BackupMain")
-    }
-
     const close = () => {
         resetBadger(event.id);
         closeModal()
-    }
-    const btnAction = (link) => {
-        resetBadger(event.id);
-        if (link.startsWith("deep:")) {
-            let page = link.replace('deep:', '')
-            if (page === "LockScreen") {
-                chrome.runtime.sendMessage({type: 'lockWallet'});
-                return
-            }
-            switchPage(page)
-        } else {
-            window.open(link, "_blank")
-        }
     }
 
 </script>
@@ -61,18 +42,28 @@
         align-items: center;
     }
     .msg{
-        margin: 1.6rem 0 1rem 0;
+        margin: 2em 0 0;
+        text-align: center;
     }
     .buttons{
         flex-grow: 1;
         flex-direction: column;
         display: flex;
-        padding-top: 1rem;
+        padding-top: 2em;
         justify-content: center;
         align-items: center;
     }
     .logo{
         margin-top: 0.75rem;
+    }
+    .version{
+        margin: 0;
+    }
+    h2{
+        margin-bottom: 0;
+    }
+    p{
+        margin: 0 0 1em;
     }
 </style>
 
@@ -82,34 +73,31 @@
     </div>
     <h2>
         {event.title} 
-        {#if event.version}
-            {event.version}
-        {/if}
     </h2>
-    {#if event.items}
+    {#if event.version}
+        <p class="version text-secondary text-center text-body1"> {`v${event.version}`}</p>  
+    {/if}
+
+    {#if event.body}
     <div class="text-body1 msg">
-        <ul>
-        {#each event.items as item }
-            <li><p>{item}</p></li>
+        {#each event.body as body}
+            <p>{body}</p>
         {/each}
-        </ul>
     </div>
     {/if}
     <div class="buttons">
-            {#each event.buttons as btn}
-                <Button
-                    width={'232px'}
-                    margin={'0 0 30px 0'}
-                    classes={`button__solid button__${btn.class}`}
-                    name={btn.name}
-                    click={ ()=> btnAction(btn.link)}
-                >
-                </Button>
-            {/each}
+            <Button
+                width={'232px'}
+                margin={'0 0 1.5em 0'}
+                classes={`button__solid button__primary`}
+                name={"More Info"}
+                click={ ()=> switchPage("News")}
+            >
+            </Button>
             <Button
                 id={'ignore-btn'} 
                 width={'232px'}
-                margin={'0 0 17px 0'}
+                margin={'0'}
                 classes={'button__solid button__secondary'}
                 name="Close"
                 click={close}

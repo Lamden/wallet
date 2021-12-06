@@ -239,6 +239,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
     font-weight: bold
 }
 
+.text-center{
+    text-align: center;
+}
+
 .text-link{
     color: var(--link-color);
     text-decoration: underline;

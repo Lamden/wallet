@@ -56,41 +56,47 @@
 </script>
 
 <style>
+    h4{
+        margin-bottom: 0;
+    }
     .wrap{
         padding-left: 35px;
     }
     .divider{
 		border-bottom: 1px solid var(--divider-light);
-	}
+    }
+    .body-items{
+        margin-bottom: 2em;
+    }
     .news{
-        margin-top: 0.5rem;
+        margin-top: 2em;
         padding-top: 0;
     }
     .news-logo{
         margin-right: 9px;
         margin-left: 9px;
-        padding-top: 14px;
+        padding-top: 5px;
     }
     .news-title{
         height: 40px;
         line-height: 40px;
+        font-size: 2em;
+        font-weight: 300;
     }
     .news-desc{
-        opacity: 0.54;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2em;
         line-height: 20px;
         width: 85%;
+        
     }
     .news-content{
         flex: 1;
         padding: 0 0 0 37px;
         border-bottom: 2px dashed var(--divider-dark);
     }
-    .news-date{
-        margin-bottom: 1.5rem;
-    }
-    .news-version{
-        margin-top: 1.5rem;
+    .news-info{
+        margin-bottom: 2em;
+        color: var(--font-secondary);
     }
     .header{
         line-height: 24px;
@@ -104,6 +110,10 @@
     .news-buttons{
         display: flex;
     }
+    ul{
+        margin-top: 0;
+        color: var(--font-secondary);
+    }
 </style>
 <div class="wrap">
     <div class="header text-body1 divider">
@@ -112,18 +122,53 @@
     {#each news as item}
         <div class="flex news">
             <div class="news-logo">
-                <svelte:component this={newsIcons[item.logo]} width={22}/>
+                <svelte:component this={newsIcons[item.logo]} width={30}/>
             </div>
             <div class="news-content">
                 <div class="text-body1 news-title weight-400">{item.title}</div>
                 <div class="text-body2 text-primary news-desc">
-                    <div class="news-date">{formatTimestamp(item.date_added)}</div>
+                    <div class="news-info">
+                        <div>{formatTimestamp(item.date_added)}</div>
+                        {#if item.version}
+                            <div>Version: {item.version}</div>
+                        {/if}
+                    </div>
+                    <div class="body-items">
                         {#each item.body as body}
                             <p>{body}</p>
                         {/each}
-                        {#if item.version}
-                            <div class="news-version">Version: {item.version}</div>
-                        {/if}
+                    </div>
+
+                    {#if item.new_features}
+                        <h4>New Features</h4>
+                        <div class="msg">
+                            <ul>
+                            {#each item.new_features as feature }
+                                <li><p>{feature}</p></li>
+                            {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if item.changes}
+                        <h4>Changes</h4>
+                        <div class="msg">
+                            <ul>
+                            {#each item.changes as change }
+                                <li><p>{change}</p></li>
+                            {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if item.fixes}
+                        <h4>Bug Fixes</h4>
+                        <div class="msg">
+                            <ul>
+                            {#each item.fixes as fix }
+                                <li><p>{fix}</p></li>
+                            {/each}
+                            </ul>
+                        </div>
+                    {/if}
                     </div>
                 <div class="news-buttons">
                     {#each item.buttons as btn}
