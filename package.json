@@ -1,7 +1,7 @@
 {
   "name": "lamden-wallet",
-  "version": "1.9.1",
-  "description": "A wallet for interacting with contracts on the Lamden blockchain.",
+  "version": "1.9.5",
+  "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
   "scripts": {
