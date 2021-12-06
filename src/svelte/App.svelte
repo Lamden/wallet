@@ -24,6 +24,7 @@
 
 	let showModal = false;
 	let accountAdded = false;
+	let whatsnewModalViewed = false;
 	let currentModal;
 	let modalData;
 	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap', 'ChangePassword']
@@ -35,13 +36,11 @@
 
 	$: walletIsLocked = true;
 	$: firstRun = undefined;
-	$: newEvent = getNewEvent($EventsStore, $SettingsStore);
+	$: newEvent = getNewEvent($EventsStore);
 
-	const getNewEvent = (eventsStore, settingsStore) => {
+	const getNewEvent = (eventsStore) => {
 		if (Array.isArray(eventsStore)) {
-			let event = eventsStore.find(event => event.id === settingsStore.lastSeenEventId);
-			let stamps = event? event.date_added : 0;
-			let arr = eventsStore.filter(e => e.date_added > stamps).sort((a, b) => b.date_added - a.date_added);
+			let arr = eventsStore.filter(e => !e.viewed).sort((a, b) => b.date_added - a.date_added);
 			return arr.length >0 ? arr[0] : false;
 		} else {
 			return false;
@@ -53,6 +52,7 @@
 			//Make sure the wallet was actually unlocked by the user
 			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 				walletIsLocked = locked;
+				if (walletIsLocked) whatsnewModalViewed = false;
 				if (walletIsLocked && $currentPage.name === 'ChangePassword') SettingsStore.changePage({name: 'CoinsMain'})
 			})
 		}
@@ -75,17 +75,13 @@
 			}
 			refreshed = false;
 			if ($needsBackup){
-				if (newEvent) {
-					chrome.browserAction.setBadgeText({
-						'text': '1'
-					});
-				}
 				openModal("BackupNotificationModal", {});
-			} 
+			}
 		}
-		if(SettingsStore.initialized() && !$needsBackup && newEvent){
+		if(!$needsBackup && newEvent && !whatsnewModalViewed){
 			openModal("WhatsnewModal", newEvent)
-		}
+			whatsnewModalViewed = true
+		} 
 	})
 
 	afterUpdate(() => {
@@ -109,13 +105,7 @@
 		appHome: () => switchPage('CoinsMain'),
 		checkFirstRun: () => checkFirstRun(),
 		themeToggle: themeToggle,
-		setAccountAdded: () => accountAdded = true,
-		resetBadger: (eventid) => {
-			SettingsStore.setLastSeenEventId(eventid);
-			chrome.browserAction.setBadgeText({
-				'text': ''
-			});
-		},
+		setAccountAdded: () => accountAdded = true
 	});
 
 
