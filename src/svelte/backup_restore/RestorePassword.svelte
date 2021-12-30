@@ -8,7 +8,7 @@
     import { steps, obscure } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components,LeftSideFullPage}  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
     //Utils
@@ -65,6 +65,7 @@
     width: 100%;
     height: 40px;
     margin: 20px 0 9px;
+    margin-bottom: 1rem;
 }
 
 .hide{
@@ -75,10 +76,21 @@
     text-align: left;
 }
 
+
+.wrap{
+    width: 347px;
+}
+
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
+<LeftSideFullPage title={`Keystore Password`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
+            This process will allow you to restore your Valut Accounts and Legacy Accounts accounts.
+        </div>
+    </div>
+<div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+    <div class="flex-column wrap">
         <h6>Keystore File Confirmed</h6>
 
         <div class="flow-text-box text-body1 text-primary">
@@ -105,6 +117,8 @@
                         on:changed={refreshValidity}
                         on:keyup={refreshValidityKeyup}
                         required={true}
+                        height={"56px"}
+                        disabledPWShowBtn={false}
                         autofocus={true}/>
             </div>
         </form>
@@ -114,17 +128,13 @@
                     value="Confirm Password"
                     class="button__solid button__primary submit-button submit-button-text submit" 
                     type="submit" >
-
-
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/restore_keystore"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if} 
+            <Button id={'back-btn'}
+                classes={'button__solid'} 
+                margin="0 0 1rem"
+                width={'347px'}
+                name="Back" 
+                click={() => changeStep(0)} />  
         </div>
     </div>
-    <div class="flex-column flow-content-right"> </div>
 </div>
+</LeftSideFullPage>

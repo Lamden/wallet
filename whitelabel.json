@@ -25,15 +25,19 @@
     "firstRun_setup":{
         "intro":{
             "title": "Welcome!",
-            "message": "Creating a wallet is easy and secure. All accounts are encrypted locally in your browser, not on remote servers."
+            "message": "Creating a Lamden Vault is easy and secure. All accounts are encrypted locally in your browser, not on remote servers.",
+            "helpLink": ""
         },
         "create_pw": {
-            "title": "Create a Password",
-            "message": "default_lamden"
+            "title": "Password Safety",
+            "message": "default_lamden",
+            "warning": "Lamden is not responsible for lost or stolen passwords.",
+            "helpLink": ""
         },
         "terms_of_service": {
             "title": "Remember",
-            "message": "default_lamden"
+            "message": "default_lamden",
+            "helpLink": ""
         }
     },
     "nav": {
@@ -41,7 +45,7 @@
     },
     "menu":[
         {
-            "heading": "Wallet",
+            "heading": "Lamden Vault",
             "show": true,
             "items":[
                 {
@@ -160,7 +164,7 @@
             "show": true
         },
         "account_info":{
-            "title": "My Accounts",
+            "title": "My Legacy Accounts",
             "show" : true,
             "show_network_name": false
         },

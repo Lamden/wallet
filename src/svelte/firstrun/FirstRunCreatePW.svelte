@@ -11,11 +11,11 @@
     import { hashStringValue } from '../../js/utils.js';
 
     //Components
-	import { Components }  from '../Router.svelte'
-    const { InputBox, StrongPW } = Components;
+	import { Components, LeftSideFullPage }  from '../Router.svelte'
+    const { InputBox, StrongPW, Button} = Components;
 
     //Context
-    const { changeStep } = getContext('functions');
+    const { nextPage, back, changeStep} = getContext('functions');
     
     //DOM NODES
     let formField, pwdInput1, pwdInput2;
@@ -25,32 +25,6 @@
 
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{10,}`;
     let pwd = '';
-
-    onMount(() => {
-        if (restore){
-            steps.set({
-                currentStep: 1,
-                stepList: [
-                    {number: 1, name: 'Wallet Password', desc:'Make it Good!'},
-                    {number: 2, name: 'Upload', desc:'Keystore File'},
-                    {number: 3, name: 'Unlock', desc:'Keystore Password'},
-                    {number: 4, name: 'Restore', desc:'Make Your Choice'},
-                    {number: 5, name: 'Complete!', desc:'About to Get lit'},
-                ]
-            });
-        }else{
-            steps.set({
-                currentStep: 1,
-                stepList: [
-                    {number: 1, name: 'Password', desc:'Make it Good'},
-                    {number: 2, name: 'Consent', desc:'Agree to Terms'},
-                    {number: 3, name: 'Create Key', desc:'Ensure to Save'},
-                    {number: 4, name: 'Get Ready', desc:'About to Get lit'},
-                ]
-            });
-        }
-
-    });
 
 	const formValidation = () => {
 		pwdInput2.setCustomValidity("")
@@ -82,7 +56,7 @@
         chrome.runtime.sendMessage({type: 'createPassword', data: hashStringValue(pwdInput1.value)}, (response) => {
             if(response) {
                 if (restore) changeStep(1);
-                else changeStep(3); 
+                else changeStep(2); 
             } else {
                 throw new Error('Could not create password in browser storage.local')
             }
@@ -97,53 +71,68 @@
     }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6 class="text-primary">{whitelabel.firstRun_setup.create_pw.title}</h6>
-        <div class="flow-text-box text-body1 text-primary">
-            {#if whitelabel.firstRun_setup.create_pw.message === "lamden_default"}
-                No username required. This password never changes so use a strong one that you'll remember. We recommend 
-                <a class="text-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a>.
+<LeftSideFullPage title={whitelabel.firstRun_setup.create_pw.title} helpLink={whitelabel.firstRun_setup.create_pw.helpLink}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
+            {#if whitelabel.firstRun_setup.create_pw.message === "default_lamden"}
+            No username required. This password never changes so use a strong one that you'll remember. We recommend 
+            <a class="layout-leftside-text-link weight-700" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a>.
             {:else}
                 {whitelabel.firstRun_setup.create_pw.message}
             {/if}
-        </div>
-
-        <StrongPW password={pwd} charLength={10}/>
-
-        <form id="password_form" class="flow-buttons" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
-            <div class="input-box">
-                <InputBox
-                    id="pwd1"
-                    bind:thisInput={pwdInput1}
-                    on:changed={() => pwd1Validity()}
-                    on:keyup={() => strongPasswordUpdate()}
-                    label={"Password"}
-                    placeholder={"At least 10 symbols"}
-                    inputType={'password'}
-                    {pattern}
-                    required={true}/>
-            </div>
-            <div class="input-box">
-                <InputBox 
-                    id="pwd2"
-                    bind:thisInput={pwdInput2}
-                    on:changed={() => pwd2Validity()}
-                    label={"Confirm Password"}
-                    placeholder={"At least 10 symbols"}
-                    inputType={'password'}
-                    required={true}/>
-            </div>
-        </form>
-        <div class="buttons flex-column">
-            <input  
-                id="save-pwd"
-                form="password_form"
-                on:click={() => formValidation()}
-                value="Save Password"
-                class="button__solid button__primary submit submit-button submit-button-text" 
-                type="submit" >
+            <div class="text-body1 layout-leftside-warning">{whitelabel.firstRun_setup.create_pw.warning}</div>
         </div>
     </div>
-    <div class="flex-column flow-content-right"></div>
-</div>
+    <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+        <div class="flex-column">
+            <h6 class="text-primary text-center">Create Password</h6>
+            <form id="password_form" class="flow-buttons" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
+                <div class="input-box">
+                    <InputBox
+                        id="pwd1"
+                        bind:thisInput={pwdInput1}
+                        on:changed={() => pwd1Validity()}
+                        on:keyup={() => strongPasswordUpdate()}
+                        label={"Password"}
+                        placeholder={"At least 10 symbols"}
+                        inputType={'password'}
+                        width={"347px"}
+                        height={"56px"}
+                        margin="0 0 0.5rem 0"
+                        {pattern}
+                        disabledPWShowBtn={false}
+                        required={true}/>
+                </div>
+                <StrongPW password={pwd} charLength={10}/>
+                <div class="input-box">
+                    <InputBox 
+                        id="pwd2"
+                        bind:thisInput={pwdInput2}
+                        on:changed={() => pwd2Validity()}
+                        label={"Confirm Password"}
+                        placeholder={"At least 10 symbols"}
+                        inputType={'password'}
+                        width={"347px"}
+                        height={"56px"}
+                        margin="0 0 0.5rem 0"
+                        disabledPWShowBtn={false}
+                        required={true}/>
+                </div>
+            </form>
+            <div class="buttons flex-column">
+                <Button id="save-pwd"
+                classes={'button__solid button__primary'}
+                margin={'.625rem 0 1rem 0'}
+                name="Save Password" 
+                width={'347px'}
+                click={() => formValidation()} />
+                <Button id="restore-wallet"
+                classes={'button__solid'}
+                margin={'0 0 .625rem 0'}
+                name="Back" 
+                width={'347px'}
+                click={() => back()} />
+            </div>
+        </div>
+    </div>
+</LeftSideFullPage>

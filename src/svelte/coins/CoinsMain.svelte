@@ -1,7 +1,7 @@
 <script>
 	import whitelabel from '../../../whitelabel.json'
 
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	
 	//Stores
 	import { 
@@ -19,6 +19,7 @@
 
 	//Images
 	import hero_bg from '../../img/backgrounds/hero_bg.png';
+	import cautionIcon from '../../img/menu_icons/icon_caution_circle.svg'
 
 	//Icons
 	import RefreshIcon from '../icons/RefreshIcon.svelte'
@@ -32,15 +33,20 @@
 	
 	//Props
 	export let name
-
+	
+	$: vaultExist = false;
 	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : '0';
 
 	let refreshing = false;
 	let orderingLocked = false;
-	$: coinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
+	$: vaults = $CoinStore ? [...$CoinStore].map((coin, index) => {
 		coin.id = index
 		return coin
-	}).filter(c => c.sk !== "watchOnly") : [];
+	}).filter(c => c.type === "vault") : [];
+	$: oldCoinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
+		coin.id = index
+		return coin
+	}).filter(c => c.sk !== "watchOnly" && c.type !== "vault") : [];
 	$: tokenStorage = $TokenStore[networkKey($currentNetwork)] ? [...$TokenStore[networkKey($currentNetwork)]].map((token, index) => {
 		token.id = index
 		return token
@@ -50,6 +56,15 @@
 		coin.id = index
 		return coin
 	}).filter(c => c.sk === "watchOnly") : [];
+
+	onMount(() => {
+		chrome.runtime.sendMessage({type: 'isVaultCreated'}, (ok) => {
+			vaultExist = ok;
+			if(ok) {
+				SettingsStore.setIsVaultCreated(ok);
+			}
+		})
+	});
 
 	const handleRefresh = () => {
 		if (refreshing) return
@@ -188,6 +203,12 @@ p{
 .show-tokens-button{
 	padding: 5px 10px;
 }
+.warning-icon{
+    width: 20px;
+    margin-left: 10px;
+    min-width: 20px;
+	cursor: pointer;
+}
 </style>
 
 <div class="coinsmain text-primary">
@@ -247,10 +268,25 @@ p{
 				{/each}
 			{/if}
 		{/if}
-		{#if coinStorage.length !== 0}
+		<div class="header header-watched header-text text-body1 divider weight-800">
+			<div class="header-name header-text">My Vault Accounts</div>
+			<div class="header-percent header-text">Portfolio %</div>
+		</div>
+		{#if vaultExist}
+			{#each vaults as coin (coin.vk) }
+				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
+				<CoinDivider />
+			{/each}
+		{:else}
+			<CoinEmpty />
+		{/if}
+		{#if oldCoinStorage.length !== 0}
 			<div class="header header-accounts header-text text-body1 divider weight-800">
 				{#if whitelabel.mainPage.account_info.show}
-					<div class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
+					<div class="header-name header-text">
+						{whitelabel.mainPage.account_info.title}
+						<div class="warning-icon" on:click={() => openModal("CoinLegacyModal")}>{@html cautionIcon}</div>
+					</div>
 				{/if}
 				{#if whitelabel.mainPage.amount.show}
 					<div class="header-amount header-text">{whitelabel.mainPage.amount.title}</div>
@@ -259,7 +295,7 @@ p{
 					<div class="header-percent header-text">{whitelabel.mainPage.portfolio.title}</div>
 				{/if}
 			</div>	
-			{#each coinStorage as coin (coin.vk) }
+			{#each oldCoinStorage as coin (coin.vk) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
 				<CoinDivider />
 			{/each}
@@ -267,15 +303,13 @@ p{
 		{#if coinsTracked.length > 0}
 			<div class="header header-watched header-text text-body1 divider weight-800">
 				<div class="header-name header-text">Watched Accounts</div>
+				<div class="warning-icon" on:click={() => openModal("CoinWatchedModal")}>{@html cautionIcon}</div>
 			</div>	
 			<div class="header-msg header-text weight-600">You do not own the private keys for these accounts</div>
 			{#each coinsTracked as coin (coin.vk) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
 				<CoinDivider />
 			{/each}
-		{/if}
-		{#if coinStorage.length === 0}
-			<CoinEmpty />
 		{/if}
 	{/if}
 </div>

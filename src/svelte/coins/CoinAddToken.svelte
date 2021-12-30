@@ -90,7 +90,7 @@
                     validateTokenContract()
                 }else{
                     loadingData = false;
-                    error = "Token already in Wallet"
+                    error = "Token already in Lamden Vault"
                 }
             })
         }
@@ -181,7 +181,7 @@
                         }
                     })
                 }else{
-                    error = "Token already in Wallet"
+                    error = "Token already in Lamden Vault"
                 }
             })
         }

@@ -72,6 +72,6 @@
 </style>
 
 <div class="restore-savewallets">
-    <Loading message={'Saving Accounts to Wallet'} />
+    <Loading message={'Saving Accounts to Lamden Vault'} />
 </div>
 

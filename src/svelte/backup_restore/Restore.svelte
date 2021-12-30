@@ -47,7 +47,7 @@
 <div class="restore text-primary">
 	<div class="hero-rec" style="background-image: url({hero_bg});">
         <h2 class="heading">
-            Restoring Accounts to Your {whitelabel.companyName} Wallet is Quick & Easy
+            Restoring Accounts to Your Lamden Vault is Quick & Easy
         </h2>
         <div class="subtext text-body1 text-opacity-1">
             It only takes a few minutes, so please have your original keystore file ready, and be prepared to provide the password for it.

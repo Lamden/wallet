@@ -27,7 +27,7 @@
 	let whatsnewModalViewed = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap', 'ChangePassword']
+	const fullPage = ['FirstCreateVault', 'RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap', 'ChangePassword']
 	const redirect = {
 		'ContinueSwap': 'Swaps',
 		'SwapsMain': 'Swaps',
@@ -52,11 +52,17 @@
 			//Make sure the wallet was actually unlocked by the user
 			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 				walletIsLocked = locked;
+				if(!walletIsLocked) {
+					chrome.runtime.sendMessage({type: 'isVaultCreated'}, (ok) => {
+						SettingsStore.setIsVaultCreated(ok);
+					})
+				}
 				if (walletIsLocked) whatsnewModalViewed = false;
 				if (walletIsLocked && $currentPage.name === 'ChangePassword') SettingsStore.changePage({name: 'CoinsMain'})
 			})
 		}
 	}
+
 
 	chrome.runtime.onMessage.addListener(walletIsLockedListener)
 
@@ -113,6 +119,9 @@
 		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {
 			firstRun = isFirstRun;
 			if (!firstRun && $currentPage.name === 'FirstRunMain'){
+				SettingsStore.changePage({name: 'CoinsMain'})
+			}
+			if (!firstRun && $currentPage.name === 'FirstRunRestoreMain'){
 				SettingsStore.changePage({name: 'CoinsMain'})
 			}
 			firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
@@ -216,7 +225,7 @@
 			{/if}
 		{/if}
 	{:else}
-		<Loading message={`Loading ${whitelabel.companyName} Wallet`} />
+		<Loading message={`Loading Lamden Vault`} />
 	{/if}
 <LightDarkToggle />
 </div>

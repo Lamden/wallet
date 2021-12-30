@@ -16,6 +16,11 @@ import FirstRunCreatePW from './firstrun/FirstRunCreatePW.svelte';
 import FirstRunTOS from './firstrun/FirstRunTOS.svelte';
 import FirstRunGenWallets from './firstrun/FirstRunGenWallets.svelte';
 import FirstRunFinishing from './firstrun/FirstRunFinishing.svelte';
+import FirstRunGenMnemonic from './firstrun/FirstRunGenMnemonic.svelte';
+import FirstRunVerifyMnemonic from './firstrun/FirstRunVerifyMnemonic.svelte';
+import FirstRunRemember from './firstrun/FirstRunRemember.svelte';
+import FirstCreateVault from './firstrun/FirstCreateVault.svelte';
+import FirstCreateVaultIntro from './firstrun/FirstCreateVaultIntro.svelte';
 
 //Coins
 import CoinsMain from './coins/CoinsMain.svelte';
@@ -44,8 +49,13 @@ import CoinDeleting from './coins/CoinDeleting.svelte';
 import CoinHistory from  './coins/CoinHistory.svelte'; 
 import CoinLamdenReceive from './coins/CoinLamdenReceive.svelte';
 import ConiLamdenSendWarningBox from './coins/ConiLamdenSendWarningBox.svelte';
+import CoinLegacyModal from './coins/CoinLegacyModal.svelte';
+import CoinWatchedModal from './coins/CoinWatchedModal.svelte';
+import CoinView from './coins/CoinView.svelte';
 
 //Backup and Restore
+import BackupMnemonicComplete from './backup_restore/BackupMnemonicComplete.svelte'
+import BackupMnemonic from './backup_restore/BackupMnemonic.svelte';
 import Backup from './backup_restore/Backup.svelte';
 import BackupMain from './backup_restore/BackupMain.svelte';
 import BackupIntro from './backup_restore/BackupIntro.svelte';
@@ -63,6 +73,15 @@ import RestorePassword from './backup_restore/RestorePassword.svelte';
 import RestoreAddWallets from './backup_restore/RestoreAddWallets.svelte';
 import RestoreSaveWallets from './backup_restore/RestoreSaveWallets.svelte';
 import RestoreComplete from './backup_restore/RestoreComplete.svelte';
+import RestoreOptions from './backup_restore/RestoreOptions.svelte';
+import RestoreIntro from './backup_restore/RestoreIntro.svelte';
+import RestoreMnemonic from './backup_restore/RestoreMnemonic.svelte';
+import RestorePrivateKey from './backup_restore/RestorePrivateKey.svelte';
+import RestoreMnemonicRemember from './backup_restore/RestoreMnemonicRemember.svelte';
+import RestoreMnemonicWarning from './backup_restore/RestoreMnemonicWarning.svelte';
+import RestoreMnemonicSuccess from './backup_restore/RestoreMnemonicSuccess.svelte';
+import RestoreMnemonicPassword from './backup_restore/RestoreMnemonicPassword.svelte';
+
 
 //History
 import PendingTransactions from './history/PendingTransactions.svelte'
@@ -97,6 +116,7 @@ import TokenLogo from './components/TokenLogo.svelte'
 import LightDarkToggle from './components/LightDarkToggle.svelte'
 import Identicons from './components/Identicons.svelte';
 import QR from './components/QR.svelte';
+import Mnemonic from './components/Mnemonic.svelte';
 
 //IDE
 import IdeMain from './IDE/IdeMain.svelte';
@@ -165,6 +185,14 @@ export const RestorePages = {
     RestoreAddWallets,
     RestoreSaveWallets,
     RestoreComplete,  
+    RestoreOptions,
+    RestoreIntro,
+    RestoreMnemonic,
+    RestorePrivateKey,
+    RestoreMnemonicRemember,
+    RestoreMnemonicWarning,
+    RestoreMnemonicSuccess,
+    RestoreMnemonicPassword
 };
 
 export const BackupPages = {
@@ -174,7 +202,10 @@ export const BackupPages = {
     BackupViewKeys,
     BackupKeystorePassword,
     BackupKeystoreCreate,
-    BackupKeystoreComplete
+    BackupKeystoreComplete,
+    BackupMnemonic,
+    FirstRunVerifyMnemonic,
+    BackupMnemonicComplete
 };
 
 export const FirstRun = { 
@@ -185,6 +216,11 @@ export const FirstRun = {
     FirstRunTOS, 
     FirstRunGenWallets, 
     FirstRunFinishing,
+    FirstRunGenMnemonic,
+    FirstRunVerifyMnemonic,
+    FirstRunRemember,
+    FirstCreateVault,
+    FirstCreateVaultIntro,
     ...RestorePages
 };
 
@@ -207,6 +243,7 @@ export const Pages = {
 };
 
 export const Components = { 
+    Mnemonic,
     Button, 
     Switch, 
     InputBox, 
@@ -228,6 +265,8 @@ export const Components = {
 };
 
 export const Modals = {
+    CoinView,
+    CoinLegacyModal,
     ConiLamdenSendWarningBox,
     CoinLamdenSend, TokenLamdenSend,
     CoinModify, CoinOptions, CoinDelete, CoinDeleting, CoinEditNickname,
@@ -246,7 +285,8 @@ export const Modals = {
     ConnectionModify, ConnectionOption, ConnectionTrusted, ConnectionRevoke,
     BackupNotificationModal,
     Settings,
-    WhatsnewModal
+    WhatsnewModal,
+    CoinWatchedModal
 }
 
 export const Layouts = {

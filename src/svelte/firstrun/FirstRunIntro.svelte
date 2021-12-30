@@ -8,7 +8,7 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage }  from '../Router.svelte'
     const { Button } = Components;
 
     //Context
@@ -26,35 +26,38 @@
 a{
     margin-top: 10px;
 }
+h6{
+    margin-top: 0;
+    margin-bottom: 1.4rem;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
+}
 
 </style>
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6 class="text-primary">{whitelabel.firstRun_setup.intro.title}</h6>
-        <div class="flow-text-box text-body1 text-primary">
+<LeftSideFullPage title={whitelabel.firstRun_setup.intro.title} helpLink={whitelabel.firstRun_setup.intro.helpLink}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
             {whitelabel.firstRun_setup.intro.message}
         </div>
-        <div class="flex-column flow-buttons">
-            <Button id="create-wallet"
-                    classes={'button__solid button__primary'}
-                    margin="0 0 1rem"
-                    name="Create A Wallet" 
-                    click={() => changeStep(1)} />
-            <Button id="restore-wallet"
-                    classes={'button__solid'}
-                    margin="0 0 1rem"
-                    name="Restore a Wallet" 
-                    click={() => switchPage('FirstRunRestoreMain')} />
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://www.lamden.io"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Learn More About {whitelabel.companyName}
-                </a>
-            {/if} 
-        </div>
-
     </div>
-    <div class="flex-column flow-content-right"> </div>
-</div>
+    <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+        <div class="flex-column">
+            <h6 class="text-primary text-center">Get Started</h6>
+            <div class="flex-column flow-buttons">
+                <Button id="create-wallet"
+                        classes={'button__solid button__primary'}
+                        margin={'0 0 1rem 0'}
+                        name="Create A Wallet" 
+                        width={'347px'}
+                        click={() => changeStep(1)} />
+                <Button id="restore-wallet"
+                        classes={'button__solid'}
+                        margin={'0 0 1rem 0'}
+                        name="Restore a Wallet" 
+                        width={'347px'}
+                        click={() => switchPage('FirstRunRestoreMain')} />
+            </div>
+        </div>
+    </div>
+</LeftSideFullPage>

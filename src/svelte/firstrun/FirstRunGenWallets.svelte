@@ -4,47 +4,40 @@
     import { onMount, getContext } from 'svelte';
     
     //Stores
-    import { CoinStore, steps, NetworksStore, SettingsStore } from '../../js/stores/stores.js';
+    import { SettingsStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
     const { Loading } = Components;
     
     //Context
-    const { changeStep } = getContext('functions');
+    const { nextPage, getVault } = getContext('functions');
     
-    let message = 'Creating Keys';
+    let vault = null;
 
     onMount(() => {
-        steps.update(current => {
-            current.currentStep = 3;
-            return current
-        });
-
         new Promise(function(resolve, reject) {
             setTimeout(() => {
                 createStartingWallet(resolve);
             }, 1500);
         })
         .then(res => {
-            steps.update(current => {
-                current.currentStep = 4;
-                return current
-            });
-        })
-        .then(res => {
             setTimeout(() => {
-                changeStep(5)
+                nextPage()
             }, 1500);
         })
     });
 
-    const dispatchState = (step) => {
-        dispatch('toggleStep', step);
-    }
-
     const createStartingWallet = (resolve) => {
-        chrome.runtime.sendMessage({type: 'accountsAddNewLamden', data: `My ${whitelabel.companyName} Account`}, (result) => {
+        vault =  getVault();
+        chrome.runtime.sendMessage({type: 'accountsAddNewLamden', data: {
+            nickname: `My ${whitelabel.companyName} Account`,
+            sk: vault.sk,
+            vk: vault.vk,
+            type: 'vault',
+            derivationIndex: vault.derivationIndex,
+            mnemonic: vault.mnemonic,
+        }}, (result) => {
             if (result.error){
                 message = result.error
             }else{

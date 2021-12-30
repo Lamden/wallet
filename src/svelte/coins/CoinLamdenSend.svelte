@@ -1,6 +1,5 @@
 <script>
     import { setContext, getContext } from 'svelte';
-    import { Encoder } from 'lamden-js'
     //Stores
     import { currentPage } from '../Router.svelte'
     //Components

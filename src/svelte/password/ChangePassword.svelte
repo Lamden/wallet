@@ -85,20 +85,9 @@
 </script>
 
 <style>
-    h6{
-        margin-top: 0;
-        margin-bottom: 1.4rem;
-        text-align: center;
-        font-size: 20px;
-        font-weight: 500;
-    }
-    .changepw{
-        margin-top: 100px;
-        margin-left: 500px;
-    }
     .submit-btn{
         width: 347px;
-        margin: 0 0 .625rem 0;
+        margin: 0 0 1rem 0;
     }
     .header{
         display: flex;
@@ -129,7 +118,7 @@
 <div class="header">
     <NavLogo />
 </div>
-<div class="flex-column changepw">
+<div class="flex-column">
     {#if currentStep === 1}
         <LeftSideFullPage title={"Password Safety"}>
             <div slot="body">
@@ -138,68 +127,70 @@
                 </div>
                 <div class="text-body1 text-warning warning weight-400">Lamden is not responsible for lost or stolen passwords.</div>
             </div>
-        </LeftSideFullPage>
-        <h6>Change Password</h6>
-        <form id="change-pd-form" class="inputs" on:submit|preventDefault={() => handleSubmit() } bind:this={formField} target="_self">
-            <InputBox
-                id={'pwd1-input'} 
-                label={"Confirm Current Password"}
-                placeholder={"At least 10 symbols"}
-                bind:thisInput={pwdInput1}
-                on:changed={() => pwd1Validity()}
-                inputType={"password"}
-                width={"347px"}
-                height={"56px"}
-                margin="0 0 0.5rem 0"
-                disabledPWShowBtn={false}
-                required={true}/>
-            <InputBox
-                id={'pwd2-input'}
-                label={"New Password"}
-                placeholder={"At least 10 symbols"}
-                bind:thisInput={pwdInput2}
-                on:changed={() => pwd2Validity()}
-                on:keyup={() => strongPasswordUpdate()}
-                inputType={"password"}
-                {pattern}
-                required={true}
-                width={"347px"}
-                height={"56px"}
-                margin="0 0 0.5rem 0"
-                disabledPWShowBtn={false}
-                autofocus={true}/>
-            {#if showStrongpd}
-                <StrongPW password={pwd} charLength={15}/>
-            {/if}
-            <InputBox
-                id={'pwd3-input'}
-                label={"Confirm New Password"}
-                placeholder={"At least 10 symbols"}
-                bind:thisInput={pwdInput3}
-                on:changed={() => pwd3Validity()}
-                on:keyup={() => confirmPasswprdCheck()}
-                inputType={"password"}
-                required={true}
-                width={"347px"}
-                height={"56px"}
-                margin="0 0 1.5rem 0"
-                disabledPWShowBtn={false}
-                autofocus={true}/>
-            <input  
-                id={'change-pw-btn'}
-                form="change-pd-form"
-                value="CHANGE PASSWORD"
-                class="button__solid button__primary submit submit-button submit-button-text submit-btn" 
-                type="submit" > 
-            <Button
-                id={'back-btn'} 
-                width={'347px'}
-                margin={'0 0 .625rem 0'}
-                classes={'button__solid button__secondary'}
-                name={"BACK"}
-                click={ () => {switchPage("Settings")}}
-            />
-        </form>
+        <div slot="content">
+            <h6>Change Password</h6>
+            <form id="change-pd-form" class="inputs" on:submit|preventDefault={() => handleSubmit() } bind:this={formField} target="_self">
+                <InputBox
+                    id={'pwd1-input'} 
+                    label={"Confirm Current Password"}
+                    placeholder={"At least 10 symbols"}
+                    bind:thisInput={pwdInput1}
+                    on:changed={() => pwd1Validity()}
+                    inputType={"password"}
+                    width={"347px"}
+                    height={"56px"}
+                    margin="0 0 0.5rem 0"
+                    disabledPWShowBtn={false}
+                    required={true}/>
+                <InputBox
+                    id={'pwd2-input'}
+                    label={"New Password"}
+                    placeholder={"At least 10 symbols"}
+                    bind:thisInput={pwdInput2}
+                    on:changed={() => pwd2Validity()}
+                    on:keyup={() => strongPasswordUpdate()}
+                    inputType={"password"}
+                    {pattern}
+                    required={true}
+                    width={"347px"}
+                    height={"56px"}
+                    margin="0 0 0.5rem 0"
+                    disabledPWShowBtn={false}
+                    autofocus={true}/>
+                {#if showStrongpd}
+                    <StrongPW password={pwd} charLength={15}/>
+                {/if}
+                <InputBox
+                    id={'pwd3-input'}
+                    label={"Confirm New Password"}
+                    placeholder={"At least 10 symbols"}
+                    bind:thisInput={pwdInput3}
+                    on:changed={() => pwd3Validity()}
+                    on:keyup={() => confirmPasswprdCheck()}
+                    inputType={"password"}
+                    required={true}
+                    width={"347px"}
+                    height={"56px"}
+                    margin="0 0 1.5rem 0"
+                    disabledPWShowBtn={false}
+                    autofocus={true}/>
+                <input  
+                    id={'change-pw-btn'}
+                    form="change-pd-form"
+                    value="CHANGE PASSWORD"
+                    class="button__solid button__primary submit submit-button submit-button-text submit-btn" 
+                    type="submit" > 
+                <Button
+                    id={'back-btn'} 
+                    width={'347px'}
+                    margin={'0 0 .625rem 0'}
+                    classes={'button__solid button__secondary'}
+                    name={"BACK"}
+                    click={ () => {switchPage("Settings")}}
+                />
+            </form>
+        </div>
+    </LeftSideFullPage>
     {/if}
     {#if currentStep === 2}
         <ChangePasswordFinish />

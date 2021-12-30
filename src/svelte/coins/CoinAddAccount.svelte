@@ -36,16 +36,17 @@
             {id:"add-existing-btn", name: 'Add Existing', click: () => addType = 2, class: addType === 2 ? ' button__primary buttonGroup__center' : 'buttonGroup__center' },
             {id:"track-address-btn", name: 'Track Address', click: () => addType = 3, class: addType === 3 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' }
         ]
+    $: vaultExist = $SettingsStore.isVaultCreated;
 
     const handleSubmit = async () => {
-        if (addType === 2) validatePrivateKey();
-        if (addType === 3) validatePublicKey();
+        // if (addType === 2) validatePrivateKey();
+        // if (addType === 3) validatePublicKey();
         
         if (formObj.checkValidity()){
-            if (addType === 1) {
-                createAndSaveKeys();
+            if (vaultExist) {
+                addNewVaultAccount();
             } else {
-                saveKeys();
+                switchPage('FirstCreateVault');
             }
         }
     }
@@ -122,6 +123,25 @@
         }
     }
 
+    const addNewVaultAccount = () => {
+        let nickname = nicknameObj.value === '' ? `New Tau Account` : nicknameObj.value;
+        chrome.runtime.sendMessage({type: 'addVaultAccount', data: nickname}, (result) => {
+            if (result.added){
+                returnMessage = {type:'success', text: result.reason}
+                let type = 'normal'; 
+                SettingsStore.setLastCoinAddedType(type)
+                chrome.runtime.sendMessage({type: 'joinSocket', data: result.vk})
+                chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: result.vk})
+            }
+
+            if (!result.added){
+                if (result.reason.includes("already exists")) returnMessage = {type:'warning', text: result.reason}
+                else returnMessage = {type:'error', text: result.reason}
+            }
+            finish();
+        })
+    }
+
     const finish = () => {
         sendMessage();
         nextPage();
@@ -152,60 +172,31 @@
     width: 232px;
     height: 46px;
 }
+h3{
+    margin-bottom: 0.5rem;
+}
+.caution{
+    margin-bottom: 2rem;
+}
 </style>
 
 <form  class="flex-column" on:submit|preventDefault={() => handleSubmit() } 
     target="_self" bind:this={formObj}>
-        <h3 class="header">Choose Action</h3>
-        <div class="button-group flex-row">
-            {#each buttonGroup as button, index}
-                <Button
-                    id={button.id} 
-                    classes={`button__solid ${button.class}`} 
-                    width={'222px'}
-                    name={button.name}
-                    click={button.click}
-                    tabIndex={"-1"} />
-            {/each}        
-        </div>
-        
-        {#if addType === 2}
+        {#if vaultExist} 
+            <h3 class="header">Create New Account</h3>
             <InputBox
-                id="private-key"
-                margin="0 0 1rem 0"
-                bind:thisInput={privateKeyObj}
-                label={"Enter Private Key"}
-                placeholder={`Private Key`}
-                on:changed={refreshValidity}
-                on:keyup={refreshValidityKeyup}
-                spellcheck={false}
-                required={true}
+                id={"nickname"}
+                margin="0 0 2rem 0"
+                bind:thisInput={nicknameObj}
+                placeholder={`Account Nickname`}
+                label={"Account Nickname (Optional)"}
             />
+        {:else}
+            <h3 class="header">Create A Vault</h3>
+            <p class="text-body1 caution">You need to create a Vault before you can add accounts to it.</p>
         {/if}
-
-        {#if addType === 3}
-            <InputBox
-                id="public-key"
-                margin="0 0 1rem 0"
-                bind:thisInput={publicKeyObj}
-                label={"Enter Account Address"}
-                placeholder={`Account Address`}
-                on:changed={refreshValidity}
-                on:keyup={refreshValidityKeyup}
-                spellcheck={false}
-                required={true}
-            />
-        {/if}
-
-        <InputBox
-            id={"nickname"}
-            margin="0 0 2rem 0"
-            bind:thisInput={nicknameObj}
-            placeholder={`Account Nickname`}
-            label={"Account Nickname (Optional)"}
-        />
 
         <div class={"submit-button-box flex-column"}>
-            <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" type="submit" value="Save">
+            <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" type="submit" value={vaultExist?'Save':'Create'}>
         </div>
 </form>

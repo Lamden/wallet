@@ -3,8 +3,8 @@
     
     import { onMount, getContext} from 'svelte';
     import { writable } from 'svelte/store';
-    import { Encoder } from 'lamden-js'
-
+    import lamden from 'lamden-js';
+    const { Encoder } = lamden;
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
@@ -98,7 +98,7 @@ import { rejects } from 'assert';
             if (!f.value) return false
             if (f.value.sk === "watchOnly") return false
             if (contract === "currency") {
-                if (!balancesStore[netKey][f.value.vk]) return false
+                if (!balancesStore[netKey] || !balancesStore[netKey][f.value.vk]) return false
                 let balance = Encoder('bigNumber', balancesStore[netKey][f.value.vk]["balance"])
                 if (balance.isGreaterThan(0)) return true
                 return false

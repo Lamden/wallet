@@ -1,6 +1,6 @@
 {
-  "name": "Lamden Wallet - Browser Extension",
-  "description": "A wallet made by Lamden.io",
+  "name": "Lamden Vault - Browser Extension",
+  "description": "A Lamden Vault made by Lamden.io",
   "options_page": "options.html",
   "background": {
     "page": "background.html"
@@ -9,7 +9,7 @@
     "storage", "tabs", "unlimitedStorage"
   ],
   "browser_action": {
-    "default_title": "Lamden Wallet",
+    "default_title": "Lamden Vault",
     "default_popup": "popup.html",
     "default_icon": "icon-34.png"
   },

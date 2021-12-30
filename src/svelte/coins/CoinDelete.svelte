@@ -104,7 +104,7 @@ form{
 <div class="coin-delete">
     <h2> Delete Account </h2>
     <div class="text-body2">
-        {`Deleting this Account will remove it from your ${whitelabel.companyName} Wallet. If you have currency on it, remember to`}
+        {`Deleting this Account will remove it from your Lamden Vault. If you have currency on it, remember to`}
         <span class="text-accent back-it-up" on:click={() => switchPage('BackupMain')}> back it up</span> 
     </div>
 
@@ -138,7 +138,7 @@ form{
                 id={'pwd-input'}
                 bind:thisInput={passwordObj}
                 label={"Password"}
-                placeholder={`Enter ${whitelabel.companyName} Wallet Password`}
+                placeholder={`Enter ${whitelabel.companyName} Lamden Vault Password`}
                 margin="0 0 2rem 0"
                 on:changed={() => setValidity(passwordObj, '')}
                 on:keyup={refreshValidityKeyup}
@@ -151,7 +151,7 @@ form{
                     class:button__red={passwordOkay}
                     class:button__primary={!passwordOkay}
                     type="submit" 
-                    value={passwordOkay ? "DELETE ACCOUNT" : "Validate Wallet Password"}>
+                    value={passwordOkay ? "DELETE ACCOUNT" : "Validate Lamden Vault Password"}>
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__primary'} 

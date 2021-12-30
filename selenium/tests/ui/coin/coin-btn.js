@@ -86,7 +86,7 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(500)
             await tokenHelpers.openCoinReceiveModal(driver)
             await helpers.sleep(500)
-            let name = "My TAU Address"
+            let name = "My TAU Account"
             await tokenHelpers.validateCoinNickname(driver, name)
             await tokenHelpers.validateCoinQR(driver)
             await tokenHelpers.validateCoinAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")

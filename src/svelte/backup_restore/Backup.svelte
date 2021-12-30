@@ -67,7 +67,7 @@
 <div class="backup text-primary">
 	<div class="hero-rec" style="background-image: url({hero_bg});">
         <h2 class="heading">
-            Backing Up Your {whitelabel.companyName} Wallet is Very Important
+            Backing Up Your Lamden Vault is Very Important
         </h2>
         <div class="subtext text-body1 text-opacity-1">
             All of the information for your Accounts is stored in this browser. We highly recommend creating a keystore file so that you can recover your Accounts if anything happens to this computer.
@@ -76,7 +76,7 @@
         	<Button
                 id={'backup-btn'} 
                 classes={'button__outlined button__overlay'}
-				name="Backup Wallet"
+				name="Backup Lamden Vault"
 		 		click={() => switchPage('BackupMain')}
             >
                 <div slot="icon-after">

@@ -11,6 +11,10 @@
 
     setContext('functions', {
         nextPage: () => currentStep = currentStep + 1,
+        back: () => {
+            if (currentStep === 0) switchPage("Settings")
+            else currentStep = 0
+        },
         setFile: (value) => {file = value;},
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
@@ -19,21 +23,35 @@
             else if (step === 0) currentStep = back;
             else currentStep = step;
         },
-        cancel: () => switchPage('Settings')
+        cancel: () => switchPage('Settings'),
+        setSelectedType: (type) => selectedType = type,
+        getSelectedType: () => selectedType,
+        setMnemonic: (s) => mnemonic = s,
+        getMnemonic: () => mnemonic
 	});
 
     let file;
     let keystoreFile;
     let keys;
     let currentStep = 0;
+    let selectedType;
+    let restore = false;
+    let mnemonic;
 
     let steps = [
+        {page: 'RestoreIntro'},
         {page: 'RestoreUpload', hideSteps: false, back: 0},
         {page: 'RestoreCheck', hideSteps: true, back: 0},
         {page: 'RestorePassword', hideSteps: false, back: 1},
         {page: 'RestoreAddWallets', hideSteps: false, back: 0},
         {page: 'RestoreSaveWallets', hideSteps: true, back: 0},
         {page: 'RestoreComplete', hideSteps: false, back: 0},
+        {page: 'RestoreMnemonic'},
+        {page: 'RestorePrivateKey'},
+        {page: 'RestoreMnemonicRemember'},
+        {page: 'RestoreMnemonicPassword'},
+        {page: 'RestoreMnemonicWarning'},
+        {page: 'RestoreMnemonicSuccess'}
     ]
 
     $: currentPage = steps[currentStep].page;
@@ -67,16 +85,6 @@
     height: 97px;
     border-bottom: 1px solid var(--divider-light);
 }
-
-.steps{
-    display: flex;
-    justify-content: center;
-    height: 180px;
-}
-
-.hide-steps{
-    display: none;
-}
 </style>
 
 <div class="layout">
@@ -84,10 +92,7 @@
         <NavLogo />
     </div>
     <div class="content">
-        <svelte:component this={RestorePages[currentPage]} {file} {keystoreFile} {keys}/>
-    </div>
-    <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back} {hideBack}/>
+        <svelte:component this={RestorePages[currentPage]} {file} {keystoreFile} {keys} {restore}/>
     </div>
 </div>
 

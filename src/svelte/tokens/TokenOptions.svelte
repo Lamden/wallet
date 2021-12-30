@@ -34,7 +34,7 @@
 
     $: options = [
         {id: 'modify-refresh-btn', name: 'Refresh', desc: 'Contract Metadata', iconComponent: RefreshIcon, color: loadingData ? 'grey' : 'primary', click: () => getTokenMeta() },
-        {id: 'modify-delete-btn', name: 'Delete', desc: 'Token from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
+        {id: 'modify-delete-btn', name: 'Delete', desc: 'Token from Lamden Vault', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
     ]
 
     const showDelete = () => setPage(2);

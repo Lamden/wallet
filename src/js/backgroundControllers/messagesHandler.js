@@ -31,7 +31,7 @@ export const messagesHandler = (masterController) => {
         if (message.type === 'lamdenWalletConnect') {
             //Reject if wallet is locked as we won't have the user's password stored to encrypt the new keypair
             if (walletIsLocked){
-                sendErrors(["Wallet is Locked"])
+                sendErrors(["Lamden Vault is Locked"])
                 return
             }
             //Make sure the connection request is valid before processing; return erros to dApp
@@ -92,6 +92,16 @@ export const messagesHandler = (masterController) => {
                 if (message.type === 'lockWallet') sendResponse(masterController.lock())
                 //Only Allow access to these messages processors if the wallet is Unlocked
                 if (!walletIsLocked){
+                    // Add a vault account
+                    if (message.type === 'addVaultAccount') sendResponse(masterController.accounts.addVaultAccount(message.data))
+                    // Set mnemonic phrase and remove the all previous accounts and related dapp
+                    if (message.type === 'setMnemonic') sendResponse(masterController.setMnemonic(message.data))
+                    // Set mnemonic phrase
+                    if (message.type === 'getMnemonic') sendResponse(masterController.accounts.getMnemonic())
+                    // Check if the vault is created
+                    if (message.type === 'isVaultCreated') sendResponse(masterController.accounts.isVaultCreated())
+                    // vertify the password and view private key
+                    if (message.type === 'viewPrivateKey') sendResponse(masterController.viewPrivateKey(message.data))
                     //Create a keystore file that is encrypted with a new password, decrypting all sk's first
                     if (message.type === 'backupCoinstore') sendResponse(masterController.accounts.createKeystore(message.data))
                     //Decrypt all keys, for use when user wants to view their secret keys in the UI

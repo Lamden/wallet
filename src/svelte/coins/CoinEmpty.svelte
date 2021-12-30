@@ -12,23 +12,31 @@
 <style>
 .buttons{
     display: flex;
-    justify-content: center;
-    margin-top: 4rem;
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+.comment{
+    margin-top: 1.3rem;
 }
 </style>
 
-<div id="coin-empty" class="buttons">
-    <Button 
-            id={"empty-add-btn"}
-            classes={'button__solid button__primary'}
-            styles={'margin-right: 23px;'}
-            width={'232px'}
-            name="Create A Wallet" 
-            click={() => openModal('CoinAdd')} />
-    <Button 
-            id={"empty-restore-btn"}
-            classes={'button__solid'} 
-            width={'232px'}
-            name="Restore a Wallet" 
-            click={() => switchPage('RestoreMain')} />
+<div id="coin-empty">
+    <div class="text-body1 comment">
+        Our new Vault accounts let you use seed phrases to recover them.
+    </div>
+    <div class="buttons">
+        <Button 
+                id={"empty-add-btn"}
+                classes={'button__solid button__primary'}
+                styles={'margin-right: 23px;'}
+                width={'232px'}
+                name="Create Vault" 
+                click={() => switchPage('FirstCreateVault')} />
+        <Button 
+                id={"empty-restore-btn"}
+                classes={'button__solid'} 
+                width={'232px'}
+                name="Learn More" 
+                click={() => switchPage('RestoreMain')} />
+    </div>
 </div>

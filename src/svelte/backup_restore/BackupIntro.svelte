@@ -8,56 +8,78 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage}  from '../Router.svelte'
     const { Button } = Components;
 
     //Context
-    const { changeStep } = getContext('functions');
+    const { changeStep, setSelectedType} = getContext('functions');
     const { appHome } = getContext('app_functions');
+
+    export let vaultExist = false;
 
 </script>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6>Backup {whitelabel.companyName} Wallet</h6>
-        
-        <div class="flow-text-box text-body1 text-primary">
+<style>
+    h6{
+        margin-top: 0;
+        margin-bottom: 1.4rem;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 500;
+    }
+</style>
+
+<LeftSideFullPage title={`Backup ${whitelabel.companyName} Vault`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
             This process will allow you to either create an encrypted keystore or decrypt and 
             view your all of your secret keys.
-        </div>
-
-        <div class="text-body1 text-accent">
-            Keeping backups safe is your responsibility. 
-        </div>
-
-        <div class="flex-column flow-buttons">
-            <Button id={'create-btn'}
-                    classes={'button__solid button__primary'}
-                    margin="0 0 1rem"
-                    name="Create Backup File" 
-                    click={() => changeStep(3)} />
-            <Button id={'view-keys-btn'}
-                    classes={'button__solid'} 
-                    margin="0 0 1rem"
-                    name="View Account Keys" 
-                    click={() => changeStep(1)} />
-            <Button id={'back-btn'}
-                    classes={'button__solid'} 
-                    margin="0 0 1rem"
-                    name="Back" 
-                    click={() => changeStep(0)} />  
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if}  
+            <div class="text-body1 layout-leftside-warning">Keeping backups safe is your responsibility.</div>
         </div>
     </div>
-    <div class="flex-column flow-content-right" > </div>
-</div>
+    <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+        <div class="flex-column">
+            <h6 class="text-primary text-center">Backup {whitelabel.companyName} Vault</h6>
+            <div class="flex-column flow-buttons">
+                {#if vaultExist}
+                <Button id={'create-btn'}
+                    classes={'button__solid button__primary'}
+                    margin="0 0 1rem"
+                    name="View Seed Phrase" 
+                    width={'347px'}
+                    click={() => {
+                        setSelectedType(1)
+                        changeStep(1)
+                    }} />
+                {/if}
+                <Button id={'create-btn'}
+                        classes={'button__solid'}
+                        margin="0 0 1rem"
+                        name="Backup Legacy Accounts" 
+                        width={'347px'}
+                        click={() => {
+                            setSelectedType(2) 
+                            changeStep(3)
+                        }} />
+                <Button id={'view-keys-btn'}
+                        classes={'button__solid'} 
+                        margin="0 0 1rem"
+                        name="View Account Keys" 
+                        width={'347px'}
+                        click={() => {
+                            setSelectedType(3)
+                            changeStep(1)
+                        }} />
+                <Button id={'back-btn'}
+                        classes={'button__solid'} 
+                        margin="0 0 1rem"
+                        width={'347px'}
+                        name="Back" 
+                        click={() => changeStep(0)} />  
+            </div>
+        </div>
+    </div>
+</LeftSideFullPage>
 
 
 

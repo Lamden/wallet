@@ -8,28 +8,17 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage}  from '../Router.svelte'
     const { Button, InputBox, StrongPW } = Components;
 
     //Context
-    const { changeStep, setKeystorePW } = getContext('functions');
+    const { changeStep, back ,setKeystorePW } = getContext('functions');
 
     //DOM Nodes
     let formField, pwdInput1, pwdInput2, hintObj;
 
     let pattern = `(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\|,.<>\\/? ]).{15,}`;
     let pwd = '';
-
-    onMount(() => {
-        steps.set({
-            currentStep: 1,
-            stepList: [
-                {number: 1, name: 'Set Password', desc:'Make it Strong'},
-                {number: 2, name: 'Generate File', desc:'Just a Second'},
-                {number: 3, name: 'Download', desc:'Keep it Safe'},
-            ]
-        });
-    })
 
 	const formValidation = () => {
 		pwdInput2.setCustomValidity("")
@@ -64,79 +53,90 @@
     input{
         margin-bottom: 1rem;
     }
-    .flow-content-right{
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
+    .link{
+        color: var(--font-accent);
     }
-    h3{
-        color: var(--font-warning);
-        margin-top: 3rem;
+    h6{
+        margin-top: 0;
+        margin-bottom: 1.4rem;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 500;
     }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6>Keystore Password</h6>
-        
-        <div class="flow-text-box text-body1 text-primary">
+<LeftSideFullPage title={`Keystore Password`} helpLink={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
             For maximun security we suggest creating a complex password
             and storing it in a password manager such as
-            <a class="text-link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass </a>
-        </div>
-
-        <StrongPW password={pwd} charLength={15}/>
-
-        <form id="password-form" class="inputs" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
-                <InputBox
-                    id={'pwd1-input'}
-                    label={"Password"}
-                    placeholder={"At least 15 symbols"}
-                    bind:thisInput={pwdInput1}
-                    on:changed={() => pwd1Validity()}
-                    on:keyup={() => strongPasswordUpdate()}
-                    inputType={"password"}
-                    {pattern}
-                    required={true}
-                    autofocus={true}/>
-                <InputBox
-                    id={'pwd2-input'} 
-                    label={"Confirm Password"}
-                    placeholder={"At least 15 symbols"}
-                    margin="0 0 1rem"
-                    bind:thisInput={pwdInput2}
-                    on:changed={() => pwd2Validity()}
-                    inputType={"password"}
-                    required={true}/>
-
-                <InputBox
-                    id={'hint-input'}
-                    bind:thisInput={hintObj}
-                    label={"Password Hint (Optional)"}
-                    margin="0 0 1rem"
-                    placeholder={"Create a Password Hint"}
-                />
-        </form>
-        <div class="flex-column flow-buttons">
-            <input  id={'create-pw-btn'}
-                    form="password-form"
-                    on:click={() => formValidation()}
-                    value="Create Keystore"
-                    class="button__solid button__primary submit submit-button submit-button-text" 
-                    type="submit" > 
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if}  
+            <a class="text-link link" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass </a>
+            <div class="text-body1 layout-leftside-warning">{whitelabel.companyName} is not responsible for lost or stolen passwords</div>
         </div>
     </div>
-    <div class="flow-content-right" in:fade="{{delay: 0, duration: 200}}">
-        <h3>{whitelabel.companyName} is not responsible for lost or stolen passwords </h3>
+    <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+        <div class="flex-column">
+            <h6 class="text-primary text-center">Keystore Password</h6>
+
+            <form id="password-form" class="inputs" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
+                    <InputBox
+                        id={'pwd1-input'}
+                        label={"Password"}
+                        placeholder={"At least 15 symbols"}
+                        bind:thisInput={pwdInput1}
+                        on:changed={() => pwd1Validity()}
+                        on:keyup={() => strongPasswordUpdate()}
+                        inputType={"password"}
+                        {pattern}
+                        required={true}
+                        width={'347px'}
+                        height={'56px'}
+                        margin="0 0 0.5rem 0"
+                        disabledPWShowBtn={false}
+                        autofocus={true}/>
+                    
+                    <StrongPW password={pwd} charLength={15}/>
+
+                    <InputBox
+                        id={'pwd2-input'} 
+                        label={"Confirm Password"}
+                        placeholder={"At least 15 symbols"}
+                        margin="0 0 1rem"
+                        bind:thisInput={pwdInput2}
+                        on:changed={() => pwd2Validity()}
+                        inputType={"password"}
+                        width={'347px'}
+                        disabledPWShowBtn={false}
+                        height={'56px'}
+                        required={true}/>
+
+                    <InputBox
+                        id={'hint-input'}
+                        bind:thisInput={hintObj}
+                        label={"Password Hint (Optional)"}
+                        margin="0 0 1rem"
+                        placeholder={"Create a Password Hint"}
+                        width={'347px'}
+                        height={'56px'}
+                    />
+            </form>
+            <div class="flex-column flow-buttons">
+                <input  id={'create-pw-btn'}
+                        form="password-form"
+                        style="width: 347px;"
+                        on:click={() => formValidation()}
+                        value="Create Keystore"
+                        class="button__solid button__primary submit submit-button submit-button-text" 
+                        type="submit" > 
+                <Button id="restore-wallet"
+                classes={'button__solid'}
+                margin={'0 0 .625rem 0'}
+                name="Back" 
+                width={'347px'}
+                click={() => back()} />  
+            </div>
+        </div>
     </div>
-</div>
+</LeftSideFullPage>
 
 

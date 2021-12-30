@@ -39,7 +39,7 @@ export const createBalancesStore = () => {
         set,
         update,
         getBalance: (networkObj, vk) => {
-            if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
+            // if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
 
             let netkey = networkKey(networkObj)
 

@@ -7,6 +7,7 @@ const http = require('http')
 const https = require('https')
 const assert = require('assert');
 const { CryptoJS } = nodeCryptoJs;
+const mnemonicWords = require("../fixtures/mnemonic.json")
 
 const { testnetMasternode, testnetBlockService } = config;
 
@@ -66,11 +67,16 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
     await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
     await driver.findElement(By.id('save-pwd')).click()
-    await driver.findElement(By.id('filePicker')).sendKeys(path.join(workingDir, walletInfo.keystoreInfo.file))
-    await driver.findElement(By.id('confirm-keystore-btn')).click()
     await sleep(2000)
-    await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.keystoreInfo.password}'`)
-    await driver.findElement(By.id('pwd-btn')).click()
+
+    let words = mnemonicWords.mnemonic.split(' ');
+    let elements = await driver.findElements(By.css('.mnemonic .cell input'));
+    for(let i=0; i<24; i++){
+        await elements[i].sendKeys(`${words[i]}\n`);
+    }
+    await driver.findElement(By.id('next')).click();
+    await sleep(2000)
+
     await driver.executeScript(`document.getElementById('chk-all').innerText='testing'`)
     await driver.findElement(By.id('chk-all')).click()
     await driver.findElement(By.id('restore-btn')).click()

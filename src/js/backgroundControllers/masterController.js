@@ -214,7 +214,7 @@ export const masterController = () => {
             return txStatus
         }
         if (accounts.walletIsLocked()){
-            return makeTxStatus(undefined, ['Wallet is Locked'])
+            return makeTxStatus(undefined, ['Lamden Vault is Locked'])
         }else{
             let txInfo = {};
             let errors = []
@@ -380,6 +380,52 @@ export const masterController = () => {
         return true;
     }
 
+    // vertify the password and view private key
+    const viewPrivateKey = (data) => {
+
+        if (!data.vk || !data.password) { 
+            return {
+                success: false
+            };
+        }
+
+        if (accounts.validatePassword(data.password)) {
+            let account = accounts.getAccountByVK(data.vk)
+
+            if (account.sk === "watchOnly") return{
+                success: false
+            }
+            
+            let sk = accounts.decryptString(account.sk);
+            return {
+                success: true,
+                data: {...account, sk}
+            };
+        } else {
+            return {
+                success: false
+            }
+        }
+    }
+
+    // Set the mnemonic phrase in vault
+    const setMnemonic = (str) => {
+        let origin = accounts.getMnemonic();
+
+        if (origin === str) return true;
+
+        let coins = accounts.getSanatizedAccounts();
+        coins.forEach(c => {
+            if (c.type === "vault"){
+                accounts.deleteOne(c);
+                dapps.deleteDapp(c.vk);
+            }
+        })
+        let ok = accounts.setMnemonic(str);
+        fauna.fetchUpdates();
+        return ok;
+    }
+
     return{
         "accounts" : {
             walletIsLocked: accounts.walletIsLocked,
@@ -392,7 +438,10 @@ export const masterController = () => {
             changeAccountNickname: accounts.changeAccountNickname,
             decryptKeys: accounts.decryptKeys,
             reorderUp: accounts.reorderUp,
-            reorderDown: accounts.reorderDown
+            reorderDown: accounts.reorderDown,
+            isVaultCreated: accounts.isVaultCreated,
+            getMnemonic: accounts.getMnemonic,
+            addVaultAccount: accounts.addVaultAccount
         },
         "dapps": {
             setTrusted: dapps.setTrusted,
@@ -447,6 +496,8 @@ export const masterController = () => {
         joinTokenSockets,
         joinTokenSocket,
         leaveTokenSockets,
-        updateAccountAndTokenBalances
+        updateAccountAndTokenBalances,
+        viewPrivateKey,
+        setMnemonic
     }
 }

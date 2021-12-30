@@ -8,11 +8,11 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage}  from '../Router.svelte'
     const { Button } = Components;
 
     //Context
-    const { setKeys, changeStep, nextPage, cancel } = getContext('functions');
+    const { setKeys, changeStep, nextPage, back, getSelectedType  } = getContext('functions');
 
     //DOM nodes
     let formObj;
@@ -21,14 +21,12 @@
     export let keys;
 
     let checked = true;
-
+    let consent = false;
+    let restoreType = getSelectedType? getSelectedType() : 999;
     $: numOfCheckedAccounts = 0
 
 	onMount(() => {
-        steps.update(current => {
-            current.currentStep = 3;
-            return current
-        });
+        consent = restoreType === 999;
         handleChange();
         numOfCheckedAccounts = keys.keyList.filter(f => f.checked).length
     });
@@ -64,11 +62,6 @@
 
 <style>
 
-.content{
-    box-sizing: border-box;
-    padding: 0px 24px 0 242px;
-    width: 498px;
-}
 
 .key-box{
     max-width: 700px;
@@ -127,18 +120,15 @@
     margin-right: 53px;
 }
 
-.chk-container{
+.checkbox-box .chk-container{
     padding-left: 0;
     margin-bottom: 0;
 }
 
-.chk-checkmark{
+.checkbox-box .chk-checkmark{
     top: -13px;
 }
 
-.text-box{
-    margin-bottom: 158px;
-}
 
 p{
     margin: 0;
@@ -148,76 +138,89 @@ p{
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.btns{
+    margin-top: 2rem;
+}
+.box{
+    width: 347px;
+    margin-top: 1rem;
+}
+.checkbox-text{
+    font-size: 16px;
+}
 </style>
 
-
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6>Password Confirmed</h6>
-    
-        <div class="flow-text-box text-body1 text-primary">
-            Almost there! Now let's select which Accounts you'd like to restore
-        </div>
-        <div class="flex-column flow-buttons">
-            <Button id={'restore-btn'}
-                    classes={`button__solid button__primary`}
-                    width="100%"
-                    styles={'margin-bottom: 16px;'}
-                    name="Restore Accounts"
-                    click={() => nextStep()} 
-                    disabled={numOfCheckedAccounts === 0} />
-
-            <Button id={'cancel-btn'}
-                    width="100%"
-                    classes={`button__solid`}
-                    styles={'margin-bottom: 16px;'}
-                    name="Cancel"
-                    click={() => cancel()} />
-
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/restore_keystore"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if}  
+<LeftSideFullPage title={`Add Accounts`} helpLink={'https://docs.lamden.io/docs/wallet/restore_overview'}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
+            Almost there! Now let's select which Accounts you'd like to restore.
         </div>
     </div>
-    <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
-        <div class="flex-row header text-subtitle2 text-primary">
-            <p class="header-name">{'Name'}</p>
-            <p class="header-address">{'Address'}</p>
-        </div>
-        <div class="flex-row key-row">
-            <div class="checkbox-box">
-                <label class="chk-container text-body2" id="chk-all">
-                    <input  type="checkbox" bind:checked={checked} on:change={handleChange}>
-                    <span class="chk-checkmark"></span>
-                </label>
+<div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+    <div class="flex-column flex-align-center">
+        <h6>Add Accounts</h6>
+        
+        <div>
+            <div class="flex-row header text-subtitle2 text-primary">
+                <p class="header-name">{'Name'}</p>
+                <p class="header-address">{'Address'}</p>
             </div>
-            <p class="name">{'All Wallets'}</p>
-            <p class="address"></p>
-        </div>
-        {#each keys.keyList as key, i}
             <div class="flex-row key-row">
                 <div class="checkbox-box">
-                    <label class="chk-container text-body2" id={`chkbox-${i}`}>
-                        <input id={`chkbox-${i}`} type="checkbox" bind:checked={keys.keyList[i].checked} disabled={keyIsWatchOnly(key.sk)} on:change={handleChangeOne}>
+                    <label class="chk-container text-body2" id="chk-all">
+                        <input  type="checkbox" bind:checked={checked} on:change={handleChange}>
                         <span class="chk-checkmark"></span>
                     </label>
                 </div>
-                <div class="flex-column key-info text-body3 ">
-                    <p>{`${key.name} (${key.symbol})`}</p>
-                    <p class="nickname text-secondary">{`${key.nickname}`}</p>
-                </div>
-                <div id={`div-address-${i}`} class="flex flex-column flex-align-start flex-just-center address">
-                    <p>{`${key.vk}`}</p>
-                    {#if keyIsWatchOnly(key.sk)}
-                        <p class="text-warning">{'No Private key found for this account'}</p>
-                    {/if}
-                </div>
+                <p class="name">{'All Account'}</p>
+                <p class="address"></p>
             </div>
-        {/each}
+            {#each keys.keyList as key, i}
+                <div class="flex-row key-row">
+                    <div class="checkbox-box">
+                        <label class="chk-container text-body2" id={`chkbox-${i}`}>
+                            <input id={`chkbox-${i}`} type="checkbox" bind:checked={keys.keyList[i].checked} disabled={keyIsWatchOnly(key.sk)} on:change={handleChangeOne}>
+                            <span class="chk-checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="flex-column key-info text-body3 ">
+                        <p>{`${key.name} (${key.symbol})`}</p>
+                        <p class="nickname text-secondary">{`${key.nickname}`}</p>
+                    </div>
+                    <div id={`div-address-${i}`} class="flex flex-column flex-align-start flex-just-center address">
+                        <p>{`${key.vk}`}</p>
+                        {#if keyIsWatchOnly(key.sk)}
+                            <p class="text-warning">{'No Private key found for this account'}</p>
+                        {/if}
+                    </div>
+                </div>
+            {/each}
+        </div>
+        {#if restoreType === 3}
+            <div class="box">
+                <label class="chk-container text-body2 checkbox-text">
+                    This account will be added as a Legacy Account and will not be covered under your Lamden Vault Seed Phrase.
+                    <input type="checkbox" bind:checked={consent}>
+                    <span class="chk-checkmark mark"></span>
+                </label>
+            </div>
+        {/if}
+        <div class="flex-column flow-buttons flex-align-center btns">
+            <Button id={'restore-btn'}
+                    classes={`button__solid button__primary`}
+                    width="347px"
+                    styles={'margin-bottom: 16px;'}
+                    name="Restore Accounts"
+                    click={() => nextStep()} 
+                    disabled={numOfCheckedAccounts === 0 || !consent} />
+
+            <Button id={'back-btn'}
+                    width="347px"
+                    classes={`button__solid`}
+                    styles={'margin-bottom: 16px;'}
+                    name="Back"
+                    click={() => back()} />
+        </div>
     </div>
 </div>
+</LeftSideFullPage>

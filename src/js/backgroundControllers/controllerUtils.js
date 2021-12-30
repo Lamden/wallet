@@ -3,6 +3,7 @@ const validators = require('types-validate-assert')
 const { validateTypes } = validators
 import { encryptObject, decryptObject, encryptStrHash, decryptStrHash, hashStringValue, isLamdenKey } from '..//utils.js';
 import Lamden from 'lamden-js'
+import * as bip39 from 'bip39' 
 
 
 export const controllerUtils = (() => {
@@ -87,6 +88,7 @@ export const controllerUtils = (() => {
         sendMessageToTab,
         removeTrailingZeros,
         getValueFromReturn,
-        isLamdenKey
+        isLamdenKey,
+        bip39
     }
 })()

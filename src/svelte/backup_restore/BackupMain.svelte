@@ -1,5 +1,5 @@
 <script>
-    import { setContext, getContext, onDestroy } from 'svelte';
+    import { setContext, getContext, onDestroy, onMount} from 'svelte';
     import { fade } from 'svelte/transition';
 	//Components
     import { Components, BackupPages }  from '../Router.svelte'
@@ -15,17 +15,38 @@
             else if (step === 0) currentStep = back;
             else currentStep = step;
         },
+        nextPage: () => {
+            currentStep = currentStep + 1
+        },
+        back: () => {
+            if (currentStep === 0) switchPage('Settings');
+            else currentStep = 0
+        },
+        setVault: (data) => vault.mnemonic = data,
+        getVault: () => vault,
         setPassword: (string) => password = string,
         getPassword: () => password,
         setKeystorePW: (info) => ksPwdInfo = info,
         //getKeystorePW: () => {return ksPwdInfo},
-        setKeystoreFile: (file) => keystoreFile = file
+        setKeystoreFile: (file) => keystoreFile = file,
+        setSelectedType: (type) => selectedType = type,
+        getSelectedType: () => selectedType
 	});
 
     let currentStep = 0;
     let ksPwdInfo;
     let keystoreFile;
     let password;
+    let selectedType;
+    let vaultExist = false;
+    let vault = {};
+
+    onMount(() => {
+		chrome.runtime.sendMessage({type: 'isVaultCreated'}, (ok) => {
+			vaultExist = ok;
+		})
+	});
+
 
     onDestroy(()=> password = "")
 
@@ -36,12 +57,13 @@
         {page: 'BackupKeystorePassword', hideSteps: false, back: 0},
         {page: 'BackupKeystoreCreate', hideSteps: false, back: 3},
         {page: 'BackupKeystoreComplete', hideSteps: false, back: 0},
+        {page: 'BackupMnemonic', hideSteps: false, back: 0},
+        {page: 'FirstRunVerifyMnemonic', hideSteps: false, back: 0},
+        {page: 'BackupMnemonicComplete'}
     ]
 
     $: currentPage = steps[currentStep].page;
-    $: hideSteps = steps[currentStep].hideSteps;
     $: back = steps[currentStep].back;
-    $: hideBack = steps[currentStep].hideBack ? false : true;
     
 </script>
 
@@ -69,16 +91,6 @@
     height: 97px;
     border-bottom: 1px solid var(--divider-light);
 }
-
-.steps{
-    display: flex;
-    justify-content: center;
-    height: 180px;
-}
-
-.hide-steps{
-    display: none;
-}
 </style>
 
 <div class="layout">
@@ -86,10 +98,7 @@
         <NavLogo />
     </div>
     <div class="content">
-        <svelte:component this={BackupPages[currentPage]} {keystoreFile} {ksPwdInfo} />
-    </div>
-    <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back} {hideBack}/>
+        <svelte:component this={BackupPages[currentPage]} {keystoreFile} {ksPwdInfo} {vaultExist}/>
     </div>
 </div>
 

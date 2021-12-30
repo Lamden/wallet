@@ -1,9 +1,10 @@
 const assert = require('assert');
-const {Builder, By} = require('selenium-webdriver');
+const {Builder, By, until, WebElementCondition} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 const helpers = require('../../../helpers/helpers')
 let config = require("../../../config/config")
-let walletInfo = require("../../../fixtures/walletInfo")
+let walletInfo = require("../../../fixtures/walletInfo");
+const { element_is, element } = require('svelte/internal');
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments("lang=en-us");
@@ -11,6 +12,7 @@ chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     let driver;
+    let mnemonics;
     before(async function() {
         driver = await new Builder()
                 .forBrowser('chrome')
@@ -22,7 +24,8 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     after(() => driver && driver.quit());
 
     it('Renders FirstRunIntro.svelte', async function() {
-        let createWallet_Button =  await driver.findElement(By.id('create-wallet'))
+        await helpers.sleep(2000)
+        let createWallet_Button = await driver.wait(until.elementLocated(By.id('create-wallet')), 25000); 
         await createWallet_Button.getAttribute('innerText').then(text => {
             assert.equal(text, 'CREATE A WALLET');
         })
@@ -35,8 +38,8 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     it('Renders FirstRunCreatePW.svelte', async function() {
         
         let savePassword_Button =  await driver.findElement(By.id('save-pwd'))
-        await savePassword_Button.getAttribute('value').then(value => {
-            assert.equal(value, 'Save Password');
+        await savePassword_Button.getAttribute('innerText').then(value => {
+            assert.equal(value, 'SAVE PASSWORD');
         })
         let password1_Input = await driver.findElement(By.id('pwd1'))
         await password1_Input.getAttribute('value').then(value => {
@@ -112,12 +115,44 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
         await driver.findElement(By.id('save-pwd')).click()
     })
 
-    it('Renders FirstRunTOS.svelte', async function() {
+    it('Renders FirstRunGenMnemonic.svelte', async function() {
+        let title = await driver.findElement(By.css('.wrap > h6'));
+        await title.getAttribute('innerText').then(text => {
+            assert.equal(text, 'Seed Recovery Phrase')
+        })
+        let elements = await driver.findElements(By.css('.mnemonic .cell input'))
+        assert.equal(elements.length, 24)
+
+        let words = [];
+        elements.forEach(element => {
+            let value = element.getAttribute("value");
+            words.push(value);
+        });
+        await Promise.all(words).then((res)=>{
+            mnemonics = res;;
+        })
+        await driver.findElement(By.css('.chk-checkmark')).click();
+        await driver.findElement(By.id('next')).click();
+        await helpers.sleep(5000);
+    })
+
+    it('Renders FirstRunVerifyMnemonic.svelte', async function() {
+        let title = await driver.findElement(By.css('.flow-page h6'));
+        let text = await title.getAttribute('innerText');
+        assert.equal(text, 'Verify Seed Recovery Phrase');
+        let elements = await driver.findElements(By.css('.mnemonic .cell input'));
+        for(let i=0; i<24; i++){
+            await elements[i].sendKeys(`${mnemonics[i]}\n`);
+        }
+        await driver.findElement(By.id('next')).click();
+    })
+
+    it('Renders FirstRunRemember.svelte', async function() {
+        await driver.findElement(By.css('.chk-checkmark')).click();
         let iUnderstand_Button =  await driver.findElement(By.id('i-understand'))
         await iUnderstand_Button.getAttribute('innerText').then(text => {
             assert.equal(text, 'I UNDERSTAND');
         })
-
        await iUnderstand_Button.click()
        await helpers.sleep(5000)
        await helpers.lockWallet(driver, 0)
