@@ -44,8 +44,34 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     await driver.executeScript(`document.getElementById('pwd1').value='${walletPassword}'`);
     await driver.executeScript(`document.getElementById('pwd2').value='${walletPassword}'`);
     await driver.findElement(By.id('save-pwd')).click()
+    await sleep(2000)
+
+    let elements = await driver.findElements(By.css('.mnemonic .cell input'))
+
+    let vals;
+    let words = [];
+    elements.forEach(element => {
+        let value = element.getAttribute("value");
+        words.push(value);
+    });
+    await Promise.all(words).then((res)=>{
+        vals = res;;
+    })
+    await driver.findElement(By.css('.chk-checkmark')).click();
+    await driver.findElement(By.id('next')).click();
+    await sleep(3000);
+
+    elements = await driver.findElements(By.css('.mnemonic .cell input'));
+    for(let i=0; i<24; i++){
+        await elements[i].sendKeys(`${vals[i]}\n`);
+    }
+    await driver.findElement(By.id('next')).click();
+    await sleep(2000)
+
+    await driver.findElement(By.css('.chk-checkmark')).click();
     await driver.findElement(By.id('i-understand')).click()
-    await sleep(5000)
+    await sleep(3000)
+
     await ignoreBackupModal(driver)
     if (testnet) await changeToTestnet(driver)
     await driver.findElement(By.id('refresh-icon')).click()
@@ -56,8 +82,8 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
 }
 
 const ignoreBackupModal = async (driver) => {
-    await validBackupModal(driver)
-    await driver.findElement(By.id('ignore-btn')).click();
+    // await validBackupModal(driver)
+    await driver.wait(until.elementLocated(By.id(`ignore-btn`)), 25000).click();
     await sleep(1000, true)
 }
 
@@ -83,6 +109,7 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await sleep(2000)
     await driver.findElement(By.id('home-btn')).click()
     await sleep(4000)
+    await driver.findElement(By.id('ignore-btn')).click()
     await ignoreBackupModal(driver)
     if (testnet) {
         await changeToTestnet(driver)
@@ -393,7 +420,7 @@ const addAccount = async (driver) => {
     await driver.findElement(By.css('.submit-button')).click();
     let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
     let message = await messageField.getAttribute("innerText")
-    assert.equal(message, `Added New Lamden Account to your wallet`);
+    assert.equal(message, `Added New Tau Account to your Lamden Vault`);
     await driver.findElement(By.id("home-btn")).click()
     await sleep(500, true)
     await ignoreBackupModal(driver)
@@ -407,7 +434,7 @@ const addTrackedAccount = async (driver, address) => {
     await driver.findElement(By.css('.submit-button')).click();
     let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
     let message = await messageField.getAttribute("innerText")
-    assert.equal(message, `Added New Lamden Account to your wallet`);
+    assert.equal(message, `Added New Tau Account to your Lamden Vault`);
     await driver.findElement(By.id("home-btn")).click()
     await sleep(500, true)
     let emts = await driver.findElements(By.className("notification"))

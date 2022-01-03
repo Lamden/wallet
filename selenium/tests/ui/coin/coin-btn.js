@@ -25,7 +25,6 @@ describe('Testing Coin Button', function () {
                 .build();
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
-        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
     });
 
     after(() => {
@@ -33,6 +32,9 @@ describe('Testing Coin Button', function () {
     });
 
     context('test-setup', function() {
+        it('init', async function() {
+            await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
+        })
         it('Add a token to wallet, for testing', async function() {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken(driver, token)
@@ -49,6 +51,7 @@ describe('Testing Coin Button', function () {
             connection.charms = dappsInfo.charmsInfo
             connection.background = dappsInfo.background
             await helpers.sendConnectRequest(driver, connection, false)
+            await helpers.sleep(200000);
             await helpers.approvePopup(driver, 2, 1, true, {show: false})
             await helpers.switchWindow(driver, 0)
         })

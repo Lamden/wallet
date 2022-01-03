@@ -34,10 +34,10 @@ describe('Testing Backup', function () {
         it('Renders Backup notification right after an account was added', async function() {
             await helpers.addAccount(driver)
         })
-        it('Doesn\'t renders Backup notification right after a tracked account was added', async function() {
-            let address = "01524fe0e495a059e825fb0970c62ee67236cd3a3658f1a2650313cd960b87cc"
-            await helpers.addTrackedAccount(driver, address)
-        })
+        // it('Doesn\'t renders Backup notification right after a tracked account was added', async function() {
+        //     let address = "01524fe0e495a059e825fb0970c62ee67236cd3a3658f1a2650313cd960b87cc"
+        //     await helpers.addTrackedAccount(driver, address)
+        // })
         it('Renders Backup notification modal when user logs in', async function() {
             await helpers.lockWallet(driver, 0)
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 0)

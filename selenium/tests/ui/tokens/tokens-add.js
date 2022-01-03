@@ -53,7 +53,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             let token = existingTokenInfo.token_png
             await tokenHelpers.addToken_ShowDetails(driver, token, 0)
             await helpers.sleep(4000)
-            await tokenHelpers.validateDropdownError(driver, "Token already in Wallet")
+            await tokenHelpers.validateDropdownError(driver, "Token already in Lamden Vault")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
     })
@@ -121,7 +121,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
             await helpers.sleep(4000)
-            await tokenHelpers.validateInputError(driver, "Token already in Wallet")
+            await tokenHelpers.validateInputError(driver, "Token already in Lamden Vault")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
         it('Will display error in inputbox if token contract is invalid', async function() {
