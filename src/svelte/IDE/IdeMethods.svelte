@@ -1,6 +1,7 @@
 <script>
     import { getContext, beforeUpdate } from 'svelte';
-    import { Encoder } from 'lamden-js'
+    import lamden from 'lamden-js';
+    const { Encoder } = lamden;
     
 	//Stores
     import { activeTab } from '../../js/stores/stores.js';

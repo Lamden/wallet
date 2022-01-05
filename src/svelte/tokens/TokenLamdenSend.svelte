@@ -1,6 +1,7 @@
 <script>
     import { setContext, getContext, onMount } from 'svelte';
-    import { Encoder } from 'lamden-js'
+    import lamden from 'lamden-js';
+    const { Encoder } = lamden;
 
     //Components
     import { Modals, Components }  from '../Router.svelte'
