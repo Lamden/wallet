@@ -139,8 +139,10 @@
         let tokens = []
         Object.keys(tokenBalancesStore[netKey][vk]).forEach(key => {
             let item = tokenStore[netKey].find(t => t.contractName === key)
-            item.balance = tokenBalancesStore[netKey][vk][key]
-            tokens.push(item)
+            if (item) {
+                item.balance = tokenBalancesStore[netKey][vk][key]
+                tokens.push(item)
+            }
         });
         return tokens;
     }
