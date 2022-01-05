@@ -221,7 +221,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
             assert.equal(text, 'FINISH');
         })
         await driver.findElement(By.className('message')).getAttribute('innerText').then(text => {
-            assert.equal(text, 'Added My TAU Address to your wallet');
+            assert.equal(text, 'Added My TAU Address to your Lamden Vault');
         })
 
         await finish_Button.click()

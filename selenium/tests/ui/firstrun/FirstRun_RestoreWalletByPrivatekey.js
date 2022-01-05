@@ -126,13 +126,14 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from mnemonic words'
             assert.equal(text, 'FINISH');
         })
         await driver.findElement(By.className('message')).getAttribute('innerText').then(text => {
-            assert.equal(text, 'Added My TAU Account to your wallet');
+            assert.equal(text, 'Added My TAU Account to your Lamden Vault');
         })
 
         await finish_Button.click()
         await helpers.sleep(5000)
     });
     it('Renders Coins Main', async function() {
+        await helpers.sleep(2000)
         await driver.findElement(By.className('coinsmain')).then(element => {
             assert.equal(element.constructor.name, 'WebElement');
         })
