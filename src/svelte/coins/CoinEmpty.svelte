@@ -22,7 +22,7 @@
 
 <div id="coin-empty">
     <div class="text-body1 comment">
-        Our new Vault accounts let you use seed phrases to recover them.
+        Our new Vault accounts are all backed up under one Recovery Phrase!
     </div>
     <div class="buttons">
         <Button 

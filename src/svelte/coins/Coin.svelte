@@ -246,6 +246,8 @@
 
 .dapps{
     margin: 0 8px;   
+    display: flex;
+    align-items: center;
 }
 
 .dapps .avatar{
@@ -338,7 +340,7 @@
             {#if whitelabel.mainPage.account_info.show}
                 <div class="name text weight-300">
                     <div class="name-box">
-                        <div id={`coin-nickname-${coin.id}`}  class="nickname " on:click={() => switchPage('CoinDetails', coin)}>
+                        <div id={`coin-nickname-${coin.id}`}  class="nickname text-white" on:click={() => switchPage('CoinDetails', coin)}>
                             {`${coin.nickname}`}
                         </div>
                     </div>
@@ -419,7 +421,7 @@
                 </div>
                 <div class="tokenlist">
                     {#each tokenList as token (token.contractName) }
-                        <Token {token}/>
+                        <Token {token} vk={coin.vk}/>
                     {/each}
                 </div>
 			{/if}

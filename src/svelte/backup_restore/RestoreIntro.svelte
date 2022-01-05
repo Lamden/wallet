@@ -42,7 +42,7 @@
                 <Button id={'restore-seed-btn'}
                         classes={'button__solid button__primary'}
                         margin="0 0 1rem"
-                        name="Restore from Seed Phrase" 
+                        name="Restore from Recovery Phrase" 
                         width={'347px'}
                         click={() => {
                             setSelectedType(1)

@@ -27,7 +27,7 @@
     
     let options = [{
         value: 1,
-        name: 'Seed Recovery Phrase'
+        name: 'Secret Recovery Phrase'
     },{
         value: 2,
         name: 'Keystore File'
@@ -189,7 +189,7 @@
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
-        <div class="flex-column">
+        <div class="flex-column flex-align-center">
             <h6 class="text-primary text-center">Restore Accounts</h6>
             <DropDown                 
                 items={options} 

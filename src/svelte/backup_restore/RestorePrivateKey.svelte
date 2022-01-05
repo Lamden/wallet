@@ -62,7 +62,7 @@
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Restore a Legacy account using it's Private Key.
-            <div class="text-body1 layout-leftside-warning">Any accounts restored in this way are not contained in your Lamden Vault and as such not backed up under your Seed Phrase</div>
+            <div class="text-body1 layout-leftside-warning">Any accounts restored in this way are not contained in your Lamden Vault and as such not backed up under your Recovery Phrase</div>
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">

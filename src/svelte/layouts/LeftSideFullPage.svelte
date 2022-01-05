@@ -15,8 +15,8 @@
         position: absolute;
         left: 0;
         top: 97px;
-        height: 100%;
         width: 500px;
+        height: calc(100% - 97px);
         background: var(--bg-secondary);
         padding: 0 78px;
         box-sizing: border-box;

@@ -199,7 +199,7 @@ p{
         {#if restoreType === 3}
             <div class="box">
                 <label class="chk-container text-body2 checkbox-text">
-                    This account will be added as a Legacy Account and will not be covered under your Lamden Vault Seed Phrase.
+                    This account will be added as a Legacy Account and will not be covered under your Lamden Vault Recovery Phrase.
                     <input type="checkbox" bind:checked={consent}>
                     <span class="chk-checkmark mark"></span>
                 </label>

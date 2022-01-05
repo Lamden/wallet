@@ -379,7 +379,7 @@ const setupMetamask = async (driver, kovan = true) => {
     await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
     await sleep(1000)
 
-    await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
+    await driver.findElement(By.xpath("//input[@placeholder='Paste Recovery Phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
     await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
     await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
     await driver.findElement(By.className("first-time-flow__terms")).click()

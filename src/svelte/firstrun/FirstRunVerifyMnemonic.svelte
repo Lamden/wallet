@@ -16,9 +16,40 @@
     // doms
     let mnemonicDom;
 
-    let mnemonics = new Array(24).fill('');
     let errmsg;
     let disabledButton = true;
+
+    let mnemonics;
+    let disableInputs = [];
+
+    onMount(() => {
+        let vals = new Array(24).fill('');
+        let disArr = [];
+        let vault = getVault();
+        let words = vault.mnemonic.split(' ');
+        let arr = generateRandom();
+        for (let i=0;i < 12;i++){
+            let index = arr[i];
+            vals[index] = words[index];
+            disArr.push(index)
+        }
+        disableInputs = disArr;
+        mnemonics = vals;
+	});
+
+    function generateRandom(){ 
+        let data = [];
+        let arr = [];
+        for (let i=0;i<24;i++){
+            data.push(i)
+        }
+        for (let i=0;i < 12;i++){
+            let index = Math.floor(Math.random()*(23-i));
+            let rand = data.splice(index, 1)[0];
+            arr.push(rand);
+        }
+        return arr;
+    } 
 
     const valid = () => {
         if (!mnemonicDom.validation()) { 
@@ -50,17 +81,17 @@
 
 <style>
 </style>
-<LeftSideFullPage title={"Seed Recovery Phrase"} helpLink={""}>
+<LeftSideFullPage title={"Secret Recovery Phrase"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Your Seed Recovery Phrase makes it easy to back up and restore all your accounts.
-            <div class="text-body1 layout-leftside-warning">Never disclose your Seed Recovery Phrase. These words can be used to steal all your accounts.</div>
+            Your Secret Recovery Phrase makes it easy to back up and restore all your accounts.
+            <div class="text-body1 layout-leftside-warning">Never disclose your Secret Recovery Phrase. These words can be used to steal all your accounts.</div>
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
-        <div class="flex-column">
-            <h6 class="text-primary text-center">Verify Seed Recovery Phrase</h6>
-            <Mnemonic bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} {mnemonics} disabled={false}/>
+        <div class="flex-column flex-align-center">
+            <h6 class="text-primary text-center">Verify Secret Recovery Phrase</h6>
+            <Mnemonic bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} {disableInputs} {mnemonics} disabled={false}/>
             {#if errmsg}
                 <p class="text-warning">{errmsg}</p>
             {/if}

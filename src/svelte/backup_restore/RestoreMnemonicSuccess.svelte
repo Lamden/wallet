@@ -32,8 +32,8 @@
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column wrap flex-align-center">
-            <h6 class="text-primary text-center">Seed Phrase</h6>
-            <div class="text-body1 box">Your Lamden Vault is already using this seed phrase.</div>
+            <h6 class="text-primary text-center">Recovery Phrase</h6>
+            <div class="text-body1 box">Your Lamden Vault is already using this Recovery Phrase.</div>
             <Button id="restore-wallet"
                 classes={'button__solid button__primary'}
                 margin={'0 0 1rem 0'}

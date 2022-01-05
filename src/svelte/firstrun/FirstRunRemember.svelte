@@ -32,14 +32,14 @@
 <LeftSideFullPage title={"Lamden Vault Security"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Storing your password, seed recovery phrase, and backing up your Lamden Vault is <strong class="text-warning">your responsibility</strong>. This is important to keeping your cryptocurrency safe.
+            Storing your password, Secret Recovery phrase, and backing up your Lamden Vault is <strong class="text-warning">your responsibility</strong>. This is important to keeping your cryptocurrency safe.
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column flex-align-center">
             <h6 class="text-primary text-center">Remember</h6>
             <label class="chk-container text-body2 checkbox-text desc">
-                I understand that it is my responsibility to keep my password and seed recovery phrase safe.
+                I understand that it is my responsibility to keep my password and Secret Recovery phrase safe.
                 <input type="checkbox" bind:checked={remember}>
                 <span class="chk-checkmark mark"></span>
             </label>

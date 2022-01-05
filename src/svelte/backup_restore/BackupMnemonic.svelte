@@ -66,16 +66,16 @@
         width: 347px;
     }
 </style>
-<LeftSideFullPage title={"Seed Recovery Phrase"} helpLink={""}>
+<LeftSideFullPage title={"Secret Recovery Phrase"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Your Seed Recovery Phrase makes it easy to back up and restore all your accounts.
-            <div class="text-body1 layout-leftside-warning">Never disclose your Seed Recovery Phrase. These words can be used to steal all your accounts.</div>
+            Your Secret Recovery Phrase makes it easy to back up and restore all your accounts.
+            <div class="text-body1 layout-leftside-warning">Never disclose your Secret Recovery Phrase. These words can be used to steal all your accounts.</div>
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
-        <div class="flex-column wrap">
-            <h6 class="text-primary text-center">Seed Recovery Phrase</h6>
+        <div class="flex-column wrap flex-align-center">
+            <h6 class="text-primary text-center">Secret Recovery Phrase</h6>
             <Mnemonic {mnemonics}/>
             <div class="copy text-subtitle3 text-link-secondary flex-just-center" 
                 class:success={copied}
@@ -89,10 +89,10 @@
                         <CheckmarkIcon width="16px" color="var(--success-color)"/>
                     {/if}
                 </div>
-                Copy Seed Recovery Phrase
+                Copy Secret Recovery Phrase
             </div>
             <label class="chk-container text-body2 checkbox-text">
-                I have copied my seed recovery phrase in this exact order on paper, on a USB drive, and in a password manger.
+                I have copied my Secret Recovery phrase in this exact order on paper, on a USB drive, and in a password manger.
                 <input type="checkbox" bind:checked={confirmCopied}>
                 <span class="chk-checkmark mark"></span>
             </label>

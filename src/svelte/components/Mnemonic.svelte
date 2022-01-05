@@ -5,7 +5,8 @@
     
     export let mnemonics = [];
     export let disabled = true;
-    
+    export let disableInputs = [];
+
     let doms = [];
 
     export const validation = () => {
@@ -29,12 +30,12 @@
     .mnemonic{
         display: flex;
         flex-wrap: wrap;
-        width: 347px;
+        width: 370px;
         justify-content: space-between;
         margin-bottom: 1.25rem;
     }
     .mnemonic > .cell{
-        width: calc(calc(100% / 3) - 20px);
+        width: calc(calc(100% / 4) - 10px);
     }
 </style>
 <div class="mnemonic">
@@ -53,7 +54,7 @@
             }}
             on:keyup={handleKeyup}
             margin={"0"}
-            disabled={disabled}
+            disabled={disabled || disableInputs.indexOf(index) !== -1}
             />
         </div>
     {/each}

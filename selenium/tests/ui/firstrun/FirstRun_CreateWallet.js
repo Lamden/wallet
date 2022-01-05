@@ -118,7 +118,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     it('Renders FirstRunGenMnemonic.svelte', async function() {
         let title = await driver.findElement(By.css('.wrap > h6'));
         await title.getAttribute('innerText').then(text => {
-            assert.equal(text, 'Seed Recovery Phrase')
+            assert.equal(text, 'Secret Recovery Phrase')
         })
         let elements = await driver.findElements(By.css('.mnemonic .cell input'))
         assert.equal(elements.length, 24)
@@ -139,7 +139,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     it('Renders FirstRunVerifyMnemonic.svelte', async function() {
         let title = await driver.findElement(By.css('.flow-page h6'));
         let text = await title.getAttribute('innerText');
-        assert.equal(text, 'Verify Seed Recovery Phrase');
+        assert.equal(text, 'Verify Secret Recovery Phrase');
         let elements = await driver.findElements(By.css('.mnemonic .cell input'));
         for(let i=0; i<24; i++){
             await elements[i].sendKeys(`${mnemonics[i]}\n`);

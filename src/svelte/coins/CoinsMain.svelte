@@ -182,7 +182,9 @@
 				My Vault Accounts
 				<div class="warning-icon">{@html vaultLogo}</div>
 			</div>
-			<div class="header-percent header-text">Portfolio %</div>
+			{#if vaultExist}
+				<div class="header-percent header-text">Portfolio %</div>
+			{/if}
 		</div>
 		{#if vaultExist}
 			{#each vaults as coin (coin.vk) }

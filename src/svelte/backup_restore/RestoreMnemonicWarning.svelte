@@ -39,8 +39,8 @@
 <LeftSideFullPage title={"Warning"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Enter a new seed phrase for your Lamden Vault. 
-            <div class="text-body1 layout-leftside-warning">Caution, if a different seed phrase is used this will delete all your current Lamden Vault accounts.</div>
+            Enter a new Recovery Phrase for your Lamden Vault. 
+            <div class="text-body1 layout-leftside-warning">Caution, if a different Recovery Phrase is used this will delete all your current Lamden Vault accounts.</div>
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">

@@ -6,7 +6,7 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { tokenBalanceTotal, currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { TokenBalancesStore, currentNetwork, networkKey } from '../../js/stores/stores.js';
 
     //Components
     import TokenLogo from '../components/TokenLogo.svelte';
@@ -15,16 +15,16 @@
      import DirectionalChevronIcon from '../icons/DirectionalChevronIcon.svelte'
 
     //Utils
-    import { displayBalance, formatValue, stringToFixed, getTokenTotalBalance} from '../../js/utils.js'  
+    import { displayBalance, formatValue, stringToFixed, getTokenBalance} from '../../js/utils.js'  
 
     const dispatch = createEventDispatcher()
 
     // Props
     export let token;
-
+    export let vk;
     let logoSize = "30px"
 
-    $: balance = getTokenTotalBalance(networkKey($currentNetwork), token.contractName, $tokenBalanceTotal)
+    $: balance = getTokenBalance(networkKey($currentNetwork), vk, token.contractName, $TokenBalancesStore)
 
     //Context
     const { switchPage } = getContext('app_functions');

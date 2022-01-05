@@ -45,7 +45,7 @@
                 <Button id={'create-btn'}
                     classes={'button__solid button__primary'}
                     margin="0 0 1rem"
-                    name="View Seed Phrase" 
+                    name="View Recovery Phrase" 
                     width={'347px'}
                     click={() => {
                         setSelectedType(1)

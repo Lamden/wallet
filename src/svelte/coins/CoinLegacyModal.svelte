@@ -46,7 +46,7 @@
     <div class="warning-icon">{@html cautionIcon}</div>
     <h2>Legacy Account</h2>
     <div class="text-body1 msg">
-        This account type can only be backed up using a keystore or private keys and can not be backed up with a seed recovery phrase. Consider moving this account over to a vault account to take advantage of seed recovery phrases.
+        This account type can only be backed up using a keystore or private keys and can not be backed up with a Secret Recovery phrase. Consider moving this account over to a vault account to take advantage of Secret Recovery phrases.
     </div>
     <div class="buttons"> 
             <Button
