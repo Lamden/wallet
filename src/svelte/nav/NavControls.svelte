@@ -9,6 +9,8 @@
     import NetworkIcon from '../icons/NetworkIcon.svelte'
     import network from '../../img/menu_icons/icon_network-testnet.svg'
 
+    export let style;
+
     const handleClick = () => {
         if (!$currentNetwork.type === 'custom') NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
         else{
@@ -26,9 +28,9 @@
     padding: 0 20px 0 20px;
     min-width: fit-content;
     cursor: pointer;
-    border: 1px solid var(--divider-dark);
+    border: 1px solid var(--color-white);
     margin: 0.8rem 61px 0.8rem 0;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 .box:hover{
     background: var(--bg-secondary);
@@ -55,7 +57,7 @@ p.mainnet:hover{
 }
 </style>
 
-<div id="nav-network-info" class="box  flex-row" on:click={handleClick}>
+<div id="nav-network-info" style={style} class="box  flex-row" on:click={handleClick}>
     <div class="flex-column text-body2">
         <p>Current Network</p>
         <p  class="network-name text-secondary"

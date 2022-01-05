@@ -52,6 +52,7 @@
 
 .name{
 	width: 234px;
+    text-decoration: underline;
 }
 
 .amount{
@@ -81,7 +82,7 @@
             {`${displayBalance(stringToFixed(balance, 8))} ${token.tokenSymbol}`}
         </div>
     {/if}
-    <div class="flex-row flex-center-end">
+    <!-- <div class="flex-row flex-center-end">
         <div class="flex-row show-on-hover">
             <button class="button__small reorder-button" on:click={handleReorderUp}>
                 <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
@@ -90,6 +91,6 @@
                 <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
             </button>
         </div>  
-    </div>
+    </div> -->
 </div>
 

@@ -13,7 +13,7 @@
 	import { needsBackup, SettingsStore, currentPage, clicked, currentThemeName, EventsStore } from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu, Components, Modals, LeftSideFullPage}  from './Router.svelte'
+	import { Pages, FirstRun, Nav, NavForApp, Menu, Components, Modals, LeftSideFullPage}  from './Router.svelte'
 	const { Modal, Loading, LightDarkToggle } = Components;
 
 	//Images
@@ -180,7 +180,7 @@
 	}
 </script>
 
-<div class="container">
+<div class="container" style={fullPage.includes($currentPage.name)?"":"padding-top: 212px"}>
 	{#if $loaded && typeof firstRun !== 'undefined'}
 		{#if firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
@@ -191,7 +191,7 @@
 						<svelte:component this={Pages[$currentPage.name]}/>
 					</div>
 				{:else}
-					<Nav />
+					<NavForApp />
 					<div class="main-layout">
 						<div class="menu-pane">
 							<Menu />
@@ -245,6 +245,7 @@
 		flex-grow: 1;
 		max-width: 1920px;
     	margin: 0 auto;
+		flex-direction: column;
 	}
 
 	.main-layout{

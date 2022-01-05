@@ -361,10 +361,10 @@ export const accountsController = (utils, services) => {
             return true
         }
 
-        let accountType = accountStore[index].sk === "watchOnly" ? "watchOnly" : "encrypted";
+        let accountType = accountStore[index].type === "vault"? "vault" : accountStore[index].sk === "watchOnly" ? "watchOnly" : "legacy";
 
         for (let i=1; i < accountStore.length; i++){
-            let nextAccountType = accountStore[index - i].sk === "watchOnly" ? "watchOnly" : "encrypted"
+            let nextAccountType = accountStore[index].type === "vault"? "vault" : accountStore[index].sk === "watchOnly" ? "watchOnly" : "legacy";
             if (accountType === nextAccountType) {
                 moveArrayItemToNewIndex(index, index - i)
                 if (callback) callback(true)
@@ -379,10 +379,10 @@ export const accountsController = (utils, services) => {
             return true
         }
 
-        let accountType = accountStore[index].sk === "watchOnly" ? "watchOnly" : "encrypted";
+        let accountType = accountStore[index].type === "vault"? "vault" : accountStore[index].sk === "watchOnly" ? "watchOnly" : "legacy";
 
         for (let i=1; i <= accountStore.length - 1 - index; i++){
-            let nextAccountType = accountStore[index + i].sk === "watchOnly" ? "watchOnly" : "encrypted"
+            let nextAccountType = accountStore[index].type === "vault"? "vault" : accountStore[index].sk === "watchOnly" ? "watchOnly" : "legacy";
             if (accountType === nextAccountType) {
                 moveArrayItemToNewIndex(index, index + i)
                 if (callback) callback(true)

@@ -1,5 +1,6 @@
 <script context="module">
 //Layout
+import NavForApp from './nav/NavForApp.svelte';
 import Nav from './nav/Nav.svelte';
 import NavLogo from './nav/NavLogo.svelte';
 import NavControls from './nav/NavControls.svelte';
@@ -294,7 +295,7 @@ export const Layouts = {
 }
 
 export {
-    Nav, NavLogo, NavControls, NavStatus,
+    Nav, NavLogo, NavControls, NavStatus, NavForApp,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
     Coin, Token, CoinDivider, CoinDetails, CoinEmpty, CoinHistory, CoinAddToken, CoinAddAccount,
