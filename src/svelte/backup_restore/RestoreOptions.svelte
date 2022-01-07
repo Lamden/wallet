@@ -221,10 +221,11 @@
                 <InputBox 
                     id="private-key"
                     label="Private Key"
-                    inputType={'text'}
+                    inputType={'password'}
                     width={"100%"}
                     height={"56px"}
                     margin={"5px 0 20px 0"}
+                    disabledPWShowBtn={false}
                     bind:thisInput={privateKeyDom}
                     bind:value={privateKey}
                     on:keyup={handlePrivatekeyInput}

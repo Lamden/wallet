@@ -100,7 +100,7 @@
             if (result.added){
                 returnMessage = {type:'success', text: result.reason}
                 if (coinInfo.sk !== 'watchOnly') SettingsStore.setLastCoinAddedDate();
-                let type = coinInfo.sk === 'watchOnly'? 'watchOnly' : 'normal'; 
+                let type = coinInfo.type === 'vault'? 'vault' : coinInfo.sk === 'watchOnly'? 'watchOnly' : 'normal';
                 SettingsStore.setLastCoinAddedType(type)
                 chrome.runtime.sendMessage({type: 'joinSocket', data: coinInfo.vk})
                 chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coinInfo.vk})
@@ -128,7 +128,7 @@
         chrome.runtime.sendMessage({type: 'addVaultAccount', data: nickname}, (result) => {
             if (result.added){
                 returnMessage = {type:'success', text: result.reason}
-                let type = 'normal'; 
+                let type = 'vault'; 
                 SettingsStore.setLastCoinAddedType(type)
                 chrome.runtime.sendMessage({type: 'joinSocket', data: result.vk})
                 chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: result.vk})

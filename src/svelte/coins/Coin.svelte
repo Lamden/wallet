@@ -302,6 +302,7 @@
 }
 .collapse-btn{
     margin-left: 28px;
+    cursor:pointer
 }
 .tokenlist{
     padding-left: 64px;
@@ -380,11 +381,11 @@
                 {/if}
                 {#if coin.sk !== "watchOnly"}
                     <button id="send-btn" class:send-btn={!token} class="button__small button__primary coin-btn flex-row" on:click={handleSend}>
-                        Send
+                        {`Send ${token? token.tokenSymbol : $currentNetwork.currencySymbol}`}
                         <div class="icon">{@html arrowOut}</div>
                     </button>
                     <button id="receive-btn" class="button__small button__primary coin-btn flex-row" on:click={handleReceive}>
-                        Receive
+                        {`Receive ${token? token.tokenSymbol : $currentNetwork.currencySymbol}`}
                         <div class="icon">{@html arrowIn}</div>
                     </button>
                 {/if}

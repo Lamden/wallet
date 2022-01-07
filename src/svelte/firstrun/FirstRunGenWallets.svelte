@@ -14,6 +14,7 @@
     const { nextPage, getVault } = getContext('functions');
     
     let vault = null;
+    let message;
 
     onMount(() => {
         new Promise(function(resolve, reject) {
@@ -43,7 +44,7 @@
             }else{
                 if (result.added){
                 SettingsStore.setLastCoinAddedDate();
-                SettingsStore.setLastCoinAddedType("normal")
+                SettingsStore.setLastCoinAddedType("vault")
                 resolve()
                 }
                 message = result.reason

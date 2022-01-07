@@ -219,6 +219,8 @@ const openCoinReceiveModal = async (driver) => {
 }
 
 const openCoinSendModal = async (driver) => {
+    await driver.findElement(By.className("collapse-btn")).click()
+    await helpers.sleep(500)
     await driver.findElement(By.id('send-btn')).click();
 }
 
