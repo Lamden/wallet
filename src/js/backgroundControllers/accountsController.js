@@ -129,6 +129,9 @@ export const accountsController = (utils, services) => {
     // }
 
     const addNewLamdenAccount = (data) => {
+        if (mnemonic === data.mnemonic) return {
+            added:true
+        };
         const accountInfo = {
             'network': 'lamden',
             'name': "Lamden",

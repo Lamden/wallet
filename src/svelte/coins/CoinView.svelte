@@ -120,7 +120,7 @@ form{
             <button  id={"validate-btn"}
                 class="button__solid submit button__primary submit-button submit-button-text submit"
                 type="submit" >
-                    {passwordOkay ? copySuccessful? "COPY SUCCESS" : "COPY KEY" : "Validate Lamden Vault Password"}
+                    {passwordOkay ? copySuccessful? "COPY SUCCESS" : "COPY KEY" : "Validate Vault Password"}
                     {#if copySuccessful} 
                         <span class="copy-icon">
                             <CheckmarkIcon width="20px" color="var(--success-color)"/>

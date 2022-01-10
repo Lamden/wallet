@@ -80,7 +80,7 @@
 				switchPage(redirect[$currentPage.name])
 			}
 			refreshed = false;
-			if ($needsBackup){
+			if ($needsBackup && $SettingsStore.lastCoinAddedType === 'normal'){
 				openModal("BackupNotificationModal", {});
 			}
 		}
@@ -179,8 +179,7 @@
 		window.jdenticon_config = { replaceMode: "observe"}
 	}
 </script>
-
-<div class="container" style={fullPage.includes($currentPage.name)?"":"padding-top: 212px"}>
+<div class="container" style={fullPage.includes($currentPage.name) || walletIsLocked?"":"padding-top: 212px"}>
 	{#if $loaded && typeof firstRun !== 'undefined'}
 		{#if firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>

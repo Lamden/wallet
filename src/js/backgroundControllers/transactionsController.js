@@ -59,13 +59,15 @@ export const transactionsController = (utils, actions) => {
             }catch(e){
                 console.log(e)
             }
-            if (txBuilder.transactionSigned){
-                txBuilder.send(undefined, undefined, () => {
+            if (txBuilder.transactionSigned){  
+                txBuilder.send(undefined, (res, err) => {
+                    if (err) throw new Error(err)
                     txBuilder.sentFrom = sentFrom;
+                    console.log(res.hash)
                     console.log(txBuilder.getAllInfo())
                     processSendResponse(txBuilder);
                     if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
-                })        
+                }) 
             } 
         })
     }

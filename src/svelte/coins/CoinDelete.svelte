@@ -151,7 +151,7 @@ form{
                     class:button__red={passwordOkay}
                     class:button__primary={!passwordOkay}
                     type="submit" 
-                    value={passwordOkay ? "DELETE ACCOUNT" : "Validate Lamden Vault Password"}>
+                    value={passwordOkay ? "DELETE ACCOUNT" : "Validate Vault Password"}>
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__primary'} 

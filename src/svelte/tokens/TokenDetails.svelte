@@ -51,16 +51,16 @@
     $: tokens = $TokenStore[netKey] || []
     $: token = tokens.find(f => f.contractName === $SettingsStore.currentPage.data.contractName) || $SettingsStore.currentPage.data;
     $: balance = displayBalance(stringToFixed(getTokenTotalBalance(netKey, token.contractName, $tokenBalanceTotal), 8))
-    $: accountList = createAccountList($TokenBalancesStore).filter( c => c.sk !== "watchOnly" || c.type !== "vault"  )
-    $: coinsTracked = createAccountList($TokenBalancesStore).filter( c => c.sk === "watchOnly" )
-    $: vaults = createAccountList($TokenBalancesStore).filter(c => c.type === "vault");
+    $: accountList = createAccountList(netKey, $TokenBalancesStore).filter( c => c.sk !== "watchOnly" && c.type !== "vault"  )
+    $: coinsTracked = createAccountList(netKey, $TokenBalancesStore).filter( c => c.sk === "watchOnly" )
+    $: vaults = createAccountList(netKey, $TokenBalancesStore).filter(c => c.type === "vault");
     $: vaultExist = vaults.length > 0;
 
 	onMount(() => { 
         null
     });
 
-    const createAccountList = () => {
+    const createAccountList = (netKey) => {
         let acountsWithBalances = []
         if (!$TokenBalancesStore[netKey]) return acountsWithBalances
         Object.keys($TokenBalancesStore[netKey]).forEach(vk => {
@@ -278,13 +278,12 @@
             {/if}
         </div>
     </div>
-    {#if vaultExist}
+    {#if vaultExist && vaults.length > 0}
         <div class="header header-vault header-text text-body1 weight-800">
             <div class="header-name header-text">
                 My Vault Accounts
                 <div class="warning-icon">{@html vaultLogo}</div>
             </div>
-            <div class="header-percent header-text">Portfolio %</div>
         </div>
         {#each vaults as coin (coin.vk) }
             <Coin {coin} {token} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>

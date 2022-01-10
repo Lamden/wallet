@@ -299,7 +299,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.switchWindow(driver, 0) 
-            await helpers.ignoreBackupModal(driver)
+            //await helpers.ignoreBackupModal(driver)
             await helpers.lockWallet(driver, 1)
             await helpers.sleep(2000, true)
             await helpers.approvePopup(driver, 2, 1, true, {show: false})

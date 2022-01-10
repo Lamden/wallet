@@ -155,7 +155,7 @@
                     class:button__red={passwordOkay}
                     class:button__primary={!passwordOkay}
                     type="submit" 
-                    value={passwordOkay ? "Revoke Access" : "Validate Lamden Vault Password"}>
+                    value={passwordOkay ? "Revoke Access" : "Validate Vault Password"}>
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__primary'} 

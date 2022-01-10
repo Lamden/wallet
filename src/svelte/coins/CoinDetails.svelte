@@ -204,7 +204,10 @@
         border: 3px solid var(--color-grey-3);
     }
     h2{
-        line-height: 36px;
+        line-height: 52px;
+    }
+    .mr10{
+        margin-right: 10px;
     }
 
     @media only screen and (max-width: 970px) {
@@ -221,7 +224,9 @@
         <div class="flex-row">
             <div class="flex-column wallet-details">
                 <div class="nickname text-body1 flex-row">
-                    <Identicons margin="0 10px 0 0" iconValue={coin.vk} width="36px"/>
+                    <div class="logo mr10 flex-center-center">
+                        <Identicons margin="0" iconValue={coin.vk} width="36px"/>
+                    </div>
                     <h2>{coin.nickname}</h2>
                 </div>
                 <div class="text-overlay text-body1"> {$currentNetwork.currencySymbol} </div>

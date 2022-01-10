@@ -335,7 +335,7 @@
             </div>
             {#if whitelabel.mainPage.logo.show}
                 <div class="logo flex-center-center">
-                    <Identicons margin="0" iconValue={coin.vk} width="50px"/>
+                    <Identicons margin="0" iconValue={coin.vk} width="36px"/>
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}

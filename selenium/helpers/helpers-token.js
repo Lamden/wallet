@@ -7,7 +7,7 @@ const path = require('path')
 const placeholder_base64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiPjxjaXJjbGUgc3Ryb2tlPSJub25lIiBmaWxsPSIjOGU3Yjk4IiByPSI0OCUiIGN4PSI1MCUiIGN5PSI1MCUiPjwvY2lyY2xlPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwIDUwKSBzY2FsZSgwLjY5IDAuNjkpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoLTUwIC01MCkiIHN0eWxlPSJmaWxsOiNmZmZmZmYiPjxzdmcgZmlsbD0iI2ZmZmZmZiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdmVyc2lvbj0iMS4xIiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOmdlb21ldHJpY1ByZWNpc2lvbjt0ZXh0LXJlbmRlcmluZzpnZW9tZXRyaWNQcmVjaXNpb247aW1hZ2UtcmVuZGVyaW5nOm9wdGltaXplUXVhbGl0eTsiIHZpZXdCb3g9IjAgMCA1OCA4OCIgeD0iMHB4IiB5PSIwcHgiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgogICAKICAgIC5maWwwIHtmaWxsOiNmZmZmZmZ9CiAgIAogIDwvc3R5bGU+PC9kZWZzPjxnPjxwYXRoIGNsYXNzPSJmaWwwIiBkPSJNMCAyNGMwLC0zMSA1OCwtMzMgNTgsLTEgMCwxOSAtMTksMTggLTIzLDM2IC0yLDkgLTE0LDggLTE0LC0yIDAsLTE3IDE0LC0xOCAyMCwtMjkgNCwtOCAtMywtMTYgLTExLC0xNiAtMTcsMCAtMTEsMTkgLTIyLDE5IC00LDAgLTgsLTMgLTgsLTd6bTI4IDY0Yy0xMiwwIC0xMSwtMTggMCwtMTggMTIsMCAxMiwxOCAwLDE4eiI+PC9wYXRoPjwvZz48L3N2Zz48L2c+PC9zdmc+"
 
 const openAddAccountsAndTokens = async (driver) => {
-    await helpers.sleep(1000);
+    await helpers.sleep(2000);
     await driver.findElement(By.id('accounts')).click();
     await driver.findElement(By.id('add-btn')).click();
 }
@@ -46,14 +46,16 @@ const addToken_Save = async (driver, token) => {
     assert.equal(message, `${token.tokenName} added successfully`);
     await driver.findElement(By.id("home-btn")).click()
     await helpers.sleep(500, true)
-    await helpers.ignoreBackupModal(driver)
-    await validateTokenOnAccountsScreen(driver, token)
+    //await helpers.ignoreBackupModal(driver)
+    //await validateTokenOnAccountsScreen(driver, token)
 }
 
 const validateTokenOnAccountsScreen = async (driver, token) => {
     await helpers.gotoAccountsPage(driver)
-    await driver.wait(until.elementLocated(By.id(`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`)), 5000);
+    await driver.findElement(By.className("collapse-btn")).click()
+    await driver.wait(until.elementLocated(By.id(`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`)), 15000);
     await validateTokenLogo(driver, token)
+    await driver.findElement(By.className("collapse-btn")).click()
 }
 
 const validateTokenNotOnAccountsScreen = async (driver, token)=> {
@@ -178,6 +180,9 @@ const saveTokenModal = async (driver, token) => {
 }
 
 const gotoTokenDetails = async (driver, token) => {
+    let element = driver.findElement(By.className('collapse-btn'))
+    await driver.executeScript("arguments[0].click();", element)
+    await helpers.sleep(500);
     await driver.findElement(By.xpath(`//div[contains(text(),'${token.tokenName}')]`)).click()
 }
 
@@ -215,12 +220,14 @@ const openAccountsScreen = async (driver) => {
 }
 
 const openCoinReceiveModal = async (driver) => {
+    await driver.findElement(By.className("collapse-btn")).click()
+    await helpers.sleep(2000)
     await driver.findElement(By.id('receive-btn')).click();
 }
 
 const openCoinSendModal = async (driver) => {
     await driver.findElement(By.className("collapse-btn")).click()
-    await helpers.sleep(500)
+    await helpers.sleep(1000)
     await driver.findElement(By.id('send-btn')).click();
 }
 

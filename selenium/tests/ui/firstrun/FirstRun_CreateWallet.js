@@ -142,7 +142,11 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
         assert.equal(text, 'Verify Secret Recovery Phrase');
         let elements = await driver.findElements(By.css('.mnemonic .cell input'));
         for(let i=0; i<24; i++){
-            await elements[i].sendKeys(`${mnemonics[i]}\n`);
+            try {
+                await elements[i].sendKeys(`${mnemonics[i]}\n`);
+            } catch {
+                // tbd
+            }
         }
         await driver.findElement(By.id('next')).click();
     })

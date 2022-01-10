@@ -35,7 +35,8 @@ const switchWindow = async (driver, windowNum) => {
 
 const gotoAccountsPage = async (driver) => {
     await sleep(1000, true)
-    await driver.findElement(By.id('accounts')).click();
+    let element = driver.findElement(By.id('accounts'))
+    await driver.executeScript("arguments[0].click();", element)
 }
 
 const completeFirstRunSetup = async (driver, walletPassword, lock = true, testnet = true) => {
@@ -63,7 +64,11 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
 
     elements = await driver.findElements(By.css('.mnemonic .cell input'));
     for(let i=0; i<24; i++){
-        await elements[i].sendKeys(`${vals[i]}\n`);
+        try {
+            await elements[i].sendKeys(`${vals[i]}\n`);
+        } catch {
+            // tbd
+        }
     }
     await driver.findElement(By.id('next')).click();
     await sleep(2000)
@@ -72,7 +77,7 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     await driver.findElement(By.id('i-understand')).click()
     await sleep(3000)
 
-    await ignoreBackupModal(driver)
+    // await ignoreBackupModal(driver)
     if (testnet) await changeToTestnet(driver)
     await driver.findElement(By.id('refresh-icon')).click()
     await sleep(3000, true)
@@ -108,15 +113,15 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.findElement(By.id('restore-btn')).click()
     await sleep(2000)
     await driver.findElement(By.id('home-btn')).click()
-    await sleep(4000)
-    await driver.findElement(By.id('ignore-btn')).click()
+    await sleep(3000)
+    // await driver.findElement(By.id('ignore-btn')).click()
     await ignoreBackupModal(driver)
     if (testnet) {
         await changeToTestnet(driver)
         await sleep(2000)
     }
     await driver.findElement(By.id('refresh-icon')).click()
-    await sleep(6000, true)
+    await sleep(3000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
