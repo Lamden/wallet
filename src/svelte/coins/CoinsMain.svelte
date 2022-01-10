@@ -182,14 +182,24 @@
 				My Vault Accounts
 				<div class="warning-icon">{@html vaultLogo}</div>
 			</div>
-			{#if vaultExist}
+			{#if vaultExist && vaults.length > 0}
 				<div class="header-percent header-text">Portfolio %</div>
 			{/if}
 		</div>
 		{#if vaultExist}
-			{#each vaults as coin (coin.vk) }
-				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
-			{/each}
+			{#if vaults.length > 0}
+				{#each vaults as coin (coin.vk) }
+					<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
+				{/each}
+			{:else}
+				<Button 
+				id={"add-new-vaulte-button"}
+				classes={'button__solid button__primary'}
+				width={'232px'}
+				margin={'1rem 0 0 0'}
+				name="Create Vault Account" 
+				click={() => openModal('CoinAdd')} />
+			{/if}
 		{:else}
 			<CoinEmpty />
 		{/if}
