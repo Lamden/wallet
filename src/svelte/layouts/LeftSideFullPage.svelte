@@ -6,8 +6,10 @@
     export let title = "";
     export let helpLink;
 
+    let baseurl = 'https://docs.lamden.io/docs'
+
     const openHelpLink = () => {
-        window.open(helpLink, '_blank');
+        window.open(`https://docs.lamden.io/docs${helpLink}`, '_blank');
     }
 </script>
 <style>

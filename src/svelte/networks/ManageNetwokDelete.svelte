@@ -39,7 +39,7 @@
         width: 352px;  
     }
 </style>
-<LeftSideFullPage title={'Delete Network'}>
+<LeftSideFullPage title={'Delete Network'} helpLink="/wallet/network_overview">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             If the network is deleted, it cannot be be restored.

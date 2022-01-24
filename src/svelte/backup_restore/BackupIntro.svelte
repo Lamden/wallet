@@ -29,7 +29,7 @@
     }
 </style>
 
-<LeftSideFullPage title={`Backup ${whitelabel.companyName} Vault`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+<LeftSideFullPage title={`Backup ${whitelabel.companyName} Vault`} helpLink={'/wallet/backup_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             This process will allow you to either create an encrypted keystore or decrypt and 

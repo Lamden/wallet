@@ -81,6 +81,8 @@
                     if (transactionsList[0].hash !== json.data[0].hash) handleRefresh()
                 }
                 transactionsList = json.data
+            }).catch(e => {
+                transactionsList = []
             })
             
         }

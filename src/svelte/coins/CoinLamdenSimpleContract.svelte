@@ -238,7 +238,6 @@ import { rejects } from 'assert';
                 stampLimit = Math.ceil(maxStamps + maxStamps * buferSize);
                 updateStamplimitSuccess = true;
             }).catch(e => {
-                console.log(e);
                 stampLimit = defaultStamps;
                 updateStamplimitSuccess = true;
             })

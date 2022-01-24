@@ -29,7 +29,7 @@
     }
 </style>
 
-<LeftSideFullPage title={`Restore Lamden Vault`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+<LeftSideFullPage title={`Restore Lamden Vault`} helpLink={'/wallet/backup_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             This process will allow you to restore your Valut Accounts and Legacy Accounts accounts.

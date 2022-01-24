@@ -93,7 +93,7 @@
 
 <style>
 </style>
-<LeftSideFullPage title={"Remember"} helpLink={""}>
+<LeftSideFullPage title={"Remember"} helpLink={"/wallet/restore_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Enter a new Recovery Phrase for your Lamden Vault

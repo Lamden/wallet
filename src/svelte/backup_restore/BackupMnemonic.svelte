@@ -66,7 +66,7 @@
         width: 347px;
     }
 </style>
-<LeftSideFullPage title={"Secret Recovery Phrase"} helpLink={""}>
+<LeftSideFullPage title={"Secret Recovery Phrase"} helpLink={"/wallet/backup_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Your Secret Recovery Phrase makes it easy to back up and restore all your accounts.

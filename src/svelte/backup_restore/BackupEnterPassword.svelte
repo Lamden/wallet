@@ -60,7 +60,7 @@
     }
 </style>
 
-<LeftSideFullPage title={`Verify Your Password`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+<LeftSideFullPage title={`Verify Your Password`} helpLink={'/wallet/backup_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Enter your password to continue.

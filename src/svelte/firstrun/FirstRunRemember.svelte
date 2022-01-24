@@ -29,7 +29,7 @@
         margin-bottom: 1.5rem;
     }
 </style>
-<LeftSideFullPage title={"Keeping Yourself Secure"} helpLink={""}>
+<LeftSideFullPage title={"Keeping Yourself Secure"} helpLink="/wallet/first_vault_install">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Storing your password, Secret Recovery phrase, and backing up your Lamden Vault is <strong class="text-warning">your responsibility</strong>. This is important to keeping your cryptocurrency safe.

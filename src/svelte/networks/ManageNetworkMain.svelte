@@ -16,7 +16,7 @@
     const { setMessage, changeStep, setNetwork} = getContext('networks_functions');
 
     //DOM Nodes
-    let formField, hostField, nameField, blockServiceField, currencySymbolField, explorerField
+    let formField, hostField, nameField, blockServiceField, currencySymbolField, explorerField, typeFiled
 
     let name = ''
     let type ='mainnet'
@@ -104,6 +104,7 @@
     const clearFields = () => {
         name = ''
         type ='mainnet'
+        typeFiled.handleClick(types[0], 0)
         currencySymbol = ''
         hosts = []
         blockService = []
@@ -127,6 +128,8 @@
             explorer = e.detail.selected.value.blockExplorer
             checking = false;
             added = false;
+            let index = types.findIndex(item => item.value === type);
+            typeFiled.handleClick(types[index], index)
         }
     }
 
@@ -176,7 +179,7 @@ h6{
 }
 </style>
 
-<LeftSideFullPage title={"Custom Networks"}>
+<LeftSideFullPage title={"Custom Networks"} helpLink="/wallet/network_overview">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             As the Lamden ecosystem grows, a very popular option for building new technologies is to build a custom network that allows users to transfer tokens, or value of some kind, between the networks. 
@@ -231,6 +234,7 @@ h6{
                 />
                 <DropDown
                     id="type"
+                    bind:this={typeFiled}
                     items={types}
                     width={"347px"}
                     label="Type"

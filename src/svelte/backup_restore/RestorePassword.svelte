@@ -83,7 +83,7 @@
 
 </style>
 
-<LeftSideFullPage title={`Keystore Password`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+<LeftSideFullPage title={`Keystore Password`} helpLink={'/wallet/restore_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             This process will allow you to restore your Valut Accounts and Legacy Accounts accounts.

@@ -29,7 +29,7 @@
         font-size: 18px;
     }
 </style>
-<LeftSideFullPage title={"Remember"} helpLink={""}>
+<LeftSideFullPage title={"Remember"} helpLink={"/wallet/restore_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             <div class="text-body1 layout-leftside-warning">Caution, if a different Recovery Phrase is used this will delete all your current Lamden Vault accounts.</div>

@@ -36,7 +36,7 @@
         font-size: 18px;
     }
 </style>
-<LeftSideFullPage title={"Warning"} helpLink={""}>
+<LeftSideFullPage title={"Warning"} helpLink={"/wallet/restore_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Enter a new Recovery Phrase for your Lamden Vault. 

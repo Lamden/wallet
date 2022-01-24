@@ -43,7 +43,7 @@
 <div class="header">
     <NavLogo />
 </div>
-    <LeftSideFullPage title={"Password Safety"}>
+    <LeftSideFullPage title={"Password Safety"} helpLink="/wallet/settings_changepassword">
         <div slot="body">
             <div class="text-body1 weight-400 desc">
                 You've successfully changed your Lamden Vault password! The next time you sign in, you’ll be asked for your new password.

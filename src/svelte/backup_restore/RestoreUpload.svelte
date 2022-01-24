@@ -91,7 +91,7 @@ span{
 }
 
 </style>
-<LeftSideFullPage title="Restore Legacy Accounts" helpLink="https://docs.lamden.io/docs/wallet/restore_keystore">
+<LeftSideFullPage title="Restore Legacy Accounts" helpLink="/wallet/restore_keystore">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Use a Keystore file to recover Legacy Lamden Accounts. This will NOT restore accounts contained in a Recovery Phrase.

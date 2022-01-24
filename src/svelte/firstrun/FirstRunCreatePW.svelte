@@ -71,7 +71,7 @@
     }
 </style>
 
-<LeftSideFullPage title={whitelabel.firstRun_setup.create_pw.title} helpLink={whitelabel.firstRun_setup.create_pw.helpLink}>
+<LeftSideFullPage title={whitelabel.firstRun_setup.create_pw.title} helpLink="/wallet/first_vault_install">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             For maximun security we suggest creating a complex password and storing it in a password manager such as 

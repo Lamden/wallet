@@ -35,7 +35,7 @@ h6{
 }
 
 </style>
-<LeftSideFullPage title={whitelabel.firstRun_setup.intro.title} helpLink={whitelabel.firstRun_setup.intro.helpLink}>
+<LeftSideFullPage title={whitelabel.firstRun_setup.intro.title} helpLink="/wallet/first_vault_install">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             {whitelabel.firstRun_setup.intro.message}

@@ -151,7 +151,7 @@ p{
 }
 </style>
 
-<LeftSideFullPage title={`Add Accounts`} helpLink={'https://docs.lamden.io/docs/wallet/restore_overview'}>
+<LeftSideFullPage title={`Add Accounts`} helpLink={'/wallet/restore_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Almost there! Now let's select which Accounts you'd like to restore.

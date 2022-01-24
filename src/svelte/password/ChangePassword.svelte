@@ -120,7 +120,7 @@
 </div>
 <div class="flex-column">
     {#if currentStep === 1}
-        <LeftSideFullPage title={"Password Safety"}>
+        <LeftSideFullPage title={"Password Safety"} helpLink="/wallet/settings_changepassword">
             <div slot="body">
                 <div class="text-body1 weight-400 desc">
                     For maximun security we suggest creating a complex password and storing it in a password manager such as <a class="text-link weight-700 link" href="https://www.lastpass.com/" target="_blank">LastPass</a>. 

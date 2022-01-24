@@ -58,7 +58,7 @@
         width: 347px;
     }
 </style>
-<LeftSideFullPage title={"Restore Legacy Accounts"} helpLink={""}>
+<LeftSideFullPage title={"Restore Legacy Accounts"} helpLink={"/wallet/restore_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             To restore your legacy account, please enter your private key

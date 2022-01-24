@@ -67,7 +67,7 @@ p{
 }
 </style>
 
-<LeftSideFullPage title="Remember" helpLink={"https://docs.lamden.io/docs/wallet/backup_overview"}>
+<LeftSideFullPage title="Remember" helpLink={"/wallet/backup_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Safe storage of your keystore and password are important to keeping your cryptocurrency safe. 

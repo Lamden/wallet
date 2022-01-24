@@ -44,7 +44,7 @@
         if (selectElm.selectedIndex >= 0) dispatch('selected', {id, selected: items[selectElm.selectedIndex]});
     }
 
-    const handleClick = (option, index) => {
+    export const handleClick = (option, index) => {
         selectElm.options[index].selected = true;
         dispatchSelected()
         toggleBox();

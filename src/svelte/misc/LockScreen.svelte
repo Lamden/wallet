@@ -90,7 +90,7 @@ form{
     <div class="header text-primary">
         <NavLogo />
     </div>
-    <LeftSideFullPage title={'Trouble signing in?'} helpLink={''}>
+    <LeftSideFullPage title={'Trouble signing in?'} helpLink={'/wallet/lock_unlock'}>
         <div class="text-primary flex flex-just-center" slot="content">
             <div class="lockscreen" in:fly="{{delay: 100, duration: 300, x: -200, y: 0, opacity: 0, easing: quintOut}}">
                 <h6 class="heading">Sign In</h6>

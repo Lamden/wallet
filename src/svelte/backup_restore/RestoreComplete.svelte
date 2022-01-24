@@ -109,7 +109,7 @@ p{
 }
 </style>
 
-<LeftSideFullPage title={`Wallets Restored`} helpLink={'https://docs.lamden.io/docs/wallet/restore_overview'}>
+<LeftSideFullPage title={`Wallets Restored`} helpLink={'/wallet/restore_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             You've added the following accounts succesfully! You may now perform transactions using these addresses.

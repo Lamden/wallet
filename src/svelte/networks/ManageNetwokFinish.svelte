@@ -19,7 +19,7 @@
         line-height: 24px;
     }
 </style>
-<LeftSideFullPage title={message.left.title}>
+<LeftSideFullPage title={message.left.title} helpLink="/wallet/network_overview">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             {message.left.content}

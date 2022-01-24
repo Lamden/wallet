@@ -65,7 +65,7 @@
     }
 </style>
 
-<LeftSideFullPage title={`Keystore Password`} helpLink={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}>
+<LeftSideFullPage title={`Keystore Password`} helpLink={whitelabel.helpLinks.masterURL || "/wallet/backup_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             For maximun security we suggest creating a complex password

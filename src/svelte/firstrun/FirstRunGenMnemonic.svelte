@@ -67,7 +67,7 @@
         width: 347px;
     }
 </style>
-<LeftSideFullPage title={"About Seed Recovery Phrases"} helpLink={""}>
+<LeftSideFullPage title={"About Seed Recovery Phrases"} helpLink="/wallet/first_vault_install">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Your Secret Recovery Phrase makes it easy to back up and restore all your accounts.

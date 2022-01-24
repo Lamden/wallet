@@ -68,6 +68,9 @@
 .dropdown:focus-visible{
     outline: none;
 }
+option{
+    background-color: var(--bg-secondary);
+}
 </style>
 
 <div id="nav-network-info" style={style} class="box  flex-row">

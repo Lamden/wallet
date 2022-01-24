@@ -182,7 +182,7 @@
         padding: 0 10px;
     }
 </style>
-<LeftSideFullPage title={"Restore Accounts"} helpLink={""}>
+<LeftSideFullPage title={"Restore Accounts"} helpLink={"/wallet/restore_overview"}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             To restore your accounts, please select the type of restore you want to perform then enter the information associated.

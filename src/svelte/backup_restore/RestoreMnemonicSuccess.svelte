@@ -24,7 +24,7 @@
     }
 </style>
 
-<LeftSideFullPage title="Restore Success" helpLink="">
+<LeftSideFullPage title="Restore Success" helpLink="/wallet/restore_overview">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             You have succesfully restored your Lamden Vault Accounts.

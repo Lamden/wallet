@@ -117,7 +117,7 @@ p{
 
 </style>
 
-<LeftSideFullPage title="Decrypted Account" helpLink="">
+<LeftSideFullPage title="Decrypted Account" helpLink="/wallet/backup_overview">
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             These are all the Secret Keys stored in your Lamden Vault.
