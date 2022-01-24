@@ -42,8 +42,8 @@
 	align-items: center;
 	position: absolute;
 	left: 50%;
-	top: 0px;
-	transform: translate(-50%, 0);
+	top: 50%;
+	transform: translate(-50%, -50%);
 	overflow: visible;
 	padding: 30px 55px;
 	background: var(--bg-primary);

@@ -95,15 +95,12 @@ span{
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Use a Keystore file to recover Legacy Lamden Accounts. This will NOT restore accounts contained in a Recovery Phrase.
+            <div class="text-body1 layout-leftside-warning">This will NOT restore accounts contained in a Recovery Phrase.</div>
         </div>
     </div>
 <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
     <div class="flex-column wrap">
-        <h6>Restore Accounts</h6>
-        
-        <div class="flow-text-box text-body1 text-primary">
-            To restore your accounts, please upload the keystore file created during your backup.
-        </div>
+        <h6>Restore with Keystore File</h6>
         
         <div class="caption-box text-caption">
             <span class="text-accent text-body1" on:click={() => openPicker()}>Click here to choose a file</span>
@@ -124,7 +121,7 @@ span{
             <Button id={'confirm-keystore-btn'}
                     classes={`button__solid ${activeButton}`}
                     styles={'margin-bottom: 16px;'}
-                    name="Confirm Keystore"
+                    name="Confirm Restore"
                     disabled={disabledButton}
                     click={() => nextPage()} />
             <Button id={'back-btn'}

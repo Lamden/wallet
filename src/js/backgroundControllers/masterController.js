@@ -203,6 +203,13 @@ export const masterController = () => {
         return response
     }
 
+    const retryFetchSendResult = (txdata) => {
+        let response = {status: ""};
+        transactions.processRetry(txdata)
+        response.status = "Transaction Sent, Awaiting Response"
+        return response
+    }
+
     // 1) For security if a contract name is provided that differes from the approved contract, automatic transactions will be ignored
     // 2) If no contract name is provided then the approved contract name will be provided 
     // 3) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
@@ -497,6 +504,7 @@ export const masterController = () => {
         leaveTokenSockets,
         updateAccountAndTokenBalances,
         viewPrivateKey,
-        setMnemonic
+        setMnemonic,
+        retryFetchSendResult
     }
 }

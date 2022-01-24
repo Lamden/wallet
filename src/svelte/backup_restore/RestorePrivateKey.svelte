@@ -58,10 +58,10 @@
         width: 347px;
     }
 </style>
-<LeftSideFullPage title={"Restore With Private Key"} helpLink={""}>
+<LeftSideFullPage title={"Restore Legacy Accounts"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Restore a Legacy account using it's Private Key.
+            To restore your legacy account, please enter your private key
             <div class="text-body1 layout-leftside-warning">Any accounts restored in this way are not contained in your Lamden Vault and as such not backed up under your Recovery Phrase</div>
         </div>
     </div>

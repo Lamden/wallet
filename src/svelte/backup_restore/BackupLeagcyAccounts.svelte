@@ -29,7 +29,7 @@
     }
 </style>
 
-<LeftSideFullPage title={`Backup ${whitelabel.companyName} Vault`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
+<LeftSideFullPage title={`Backup Legacy Accounts`} helpLink={'https://docs.lamden.io/docs/wallet/backup_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             This process will allow you to either create an encrypted keystore or decrypt and 
@@ -39,43 +39,28 @@
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column">
-            <h6 class="text-primary text-center">Backup {whitelabel.companyName} Vault</h6>
+            <h6 class="text-primary text-center">Backup Legacy Accounts</h6>
+            <div class="text-body1 text-primary font18">
+                Description...
+            </div>
             <div class="flex-column flow-buttons">
-                {#if vaultExist}
                 <Button id={'create-btn'}
                     classes={'button__solid button__primary'}
-                    margin="0 0 1rem"
-                    name="View Recovery Phrase" 
+                    margin="1.5rem 0 0 0"
+                    name="Next" 
                     width={'347px'}
                     click={() => {
-                        setSelectedType(1)
-                        changeStep(1)
+                        setSelectedType(2) 
+                        changeStep(3)
                     }} />
-                {/if}
-                <Button id={'create-btn'}
-                        classes={'button__solid'}
-                        margin="0 0 1rem"
-                        name="Backup Legacy Accounts" 
-                        width={'347px'}
-                        click={() => {
-                            setSelectedType(2) 
-                            changeStep(1)
-                        }} />
-                <Button id={'view-keys-btn'}
-                        classes={'button__solid'} 
-                        margin="0 0 1rem"
-                        name="View Account Keys" 
-                        width={'347px'}
-                        click={() => {
-                            setSelectedType(3)
-                            changeStep(1)
-                        }} />
-                <Button id={'back-btn'}
-                        classes={'button__solid'} 
-                        margin="0 0 1rem"
-                        width={'347px'}
-                        name="Back" 
-                        click={() => changeStep(0)} />  
+                <Button
+                    id={'home'} 
+                    name="Back To Home"
+                    width={'347px'}
+                    margin={'1rem 0 0 0'}
+                    classes={'button__solid button__secondary'}
+                    click={() => appHome()}
+                />
             </div>
         </div>
     </div>

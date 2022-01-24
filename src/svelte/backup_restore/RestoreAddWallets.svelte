@@ -23,10 +23,11 @@
     let checked = true;
     let consent = false;
     let restoreType = getSelectedType? getSelectedType() : 999;
+    
     $: numOfCheckedAccounts = 0
+    $: btnDisable = numOfCheckedAccounts === 0 || restoreType === 3? !consent : false
 
 	onMount(() => {
-        consent = restoreType === 999;
         handleChange();
         numOfCheckedAccounts = keys.keyList.filter(f => f.checked).length
     });
@@ -212,7 +213,7 @@ p{
                     styles={'margin-bottom: 16px;'}
                     name="Restore Accounts"
                     click={() => nextStep()} 
-                    disabled={numOfCheckedAccounts === 0 || !consent} />
+                    disabled={btnDisable} />
 
             <Button id={'back-btn'}
                     width="347px"

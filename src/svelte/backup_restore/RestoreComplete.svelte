@@ -109,7 +109,7 @@ p{
 }
 </style>
 
-<LeftSideFullPage title={`Lamden Vault Restored`} helpLink={'https://docs.lamden.io/docs/wallet/restore_overview'}>
+<LeftSideFullPage title={`Wallets Restored`} helpLink={'https://docs.lamden.io/docs/wallet/restore_overview'}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             You've added the following accounts succesfully! You may now perform transactions using these addresses.
@@ -117,7 +117,6 @@ p{
     </div>
 <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
     <div class="flex-column">
-        <h6>Lamden Vault Restored</h6>
         <div>
             <div class="flex-row header text-subtitle2 text-primary">
                 <p class="header-name">{'Name'}</p>

@@ -10,6 +10,7 @@
     import BackupIcon from '../icons/menu/BackupIcon.svelte';
     import RestoreIcon from '../icons/menu/RestoreIcon.svelte';
     import ChangePasswordIcon from '../icons/menu/ChangePassword.svelte';
+    import NetworksIcon from '../icons/menu/NetworksIcon.svelte';
 
     //Stores
 	import { CoinStore} from '../../js/stores/stores.js';
@@ -37,14 +38,20 @@
         desc: "It only takes a few minutes, so please have your original keystore file ready, and be prepared to provide the password for it.",
         btnName: "Restore Wallet",
         page: "RestoreMain"
-    },
-    {
+    },{
         id: "change-btn",
         logo: "changePassword",
         title: "Change Password",
         desc: "Create a complex password so that no one can unlock your wallet except you.",
         btnName: "Change Password",
         page: "ChangePassword"
+    },{
+        id: "networks-btn",
+        logo: "networks",
+        title: "Manage Networks",
+        desc: "Add or edit custom networks..",
+        btnName: "Manage Networks",
+        page: "ManageNetwork"
     },{
         id: "signout-btn",
         logo: "signout",
@@ -58,7 +65,8 @@
         backup: BackupIcon,
         restore: RestoreIcon,
         signout: SignOutIcon,
-        changePassword: ChangePasswordIcon
+        changePassword: ChangePasswordIcon,
+        networks: NetworksIcon
     }
 
     const btnAction = (page) => {

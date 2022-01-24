@@ -55,6 +55,7 @@ import CoinWatchedModal from './coins/CoinWatchedModal.svelte';
 import CoinView from './coins/CoinView.svelte';
 
 //Backup and Restore
+import BackupLeagcyAccounts from './backup_restore/BackupLeagcyAccounts.svelte';
 import BackupMnemonicComplete from './backup_restore/BackupMnemonicComplete.svelte'
 import BackupMnemonic from './backup_restore/BackupMnemonic.svelte';
 import Backup from './backup_restore/Backup.svelte';
@@ -175,6 +176,12 @@ import ChangePassword from './password/ChangePassword.svelte';
 import ChangePasswordSlot from './password/ChangePasswordSlot.svelte';
 import ChangePasswordFinish from './password/ChangePasswordFinish.svelte';
 
+// NetWorks
+import ManageNetwork from './networks/ManageNetwork.svelte';
+import ManageNetworkMain from './networks/ManageNetworkMain.svelte';
+import ManageNetwokFinish from './networks/ManageNetwokFinish.svelte';
+import ManageNetwokDelete from './networks/ManageNetwokDelete.svelte';
+
 // Layouts
 import LeftSideFullPage from './layouts/LeftSideFullPage.svelte';
 
@@ -206,7 +213,8 @@ export const BackupPages = {
     BackupKeystoreComplete,
     BackupMnemonic,
     FirstRunVerifyMnemonic,
-    BackupMnemonicComplete
+    BackupMnemonicComplete,
+    BackupLeagcyAccounts
 };
 
 export const FirstRun = { 
@@ -226,6 +234,10 @@ export const FirstRun = {
 };
 
 export const Pages = { 
+    ManageNetwokDelete,
+    ManageNetwokFinish,
+    ManageNetworkMain,
+    ManageNetwork,
     ChangePasswordSlot, ChangePasswordFinish,
     Settings, ChangePassword,
     News,
@@ -313,6 +325,9 @@ export {
     ConnectionsMain, Connection, ConnectionEmpty,
     ChangePassword,
     LeftSideFullPage,
-    ChangePasswordSlot, ChangePasswordFinish
+    ChangePasswordSlot, ChangePasswordFinish,
+    ManageNetwork,
+    ManageNetworkMain,
+    ManageNetwokFinish
 };
 </script>

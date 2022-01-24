@@ -149,6 +149,29 @@ export const createNetworksStore = () => {
             })
             return {added: true};
         },
+        //Add a new network into the Networks Array
+        updateNetwork: (oldNetworkInfo, newNetworkInfo) => {
+            //Reject undefined or missing Network info
+            if (!isNetworkObj(newNetworkInfo)) return {updated: false, reason: 'badArg'};
+
+            if (newNetworkInfo.name.includes("|")) return {updated: false, reason: 'badArg'};
+
+            //Set Defaults if they weren't passed
+            if (!newNetworkInfo.online) newNetworkInfo.online = false;
+
+
+            //Don't add network if a similar one exits
+            let netKey = networkKey(oldNetworkInfo);
+            let networks = makeList(get(NetworksStore));
+            let index = networks.findIndex(network => networkKey(network) === netKey)
+            
+            NetworksStore.update(networksStore => {
+                //Override the old networkinfo
+                networksStore.user[index] = newNetworkInfo;
+                return networksStore;
+            })
+            return {updated: true};
+        },
         //Change the online status of network to true/false
         setNetworkStatus: (networkInfo, status) => {
             //Reject undefined or missing info
@@ -167,9 +190,9 @@ export const createNetworksStore = () => {
         //Delete a network from the network list
         deleteNetwork: (networkObj) => {
             //Reject undefined or missing Network info
-            if (!validateTypes.isSpecificClass(networkObj, 'Network')) return;
+            if (!networkObj.classname === 'Network') return;
 
-            let netKey = networkObj.url
+            let netKey = networkKey(networkObj)
             leaveTokenSockets()
             NetworksStore.update(networksStore => {
                 

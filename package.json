@@ -6,7 +6,7 @@
   "license": "",
   "scripts": {
     "build": "node utils/build.js",
-    "tests": "npm run build && mocha --recursive --timeout 30000 selenium/tests/",
+    "tests": "npm run build && mocha --recursive --retries 3 --timeout 30000 selenium/tests/",
     "test-firstrun": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/*.js",
     "test-firstrun-new": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_CreateWallet.js",
     "test-firstrun-restore": "mocha --recursive --timeout 30000 selenium/tests/ui/firstrun/FirstRun_RestoreWallet*.js",
@@ -26,6 +26,7 @@
     "test-coin-btn": "mocha --timeout 30000 selenium/tests/ui/coin/coin-btn.js",
     "test-coin-backup-notification": "mocha --timeout 30000 selenium/tests/ui/coin/coin-backup-notification.js",
     "test-coin-changepassword": "mocha --timeout 30000 selenium/tests/ui/coin/coin-changepassword.js",
+    "test-misc": "mocha --timeout 30000  selenium/tests/ui/misc/*.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -54,7 +55,7 @@
   "dependencies": {
     "easyqrcodejs": "^4.4.6",
     "faunadb": "^4.4.1",
-    "lamden-js": "^3.0.0",
+    "lamden-js": "^3.5.8",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",
     "node-cryptojs-aes": "^0.4.0",

@@ -93,16 +93,16 @@
 
 <style>
 </style>
-<LeftSideFullPage title={"Secret Recovery Phrase"} helpLink={""}>
+<LeftSideFullPage title={"Remember"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Enter a new Recovery Phrase for your Lamden Vault. 
+            Enter a new Recovery Phrase for your Lamden Vault
             <div class="text-body1 layout-leftside-warning">Caution, if a different Recovery Phrase is used this will delete all your current Lamden Vault accounts.</div>
         </div>
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column flex-align-center">
-            <h6 class="text-primary text-center">Secret Recovery Phrase</h6>
+            <h6 class="text-primary text-center">Restore with Seed Recovery Phrase</h6>
             <Mnemonic {mnemonics} on:mnemonicChanged={handleMnemonicChanged} disabled={false}/>
             <div class="flex-column flow-buttons">
                 <Button id="create-wallet"

@@ -1,13 +1,15 @@
 <script>
 	//Stores
-    import { currentNetwork, NetworksStore } from '../../js/stores/stores.js';
+    import { currentNetwork, NetworksStore, networksDropDownList } from '../../js/stores/stores.js';
     
 	//Components
-    import { NavStatus }  from '../Router.svelte'
+    import { NavStatus, Components }  from '../Router.svelte'
+    const { DropDown } = Components;
 
     //Images
     import NetworkIcon from '../icons/NetworkIcon.svelte'
     import network from '../../img/menu_icons/icon_network-testnet.svg'
+
 
     export let style;
 
@@ -18,12 +20,18 @@
             else NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
         }
     }
+
+    const handleSelected = (e) => {
+        let index = e.target.options.selectedIndex
+        let network = $networksDropDownList[index]
+        NetworksStore.setCurrentNetwork(network.value)
+    }
 </script>
 
 <style>
 .box{
     box-sizing: border-box;
-    text-align: right;
+    text-align: left;
     align-items: center;
     padding: 0 20px 0 20px;
     min-width: fit-content;
@@ -38,13 +46,7 @@
     -webkit-box-shadow: var(--box-shadow-2);
     -moz-box-shadow: var(--box-shadow-2);
 }
-p{
-    margin: 0;
-}
-p.mainnet:hover{
-    text-decoration: underline;
-    color: var(--font-accent);
-}
+
 .mainnet{
     color: var(--font-accent);
 }
@@ -55,17 +57,29 @@ p.mainnet:hover{
     margin-left: 20px;
     width: 50px;
 }
+.dropdown{
+    background: transparent;
+    padding: 4px 2px;
+    border-radius: 4px;
+    width: 146px;
+    margin-bottom: 4px;
+    border: 1px solid white;
+}
+.dropdown:focus-visible{
+    outline: none;
+}
 </style>
 
-<div id="nav-network-info" style={style} class="box  flex-row" on:click={handleClick}>
+<div id="nav-network-info" style={style} class="box  flex-row">
     <div class="flex-column text-body2">
-        <p>Current Network</p>
-        <p  class="network-name text-secondary"
+        <select on:change={handleSelected} class="dropdown text-secondary text-body2"             
             class:mainnet={$currentNetwork.type === 'mainnet'}
             class:text-secondary={$currentNetwork.type === 'testnet' || $currentNetwork.type === 'custom'}
-            class:custom={$currentNetwork.type === 'custom'}>
-        {$currentNetwork.name}
-        </p>
+            class:custom={!$currentNetwork.lamden}>
+            {#each $networksDropDownList as item, index}
+                <option value={item.value} class="text-body2" selected={item.selected}>{item.name}</option>
+            {/each}
+        </select>
         <NavStatus />
     </div>
     <div class="icon">

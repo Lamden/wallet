@@ -12,15 +12,23 @@
 
     //Props
     export let txData;
-    let message = 'Sending Transaction'
+    export let txallInfo;
+    let message = !txallInfo?'Sending Transaction':'Checking Again'
 
     onMount(() => {
-        chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
-            message = response.status
-            if (message === "Transaction cancelled by user") {
-                setTimeout(home, 1500);
-            }
-        })
+        if (!txallInfo){
+            chrome.runtime.sendMessage({type: 'sendLamdenTransaction', data: txData.txInfo}, (response) => {
+                message = response.status
+                if (message === "Transaction cancelled by user") {
+                    setTimeout(home, 1500);
+                }
+            })
+        } else if(txallInfo.resultInfo.statusCode === 2) {
+            // check again
+            chrome.runtime.sendMessage({type: 'retryFetchTransactionResult', data: txallInfo}, (response) => {
+                message = response.status
+            })
+        }
     })
 
     onDestroy(() => {

@@ -11,7 +11,8 @@
             "type": "mainnet", 
             "lamden": true, 
             "currencySymbol": "TAU",
-            "blockExplorer": "https://mainnet.lamden.io"
+            "blockExplorer": "https://mainnet.lamden.io",
+            "blockservice_hosts": ["http://165.22.47.195:3535"]
         },
         {
             "name": "Lamden Testnet", 
@@ -19,7 +20,8 @@
             "type": "testnet", 
             "lamden": true, 
             "currencySymbol": "dTAU",
-            "blockExplorer": "https://testnet.lamden.io"
+            "blockExplorer": "https://testnet.lamden.io",
+            "blockservice_hosts": ["http://165.227.181.34:3535"]
         }
     ],
     "firstRun_setup":{

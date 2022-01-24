@@ -141,6 +141,8 @@ export const messagesHandler = (masterController) => {
                     if (message.type === 'balancesStoreClearAllNetworks') sendResponse(masterController.balances.clearAllNetworks())
                     //Create and Send a transaction to the currentNetwork Masternode
                     if (message.type === 'sendLamdenTransaction') sendResponse(masterController.initiateAppTxSend(message.data, sender))
+                    //Retry to fetch tx result
+                    if (message.type === 'retryFetchTransactionResult') sendResponse(masterController.retryFetchSendResult(message.data))
                     //Set a dApp as Trusted to enable auto transactions
                     if (message.type === 'setTrusted') sendResponse(masterController.dapps.setTrusted(message.data))
                     //Remove a connection approval from a dApp, the dApp will have to reapprove

@@ -32,7 +32,6 @@
 <LeftSideFullPage title={"Remember"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            Enter a new Recovery Phrase for your Lamden Vault. 
             <div class="text-body1 layout-leftside-warning">Caution, if a different Recovery Phrase is used this will delete all your current Lamden Vault accounts.</div>
         </div>
     </div>

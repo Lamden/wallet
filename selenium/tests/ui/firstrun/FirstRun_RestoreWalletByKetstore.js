@@ -21,7 +21,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     });
 
-    after(() => driver && driver.quit());
+    after(() => driver && driver);
 
     it('Renders FirstRunIntro.svelte', async function() {
         let restoreWallet_Button =  await driver.findElement(By.id('restore-wallet'))
@@ -195,10 +195,10 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
         await restoreWallets_Button.getAttribute('innerText').then(text => {
             assert.equal(text, 'RESTORE ACCOUNTS');
         })
-        driver.findElement(By.id('back')).getAttribute('innerText').then(text => {
+        await driver.findElement(By.id('back-btn')).getAttribute('innerText').then(text => {
             assert.equal(text, 'BACK');
         })
-        driver.findElement(By.id('div-address-0')).getAttribute('innerText').then(text => {
+        await driver.findElement(By.id('div-address-0')).getAttribute('innerText').then(text => {
             assert.equal(text, walletInfo.keystoreInfo.keys.vk);
         })
 

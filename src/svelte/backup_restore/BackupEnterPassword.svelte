@@ -30,6 +30,8 @@
                 setPassword(hashStringValue(pwdObj.value))
                 if (selectedType === 1) {
                     changeStep(6);
+                } else if (selectedType === 2) {
+                    changeStep(3);
                 } else if (selectedType === 3) {
                     changeStep(2);
                 }

@@ -6,8 +6,11 @@
     const { Steps, Step } = Components;
     import NavLogo from '../nav/NavLogo.svelte';
 
+    //Stores
+	import { SettingsStore } from '../../js/stores/stores.js';
+
     //Context
-    const { switchPage } = getContext('app_functions');
+    const { switchPage, getModalData } = getContext('app_functions');
 
     setContext('functions', {
         changeStep: (step) => {
@@ -19,6 +22,14 @@
             currentStep = currentStep + 1
         },
         back: () => {
+            if (fromBackupModal) {
+                if (currentStep === 9) {
+                    switchPage('CoinsMain')
+                } else {
+                    currentStep = 9;
+                }
+                return;
+            }
             if (currentStep === 0) switchPage('Settings');
             else currentStep = 0
         },
@@ -40,11 +51,18 @@
     let selectedType;
     let vaultExist = false;
     let vault = {};
+    let fromBackupModal = false;
+    
+    $: pageData = $SettingsStore.currentPage.data;
 
     onMount(() => {
 		chrome.runtime.sendMessage({type: 'isVaultCreated'}, (ok) => {
 			vaultExist = ok;
 		})
+        if (pageData && pageData.from === 'fromBackupModal') {
+            fromBackupModal = true;
+            currentStep = 9;
+        }
 	});
 
 
@@ -59,7 +77,8 @@
         {page: 'BackupKeystoreComplete', hideSteps: false, back: 0},
         {page: 'BackupMnemonic', hideSteps: false, back: 0},
         {page: 'FirstRunVerifyMnemonic', hideSteps: false, back: 0},
-        {page: 'BackupMnemonicComplete'}
+        {page: 'BackupMnemonicComplete'},
+        {page: 'BackupLeagcyAccounts'}
     ]
 
     $: currentPage = steps[currentStep].page;

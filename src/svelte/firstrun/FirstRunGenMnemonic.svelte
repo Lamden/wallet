@@ -67,7 +67,7 @@
         width: 347px;
     }
 </style>
-<LeftSideFullPage title={"Secret Recovery Phrase"} helpLink={""}>
+<LeftSideFullPage title={"About Seed Recovery Phrases"} helpLink={""}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
             Your Secret Recovery Phrase makes it easy to back up and restore all your accounts.
@@ -76,7 +76,7 @@
     </div>
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column wrap flex-align-center">
-            <h6 class="text-primary text-center">Secret Recovery Phrase</h6>
+            <h6 class="text-primary text-center">Copy Your Seed Recovery Phrase</h6>
             <Mnemonic {mnemonics}/>
             <div class="copy text-subtitle3 text-link-secondary" 
                 class:success={copied}

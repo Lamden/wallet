@@ -1,13 +1,11 @@
 import { LamdenBlockexplorer_API } from '../blockExplorer_API.js'
+import whitelabel from '../../../whitelabel.json'
+
+let lamdenNetworks = whitelabel.networks
 
 export const networkController = (utils, services) => {
     let networksStore = {};
     const LamdenNetworkTypes = ['mainnet','testnet']
-    const blockserviceIPs = {
-        mainnet: 'http://165.22.47.195',
-        testnet: 'http://165.227.181.34'
-        // testnet: 'http://localhost'
-    }
 
     chrome.storage.local.get({"networks":{}},function(getValue) {networksStore = getValue.networks;})
     chrome.storage.onChanged.addListener(function(changes) {
@@ -15,6 +13,21 @@ export const networkController = (utils, services) => {
             if (key === 'networks') networksStore = changes[key].newValue;
         }
     });
+
+    chrome.runtime.onInstalled.addListener(function(details) {
+        if (details.reason === "update"){
+            let currVer = chrome.runtime.getManifest().version;
+            let prevVer = details.previousVersion
+            if (currVer > prevVer){
+                purgeNetworksStorage()
+            }
+        }
+    });
+
+    const purgeNetworksStorage = () => {
+        networksStore.lamden = lamdenNetworks;
+        chrome.storage.local.set({"networks": networksStore});
+    }
 
     const networkKey = (networkObj) => {
         return `${networkObj.name}|${networkObj.type}|${networkObj.lamden ? 'lamden': 'user'}`
@@ -32,19 +45,9 @@ export const networkController = (utils, services) => {
         
     }
 
-    const addBlockservice = (networkObj) => {
-        if (networkObj.type === 'mainnet'){
-            networkObj.blockservice_API = services.blockservice.getBlockservice(blockserviceIPs['mainnet'], 3535)
-        }
-        if (networkObj.type === 'testnet') {
-            networkObj.blockservice_API = services.blockservice.getBlockservice(blockserviceIPs['testnet'], 3535)
-        }
-    }
-
     const addExtras = (networkObj) => {
         addNetworkKey(networkObj)
         addBlockexplorer(networkObj)
-        addBlockservice(networkObj)
         return networkObj
     }
 
@@ -79,6 +82,10 @@ export const networkController = (utils, services) => {
         const network = new utils.Lamden.Network(networkInfo)
         return network.API.contractExists(contractName)
     }
+
+    const getLastetBlock = () => {
+        return network.API.getLastetBlock()
+    }
     return {
         getAll,
         getCurrent,
@@ -86,6 +93,7 @@ export const networkController = (utils, services) => {
         getLamdenNetwork,
         isAcceptedNetwork,
         contractExists: (networkType, contractName) => contractExists(networkType, contractName),
+        getLastetBlock,
         LamdenNetworkTypes
     }
 }

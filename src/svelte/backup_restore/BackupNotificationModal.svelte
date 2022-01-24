@@ -13,7 +13,7 @@
     let helpLink = "https://docs.lamden.io/docs/develop/wallet_api/overview";
 
     const toBackup = () => {
-        switchPage("BackupMain")
+        switchPage("BackupMain", {from: "fromBackupModal"})
     }
 
     const openHelpLink = () => {

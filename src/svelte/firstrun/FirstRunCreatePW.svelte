@@ -74,12 +74,8 @@
 <LeftSideFullPage title={whitelabel.firstRun_setup.create_pw.title} helpLink={whitelabel.firstRun_setup.create_pw.helpLink}>
     <div slot="body">
         <div class="text-body1 weight-400 desc">
-            {#if whitelabel.firstRun_setup.create_pw.message === "default_lamden"}
-            No username required. This password never changes so use a strong one that you'll remember. We recommend 
+            For maximun security we suggest creating a complex password and storing it in a password manager such as 
             <a class="layout-leftside-text-link weight-700" href="https://www.lastpass.com/" rel="noopener noreferrer" target="_blank"> LastPass</a>.
-            {:else}
-                {whitelabel.firstRun_setup.create_pw.message}
-            {/if}
             <div class="text-body1 layout-leftside-warning">{whitelabel.firstRun_setup.create_pw.warning}</div>
         </div>
     </div>

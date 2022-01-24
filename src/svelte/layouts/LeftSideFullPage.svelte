@@ -4,7 +4,7 @@
     const { Button } = Components;
 
     export let title = "";
-    export let helpLink = "https://www.lamden.io";
+    export let helpLink;
 
     const openHelpLink = () => {
         window.open(helpLink, '_blank');
@@ -45,15 +45,17 @@
         <div class="side-content">
             <h6>{title}</h6>
             <slot name="body"></slot>
-            <Button
-                id={'helpfaq'} 
-                width={'215px'}
-                height={'36px'}
-                margin={'2rem 0 .625rem 0'}
-                classes={'button__solid button__primary'}
-                name={"Help & FAQ"}
-                click={openHelpLink}
-            />
+            {#if helpLink && helpLink !== ''}
+                <Button
+                    id={'helpfaq'} 
+                    width={'215px'}
+                    height={'36px'}
+                    margin={'2rem 0 .625rem 0'}
+                    classes={'button__solid button__primary'}
+                    name={"Help & FAQ"}
+                    click={openHelpLink}
+                />
+            {/if}
         </div>
     </div>
     <div class="content layout-leftside-content">

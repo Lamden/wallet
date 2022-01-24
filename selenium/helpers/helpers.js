@@ -145,7 +145,7 @@ const lockWallet = async (driver, switchback) => {
     await sleep(1000, true)
 }
 const changeToTestnet = async (driver) => {
-    let navNetwork = await driver.wait(until.elementLocated(By.id("nav-network-info")), 5000);
+    let navNetwork = await driver.wait(until.elementLocated(By.css("#nav-network-info option:nth-child(2)")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
@@ -457,6 +457,49 @@ const changePassword = async (driver, oldpd, newpd, confirmpd) => {
     await driver.findElement(By.id("change-pw-btn")).click();
 }
 
+const gotoNetwork = async (driver) => {
+    await sleep(500)
+    await driver.findElement(By.id("settings")).click();
+    await driver.findElement(By.id("networks-btn")).click();
+    await sleep(500)
+}
+
+const clearNetwork = async (driver) => {
+    await driver.findElement(By.id("name")).clear();
+    await driver.findElement(By.id("currencySymbol")).clear();
+    await driver.findElements(By.css("#mainbox-hostlist>div>.text-btn")).then(res => {
+        res.forEach(async item => {
+            await driver.executeScript(`arguments[0].style.display = 'inline-block'`, item)
+            await item.click()
+        });
+    })
+    await driver.findElements(By.css("#mainbox-blockServiceList>div>.text-btn")).then(res => {
+
+        res.forEach(async item => {
+            await driver.executeScript(`arguments[0].style.display = 'inline-block'`, item)
+            await item.click()
+        });
+    })
+    await driver.findElement(By.id("explorer")).clear();
+}
+
+const fillNetworkForm = async (driver, networkinfo) => {
+    await driver.findElement(By.id("name")).sendKeys(networkinfo.name);
+    await driver.findElement(By.id("currencySymbol")).sendKeys(networkinfo.currencySymbol);
+
+    let hostinput = await driver.findElement(By.id("hostlist"))
+    await hostinput.sendKeys(networkinfo.host)
+    await driver.findElement(By.css("#hostlist + .add-btn")).click()
+
+    let blockserviceInput = await driver.findElement(By.id("blockServiceList"))
+    await blockserviceInput.sendKeys(networkinfo.blockservice)
+    await driver.findElement(By.css("#blockServiceList + .add-btn")).click()
+
+    if (networkinfo.explorer) {
+        await driver.findElement(By.id("explorer")).sendKeys(networkinfo.explorer);
+    }
+}
+
 module.exports = {
     changePassword,
     sleep,
@@ -478,5 +521,8 @@ module.exports = {
     ignoreBackupModal,
     validBackupModal,
     addAccount,
-    addTrackedAccount
+    addTrackedAccount,
+    gotoNetwork,
+    clearNetwork,
+    fillNetworkForm
 }
