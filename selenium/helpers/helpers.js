@@ -145,7 +145,8 @@ const lockWallet = async (driver, switchback) => {
     await sleep(1000, true)
 }
 const changeToTestnet = async (driver) => {
-    let navNetwork = await driver.wait(until.elementLocated(By.css("#nav-network-info option:nth-child(2)")), 5000);
+    await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
+    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-1")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
@@ -154,7 +155,7 @@ const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
     await driver.findElement(By.id("dapp-connections")).click()
     await driver.wait(until.elementLocated(By.id("dapp-appname-0")), 5000).click()
-    await sleep(500, true)
+    await sleep(1000, true)
     await driver.findElement(By.id("modify-dapp-btn")).click()
     await sleep(500, true)
     await driver.findElement(By.id("preapproval-btn")).click()
@@ -192,6 +193,7 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true) => 
     await accountLink_Button.click()
 
     if (!trusted){
+        await sleep(1000)
         let trusted_Radio = await driver.wait(until.elementLocated(By.id("not-trusted")), 5000);
         await trusted_Radio.click()
     }

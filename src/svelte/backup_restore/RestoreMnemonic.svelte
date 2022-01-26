@@ -24,6 +24,8 @@
     //Context
     const { changeStep, back, setKeys, setMnemonic} = getContext('functions');
 
+    let mnemonicDom;
+
     let mnemonics = new Array(24).fill('');
     let oldMnemonic;
     let vaultExist = false;
@@ -39,6 +41,9 @@
     });
 
     const restore = () => {
+        if (!mnemonicDom.validation()) {
+            return;
+        }
         let isSameMnemonic = oldMnemonic === mnemonics.join(' ');
         if (!vaultExist) {
             let mnemonicStr = mnemonics.join(' ');
@@ -103,7 +108,7 @@
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column flex-align-center">
             <h6 class="text-primary text-center">Restore with Seed Recovery Phrase</h6>
-            <Mnemonic {mnemonics} on:mnemonicChanged={handleMnemonicChanged} disabled={false}/>
+            <Mnemonic {mnemonics} bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} disabled={false}/>
             <div class="flex-column flow-buttons">
                 <Button id="create-wallet"
                         classes={'button__solid button__primary'}

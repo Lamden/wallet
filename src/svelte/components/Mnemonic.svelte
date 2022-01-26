@@ -17,6 +17,10 @@
                 node.setCustomValidity("Can't be empty")
                 node.reportValidity()
                 valid = valid & false;
+            } else if(!/^[a-z]+$/.test(node.value)){
+                node.setCustomValidity("Should be lowercase letter")
+                node.reportValidity()
+                valid = valid & false;
             };
         })
         return valid;

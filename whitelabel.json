@@ -87,15 +87,6 @@
                     }
                 },
                 {
-                    "id": "token-swap", 
-                    "show": true,
-                    "logo": "swap", 
-                    "name": "Token Swap", 
-                    "page": {
-                        "name": "Swaps"
-                    }
-                },
-                {
                     "id": "devtools", 
                     "show": true,
                     "logo": "devtools", 

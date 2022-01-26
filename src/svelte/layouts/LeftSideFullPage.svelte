@@ -14,14 +14,12 @@
 </script>
 <style>
     .leftside{
-        position: absolute;
-        left: 0;
-        top: 97px;
         width: 500px;
-        height: calc(100% - 97px);
+        height: 100%;
         background: var(--bg-secondary);
         padding: 0 78px;
         box-sizing: border-box;
+        flex-shrink: 0;
     }
     .side-content{
         margin-top: 51px;
@@ -34,7 +32,6 @@
     }
     .content{
         padding-top: 51px;
-        margin-left: 500px;
         width: 100%;
     }
     .layout{

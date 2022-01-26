@@ -51,6 +51,6 @@
 <div class="header">
     <NavLogo />
 </div>
-<div class="flex-column">
+<div class="flex-column" style="width: 100%;">
     <svelte:component this={Pages[steps[currentStep - 1].page]} />
 </div>

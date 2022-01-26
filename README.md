@@ -104,15 +104,6 @@ npm run dev
                     }
                 },
                 {
-                    "id": "token-swap",  // do not edit
-                    "show": true,
-                    "logo": "swap", // do not edit
-                    "name": "Token Swap", 
-                    "page": {
-                        "name": "Swaps" // do not edit
-                    }
-                },
-                {
                     "id": "devtools",  // do not edit
                     "show": true,
                     "logo": "devtools", // do not edit

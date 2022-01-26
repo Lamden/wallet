@@ -96,7 +96,7 @@ export const messagesHandler = (masterController) => {
                     if (message.type === 'addVaultAccount') sendResponse(masterController.accounts.addVaultAccount(message.data))
                     // Set mnemonic phrase and remove the all previous accounts and related dapp
                     if (message.type === 'setMnemonic') sendResponse(masterController.setMnemonic(message.data))
-                    // Set mnemonic phrase
+                    // Get   mnemonic phrase
                     if (message.type === 'getMnemonic') sendResponse(masterController.accounts.getMnemonic())
                     // Check if the vault is created
                     if (message.type === 'isVaultCreated') sendResponse(masterController.accounts.isVaultCreated())

@@ -10,7 +10,7 @@
     //Context
     const { closeModal } = getContext('app_functions');
 
-    let helpLink = "https://docs.lamden.io/docs/develop/wallet_api/overview";
+    let helpLink = "https://docs.lamden.io/docs/wallet/accounts_overview#what-are-legacy-accounts";
 
     const openHelpLink = () => {
         window.open(helpLink, '_blank');

@@ -118,7 +118,7 @@
 <div class="header">
     <NavLogo />
 </div>
-<div class="flex-column">
+<div class="flex-column" style="width: 100%;">
     {#if currentStep === 1}
         <LeftSideFullPage title={"Password Safety"} helpLink="/wallet/settings_changepassword">
             <div slot="body">
@@ -127,7 +127,7 @@
                 </div>
                 <div class="text-body1 text-warning warning weight-400">Lamden is not responsible for lost or stolen passwords.</div>
             </div>
-        <div slot="content">
+        <div slot="content" class="flex-column flex-align-center">
             <h6>Change Password</h6>
             <form id="change-pd-form" class="inputs" on:submit|preventDefault={() => handleSubmit() } bind:this={formField} target="_self">
                 <InputBox

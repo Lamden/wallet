@@ -21,7 +21,10 @@
     export let sideBox = false;
     export let boxHeight = "242px";
     export let bgStyle = "primary";
-    export let logoWidth = "20px"
+    export let logoWidth = "20px";
+    export let disabled = false;
+    // if network dropdown
+    export let network = false;
 
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
@@ -51,6 +54,7 @@
     }
 
     const toggleBox = () => {
+        if (disabled) return;
         if (items.length > 0) hideBox = !hideBox;
     }
 
@@ -165,7 +169,18 @@ label{
     font-weight: 600;
 }
 
-
+.mark{
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+    margin-right: 4px;
+    background: var(--error-color);
+    vertical-align: middle;
+}
+.online{
+    background: var(--success-color);
+}
 </style>
 <svelte:window on:click={(e) => handleWindowClick(e)} />
 <div bind:this={customSelectElm} 
@@ -174,7 +189,7 @@ label{
      {#if label}
         <label>{label}</label>
      {/if}
-    <select id={id} required={required} bind:this={selectElm}>
+    <select id={id} required={required} bind:this={selectElm} disabled={disabled}>
         {#each items as item, index}
             <option id={`coin-${index}`} value={index}>{item.name}</option>
         {/each}
@@ -200,6 +215,9 @@ label{
                     </div>
                 {/if}
                 <div>
+                    {#if network && typeof(displayItems[selectElm.selectedIndex].value.status) != 'undefined'}
+                        <span class="mark" class:online={displayItems[selectElm.selectedIndex].value.status}/>
+                    {/if}
                     {displayItems[selectElm.selectedIndex].name}
                 </div>
             {:else}
@@ -220,7 +238,12 @@ label{
                             <Identicons margin="0 10px 0 0" iconValue={item.value.vk} />
                         </div>
                      {/if}
-                    <div>{item.name}</div>
+                    <div>
+                        {#if network && typeof(item.value.status) != 'undefined'}
+                            <span class="mark" class:online={item.value.status}/>
+                        {/if}
+                        {item.name}
+                    </div>
                 </div>
             {/each}  
         </div>

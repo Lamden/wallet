@@ -28,19 +28,40 @@
     let blockService = []
     let explorer;
     
+    let showForm = false;
+    let showAdd = false;
+    
     let currentNet;
 
     $: network = {name, hosts, currencySymbol,blockservice_hosts: blockService, type, blockExplorer: explorer, lamden: false, selected: false}
     $: isCustomNetwork = currentNet && !currentNet.lamden;
     $: isEdit = isCustomNetwork;
-    $: networkList = $networksDropDownList.map(net => {
-        if (net.value.lamden && net.value.type === "mainnet"){
-            net.selected = true
-        } else {
-            net.selected = false
-        }
-        return net
-    })
+    $: networkList = createNetworkList($networksDropDownList);
+    $: disabledForm = showAdd? false : isCustomNetwork? false : true;
+    
+    const createNetworkList = (networksDropDownList) => {
+        if (!networksDropDownList) networksDropDownList = []
+        let arr = [...networksDropDownList]
+        arr.forEach(item => {
+            item.selected = false;
+        })
+        Promise.all(arr.map(async item => {
+            let instance = new Lamden.Network(item.value)
+            item.value.status = instance.ping()
+            return item
+        }));
+        arr.unshift({
+            name: "Select Network",
+            value: "default",
+            selected: true
+        })
+        arr.push({
+            name: "Add Network",
+            value: "add",
+            selected: false
+        })
+        return arr
+    }
 
     const formValidation = async () => {
         hostField.setCustomValidity('');
@@ -104,7 +125,7 @@
     const clearFields = () => {
         name = ''
         type ='mainnet'
-        typeFiled.handleClick(types[0], 0)
+        typeFiled && typeFiled.handleClick(types[0], 0)
         currencySymbol = ''
         hosts = []
         blockService = []
@@ -116,21 +137,30 @@
     }
 
     const handleNetworkSelected = (e) => {
-        clearFields()
-        currentNet = e.detail.selected.value
-        setNetwork(new Lamden.Network(currentNet))
-        if (!e.detail.selected.value.lamden){
-            currencySymbol = e.detail.selected.value.currencySymbol
-            name = e.detail.selected.value.name
-            type = e.detail.selected.value.type
-            hosts = [...e.detail.selected.value.hosts]
-            blockService = e.detail.selected.value.blockservice_hosts? [...e.detail.selected.value.blockservice_hosts] : []
-            explorer = e.detail.selected.value.blockExplorer
-            checking = false;
-            added = false;
-            let index = types.findIndex(item => item.value === type);
-            typeFiled.handleClick(types[index], index)
+        if (e.detail.selected.value === "default") {
+            showForm = false;
+            return;
         }
+        clearFields();
+        showForm = true;
+        if (e.detail.selected.value === "add") {
+            showAdd = true;
+            return;
+        }
+
+        currentNet = e.detail.selected.value
+        showAdd = false;
+        setNetwork(new Lamden.Network(currentNet))
+        currencySymbol = e.detail.selected.value.currencySymbol
+        name = e.detail.selected.value.name
+        type = e.detail.selected.value.type
+        hosts = [...e.detail.selected.value.hosts]
+        blockService = e.detail.selected.value.blockservice_hosts? [...e.detail.selected.value.blockservice_hosts] : []
+        explorer = e.detail.selected.value.blockExplorer
+        checking = false;
+        added = false;
+        let index = types.findIndex(item => item.value === type);
+        typeFiled.handleClick(types[index], index)
     }
 
     const handleTypeSelected = (e) => {
@@ -167,6 +197,10 @@
     justify-content: space-between;
     border-right: 1px solid var(--divider-light);
     padding-right: 46px;
+    padding-left: 46px;   
+}
+.border-transparent{
+    border-color: transparent;
 }
 .add-network{
     margin: 0 3rem;
@@ -176,6 +210,12 @@
 }
 h6{
     text-align: left;
+}
+.unvisible{
+    visibility: hidden;
+}
+.visible{
+    visibility: visible;
 }
 </style>
 
@@ -187,35 +227,29 @@ h6{
     </div>
     <div slot="content">
         <div class="edit-networks flex-row">
-            <div class="current-network flex-column">
+            <div class="current-network flex-column" class:border-transparent={!showForm}>
                 <div>
                     <h6>Manage Networks</h6>
                     <DropDown 
+                        network={true}
                         items={networkList}
                         width={"347px"}
                         label="Current Network"
                         on:selected={(e) => handleNetworkSelected(e)} 
                     />  
-                    <!-- <Button 
-                        id="clear-cache-network"
-                        name={"Clear Network Cache"}
-                        classes={`button__solid`}
-                        width={'100%'}
-                        margin={'20px 0 0 0'}
-                        click={clearCache}
-                    /> -->
                 </div>
             </div>
             <div>
         
             </div>
-            <form id="network_from" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
+            <form class:unvisible={!showForm} class:visible={showForm} id="network_from" on:submit|preventDefault={() => {} } bind:this={formField} target="_self">
             <div class="add-network">
-                <h6>{isCustomNetwork? "Edit Network" : "Add Network"}</h6>
+                <h6>{showAdd? "Add Network" : isCustomNetwork?"Edit Network" : "Network Info"}</h6>
                 <InputBox 
                     id="name"
                     label="Name"
                     placeholder={"Network Name"}
+                    disabled={disabledForm}
                     bind:value={name}
                     bind:thisInput={nameField}
                     on:changed={(e) => {
@@ -239,12 +273,14 @@ h6{
                     width={"347px"}
                     label="Type"
                     margin="0 0 .5rem 0"
+                    disabled={disabledForm}
                     on:selected={(e) => handleTypeSelected(e)} 
                 />  
                 <InputBox 
                     id="currencySymbol"
                     label="Currency Symbol"
                     placeholder={"currencySymbol"}
+                    disabled={disabledForm}
                     bind:value={currencySymbol}
                     bind:thisInput={currencySymbolField}
                     on:changed={(e) => {
@@ -282,6 +318,7 @@ h6{
                     margin="1.5rem 0 1.5rem 0"
                     required={true}
                     spellcheck={false}
+                    disabled={disabledForm}
                     ping={pingHost}
                 />
                 <InputboxWithList 
@@ -295,6 +332,7 @@ h6{
                     margin="0 0 0.5rem 0"
                     required={true}
                     spellcheck={false}
+                    disabled={disabledForm}
                     ping={pingBlock}
                 />
                 <InputBox 
@@ -310,8 +348,10 @@ h6{
                     width="347px"
                     margin="0 0 1.5rem 0"
                     required={false}
+                    disabled={disabledForm}
                     spellcheck={false}
                 />
+                {#if isCustomNetwork || showAdd}
                 <input  
                     id="save"
                     on:click={() => formValidation()}
@@ -319,7 +359,8 @@ h6{
                     class="button__solid button__primary submit submit-button submit-button-text"
                     type="submit" 
                     style="width: 347px;margin: 0 0 .625rem 0"
-                    value={isCustomNetwork? "Save" : "Add Network"} /> 
+                    value={showAdd? "Add Network" : "Save"} /> 
+                {/if}
                 {#if isCustomNetwork}
                 <Button id="remove"
                     classes={'button__solid'}

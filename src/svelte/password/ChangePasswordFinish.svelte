@@ -49,7 +49,7 @@
                 You've successfully changed your Lamden Vault password! The next time you sign in, you’ll be asked for your new password.
             </div>
         </div>
-    <div slot="content">
+    <div slot="content" class="flex-column flex-align-center">
         <h6 class="text-green">Password Changed!</h6>
         <Button
             id={'change-done-btn'} 

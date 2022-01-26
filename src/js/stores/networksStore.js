@@ -234,6 +234,7 @@ export const networksDropDownList = derived(
             return networkKey(network) === $NetworksStore.current
         }
         function pushItem(item){
+            item.status = false
             networks.push({
                 name: item.name,
                 value: item,

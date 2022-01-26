@@ -139,11 +139,6 @@ import LockScreen from './misc/LockScreen.svelte';
 import Transactions from './misc/Transactions.svelte';
 import About from './misc/About.svelte';
 
-//Swaps
-import Swaps from './swaps/Swaps.svelte';
-import SwapsStatus from './swaps/SwapsStatus.svelte';
-import SwapStatus from './swaps/SwapStatus.svelte';
-
 //Token
 import TokenDetails from './tokens/TokenDetails.svelte';
 import TokenLamdenSend from './tokens/TokenLamdenSend.svelte';
@@ -247,7 +242,6 @@ export const Pages = {
     BackupMain,
     Restore,
     Backup,
-    Swaps,
     DevToolsMain, 
     About, 
     IdeMain,
@@ -321,7 +315,6 @@ export {
     Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
-    Swaps, SwapsStatus, SwapStatus,
     ConnectionsMain, Connection, ConnectionEmpty,
     ChangePassword,
     LeftSideFullPage,

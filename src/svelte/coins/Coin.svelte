@@ -11,13 +11,10 @@
     //Images
     import arrowIn from '../../img/arrow_in.svg';
     import arrowOut from '../../img/arrow_out.svg';
-    import accountBG from '../../img/account_border.svg';
 
-    //Images
-    import hero_bg from '../../img/backgrounds/hero_bg.png';  
     //Components
-    import CryptoLogos from '../components/CryptoLogos.svelte';
-    import { CoinDivider, Token, Components}  from '../Router.svelte'
+
+    import { Token, Components}  from '../Router.svelte'
     const { Identicons, TokenLogo } = Components;
 
     //Utils
@@ -229,9 +226,9 @@
     margin-left: 8px;
 }
 .coin-btn{
-    padding: 6px 12px;
+    padding: 8px 14px;
     margin-left: 10px;
-    font-size: 1em;
+    font-size: 0.8em;
 }
 
 .send-btn{
@@ -279,7 +276,7 @@
 }
 
 .coinmenus{
-    padding-left: 80px;
+    padding-left: 82px;
     margin-bottom: 1.5rem;
     margin-top: 1rem;
 }
@@ -335,7 +332,7 @@
             </div>
             {#if whitelabel.mainPage.logo.show}
                 <div class="logo flex-center-center">
-                    <Identicons margin="0" iconValue={coin.vk} width="36px"/>
+                    <Identicons margin="0" iconValue={coin.vk} width="27px"/>
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}
