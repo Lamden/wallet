@@ -9,11 +9,12 @@ const faunadbClient = new faunadb.Client({
 const q = faunadb.query;
 
 const fetchUpdates = async () => {
+    let currVer = chrome.runtime.getManifest().version;
     try {
         const res = await faunadbClient.query( 
             q.Map(
               q.Paginate(
-                q.Documents(q.Collection('updates')),
+                q.Filter(q.Documents(q.Collection('updates')), q.Lambda('update', q.LTE(q.Select(['data', 'version'], q.Get(q.Var('update'))), currVer))),
                 {size: 10}
               ), 
               q.Lambda(ref => q.Let({

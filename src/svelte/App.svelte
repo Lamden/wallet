@@ -27,10 +27,8 @@
 	let whatsnewModalViewed = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['FirstCreateVault', 'RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap', 'ChangePassword', 'ManageNetwork']
+	const fullPage = ['FirstCreateVault', 'RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'ContinueSwap', 'ChangePassword', 'ManageNetwork']
 	const redirect = {
-		'ContinueSwap': 'Swaps',
-		'SwapsMain': 'Swaps',
 		'FirstRunRestoreMain': 'FirstRunMain'
 	}
 

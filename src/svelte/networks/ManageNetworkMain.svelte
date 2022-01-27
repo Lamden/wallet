@@ -237,6 +237,12 @@ h6{
                         label="Current Network"
                         on:selected={(e) => handleNetworkSelected(e)} 
                     />  
+                    <Button id="back"
+                    classes={'button__solid'}
+                    margin={'1rem 0 .625rem 0'}
+                    name="Back" 
+                    width="347px"
+                    click={() => switchPage("Settings")} />  
                 </div>
             </div>
             <div>
@@ -369,12 +375,6 @@ h6{
                     name= {"Remove Network"}
                     click={() => changeStep(2)} />
                 {/if}
-                <Button id="back"
-                    classes={'button__solid'}
-                    margin={'0 0 .625rem 0'}
-                    name="Back" 
-                    width="347px"
-                    click={() => switchPage("Settings")} />  
             </div>
             </form>
         </div>

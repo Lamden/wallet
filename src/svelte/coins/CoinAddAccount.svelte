@@ -26,6 +26,8 @@
     let keyPair = {};
     let addType = 1;
 
+    let disabledButton = false;
+
     const returnMessageButtons = [
             {id: "home-btn", name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
             {id: "another-btn", name: 'Add Another', click: () => detailsPage(), class: 'button__solid'}
@@ -41,7 +43,6 @@
     const handleSubmit = async () => {
         // if (addType === 2) validatePrivateKey();
         // if (addType === 3) validatePublicKey();
-        
         if (formObj.checkValidity()){
             if (vaultExist) {
                 addNewVaultAccount();
@@ -124,6 +125,7 @@
     }
 
     const addNewVaultAccount = () => {
+        disabledButton = true;
         let nickname = nicknameObj.value === '' ? `New Tau Account` : nicknameObj.value;
         chrome.runtime.sendMessage({type: 'addVaultAccount', data: nickname}, (result) => {
             if (result.added){
@@ -197,6 +199,6 @@ h3{
         {/if}
 
         <div class={"submit-button-box flex-column"}>
-            <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" type="submit" value={vaultExist?'Save':'Create'}>
+            <input class="button__solid button__primary submit submit-button submit-button-text submit-button-size" disabled={disabledButton} type="submit" value={vaultExist?'Save':'Create'}>
         </div>
 </form>

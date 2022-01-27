@@ -45,7 +45,7 @@
             If the network is deleted, it cannot be be restored.
         </div>
     </div>
-<div slot="content">
+<div slot="content" class="flex-column flex-align-center">
     <div class="flex-column wrap">
         <h6 class="text-primary text-center">Delete Network</h6>
         <div class="text-body1 text-primary text-box">

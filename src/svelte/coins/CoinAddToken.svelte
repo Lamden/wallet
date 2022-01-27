@@ -20,6 +20,8 @@
     
     const MAX_IMAGE_SIZE = 100;
     
+    let adding = false;
+
     let contractName
     let error = null
     let contractChecker
@@ -124,9 +126,12 @@
 
     const addToken = async (tokenInfo) => {
         Object.keys(tokenInfo).forEach(key => !tokenInfo[key] ? delete tokenInfo[key] : null)
+        adding = true
         chrome.runtime.sendMessage({type: 'addToken', data: tokenInfo}, (result) => {
             if (result) {
                 finish({type:'success', text: `${tokenInfo.tokenName} added successfully`}, tokenInfo);
+            } else {
+                adding = false;
             }
         })
     }
@@ -328,7 +333,7 @@
                         width={'260px'}
                         name={validating ? "Getting Data" : "Add Token"} 
                         click={handleSubmit}
-                        disabled={buttonDisabled}/>  
+                        disabled={buttonDisabled || adding}/>  
                         
                 </div>
             {/if}
@@ -370,7 +375,7 @@
                 width={'260px'}
                 name={"Add Token"} 
                 click={handleSubmit}
-                disabled={buttonDisabled}/>  
+                disabled={buttonDisabled || adding}/>  
         </div>
     {/if}
 </div>
