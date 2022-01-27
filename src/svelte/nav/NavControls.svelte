@@ -1,76 +1,72 @@
 <script>
+    import { getContext } from 'svelte';
+    import Lamden from 'lamden-js'
 	//Stores
-    import { currentNetwork, NetworksStore } from '../../js/stores/stores.js';
+    import { currentNetwork, NetworksStore, networksDropDownList } from '../../js/stores/stores.js';
     
 	//Components
-    import { NavStatus }  from '../Router.svelte'
+    import { Components }  from '../Router.svelte'
+    const { DropDown } = Components;
 
-    //Images
-    import NetworkIcon from '../icons/NetworkIcon.svelte'
-    import network from '../../img/menu_icons/icon_network-testnet.svg'
+    //Context
+    const { switchPage } = getContext('app_functions');
 
-    const handleClick = () => {
-        if (!$currentNetwork.type === 'custom') NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
-        else{
-            if ($currentNetwork.type === 'mainnet') NetworksStore.setCurrentNetwork(NetworksStore.testnetNetwork)
-            else NetworksStore.setCurrentNetwork(NetworksStore.mainnetNetwork)
+    export let style;
+
+    $: dropwonList = createNetworkList($networksDropDownList);
+    
+    const createNetworkList = (networksDropDownList) => {
+        if (!networksDropDownList) {
+            networksDropDownList = []
+        } 
+        
+        Promise.all(networksDropDownList.map(async item => {
+            let instance = new Lamden.Network(item.value)
+            item.value.status = instance.ping()
+            return item
+        }));
+        networksDropDownList.push({
+            name: "Manage Networks",
+            value: "manage",
+            selected: false
+        })
+        return networksDropDownList
+    }
+
+    const handleSelected = (e) => {
+        let item = e.detail.selected
+        if (item.value === 'manage') {
+            switchPage("ManageNetwork")
+            return;
         }
+        NetworksStore.setCurrentNetwork(item.value)
     }
 </script>
 
 <style>
-.box{
-    box-sizing: border-box;
-    text-align: right;
-    align-items: center;
-    padding: 0 20px 0 20px;
-    min-width: fit-content;
-    cursor: pointer;
-    border: 1px solid var(--divider-dark);
-    margin: 0.8rem 61px 0.8rem 0;
-    border-radius: 4px;
-}
-.box:hover{
-    background: var(--bg-secondary);
-    box-shadow: var(--box-shadow-2);
-    -webkit-box-shadow: var(--box-shadow-2);
-    -moz-box-shadow: var(--box-shadow-2);
-}
-p{
-    margin: 0;
-}
-p.mainnet:hover{
-    text-decoration: underline;
-    color: var(--font-accent);
-}
-.mainnet{
-    color: var(--font-accent);
-}
-.custom{
-    color: var(--font-warning)
-}
-.icon{
-    margin-left: 20px;
-    width: 50px;
-}
+    .box{
+        position: relative;
+        width: 222px;
+        margin-right: 66px;
+    }
+    .wrap{
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-65%);
+    }
 </style>
 
-<div id="nav-network-info" class="box  flex-row" on:click={handleClick}>
-    <div class="flex-column text-body2">
-        <p>Current Network</p>
-        <p  class="network-name text-secondary"
-            class:mainnet={$currentNetwork.type === 'mainnet'}
-            class:text-secondary={$currentNetwork.type === 'testnet' || $currentNetwork.type === 'custom'}
-            class:custom={$currentNetwork.type === 'custom'}>
-        {$currentNetwork.name}
-        </p>
-        <NavStatus />
+<div class="box">
+    <div class="wrap"> 
+        <DropDown 
+            id="nav-network"
+            network={true}
+            items={dropwonList}
+            label="Network"
+            bgStyle={"transparent"}
+            innerHeight={"40px"}
+            on:selected={(e) => handleSelected(e)} 
+        />
     </div>
-    <div class="icon">
-        {#if $currentNetwork.type === 'mainnet'}
-            <NetworkIcon width= "50px"/>
-        {:else}
-            {@html network}
-        {/if}
-    </div>
-</div>
+</div>  

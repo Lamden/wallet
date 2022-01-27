@@ -107,6 +107,12 @@ const createSettingsStore = () => {
                 settingsStore.hideTokens = value;
                 return settingsStore;
             }) 
+        },
+        setIsVaultCreated: (value) => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.isVaultCreated = value;
+                return settingsStore;
+            }) 
         }
     };
 }

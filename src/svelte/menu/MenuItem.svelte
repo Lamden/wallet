@@ -14,7 +14,7 @@
     let feedbackURL = "https://docs.google.com/forms/d/e/1FAIpQLSf-X4wWIDLKAJc9tZBV7vZYYD3qyMGMxbTgij1ltmr8CfSxbw/viewform?usp=sf_link"
 
     $: isSelected = $currentPage.name === menuItem.page.name;
-    $: backupPage = menuItem.name === 'Backup Wallet';
+    $: backupPage = menuItem.name === 'Backup Lamden Vault';
     $: whatsnew = menuItem.name === "What's New";
 
     const menuAction = () => {

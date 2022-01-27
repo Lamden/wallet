@@ -138,7 +138,7 @@
         <p class="text-body2 weight-600">
             Do you want to authorize 
             <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">automatic transactions</a> 
-            for this wallet?
+            for this Lamden Vault?
         </p>
         <label>
             <input id="trusted" type=radio bind:group={trusted} value={true}>

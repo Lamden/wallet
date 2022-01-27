@@ -7,6 +7,7 @@ const http = require('http')
 const https = require('https')
 const assert = require('assert');
 const { CryptoJS } = nodeCryptoJs;
+const mnemonicWords = require("../fixtures/mnemonic.json")
 
 const { testnetMasternode, testnetBlockService } = config;
 
@@ -34,7 +35,8 @@ const switchWindow = async (driver, windowNum) => {
 
 const gotoAccountsPage = async (driver) => {
     await sleep(1000, true)
-    await driver.findElement(By.id('accounts')).click();
+    let element = driver.findElement(By.id('accounts'))
+    await driver.executeScript("arguments[0].click();", element)
 }
 
 const completeFirstRunSetup = async (driver, walletPassword, lock = true, testnet = true) => {
@@ -43,9 +45,39 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     await driver.executeScript(`document.getElementById('pwd1').value='${walletPassword}'`);
     await driver.executeScript(`document.getElementById('pwd2').value='${walletPassword}'`);
     await driver.findElement(By.id('save-pwd')).click()
+    await sleep(2000)
+
+    let elements = await driver.findElements(By.css('.mnemonic .cell input'))
+
+    let vals;
+    let words = [];
+    elements.forEach(element => {
+        let value = element.getAttribute("value");
+        words.push(value);
+    });
+    await Promise.all(words).then((res)=>{
+        vals = res;;
+    })
+    await driver.findElement(By.css('.chk-checkmark')).click();
+    await driver.findElement(By.id('next')).click();
+    await sleep(3000);
+
+    elements = await driver.findElements(By.css('.mnemonic .cell input'));
+    for(let i=0; i<24; i++){
+        try {
+            await elements[i].sendKeys(`${vals[i]}\n`);
+        } catch {
+            // tbd
+        }
+    }
+    await driver.findElement(By.id('next')).click();
+    await sleep(2000)
+
+    await driver.findElement(By.css('.chk-checkmark')).click();
     await driver.findElement(By.id('i-understand')).click()
-    await sleep(5000)
-    await ignoreBackupModal(driver)
+    await sleep(3000)
+
+    // await ignoreBackupModal(driver)
     if (testnet) await changeToTestnet(driver)
     await driver.findElement(By.id('refresh-icon')).click()
     await sleep(3000, true)
@@ -55,8 +87,8 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
 }
 
 const ignoreBackupModal = async (driver) => {
-    await validBackupModal(driver)
-    await driver.findElement(By.id('ignore-btn')).click();
+    // await validBackupModal(driver)
+    await driver.wait(until.elementLocated(By.id(`ignore-btn`)), 25000).click();
     await sleep(1000, true)
 }
 
@@ -66,24 +98,30 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
     await driver.executeScript(`document.getElementById('pwd2').value='${walletInfo.walletPassword}'`);
     await driver.findElement(By.id('save-pwd')).click()
-    await driver.findElement(By.id('filePicker')).sendKeys(path.join(workingDir, walletInfo.keystoreInfo.file))
-    await driver.findElement(By.id('confirm-keystore-btn')).click()
     await sleep(2000)
-    await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.keystoreInfo.password}'`)
-    await driver.findElement(By.id('pwd-btn')).click()
+
+    let words = mnemonicWords.mnemonic.split(' ');
+    let elements = await driver.findElements(By.css('.mnemonic .cell input'));
+    for(let i=0; i<24; i++){
+        await elements[i].sendKeys(`${words[i]}\n`);
+    }
+    await driver.findElement(By.id('next')).click();
+    await sleep(2000)
+
     await driver.executeScript(`document.getElementById('chk-all').innerText='testing'`)
     await driver.findElement(By.id('chk-all')).click()
     await driver.findElement(By.id('restore-btn')).click()
     await sleep(2000)
     await driver.findElement(By.id('home-btn')).click()
-    await sleep(4000)
+    await sleep(3000)
+    // await driver.findElement(By.id('ignore-btn')).click()
     await ignoreBackupModal(driver)
     if (testnet) {
         await changeToTestnet(driver)
         await sleep(2000)
     }
     await driver.findElement(By.id('refresh-icon')).click()
-    await sleep(6000, true)
+    await sleep(3000, true)
     if (lock){
         await driver.findElement(By.id('lock')).click()
     }
@@ -107,7 +145,8 @@ const lockWallet = async (driver, switchback) => {
     await sleep(1000, true)
 }
 const changeToTestnet = async (driver) => {
-    let navNetwork = await driver.wait(until.elementLocated(By.id("nav-network-info")), 5000);
+    await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
+    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-1")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
@@ -116,7 +155,7 @@ const setAsTrustedDapp = async (driver) => {
     await sleep(500, true)
     await driver.findElement(By.id("dapp-connections")).click()
     await driver.wait(until.elementLocated(By.id("dapp-appname-0")), 5000).click()
-    await sleep(500, true)
+    await sleep(1000, true)
     await driver.findElement(By.id("modify-dapp-btn")).click()
     await sleep(500, true)
     await driver.findElement(By.id("preapproval-btn")).click()
@@ -154,6 +193,7 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true) => 
     await accountLink_Button.click()
 
     if (!trusted){
+        await sleep(1000)
         let trusted_Radio = await driver.wait(until.elementLocated(By.id("not-trusted")), 5000);
         await trusted_Radio.click()
     }
@@ -346,7 +386,7 @@ const setupMetamask = async (driver, kovan = true) => {
     await driver.findElement(By.xpath("//button[contains(text(),'No Thanks')]")).click()
     await sleep(1000)
 
-    await driver.findElement(By.xpath("//input[@placeholder='Paste seed phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
+    await driver.findElement(By.xpath("//input[@placeholder='Paste Recovery Phrase from clipboard']")).sendKeys(config.metamaskBackupPhrase)
     await driver.findElement(By.id("password")).sendKeys(config.metamaskPassword)
     await driver.findElement(By.id("confirm-password")).sendKeys(config.metamaskPassword)
     await driver.findElement(By.className("first-time-flow__terms")).click()
@@ -387,7 +427,7 @@ const addAccount = async (driver) => {
     await driver.findElement(By.css('.submit-button')).click();
     let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
     let message = await messageField.getAttribute("innerText")
-    assert.equal(message, `Added New Lamden Account to your wallet`);
+    assert.equal(message, `Added New Tau Account to your Lamden Vault`);
     await driver.findElement(By.id("home-btn")).click()
     await sleep(500, true)
     await ignoreBackupModal(driver)
@@ -401,7 +441,7 @@ const addTrackedAccount = async (driver, address) => {
     await driver.findElement(By.css('.submit-button')).click();
     let messageField = await driver.wait(until.elementLocated(By.id(`message-text`)), 25000);
     let message = await messageField.getAttribute("innerText")
-    assert.equal(message, `Added New Lamden Account to your wallet`);
+    assert.equal(message, `Added New Tau Account to your Lamden Vault`);
     await driver.findElement(By.id("home-btn")).click()
     await sleep(500, true)
     let emts = await driver.findElements(By.className("notification"))
@@ -417,6 +457,49 @@ const changePassword = async (driver, oldpd, newpd, confirmpd) => {
     await driver.findElement(By.id("pwd2-input")).sendKeys(newpd);
     await driver.executeScript(`document.getElementById('pwd3-input').value='${confirmpd}'`)
     await driver.findElement(By.id("change-pw-btn")).click();
+}
+
+const gotoNetwork = async (driver) => {
+    await sleep(500)
+    await driver.findElement(By.id("settings")).click();
+    await driver.findElement(By.id("networks-btn")).click();
+    await sleep(500)
+}
+
+const clearNetwork = async (driver) => {
+    await driver.findElement(By.id("name")).clear();
+    await driver.findElement(By.id("currencySymbol")).clear();
+    await driver.findElements(By.css("#mainbox-hostlist>div>.text-btn")).then(res => {
+        res.forEach(async item => {
+            await driver.executeScript(`arguments[0].style.display = 'inline-block'`, item)
+            await item.click()
+        });
+    })
+    await driver.findElements(By.css("#mainbox-blockServiceList>div>.text-btn")).then(res => {
+
+        res.forEach(async item => {
+            await driver.executeScript(`arguments[0].style.display = 'inline-block'`, item)
+            await item.click()
+        });
+    })
+    await driver.findElement(By.id("explorer")).clear();
+}
+
+const fillNetworkForm = async (driver, networkinfo) => {
+    await driver.findElement(By.id("name")).sendKeys(networkinfo.name);
+    await driver.findElement(By.id("currencySymbol")).sendKeys(networkinfo.currencySymbol);
+
+    let hostinput = await driver.findElement(By.id("hostlist"))
+    await hostinput.sendKeys(networkinfo.host)
+    await driver.findElement(By.css("#hostlist + .add-btn")).click()
+
+    let blockserviceInput = await driver.findElement(By.id("blockServiceList"))
+    await blockserviceInput.sendKeys(networkinfo.blockservice)
+    await driver.findElement(By.css("#blockServiceList + .add-btn")).click()
+
+    if (networkinfo.explorer) {
+        await driver.findElement(By.id("explorer")).sendKeys(networkinfo.explorer);
+    }
 }
 
 module.exports = {
@@ -440,5 +523,8 @@ module.exports = {
     ignoreBackupModal,
     validBackupModal,
     addAccount,
-    addTrackedAccount
+    addTrackedAccount,
+    gotoNetwork,
+    clearNetwork,
+    fillNetworkForm
 }

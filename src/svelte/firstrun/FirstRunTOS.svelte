@@ -42,7 +42,7 @@ strong{
         
         <div class="flow-text-box text-body1 text-primary">
             {#if whitelabel.firstRun_setup.terms_of_service.message = "lamden_default"}
-                Storing your password and backing up your wallet is <strong>YOUR RESPONSIBILITY</strong>. This is important to keeping your cryptocurrency safe.
+                Storing your password and backing up your Lamden Vault is <strong>YOUR RESPONSIBILITY</strong>. This is important to keeping your cryptocurrency safe.
             {:else}
                 {whitelabel.firstRun_setup.terms_of_service.message}
             {/if}

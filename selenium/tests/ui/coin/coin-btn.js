@@ -10,6 +10,7 @@ let walletInfo = require("../../../fixtures/walletInfo")
 var validators = require('types-validate-assert');
 let dappsInfo = require("../../../fixtures/dappsInfo.json")
 let tokenInfo = require("../../../fixtures/tokenInfo.json")
+const mnemonicWords = require("../../../fixtures/mnemonic.json")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -25,7 +26,6 @@ describe('Testing Coin Button', function () {
                 .build();
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
-        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
     });
 
     after(() => {
@@ -33,6 +33,9 @@ describe('Testing Coin Button', function () {
     });
 
     context('test-setup', function() {
+        it('init', async function() {
+            await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
+        })
         it('Add a token to wallet, for testing', async function() {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken(driver, token)
@@ -62,19 +65,24 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(500)
             let name = "dTau"
             await tokenHelpers.validateCoinTokenName(driver, name)
-            await tokenHelpers.validateCoinFromAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
+            await tokenHelpers.validateCoinFromAddress(driver, mnemonicWords.vk)
             await tokenHelpers.cancelTransferModal(driver)
             await helpers.sleep(1000)
         });
         it('Render TX UI modal on token details screen', async function() {
             let token = tokenInfo.token_1_svg
+            await driver.findElement(By.className("collapse-btn")).click()
             await tokenHelpers.gotoTokenDetails(driver, token)
             await helpers.sleep(500)
-            await tokenHelpers.openCoinSendModal(driver)
+            await driver.findElement(By.className("collapse-btn")).click()
+            let element = driver.findElement(By.id('send-btn'))
+            await driver.executeScript("arguments[0].click();", element)
+            //await driver.findElement(By.id('send-btn')).click();
+            //await tokenHelpers.openCoinSendModal(driver)
             await helpers.sleep(500)
             let tokenName = await driver.findElement(By.id("tokeninput")).getText()
             assert.equal(tokenName, "Pooch")
-            await tokenHelpers.validateCoinFromAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
+            await tokenHelpers.validateCoinFromAddress(driver, mnemonicWords.vk)
             await tokenHelpers.cancelTransferModal(driver)
             await helpers.sleep(1000)
         });
@@ -86,16 +94,16 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(500)
             await tokenHelpers.openCoinReceiveModal(driver)
             await helpers.sleep(500)
-            let name = "My TAU Address"
+            let name = "My TAU Account"
             await tokenHelpers.validateCoinNickname(driver, name)
             await tokenHelpers.validateCoinQR(driver)
-            await tokenHelpers.validateCoinAddress(driver, "2341d744f11658d7f1ca1c514a1b76ff07898435c46402b1e4f8b00d4a13f5f9")
+            await tokenHelpers.validateCoinAddress(driver, mnemonicWords.vk)
             await tokenHelpers.closeReceiveModal(driver)
             await helpers.sleep(1000)
         });
         it('Close receive modal', async function() {
-            await tokenHelpers.openAccountsScreen(driver)
-            await helpers.sleep(500)
+            await driver.findElement(By.className("collapse-btn")).click()
+            await helpers.sleep(1000)
             await tokenHelpers.openCoinReceiveModal(driver)
             await helpers.sleep(500)
             await tokenHelpers.closeReceiveModal(driver)

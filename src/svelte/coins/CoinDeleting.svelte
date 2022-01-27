@@ -67,6 +67,6 @@
 </style>
 
 <div class="deleting-coin flex-column">
-    <h2>Deleting Account from Wallet</h2>
+    <h2>Deleting Account from Lamden Vault</h2>
     <Loading />
 </div>

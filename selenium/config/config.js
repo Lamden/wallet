@@ -8,8 +8,8 @@ This test will use the local install of the metamask plugin from your chrome ins
 Once installed validate that your chome installation has installed the metamask pluging into the directory specified in the "getMetaMaskLocation" function
 Then validate metamask version's folder is correct as per the config item below
 
-Seed Phrase:
-The seed phrase will restore wallet which will be used to swap test dTAU from.  
+Recovery Phrase:
+The Recovery Phrase will restore wallet which will be used to swap test dTAU from.  
 
 This ETH wallet 0x00eB12f5C96B15001bf8f32bEEd970d178719AcC needs to be funded with KOVAN dTAU before testing is run (the test swaps 10 dTAU).
 

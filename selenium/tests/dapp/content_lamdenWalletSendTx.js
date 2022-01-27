@@ -125,7 +125,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let response = await helpers.sendTx(driver, transaction, true)
             assert.equal(response.status, "Unable to process transaction");
             assert.equal(response.data.errors.length, 1);
-            assert.equal(response.data.errors[0], "Wallet is Locked");
+            assert.equal(response.data.errors[0], "Lamden Vault is Locked");
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
             await helpers.switchWindow(driver, 0)
             await helpers.ignoreBackupModal(driver)         

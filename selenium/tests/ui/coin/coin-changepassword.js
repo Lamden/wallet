@@ -13,7 +13,7 @@ let chromeOptions = new chrome.Options();
 chromeOptions.addArguments("lang=en-us");
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
-describe('Testing Backup', function () {
+describe('Testing Changepassword', function () {
     var driver;
 
     before(async function() {

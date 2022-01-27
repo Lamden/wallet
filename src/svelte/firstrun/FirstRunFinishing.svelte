@@ -28,12 +28,6 @@
 
         new Promise(function(resolve, reject) {
             setTimeout(() => {
-                if (!restore) {
-                    steps.update(current => {
-                        current.currentStep = 5;
-                        return current
-                    });
-                }
                 message = 'Done!'
                 resolve();
             }, 1000);
@@ -42,7 +36,6 @@
             chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
             chrome.runtime.sendMessage({type: 'joinSockets'})
             setTimeout(() => {
-                SettingsStore.changePage({name: 'CoinsMain'})
                 done()
             }, 1000);            
         })

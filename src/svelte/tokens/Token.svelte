@@ -6,7 +6,7 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { tokenBalanceTotal, currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { TokenBalancesStore, currentNetwork, networkKey } from '../../js/stores/stores.js';
 
     //Components
     import TokenLogo from '../components/TokenLogo.svelte';
@@ -15,16 +15,16 @@
      import DirectionalChevronIcon from '../icons/DirectionalChevronIcon.svelte'
 
     //Utils
-    import { displayBalance, formatValue, stringToFixed, getTokenTotalBalance} from '../../js/utils.js'  
+    import { displayBalance, formatValue, stringToFixed, getTokenBalance} from '../../js/utils.js'  
 
     const dispatch = createEventDispatcher()
 
     // Props
     export let token;
-
+    export let vk;
     let logoSize = "30px"
 
-    $: balance = getTokenTotalBalance(networkKey($currentNetwork), token.contractName, $tokenBalanceTotal)
+    $: balance = getTokenBalance(networkKey($currentNetwork), vk, token.contractName, $TokenBalancesStore)
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -52,6 +52,7 @@
 
 .name{
 	width: 234px;
+    text-decoration: underline;
 }
 
 .amount{
@@ -81,7 +82,7 @@
             {`${displayBalance(stringToFixed(balance, 8))} ${token.tokenSymbol}`}
         </div>
     {/if}
-    <div class="flex-row flex-center-end">
+    <!-- <div class="flex-row flex-center-end">
         <div class="flex-row show-on-hover">
             <button class="button__small reorder-button" on:click={handleReorderUp}>
                 <DirectionalChevronIcon width="8px" color="var(--font-primary-dim)"/>
@@ -90,6 +91,6 @@
                 <DirectionalChevronIcon  width="8px" direction="down" color="var(--font-primary-dim)"/>
             </button>
         </div>  
-    </div>
+    </div> -->
 </div>
 

@@ -123,7 +123,7 @@ export const dappController = (utils, funa, actions) => {
                 throw new Error('Unable to encrypt private key while approving dapp')
             }
         }else{
-            const errors = ['Tried to approve app but wallet was locked']
+            const errors = ['Tried to approve app but Lamden Vault was locked']
             utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
         }
         delete txToConfirm[getSenderHash(sender)]
@@ -154,7 +154,7 @@ export const dappController = (utils, funa, actions) => {
             const txBuilder = new utils.Lamden.TransactionBuilder(txData.networkInfo, txData.txInfo, txData)
             actions.sendLamdenTx(txBuilder, confirmData.url)    
         }else{
-            const errors = ['Tried to send transaction app but wallet was locked']
+            const errors = ['Tried to send transaction app but Lamden Vault was locked']
             utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
         }
         delete txToConfirm[getSenderHash(sender)]

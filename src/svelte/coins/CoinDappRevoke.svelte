@@ -48,7 +48,7 @@
                         setMessage(message)
                         setPage(4);
                     } else {
-                        message.text =`${dappInfo.appName}'s Wallet Access Has Been Revoked`
+                        message.text =`${dappInfo.appName}'s Lamden Vault Access Has Been Revoked`
                         setMessage(message)
                         setPage(5);
                     }
@@ -119,7 +119,7 @@
 </style>
 
 <div id="coin-dapp-revoke">
-    <h2> {`${dappInfo.appName} - Revoke Wallet Access`} </h2>
+    <h2> {`${dappInfo.appName} - Revoke Lamden Vault Access`} </h2>
     <h3>You are about to do the following:</h3>
     <div class="bullets text-subtitle2">
         <div class="flex-row">
@@ -132,7 +132,7 @@
         </div>
         <div id={'caution-msg'} class="flex-row caution-message">
             <div class="icon" >{@html caution}</div>
-            <p class="text-body-1">{`This action will NOT delete the Account from your ${whitelabel.companyName} Wallet.`}</p>
+            <p class="text-body-1">{`This action will NOT delete the Account from your Lamden Vault.`}</p>
         </div>
     </div>
 
@@ -155,7 +155,7 @@
                     class:button__red={passwordOkay}
                     class:button__primary={!passwordOkay}
                     type="submit" 
-                    value={passwordOkay ? "Revoke Access" : "Validate Wallet Password"}>
+                    value={passwordOkay ? "Revoke Access" : "Validate Vault Password"}>
             <Button 
                     id={"back-btn"}
                     classes={'button__solid buttom__primary'} 

@@ -20,17 +20,21 @@
 
 
     onMount(() => {
-        $EventsStore.forEach(e => EventsStore.setEventStatus(e.id, true))
+        if (Array.isArray($EventsStore)) {
+            $EventsStore.forEach(e => EventsStore.setEventStatus(e.id, true))
+        }
     })
 
     const createNews = (eventsStore) => {
         let arr = [];
-        eventsStore.forEach(data => {
+        if (Array.isArray(eventsStore)) {
+            eventsStore.forEach(data => {
             arr.push({
                 ...data,
                 logo: data.type === "announcement" ? "announce" : data.type === "hotfix" ? "fix" : "feature"
             })
-        });
+            });
+        }
         return arr;
     }
 

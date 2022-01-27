@@ -8,27 +8,19 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage}  from '../Router.svelte'
     const { Button, InputBox } = Components;
 
     //Utils
     import { hashStringValue } from '../../js/utils.js'
 
     //Context
-    const { changeStep, setPassword } = getContext('functions');
+    const { back, changeStep, setPassword, getSelectedType} = getContext('functions');
 
     //DOM Nodes
     let formObj, pwdObj;
 
-    onMount(() => {
-        steps.set({
-                currentStep: 1,
-                stepList: [
-                    {number: 1, name: 'Verify', desc:'Wallet Password'},
-                    {number: 2, name: 'Decrypt', desc:'View Stored Keys'},
-                ]
-            });
-    })
+    let selectedType = getSelectedType();
 
     const handleSubmit = () => {
         chrome.runtime.sendMessage({type: 'validatePassword', data: hashStringValue(pwdObj.value)}, (valid) => {
@@ -36,7 +28,13 @@
                 setValidity(pwdObj, "Incorrect Password")
             } else {
                 setPassword(hashStringValue(pwdObj.value))
-                changeStep(2);
+                if (selectedType === 1) {
+                    changeStep(6);
+                } else if (selectedType === 2) {
+                    changeStep(3);
+                } else if (selectedType === 3) {
+                    changeStep(2);
+                }
             }
         })
     }
@@ -56,42 +54,54 @@
     input{
         margin-bottom: 1rem;
     }
+
+    .wrap{
+        width: 347px;  
+    }
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6>Verify Your Password</h6>
-        
-        <div class="flow-text-box text-body1 text-primary">
-            Enter your {whitelabel.companyName} wallet password to continue.
-        </div>
-
-        <form id="password_from" on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
-            <InputBox
-                bind:thisInput={pwdObj}
-                label={"Wallet Password"}
-                placeholder={`Enter Wallet Password`}
-                margin="0 0 1rem 0"
-                on:changed={() => setValidity(pwdObj, '')}
-                on:keyup={refreshValidityKeyup}
-                inputType={"password"}
-                required={true}
-                autofocus={true} />
-        </form>
-        <div class="flex-column flow-buttons">
-            <input  form="password_from"
-                    class="button__solid button__primary submit submit-button submit-button-text submit-button-size"
-                    type="submit" 
-                    value={"Confirm Password"} />
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if}        
+<LeftSideFullPage title={`Verify Your Password`} helpLink={'/wallet/backup_overview'}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
+            Enter your password to continue.
         </div>
     </div>
-    <div class="flex-column flow-content-right" > </div>
-</div>
+    <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+        <div class="flex-column wrap">
+            <h6 class="text-primary text-center">Verify Your Password</h6>
+            
+            <div class="text-body1 text-primary text-box">
+                Enter your Lamden Vault password to continue.
+            </div>
+
+            <form id="password_from" on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
+                <InputBox
+                    bind:thisInput={pwdObj}
+                    label={"Vault Password"}
+                    placeholder={`Enter Vault Password`}
+                    margin="0 0 1.5rem 0"
+                    on:changed={() => setValidity(pwdObj, '')}
+                    on:keyup={refreshValidityKeyup}
+                    inputType={"password"}
+                    width={"100%"}
+                    height="56px"
+                    required={true}
+                    disabledPWShowBtn={false}
+                    autofocus={true} />
+            </form>
+            <div class="flex-column flow-buttons">
+                <input  form="password_from"
+                        class="button__solid button__primary submit submit-button submit-button-text submit-button-size"
+                        type="submit" 
+                        style="width: 100%;"
+                        value={"Confirm Password"} />   
+                <Button id="restore-wallet"
+                    classes={'button__solid'}
+                    margin={'0 0 .625rem 0'}
+                    name="Back" 
+                    width={'347px'}
+                    click={() => back()} />  
+            </div>
+        </div>
+    </div>
+</LeftSideFullPage>

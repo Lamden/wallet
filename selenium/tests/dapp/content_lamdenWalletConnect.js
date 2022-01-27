@@ -64,7 +64,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             let response = await helpers.sendConnectRequest(driver, connection)
             console.log({response})
-            assert.equal(response.errors.includes("Wallet is Locked"), true);
+            assert.equal(response.errors.includes("Lamden Vault is Locked"), true);
             //Unlock the wallet for rest of test cases
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
         })
@@ -299,13 +299,13 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.switchWindow(driver, 0) 
-            await helpers.ignoreBackupModal(driver)
+            //await helpers.ignoreBackupModal(driver)
             await helpers.lockWallet(driver, 1)
             await helpers.sleep(2000, true)
             await helpers.approvePopup(driver, 2, 1, true, {show: false})
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors.length, 1);
-            assert.equal(response.errors.includes("Tried to approve app but wallet was locked"), true);
+            assert.equal(response.errors.includes("Tried to approve app but Lamden Vault was locked"), true);
         });
         it('POPUP: Can Approve a connection request and return wallet info', async function() {
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)

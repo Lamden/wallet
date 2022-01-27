@@ -30,33 +30,33 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
 
     after(() => driver && driver.quit());
 
-    context('add existing tokens', function() {
-        it('Can add a token with png icon from rocketswap', async function() {
-            let token = existingTokenInfo.token_png
-            await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(4000)
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        /*
-        it('Can add a token with url icon from rocketswap', async function() {
-            let token = existingTokenInfo.token_url
-            await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(4000)
-            token.logo_type = "urlB64"
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        */
-    })
+    // context('add existing tokens', function() {
+    //     // it('Can add a token with png icon from rocketswap', async function() {
+    //     //     let token = existingTokenInfo.token_png
+    //     //     await tokenHelpers.addToken_ShowDetails(driver, token, 0)
+    //     //     await helpers.sleep(4000)
+    //     //     await tokenHelpers.addToken_Save(driver, token)
+    //     // });
+    //     /*
+    //     it('Can add a token with url icon from rocketswap', async function() {
+    //         let token = existingTokenInfo.token_url
+    //         await tokenHelpers.addToken_ShowDetails(driver, token, 0)
+    //         await helpers.sleep(4000)
+    //         token.logo_type = "urlB64"
+    //         await tokenHelpers.addToken_Save(driver, token)
+    //     });
+    //     */
+    // })
 
-    context('add existing tokens - negative', function() {
-        it('Will display error in the bellow of dropdown if token already added', async function() {
-            let token = existingTokenInfo.token_png
-            await tokenHelpers.addToken_ShowDetails(driver, token, 0)
-            await helpers.sleep(4000)
-            await tokenHelpers.validateDropdownError(driver, "Token already in Wallet")
-            await tokenHelpers.cancelAddTokenModal(driver)
-        });
-    })
+    // context('add existing tokens - negative', function() {
+    //     it('Will display error in the bellow of dropdown if token already added', async function() {
+    //         let token = existingTokenInfo.token_png
+    //         await tokenHelpers.addToken_ShowDetails(driver, token, 0)
+    //         await helpers.sleep(4000)
+    //         await tokenHelpers.validateDropdownError(driver, "Token already in Lamden Vault")
+    //         await tokenHelpers.cancelAddTokenModal(driver)
+    //     });
+    // })
 
     context('add custom tokens', function() {
         it('Can add a token with svg icon from contract', async function() {
@@ -70,50 +70,50 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             await tokenHelpers.validateTokenLogo(driver, token)
             await tokenHelpers.addToken_Save(driver, token)
         });
-        it('Can add a token with png icon from contract', async function() {
-            let token = tokenInfo.token_2_png
-            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(4000)
-            await tokenHelpers.validateTokenName(driver, token)
-            await tokenHelpers.validateTokenSymbol(driver, token)
-            await tokenHelpers.validateTokenLogo(driver, token)
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        it('Can add a token with url icon from contract', async function() {
-            let token = tokenInfo.token_3_url
-            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(4000)
-            await tokenHelpers.validateTokenName(driver, token)
-            await tokenHelpers.validateTokenSymbol(driver, token)
-            await tokenHelpers.validateTokenLogo(driver, token)
-            token.logo_type = "urlB64"
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        it('Displays placeholder token icon if no icon found in contract or uploaded', async function() {
-            let token = tokenInfo.token_4_placeholder
-            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(4000)
-            await tokenHelpers.validateTokenName(driver, token)
-            await tokenHelpers.validateTokenSymbol(driver, token)
-            await tokenHelpers.validateTokenLogo(driver, token)
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        it('Can change Token Name from what was taken from contract', async function() {
-            let token = tokenInfo.token_5_svg
-            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(4000)
-            token.tokenName = 'Super Token'
-            await tokenHelpers.changeTokenName(driver, 'Super Token')
-            await tokenHelpers.addToken_Save(driver, token)
-        });
-        it('Can change Token Symbol from what was taken from contract', async function() {
-            let token = tokenInfo.token_6_svg
-            await tokenHelpers.addToken_ShowDetails(driver, token, 1)
-            await helpers.sleep(4000)
-            token.tokenSymbol = 'SUPER'
-            await tokenHelpers.changeTokenSymbol(driver, 'SUPER')
-            await tokenHelpers.addToken_Save(driver, token)
-        });
+        // it('Can add a token with png icon from contract', async function() {
+        //     let token = tokenInfo.token_2_png
+        //     await tokenHelpers.addToken_ShowDetails(driver, token, 1)
+        //     await helpers.sleep(4000)
+        //     await tokenHelpers.validateTokenName(driver, token)
+        //     await tokenHelpers.validateTokenSymbol(driver, token)
+        //     await tokenHelpers.validateTokenLogo(driver, token)
+        //     await tokenHelpers.addToken_Save(driver, token)
+        // });
+        // it('Can add a token with url icon from contract', async function() {
+        //     let token = tokenInfo.token_3_url
+        //     await tokenHelpers.addToken_ShowDetails(driver, token, 1)
+        //     await helpers.sleep(4000)
+        //     await tokenHelpers.validateTokenName(driver, token)
+        //     await tokenHelpers.validateTokenSymbol(driver, token)
+        //     await tokenHelpers.validateTokenLogo(driver, token)
+        //     token.logo_type = "urlB64"
+        //     await tokenHelpers.addToken_Save(driver, token)
+        // });
+        // it('Displays placeholder token icon if no icon found in contract or uploaded', async function() {
+        //     let token = tokenInfo.token_4_placeholder
+        //     await tokenHelpers.addToken_ShowDetails(driver, token, 1)
+        //     await helpers.sleep(4000)
+        //     await tokenHelpers.validateTokenName(driver, token)
+        //     await tokenHelpers.validateTokenSymbol(driver, token)
+        //     await tokenHelpers.validateTokenLogo(driver, token)
+        //     await tokenHelpers.addToken_Save(driver, token)
+        // });
+        // it('Can change Token Name from what was taken from contract', async function() {
+        //     let token = tokenInfo.token_5_svg
+        //     await tokenHelpers.addToken_ShowDetails(driver, token, 1)
+        //     await helpers.sleep(4000)
+        //     token.tokenName = 'Super Token'
+        //     await tokenHelpers.changeTokenName(driver, 'Super Token')
+        //     await tokenHelpers.addToken_Save(driver, token)
+        // });
+        // it('Can change Token Symbol from what was taken from contract', async function() {
+        //     let token = tokenInfo.token_6_svg
+        //     await tokenHelpers.addToken_ShowDetails(driver, token, 1)
+        //     await helpers.sleep(4000)
+        //     token.tokenSymbol = 'SUPER'
+        //     await tokenHelpers.changeTokenSymbol(driver, 'SUPER')
+        //     await tokenHelpers.addToken_Save(driver, token)
+        // });
     })
 
     context('add custom tokens - negative', function() {
@@ -121,7 +121,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
             let token = tokenInfo.token_1_svg
             await tokenHelpers.addToken_ShowDetails(driver, token, 1)
             await helpers.sleep(4000)
-            await tokenHelpers.validateInputError(driver, "Token already in Wallet")
+            await tokenHelpers.validateInputError(driver, "Token already in Lamden Vault")
             await tokenHelpers.cancelAddTokenModal(driver)
         });
         it('Will display error in inputbox if token contract is invalid', async function() {

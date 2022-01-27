@@ -7,6 +7,8 @@
 	//Context
     const { switchPage, firstRun } = getContext('app_functions');
 
+    export let style;
+
     $: clickable = !firstRun()
 
     const goHome = () => {
@@ -30,13 +32,13 @@
 }
 
 .logo {
-    width: 125px;
+    width: 240px;
     margin-right: 15.5px;
     margin-left: 51px;
 }
 </style>
 
-<div class="box flex-column">
+<div class="box flex-column" style={style}>
     <div class="brand" class:clickable={clickable} on:click={() => goHome()}>
         <div class="logo">{@html logo_full}</div>
     </div>

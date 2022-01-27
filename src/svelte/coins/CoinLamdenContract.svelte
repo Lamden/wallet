@@ -3,7 +3,8 @@
     
     import { onMount} from 'svelte';
     import { writable } from 'svelte/store';
-    import { Encoder } from 'lamden-js'
+    import lamden from 'lamden-js';
+    const { Encoder } = lamden;
 
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();

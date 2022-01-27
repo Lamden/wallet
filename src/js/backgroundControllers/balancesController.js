@@ -78,7 +78,7 @@ export const balancesController = (utils, services, actions) => {
                 key: account.vk
             }
         })
-        network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+        network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
             if (balances.length > 0){
                 let newBalances = processBalances(balances, accountsList)
                 let netKey = network.networkKey
@@ -143,7 +143,7 @@ export const balancesController = (utils, services, actions) => {
 
     const getUpdate = async (account, network) => {
         let vk = account.vk
-        let balance = await network.blockservice_API.getCurrentKeyValue('currency', 'balances', vk)
+        let balance = await network.blockservice.getCurrentKeyValue('currency', 'balances', vk)
             .then(res => {
                 if (!res) return {value : "0"}
                 if (res.notFound) return {value : "0"}

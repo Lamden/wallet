@@ -81,6 +81,8 @@
                     if (transactionsList[0].hash !== json.data[0].hash) handleRefresh()
                 }
                 transactionsList = json.data
+            }).catch(e => {
+                transactionsList = []
             })
             
         }
@@ -195,6 +197,21 @@
         margin: 0 1em 0 0.5em;
     }
 
+    .logo{
+        display: flex;
+        justify-content: center;
+        padding: 5px;
+        background: black;
+        border-radius: 999px;
+        border: 3px solid var(--color-grey-3);
+    }
+    h2{
+        line-height: 52px;
+    }
+    .mr10{
+        margin-right: 10px;
+    }
+
     @media only screen and (max-width: 970px) {
         .buttons {
             flex-direction: column;
@@ -209,7 +226,9 @@
         <div class="flex-row">
             <div class="flex-column wallet-details">
                 <div class="nickname text-body1 flex-row">
-                    <Identicons margin="0 5px 0 0" iconValue={coin.vk} width="24px"/>
+                    <div class="logo mr10 flex-center-center">
+                        <Identicons margin="0" iconValue={coin.vk} width="36px"/>
+                    </div>
                     <h2>{coin.nickname}</h2>
                 </div>
                 <div class="text-overlay text-body1"> {$currentNetwork.currencySymbol} </div>
@@ -280,7 +299,9 @@
     </div>
     <strong class="text-accent text-body1">Account Address</strong>
     <div class="flex-row flex-align-center account-address text-body1">
-        <Identicons margin="0" iconValue={coin.vk} />
+        <div class="logo flex-center-center">
+            <Identicons margin="0" iconValue={coin.vk} />
+        </div>
         <span class="account-vk">{coin.vk}</span>
         <div class="icon-copy" 
             on:click={() => handleAddressCopy("icon")} 

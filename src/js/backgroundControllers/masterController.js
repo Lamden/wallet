@@ -203,6 +203,13 @@ export const masterController = () => {
         return response
     }
 
+    const retryFetchSendResult = (txdata) => {
+        let response = {status: ""};
+        transactions.processRetry(txdata)
+        response.status = "Transaction Sent, Awaiting Response"
+        return response
+    }
+
     // 1) For security if a contract name is provided that differes from the approved contract, automatic transactions will be ignored
     // 2) If no contract name is provided then the approved contract name will be provided 
     // 3) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
@@ -214,7 +221,7 @@ export const masterController = () => {
             return txStatus
         }
         if (accounts.walletIsLocked()){
-            return makeTxStatus(undefined, ['Wallet is Locked'])
+            return makeTxStatus(undefined, ['Lamden Vault is Locked'])
         }else{
             let txInfo = {};
             let errors = []
@@ -302,7 +309,6 @@ export const masterController = () => {
             const windowId = utils.createUID()
             messageData.network = utils.networks.getLamdenNetwork(messageData.networkType)
             messageData.accounts = accounts.getSanatizedAccounts()
-            console.log(messageData.accounts)
             if (reapprove) {
                 messageData.reapprove = reapprove
                 messageData.oldConnection = dappInfo
@@ -380,6 +386,52 @@ export const masterController = () => {
         return true;
     }
 
+    // vertify the password and view private key
+    const viewPrivateKey = (data) => {
+
+        if (!data.vk || !data.password) { 
+            return {
+                success: false
+            };
+        }
+
+        if (accounts.validatePassword(data.password)) {
+            let account = accounts.getAccountByVK(data.vk)
+
+            if (account.sk === "watchOnly") return{
+                success: false
+            }
+            
+            let sk = accounts.decryptString(account.sk);
+            return {
+                success: true,
+                data: {...account, sk}
+            };
+        } else {
+            return {
+                success: false
+            }
+        }
+    }
+
+    // Set the mnemonic phrase in vault
+    const setMnemonic = (str) => {
+        let origin = accounts.getMnemonic();
+
+        if (origin === str) return true;
+
+        let coins = accounts.getSanatizedAccounts();
+        coins.forEach(c => {
+            if (c.type === "vault"){
+                accounts.deleteOne(c);
+                dapps.deleteDapp(c.vk);
+            }
+        })
+        let ok = accounts.setMnemonic(str);
+        fauna.fetchUpdates();
+        return ok;
+    }
+
     return{
         "accounts" : {
             walletIsLocked: accounts.walletIsLocked,
@@ -392,7 +444,10 @@ export const masterController = () => {
             changeAccountNickname: accounts.changeAccountNickname,
             decryptKeys: accounts.decryptKeys,
             reorderUp: accounts.reorderUp,
-            reorderDown: accounts.reorderDown
+            reorderDown: accounts.reorderDown,
+            isVaultCreated: accounts.isVaultCreated,
+            getMnemonic: accounts.getMnemonic,
+            addVaultAccount: accounts.addVaultAccount
         },
         "dapps": {
             setTrusted: dapps.setTrusted,
@@ -447,6 +502,9 @@ export const masterController = () => {
         joinTokenSockets,
         joinTokenSocket,
         leaveTokenSockets,
-        updateAccountAndTokenBalances
+        updateAccountAndTokenBalances,
+        viewPrivateKey,
+        setMnemonic,
+        retryFetchSendResult
     }
 }

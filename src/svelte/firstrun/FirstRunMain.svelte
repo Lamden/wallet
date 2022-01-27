@@ -11,29 +11,35 @@
 
     setContext('functions', {
         nextPage: () => currentStep = currentStep + 1,
+        back: () => {
+            if (currentStep === 0) {
+                currentStep = 0;
+                return;
+            }
+            currentStep = currentStep - 1;
+        },
         changeStep: (step) => {
             if (step === 0 && currentStep === 0) currentStep = 0;
             else if (step === 0) currentStep = back;
             else currentStep = step;
         },
+        setVault: (data) => vault = data,
+        getVault: () => vault,
         done: () => checkFirstRun()
 	});
 
     let steps = [
-        {page: 'FirstRunIntro', hideSteps: false, back: 0},
-        {page: 'FirstRunCreatePW', hideSteps: false, back: 0},
-        {page: 'FirstRunRestore', hideSteps: false, back: 0},
-        {page: 'FirstRunTOS', hideSteps: false, back: 0},
-        {page: 'FirstRunGenWallets', hideSteps: false, back: 0},
-        {page: 'FirstRunFinishing', hideSteps: false, back: 0},
+        {page: 'FirstRunIntro'},
+        {page: 'FirstRunCreatePW'},
+        {page: 'FirstRunGenMnemonic'},
+        {page: 'FirstRunVerifyMnemonic'},
+        {page: 'FirstRunRemember'},
+        {page: 'FirstRunGenWallets'},
+        {page: 'FirstRunFinishing'},
     ]
     let currentStep = 0;
     let restore = false;
-
-    $: currentPage = steps[currentStep].page;
-    $: hideSteps = steps[currentStep].hideSteps;
-    $: back = steps[currentStep].back;
-    $: hideBack = steps[currentStep].hideBack ? false : true;
+    let vault = null;
 
 </script>
 
@@ -43,9 +49,6 @@
     </div>
     <div class="flow-content">
         <svelte:component this={FirstRun[steps[currentStep].page]} {restore}/>
-    </div>
-    <div class="flow-steps">
-        <Steps {back} {hideBack}/>
     </div>
 </div>
 

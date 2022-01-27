@@ -11,7 +11,8 @@
             "type": "mainnet", 
             "lamden": true, 
             "currencySymbol": "TAU",
-            "blockExplorer": "https://mainnet.lamden.io"
+            "blockExplorer": "https://mainnet.lamden.io",
+            "blockservice_hosts": ["http://165.22.47.195:3535"]
         },
         {
             "name": "Lamden Testnet", 
@@ -19,21 +20,26 @@
             "type": "testnet", 
             "lamden": true, 
             "currencySymbol": "dTAU",
-            "blockExplorer": "https://testnet.lamden.io"
+            "blockExplorer": "https://testnet.lamden.io",
+            "blockservice_hosts": ["http://165.227.181.34:3535"]
         }
     ],
     "firstRun_setup":{
         "intro":{
             "title": "Welcome!",
-            "message": "Creating a wallet is easy and secure. All accounts are encrypted locally in your browser, not on remote servers."
+            "message": "Creating a Lamden Vault is easy and secure. All accounts are encrypted locally in your browser, not on remote servers.",
+            "helpLink": ""
         },
         "create_pw": {
-            "title": "Create a Password",
-            "message": "default_lamden"
+            "title": "Password Safety",
+            "message": "default_lamden",
+            "warning": "Lamden is not responsible for lost or stolen passwords.",
+            "helpLink": ""
         },
         "terms_of_service": {
             "title": "Remember",
-            "message": "default_lamden"
+            "message": "default_lamden",
+            "helpLink": ""
         }
     },
     "nav": {
@@ -41,7 +47,7 @@
     },
     "menu":[
         {
-            "heading": "Wallet",
+            "heading": "Lamden Vault",
             "show": true,
             "items":[
                 {
@@ -78,15 +84,6 @@
                     "name": "Smart Contracts", 
                     "page": {
                         "name": "IdeMain"
-                    }
-                },
-                {
-                    "id": "token-swap", 
-                    "show": true,
-                    "logo": "swap", 
-                    "name": "Token Swap", 
-                    "page": {
-                        "name": "Swaps"
                     }
                 },
                 {
@@ -160,7 +157,7 @@
             "show": true
         },
         "account_info":{
-            "title": "My Accounts",
+            "title": "My Legacy Accounts",
             "show" : true,
             "show_network_name": false
         },

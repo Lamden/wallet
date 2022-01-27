@@ -7,7 +7,6 @@ export { BalancesStore, balanceTotal} from './balancesStore.js';
 export { TokenBalancesStore, tokenBalanceTotal} from './tokenBalancesStore.js';
 export { PendingTxStore} from './pendingTxStore.js';
 export { SettingsStore, currentPage, needsBackup  } from './settingsStore.js';
-export { SwapsStore, swapsbyCreatedDate } from './swapsStore.js';
 export { DappStore, dappsDropDown } from './dappStore.js';
 export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList, currentNetworkOnline } from './networksStore.js';
 export { FilesStore, activeTab }  from './filesStore.js';

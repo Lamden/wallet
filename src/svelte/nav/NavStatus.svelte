@@ -8,6 +8,9 @@
 </script>
 
 <style>
+div{
+    padding-left: 6px;
+}
 .online{
     color:green;
 }
