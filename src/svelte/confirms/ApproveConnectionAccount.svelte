@@ -113,7 +113,7 @@
             {/each}
         </div>
     {:else}
-        <p class="no-accounts"><strong>Your Lamden Wallet does not have any accounts.</strong></p>
+        <p class="no-accounts"><strong>Your Lamden Lamden Vault does not have any accounts.</strong></p>
         <p>
             Please 
             <a href="https://docs.lamden.io/docs/wallet/accounts_creation" class="text-link" target="_blank" rel="noopener noreferrer">add an account</a> 

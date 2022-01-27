@@ -35,7 +35,7 @@
 
 
     <div class="subtitle text-subtitle3">
-        {`This will delete the network connection information for "${$currentNetwork.name}" but will leave all wallet accounts intact.`}
+        {`This will delete the network connection information for "${$currentNetwork.name}" but will leave all Lamden Vault accounts intact.`}
     </div>
     <div class="buttons flex-row">
         <Button 

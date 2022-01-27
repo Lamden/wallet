@@ -49,9 +49,6 @@ h3{
 .spinner{
 	animation: rotation 4s infinite linear;
 }
-h4{
-    display: inline;
-}
 
 @keyframes rotation {
   from {

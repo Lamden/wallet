@@ -157,7 +157,7 @@
     <div class="flex-column padding text-body2">
         <label>
             <input id="trusted" type="radio" bind:group={trusted} value={true} on:change={handleChange} disabled={sending}>
-            <strong>Automatic</strong>Transactions from {dappInfo.appName} to its smart contract are approved by the wallet automatically
+            <strong>Automatic</strong>Transactions from {dappInfo.appName} to its smart contract are approved by the Lamden Vault automatically
         </label>
 
         <label >

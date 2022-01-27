@@ -9,7 +9,7 @@
 
     //Components
     import CryptoLogos from '../components/CryptoLogos.svelte';
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage }  from '../Router.svelte'
     const { Button, InputBox, Loading } = Components;
 
     //Context
@@ -31,10 +31,6 @@
                 if (coinStore === false) errorMsg = "Incorrect Password"
                 else {
                     coins = [...coinStore];
-                    steps.update(current => {
-                        current.currentStep = 2;
-                        return current
-                    });
                 }
             }
         })
@@ -56,7 +52,7 @@
 }
 
 .header{
-    margin-left: 53px;
+    margin-left: 40px;
     border-bottom: 2px solid var(--divider-light);
     width: calc(100% - 53px);
 }
@@ -121,35 +117,16 @@ p{
 
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6>Decrypted Account Addresses</h6>
-    
-        <div class="flow-text-box text-body1 text-primary">
-            These are all the Secret Keys stored in your {whitelabel.companyName} Wallet
-        </div>
-        <div class="flex-column flow-buttons">
-            <Button classes={`button__solid button__primary`}
-                    margin="0 0 1rem"
-                    name="Backup Keys"
-                    disabled={typeof coins === 'undefined'}
-                    click={() => changeStep(3)} />
-
-            <Button classes={`button__solid`}
-                    margin="0 0 1rem"
-                    name="Back To Home"
-                    click={() => appHome()} />
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/backup_overview"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if}  
+<LeftSideFullPage title="Decrypted Account" helpLink="/wallet/backup_overview">
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
+            These are all the Secret Keys stored in your Lamden Vault.
         </div>
     </div>
-    <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
+<div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+    <div class="flex-column flex-align-center">
+        <h6>Decrypted Account Addresses</h6>
+
         <div class="flex-row header text-subtitle2 text-primary">
             <p class="header-name">{'Name'}</p>
             <p class="header-address">{'Address'}</p>
@@ -176,5 +153,20 @@ p{
                 <p class="text-body2 text-red">{errorMsg}</p>
             </div>
         {/if}
+        <div class="flex-column flow-buttons">
+            <Button classes={`button__solid button__primary`}
+                    margin="1rem 0 1rem 0"
+                    name="Backup Keys"
+                    disabled={typeof coins === 'undefined'}
+                    width={"347px"}
+                    click={() => changeStep(3)} />
+
+            <Button classes={`button__solid`}
+                    margin="0 0 1rem"
+                    name="Back To Home"
+                    width={"347px"}
+                    click={() => appHome()} />
+        </div>
     </div>
 </div>
+</LeftSideFullPage>

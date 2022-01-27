@@ -36,6 +36,7 @@
         {page: 'CoinDeleting', cancelButton: false},
         {page: 'ResultBox', cancelButton: false},
         {page: 'MessageBox', cancelButton: false},
+        {page: 'CoinView', cancelButton: true}
     ]
     let currentStep = 1;
 

@@ -1,6 +1,5 @@
 <script>
     import { setContext, getContext } from 'svelte';
-    import { Encoder } from 'lamden-js'
     //Stores
     import { currentPage } from '../Router.svelte'
     //Components
@@ -49,6 +48,7 @@
     let txData = {};
     let resultInfo = {};
     let txui = "simple";  // "simple", "advanced";
+    let txallInfo; // used to retry fetch result
 
     $: coin = modalData.coin;
 
@@ -99,7 +99,12 @@
     }
 
     const resultDetails = (e) => {
+        txallInfo = e.detail
         resultInfo = e.detail.resultInfo;
+        if (resultInfo.statusCode === 2) {
+            buttons.pop()
+            buttons.push({name: 'Check Again', click: () =>  back(), class: 'button__solid button__primary'})
+        }
         resultInfo.buttons = buttons;
         resultInfo.txHash = e.detail.txHash;
         if (resultInfo.stampsUsed > 0) modalData.refreshTx();
@@ -124,6 +129,7 @@
 {#if currentStep > 2}
     <svelte:component this={Modals[steps[currentStep - 1].page]} 
                       result={resultInfo} 
+                      {txallInfo}
                       {coin} 
                       {txData}
                       {message}

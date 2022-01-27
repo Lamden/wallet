@@ -13,7 +13,7 @@
     let helpLink = "https://docs.lamden.io/docs/develop/wallet_api/overview";
 
     const toBackup = () => {
-        switchPage("BackupMain")
+        switchPage("BackupMain", {from: "fromBackupModal"})
     }
 
     const openHelpLink = () => {
@@ -50,7 +50,7 @@
     <div class="warning-icon">{@html cautionIcon}</div>
     <h2>Your Backup is out of Date</h2>
     <div class="text-body1 msg">
-        We have detected that new accounts were added to the wallet since your last backup. You will need to do a new backup to ensure all accounts are backed up.
+        We have detected that new accounts were added to the Lamden Vault since your last backup. You will need to do a new backup to ensure all accounts are backed up.
     </div>
     <div class="buttons">
             <Button

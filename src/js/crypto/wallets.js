@@ -1,7 +1,7 @@
 const Lamden = require('lamden-js')
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators;
-const lamdenWallet = Lamden.wallet
+const lamdenWallet = Lamden.default.wallet
 
 /*
     Gets the Public Address of a Coin from the Private Key
@@ -83,7 +83,7 @@ const validateAddress = ( network, wallet_address ) => {
     
     if (network === "lamden"){
         if (validateTypes.isStringHex(wallet_address) && wallet_address.length === 64) return wallet_address;
-        throw new Error(`Invalid ${network} wallet address`);
+        throw new Error(`Invalid ${network} Lamden Vault address`);
     }
 
     throw new Error(`${network} is not a supported network `);

@@ -171,7 +171,7 @@ export const tokenController = (utils, services, actions) => {
 
     const getTokenMetaValues = async (metaKeys) => {
         let network = utils.networks.getCurrent()
-        let res = await network.blockservice_API.getCurrentKeysValues(metaKeys)
+        let res = await network.blockservice.getCurrentKeysValues(metaKeys)
         return res
     }
 
@@ -326,7 +326,7 @@ export const tokenController = (utils, services, actions) => {
             })
         })
 
-        await network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+        await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
             if (!Array.isArray(balances)) return
             try{
                 if (!token_balances[netKey]) token_balances[netKey] = {}
@@ -374,7 +374,7 @@ export const tokenController = (utils, services, actions) => {
             })
         })
 
-        await network.blockservice_API.getCurrentKeysValues(keysToGet).then(balances => {
+        await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
             try{
                 let newBalances = keysReturnToTokenStoreObject(balances)
                 token_balances[netKey] = newBalances

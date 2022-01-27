@@ -13,7 +13,7 @@
 	import { needsBackup, SettingsStore, currentPage, clicked, currentThemeName, EventsStore } from '../js/stores/stores.js';
 
 	//Components
-	import { Pages, FirstRun, Nav, Menu, Components, Modals, LeftSideFullPage}  from './Router.svelte'
+	import { Pages, FirstRun, Nav, NavForApp, Menu, Components, Modals, LeftSideFullPage}  from './Router.svelte'
 	const { Modal, Loading, LightDarkToggle } = Components;
 
 	//Images
@@ -27,10 +27,8 @@
 	let whatsnewModalViewed = false;
 	let currentModal;
 	let modalData;
-	const fullPage = ['RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'SwapsMain', 'ContinueSwap', 'ChangePassword']
+	const fullPage = ['FirstCreateVault', 'RestoreMain', 'BackupMain', 'FirstRunRestoreMain', 'FirstRunMain', 'ContinueSwap', 'ChangePassword', 'ManageNetwork']
 	const redirect = {
-		'ContinueSwap': 'Swaps',
-		'SwapsMain': 'Swaps',
 		'FirstRunRestoreMain': 'FirstRunMain'
 	}
 
@@ -52,11 +50,17 @@
 			//Make sure the wallet was actually unlocked by the user
 			chrome.runtime.sendMessage({type: 'walletIsLocked'}, (locked) => {
 				walletIsLocked = locked;
+				if(!walletIsLocked) {
+					chrome.runtime.sendMessage({type: 'isVaultCreated'}, (ok) => {
+						SettingsStore.setIsVaultCreated(ok);
+					})
+				}
 				if (walletIsLocked) whatsnewModalViewed = false;
 				if (walletIsLocked && $currentPage.name === 'ChangePassword') SettingsStore.changePage({name: 'CoinsMain'})
 			})
 		}
 	}
+
 
 	chrome.runtime.onMessage.addListener(walletIsLockedListener)
 
@@ -74,7 +78,7 @@
 				switchPage(redirect[$currentPage.name])
 			}
 			refreshed = false;
-			if ($needsBackup){
+			if ($needsBackup && $SettingsStore.lastCoinAddedType === 'normal'){
 				openModal("BackupNotificationModal", {});
 			}
 		}
@@ -113,6 +117,9 @@
 		chrome.runtime.sendMessage({type: 'isFirstRun'}, (isFirstRun) => {
 			firstRun = isFirstRun;
 			if (!firstRun && $currentPage.name === 'FirstRunMain'){
+				SettingsStore.changePage({name: 'CoinsMain'})
+			}
+			if (!firstRun && $currentPage.name === 'FirstRunRestoreMain'){
 				SettingsStore.changePage({name: 'CoinsMain'})
 			}
 			firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
@@ -170,8 +177,7 @@
 		window.jdenticon_config = { replaceMode: "observe"}
 	}
 </script>
-
-<div class="container">
+<div class="container" style={fullPage.includes($currentPage.name) || walletIsLocked?"":"padding-top: 212px"}>
 	{#if $loaded && typeof firstRun !== 'undefined'}
 		{#if firstRun}
 			<svelte:component this={Pages[$currentPage.name]}/>
@@ -182,7 +188,7 @@
 						<svelte:component this={Pages[$currentPage.name]}/>
 					</div>
 				{:else}
-					<Nav />
+					<NavForApp />
 					<div class="main-layout">
 						<div class="menu-pane">
 							<Menu />
@@ -216,7 +222,7 @@
 			{/if}
 		{/if}
 	{:else}
-		<Loading message={`Loading ${whitelabel.companyName} Wallet`} />
+		<Loading message={`Loading Lamden Vault`} />
 	{/if}
 <LightDarkToggle />
 </div>
@@ -236,6 +242,7 @@
 		flex-grow: 1;
 		max-width: 1920px;
     	margin: 0 auto;
+		flex-direction: column;
 	}
 
 	.main-layout{

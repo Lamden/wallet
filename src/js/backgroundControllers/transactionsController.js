@@ -8,6 +8,7 @@ export const transactionsController = (utils, actions) => {
     let checkingTransactions = false;
 
     const sendLamdenTx = (txBuilder, sentFrom = false) => {
+        let network = utils.networks.getCurrent()
         lastSentDate = new Date()
         //Get current nonce from the masternode
         txBuilder.getNonce()
@@ -59,13 +60,16 @@ export const transactionsController = (utils, actions) => {
             }catch(e){
                 console.log(e)
             }
-            if (txBuilder.transactionSigned){
-                txBuilder.send(undefined, undefined, () => {
-                    txBuilder.sentFrom = sentFrom;
-                    console.log(txBuilder.getAllInfo())
-                    processSendResponse(txBuilder);
-                    if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
-                })        
+            if (txBuilder.transactionSigned){  
+                network.blockservice.getLastetBlock().then(res => {
+                    txBuilder.startBlock = res;
+                    txBuilder.send(undefined, (res, err) => {
+                        if (err) throw new Error(err)
+                        txBuilder.sentFrom = sentFrom;
+                        processSendResponse(txBuilder);
+                        if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
+                    }) 
+                });
             } 
         })
     }
@@ -92,10 +96,15 @@ export const transactionsController = (utils, actions) => {
         if (result.hash){
             let txData = txBuilder.getAllInfo();
             txData.sentFrom = txBuilder.sentFrom;
+            txData.startBlock = txBuilder.startBlock;
             pendingTxStore.push(txData);
         }
     }
     
+    const processRetry = (txData) => {
+        pendingTxStore.push(txData);
+    }
+
     const checkPendingTransactions = async () => {
         if (!checkingTransactions){
             checkingTransactions = true;
@@ -104,12 +113,17 @@ export const transactionsController = (utils, actions) => {
             for (let i = 0; i < transactionsToCheck; i++){
                 const tx = pendingTxStore[i]
                 const txBuilder = new utils.Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
-                await txBuilder.checkForTransactionResult()
-                .then(() => {
-                    console.log(txBuilder.getAllInfo())
+                txBuilder.startBlock = tx.startBlock
+                await txBuilder.checkBlockserviceForTransactionResult()
+                .then((res) => {
                     transactionsChecked = transactionsChecked + 1
-                    if (tx.sentFrom) utils.sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
-                    if (transactionsChecked >= transactionsToCheck){
+                    if (tx.sentFrom) {
+                        let info = txBuilder.getAllInfo()
+                        info.startBlock = tx.startBlock
+                        info.sentFrom = tx.sentFrom
+                        utils.sendMessageToTab(tx.sentFrom, 'txStatus', info)
+                    } 
+                    if (transactionsChecked >= transactionsToCheck){ 
                         pendingTxStore = pendingTxStore.slice(transactionsToCheck)
                         chrome.storage.local.set({"pendingTxs": pendingTxStore}, () => {
                             checkingTransactions = false;
@@ -141,6 +155,7 @@ export const transactionsController = (utils, actions) => {
     return {
         sendLamdenTx,
         sendCurrencyTransaction,
+        processRetry
     }
 }
 

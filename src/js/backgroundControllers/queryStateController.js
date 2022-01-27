@@ -4,7 +4,7 @@ export const queryStateController = (utils) => {
         try{
             let network = utils.networks.getCurrent()
 
-            let res = await network.blockservice_API.getCurrentKeyValue('stamp_cost', 'S', 'value')
+            let res = await network.blockservice.getCurrentKeyValue('stamp_cost', 'S', 'value')
             let value = utils.getValueFromReturn(res.value)
 
             if (callback) callback(value)

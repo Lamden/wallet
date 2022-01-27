@@ -2,8 +2,8 @@
     import { setContext, getContext } from 'svelte';
 
 	//Components
-    import { Components, FirstRun }  from '../Router.svelte'
-    const { Steps, Step } = Components;
+    import { FirstRun }  from '../Router.svelte'
+
     import NavLogo from '../nav/NavLogo.svelte';
 
     //Context
@@ -11,6 +11,13 @@
 
     setContext('functions', {
         nextPage: () => {currentStep = currentStep + 1},
+        back: () => {
+            if (currentStep === 0) {
+                switchPage("FirstRunMain")
+                return;
+            }
+            currentStep = currentStep - 1;
+        },
         setFile: (value) => {file = value;},
         setKeyStore: (value) => {keystoreFile = value;},
         setKeys: (value) => {keys = value;},
@@ -19,6 +26,8 @@
             else if (step === 0) currentStep = back;
             currentStep = step;
         },
+        setVault: (data) => vault = data,
+        getVault: () => vault,
         done: () => checkFirstRun()
 	});
 
@@ -27,10 +36,11 @@
     let keys;
     let restore = true;
     let currentStep = 0;
+    let vault = null;
 
     let steps = [
         {page: 'FirstRunCreatePW', hideSteps: false, back: 0},
-        {page: 'RestoreUpload', hideSteps: false, back: 0},
+        {page: 'RestoreOptions', hideSteps: false, back: 0},
         {page: 'RestoreCheck', hideSteps: true, back: 0},
         {page: 'RestorePassword', hideSteps: false, back: 1},
         {page: 'RestoreAddWallets', hideSteps: false, back: 1},
@@ -70,16 +80,6 @@
     height: 97px;
     border-bottom: 1px solid var(--divider-light);
 }
-
-.steps{
-    display: flex;
-    justify-content: center;
-    height: 180px;
-}
-
-.hide-steps{
-    display: none;
-}
 </style>
 
 <div class="firstrun-restore">
@@ -88,9 +88,6 @@
     </div>
     <div class="content">
         <svelte:component this={FirstRun[currentPage]} {file} {keystoreFile} {keys} {restore}/>
-    </div>
-    <div class="steps" class:hide-steps={hideSteps}>
-        <Steps {back} {hideBack}/>
     </div>
 </div>
 

@@ -8,7 +8,7 @@
     import { steps } from '../../js/stores/stores.js';
 
 	//Components
-	import { Components }  from '../Router.svelte'
+	import { Components, LeftSideFullPage}  from '../Router.svelte'
     const { Button } = Components;
 
     //Images
@@ -16,7 +16,7 @@
 
     //Context
     const { switchPage } = getContext('app_functions');
-    const { setKeys, changeStep } = getContext('functions');
+    const { setKeys, changeStep, nextPage } = getContext('functions');
 
     //Props
     export let keys;
@@ -24,28 +24,10 @@
 
     let selectAll = false;
 
-    $: buttonName = restore ? "Complete Restore" : "Back To Home";
-
-	onMount(() => {
-        steps.update(current => {
-            current.currentStep = 4;
-            return current
-        });   
-    });
-
-    const done = () => {
-        if (restore) changeStep(7);
-        else switchPage('CoinsMain');
-    }
     
 </script>
 
 <style>
-
-.key-box{
-    margin: 0 auto;
-    max-width: 820px;
-}
 
 .header{
     margin-left: 53px;
@@ -122,80 +104,83 @@ p{
     width: 22px;
     min-width: 22px;
 }
+.btns{
+    margin-top: 1.5rem;
+}
 </style>
 
-<div class="flex-row flow-page" in:fade="{{delay: 0, duration: 200}}">
-    <div class="flex-column flow-content-left">
-        <h6>Wallets Restored</h6>
-    
-        <div class="flow-text-box text-body1 text-primary">
-            You've added the following wallets succesfully! You may now perform transactions using these addresses.
+<LeftSideFullPage title={`Wallets Restored`} helpLink={'/wallet/restore_overview'}>
+    <div slot="body">
+        <div class="text-body1 weight-400 desc">
+            You've added the following accounts succesfully! You may now perform transactions using these addresses.
         </div>
-        <div class="flex-column flow-buttons">
+    </div>
+<div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
+    <div class="flex-column">
+        <div>
+            <div class="flex-row header text-subtitle2 text-primary">
+                <p class="header-name">{'Name'}</p>
+                <p class="header-address">{'Address'}</p>
+            </div>
+            {#if keys.error}
+                <div class="flex-row key-row">
+                    <div class="error-icon">
+                        {@html errorIcon}
+                    </div>
+                    <p class="text-red text-body2">{keys.error}</p>
+                </div>
+            {:else}
+                {#each keys.keyList as key, i}
+                    {#if key.result.added}
+                        <div class="flex-row key-row">
+                            <div class="checkbox-box">
+                                <label class="chk-container">
+                                    <input type="checkbox" bind:checked={keys.keyList[i].checked} on:click|preventDefault>
+                                    <span class="chk-checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="flex-column key-info text-body3 ">
+                                <p>{`${key.name} (${key.symbol})`}</p>
+                                <p class="nickname text-secondary">{`${key.nickname}`}</p>
+                            </div>
+                            <div class="flex-column result-box text-body3 text-secondary">
+                                <p>{`${key.vk}`}</p>
+                                <p class="message">{key.result.reason}</p>
+                            </div>
+                        </div>
+                    {:else}
+                        <div class="flex-row key-row">
+                            <div class="error-icon">
+                                {@html errorIcon}
+                            </div>
+                            <div class="flex-column key-info text-body3 ">
+                                <p>{`${key.name} (${key.symbol})`}</p>
+                                <p class="nickname text-secondary">{`${key.nickname}`}</p>
+                            </div>
+                            <div class="flex-column result-box text-body3 text-secondary">
+                                <p>{key.vk}</p>
+                                <p class="error">{key.result.reason}</p>
+                            </div>
+                        </div>
+                    {/if}
+                {/each}
+            {/if}
+        </div>
+        <div class="flex-column flow-buttons flex-align-center btns">
             <Button id={'home-btn'}
                     classes={`button__solid button__primary`}
                     styles={'margin-bottom: 16px;'}
                     name={restore ? "Finish" : "Back to Home"}
                     disabled={false}
-                    click={() => done()} />
-
-            {#if whitelabel.helpLinks.show}
-                <a  class="text-link text-caption text-secondary" 
-                    href={whitelabel.helpLinks.masterURL || "https://docs.lamden.io/docs/wallet/restore_keystore"}
-                    target="_blank" 
-                    rel="noopener noreferrer" >
-                    Help & FAQ
-                </a>
-            {/if}  
+                    width={"347px"}
+                    click={() => {
+                        if (restore) {
+                            nextPage()
+                        } else {
+                            switchPage('CoinsMain')
+                        }
+                    }} />
         </div>
-    </div>
-    <div class="flow-content-right key-box" in:fade="{{delay: 0, duration: 200}}">
-        <div class="flex-row header text-subtitle2 text-primary">
-            <p class="header-name">{'Name'}</p>
-            <p class="header-address">{'Address'}</p>
-        </div>
-        {#if keys.error}
-            <div class="flex-row key-row">
-                <div class="error-icon">
-                    {@html errorIcon}
-                </div>
-                <p class="text-red text-body2">{keys.error}</p>
-            </div>
-        {:else}
-            {#each keys.keyList as key, i}
-                {#if key.result.added}
-                    <div class="flex-row key-row">
-                        <div class="checkbox-box">
-                            <label class="chk-container">
-                                <input type="checkbox" bind:checked={keys.keyList[i].checked} on:click|preventDefault>
-                                <span class="chk-checkmark"></span>
-                            </label>
-                        </div>
-                        <div class="flex-column key-info text-body3 ">
-                            <p>{`${key.name} (${key.symbol})`}</p>
-                            <p class="nickname text-secondary">{`${key.nickname}`}</p>
-                        </div>
-                        <div class="flex-column result-box text-body3 text-secondary">
-                            <p>{`${key.vk}`}</p>
-                            <p class="message">{key.result.reason}</p>
-                        </div>
-                    </div>
-                {:else}
-                    <div class="flex-row key-row">
-                        <div class="error-icon">
-                            {@html errorIcon}
-                        </div>
-                        <div class="flex-column key-info text-body3 ">
-                            <p>{`${key.name} (${key.symbol})`}</p>
-                            <p class="nickname text-secondary">{`${key.nickname}`}</p>
-                        </div>
-                        <div class="flex-column result-box text-body3 text-secondary">
-                            <p>{key.vk}</p>
-                            <p class="error">{key.result.reason}</p>
-                        </div>
-                    </div>
-                {/if}
-            {/each}
-        {/if}
     </div>
 </div>
+</LeftSideFullPage>

@@ -43,21 +43,21 @@
 <div class="header">
     <NavLogo />
 </div>
-<div class="flex-column">
-    <LeftSideFullPage title={"Password Safety"}>
+    <LeftSideFullPage title={"Password Safety"} helpLink="/wallet/settings_changepassword">
         <div slot="body">
             <div class="text-body1 weight-400 desc">
-                You've successfully changed your wallet password! The next time you sign in, you’ll be asked for your new password.
+                You've successfully changed your Lamden Vault password! The next time you sign in, you’ll be asked for your new password.
             </div>
         </div>
-    </LeftSideFullPage>
-    <h6 class="text-green">Password Changed!</h6>
-    <Button
-        id={'change-done-btn'} 
-        width={'347px'}
-        margin={'0 0 .625rem 0'}
-        classes={'button__solid button__primary'}
-        name={"DONE"}
-        click={done}
-    />
-</div>
+    <div slot="content" class="flex-column flex-align-center">
+        <h6 class="text-green">Password Changed!</h6>
+        <Button
+            id={'change-done-btn'} 
+            width={'347px'}
+            margin={'0 0 .625rem 0'}
+            classes={'button__solid button__primary'}
+            name={"DONE"}
+            click={done}
+        />
+    </div>
+</LeftSideFullPage>

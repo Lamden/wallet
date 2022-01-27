@@ -24,6 +24,9 @@
     
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';   
+    //Images
+	import cautionIcon from '../../img/menu_icons/icon_caution_circle.svg'
+	import vaultLogo from '../../img/vault_logo.svg'
 
     //Icons
     import RefreshIcon from '../icons/RefreshIcon.svelte'
@@ -43,19 +46,21 @@
     let buttons = [
         {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__primary'},
     ]
-
+    
     $: netKey = networkKey($currentNetwork)
     $: tokens = $TokenStore[netKey] || []
     $: token = tokens.find(f => f.contractName === $SettingsStore.currentPage.data.contractName) || $SettingsStore.currentPage.data;
     $: balance = displayBalance(stringToFixed(getTokenTotalBalance(netKey, token.contractName, $tokenBalanceTotal), 8))
-    $: accountList = createAccountList($TokenBalancesStore).filter( c => c.sk !== "watchOnly" )
-    $: coinsTracked = createAccountList($TokenBalancesStore).filter( c => c.sk === "watchOnly" )
+    $: accountList = createAccountList(netKey, $TokenBalancesStore).filter( c => c.sk !== "watchOnly" && c.type !== "vault"  )
+    $: coinsTracked = createAccountList(netKey, $TokenBalancesStore).filter( c => c.sk === "watchOnly" )
+    $: vaults = createAccountList(netKey, $TokenBalancesStore).filter(c => c.type === "vault");
+    $: vaultExist = vaults.length > 0;
 
 	onMount(() => { 
         null
     });
 
-    const createAccountList = () => {
+    const createAccountList = (netKey) => {
         let acountsWithBalances = []
         if (!$TokenBalancesStore[netKey]) return acountsWithBalances
         Object.keys($TokenBalancesStore[netKey]).forEach(vk => {
@@ -204,6 +209,12 @@
             margin-top: 2rem;
         }
     }
+    .warning-icon{
+        width: 20px;
+        margin-left: 10px;
+        min-width: 20px;
+        cursor: pointer;
+    }
 </style>
 
 <div id="token-details" class="flex-column text-primary">
@@ -267,10 +278,24 @@
             {/if}
         </div>
     </div>
+    {#if vaultExist && vaults.length > 0}
+        <div class="header header-vault header-text text-body1 weight-800">
+            <div class="header-name header-text">
+                My Vault Accounts
+                <div class="warning-icon">{@html vaultLogo}</div>
+            </div>
+        </div>
+        {#each vaults as coin (coin.vk) }
+            <Coin {coin} {token} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
+        {/each}
+    {/if}
     {#if accountList.length !== 0}
         <div class="header header-accounts header-text text-body1 divider ">
             {#if whitelabel.mainPage.account_info.show}
-                <div class:logo-space={whitelabel.mainPage.logo.show} class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
+                <div class="header-name header-text">
+                    {whitelabel.mainPage.account_info.title}
+                    <div class="warning-icon" on:click={() => openModal("CoinLegacyModal")}>{@html cautionIcon}</div>
+                </div>
             {/if}
             {#if whitelabel.mainPage.amount.show}
                 <div class="header-amount header-text">{whitelabel.mainPage.amount.title}</div>
@@ -282,7 +307,10 @@
     {/if}
     {#if coinsTracked.length > 0}
         <div class="header header-accounts-tracked header-text text-body1 divider ">
-            <div class="logo-space header-name header-text">Watched Accounts</div>
+            <div class="header-name header-text">
+                Watched Accounts
+                <div class="warning-icon" on:click={() => openModal("CoinWatchedModal")}>{@html cautionIcon}</div>
+            </div>
             <div class="header-msg header-text text-accent">You do not own the private keys for these accounts</div>
         </div>	
         {#each coinsTracked as coin (coin.id) }

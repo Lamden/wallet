@@ -26,6 +26,7 @@
     export let warningMsg = ""
     export let disabledPWShowBtn = true
     export let thisInput;
+    export let autoComplete = "off";
 
     let pwShow = false;
 
@@ -99,6 +100,7 @@
             required={required}
             spellcheck={spellcheck}
             {disabled}
+            {autoComplete}
             autofocus={autofocus}  />
         {#if !disabledPWShowBtn}
             <span class="password-btn" on:click={handleShow}>{showtext}</span>
@@ -120,6 +122,7 @@
             placeholder={placeholder}
             required={required}
             {disabled}
+            {autoComplete}
             autofocus={autofocus}  />
             <slot name="button"></slot>
     {/if}
@@ -159,6 +162,7 @@
             required={required}
             spellcheck={spellcheck}
             {disabled}
+            {autoComplete}
             autofocus={autofocus}  />
     {/if}
 </div>

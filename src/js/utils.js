@@ -4,7 +4,7 @@ const { CryptoJS, JsonFormatter } = nodeCryptoJs;
 const validators = require('types-validate-assert')
 const { validateTypes, assertTypes } = validators;
 
-const Lamden = require('lamden-js')
+const Lamden = require('lamden-js').default
 const { Encoder } = Lamden;
 
 /*

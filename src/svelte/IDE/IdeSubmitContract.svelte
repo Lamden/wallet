@@ -2,7 +2,8 @@
     import { getContext, onMount, createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    import { Encoder } from 'lamden-js'
+    import lamden from 'lamden-js';
+    const { Encoder } = lamden;
     
 	//Stores
     import { BalancesStore, coinsDropDown, currentNetwork } from '../../js/stores/stores.js';

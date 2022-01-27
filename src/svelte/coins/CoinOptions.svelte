@@ -12,7 +12,6 @@
     const { Button, DropDown } = Components;
     
     //Icons
-    import CheckmarkIcon from '../icons/CheckmarkIcon.svelte'
     import CopyIcon from '../icons/CopyIcon.svelte'
     import DeleteIcon from '../icons/DeleteIcon.svelte'
     import EditIcon from '../icons/EditIcon.svelte'
@@ -22,9 +21,8 @@
     const { close, setPage, setSelectedCoin} = getContext('coinmodify_functions');
 
     let selectedWallet;
-    let copySuccessful;
     let options = [
-        {id: 'modify-copy-btn', name: 'Copy Account', desc: 'Address to Clipboard', iconComponent: CopyIcon, color: 'primary', click: () => copyWalletAddress() },
+        {id: 'modify-view-btn', name: 'View', desc: 'Private Key', iconComponent: CopyIcon, color: 'primary', click: () => viewWalletSk() },
         {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', iconComponent: EditIcon, color: 'primary', click: () => showEdit() },
         {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
     ]
@@ -43,10 +41,9 @@
         setPage(3);
     }
 
-    const copyWalletAddress = () => {
-        copyToClipboard(selectedWallet.vk)
-        copySuccessful = true;
-        setTimeout(() => copySuccessful = false, 2000)
+    const viewWalletSk = () => {
+        setSelectedCoin(selectedWallet);
+        setPage(7);
     }
 
     const coinList = () => {
@@ -112,19 +109,11 @@ h2{
                 class:options-box-grey={ option.color === 'grey'}
                 class:options-box-primary={ option.color === 'primary'}
                 on:click={option.click}>
-                {#if option.name !== "Copy Account"}
-                    <svelte:component 
-                        this={option.iconComponent} 
-                        width="20px" 
-                        color={option.color === "primary" ? "var(--color-white)" : "var(--font-primary)"}
-                    />
-                {:else}
-                    <svelte:component 
-                        this={copySuccessful ? CheckmarkIcon : option.iconComponent} 
-                        width="20px" 
-                        color={copySuccessful ? "var(--success-color)" : option.color ===  "primary" ? "var(--color-white)" : "var(--font-primary)"}
-                    />
-                {/if}
+                <svelte:component 
+                    this={option.iconComponent} 
+                    width="20px" 
+                    color={option.color === "primary" ? "var(--color-white)" : "var(--font-primary)"}
+                />
                 <div class="option-name text-subtitle2">{option.name}</div>
                 <div class="option-desc text-caption text-opacity-1">{option.desc}</div>
             </div>

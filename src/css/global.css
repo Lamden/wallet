@@ -958,7 +958,6 @@ input.submit-button:disabled{
 }
 .flow-page{
     flex-grow:1;
-    padding-top: 100px;
 }
 .flow-content{
     flex-grow: 1;
@@ -1166,4 +1165,35 @@ input.submit-button:disabled{
 
 .options-box-grey:hover{
     background-color: var(--bg-secondary-hover);
+}
+
+.layout-leftside-warning{
+    margin-top: 1.5rem;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--font-warning);
+}
+
+.layout-leftside-text-link{
+    color: var(--accent-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.layout-leftside-content  .text-box{
+    margin: 1rem 0;
+}
+
+.layout-leftside-content  .buttons{
+    flex-grow: 1;
+    max-height: 250px;
+    justify-content: flex-end;
+}
+
+.layout-leftside-content  h6{
+    margin-top: 0;
+    margin-bottom: 1.4rem;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
 }

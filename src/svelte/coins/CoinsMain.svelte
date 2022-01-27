@@ -1,7 +1,7 @@
 <script>
 	import whitelabel from '../../../whitelabel.json'
 
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	
 	//Stores
 	import { 
@@ -18,29 +18,34 @@
 	const { Button } = Components;
 
 	//Images
-	import hero_bg from '../../img/backgrounds/hero_bg.png';
-
-	//Icons
-	import RefreshIcon from '../icons/RefreshIcon.svelte'
-	import PlusIcon from '../icons/PlusIcon.svelte'
-
-	//Utils
-	import { displayBalance } from '../../js/utils.js';
+	import cautionIcon from '../../img/menu_icons/icon_caution_circle.svg'
+	import vaultLogo from '../../img/vault_logo.svg'
 
 	//Context
     const { switchPage, openModal } = getContext('app_functions');
 	
 	//Props
 	export let name
-
+	
+	$: vaultExist = false;
 	$: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : '0';
 
 	let refreshing = false;
 	let orderingLocked = false;
+	$: vaults = $CoinStore ? [...$CoinStore].map((coin, index) => {
+		coin.id = index
+		return coin
+	}).filter(c => c.type === "vault") : [];
+
 	$: coinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
 		coin.id = index
 		return coin
 	}).filter(c => c.sk !== "watchOnly") : [];
+
+	$: oldCoinStorage = $CoinStore ? [...$CoinStore].map((coin, index) => {
+		coin.id = index
+		return coin
+	}).filter(c => c.sk !== "watchOnly" && c.type !== "vault") : [];
 	$: tokenStorage = $TokenStore[networkKey($currentNetwork)] ? [...$TokenStore[networkKey($currentNetwork)]].map((token, index) => {
 		token.id = index
 		return token
@@ -50,6 +55,15 @@
 		coin.id = index
 		return coin
 	}).filter(c => c.sk === "watchOnly") : [];
+
+	onMount(() => {
+		chrome.runtime.sendMessage({type: 'isVaultCreated'}, (ok) => {
+			vaultExist = ok;
+			if(ok) {
+				SettingsStore.setIsVaultCreated(ok);
+			}
+		})
+	});
 
 	const handleRefresh = () => {
 		if (refreshing) return
@@ -112,37 +126,23 @@
 <style>
 .coinsmain{
 	display: flex;
-	flex-direction: column;
-}
-
-.hero-rec{
-	height: 346px;
-}
-
-.refresh-icon{
-    width: 40px;
-	cursor: pointer;
-}
-.text-huge:first-child{
-    margin-right: 10px;
+	flex-direction: column
 }
 .header{
 	display: flex;
 	flex-direction: row;
 	width: 100%;
-	padding: 0.5rem 0;
 	margin-bottom: 0.5rem;
 	font-weight: 800;
 }
+.header-vault{
+	margin-top: 0;
+}
 .header-accounts{
-	margin-top: 4rem;
+	margin-top: 40px;
 }
 .header-watched{
-	margin-top: 4rem;
-}
-
-.divider{
-	border-bottom: 2px solid var(--divider-light);
+	margin-top: 40px;
 }
 .header-name{
 	width: 100%;
@@ -167,90 +167,49 @@
 	margin-right: 28px;  
 	width: 203px;
 }
-.balance-total{
-	align-items: center;
-	color: var(--font-overlay);
-}
-.balance-words{
-	color: var(--font-overlay);
-}
-p{
-    margin: 0;
-}
-.buttons{
-	align-items: flex-end;
-	flex-grow: 1;
-}
-
-.hide-tokens-button{
-	padding: 2px 6px;
-}
-.show-tokens-button{
-	padding: 5px 10px;
+.warning-icon{
+    width: 20px;
+    margin-left: 10px;
+    min-width: 20px;
+	cursor: pointer;
 }
 </style>
 
 <div class="coinsmain text-primary">
-	<div class="hero-rec" style="background-image: url({hero_bg});">
-		<div class="balance-words text-body1">
-			{`${$currentNetwork.currencySymbol}`}
-		</div>
-		<div class="flex-row balance-total">
-			<p class="text-huge">{`${displayBalance(totalBalance)}`}</p>
-			<div on:click={handleRefresh} 
-				id="refresh-icon"
-				class="flex-column refresh-icon" 
-				class:spinner={refreshing}>
-				<RefreshIcon />
-			</div>
-		</div>
-		<div class="flex-row buttons">
-			{#if whitelabel.mainPage.buttons.add_account.show}
-				<Button
-					id={'add-btn'} 
-					classes={'button__outlined button__overlay'}
-					name={whitelabel.mainPage.buttons.add_account.name}
-					click={() => openModal('CoinAdd')}
-				>
-					<div slot="icon-before">
-						<PlusIcon width="15px" color="var(--color-white)" />
-					</div>
-				</Button> 
-			{/if}
-		</div>
-	</div>
-
 	{#if $currentNetwork}
-		{#if tokenStorage.length > 0 && whitelabel.enableTokens}
-			{#if hideTokens}
-			<div class="flex-row flex-center-center mb-half">
-				<button class="button__small show-tokens-button text-body2"
-						on:click={handleHideTokens}
-				>
-					{`${tokenStorage.length} ${tokenStorage.length === 1 ? 'token' : 'tokens'} hidden`}
-				</button>
+		<div class="header header-vault header-text text-body1 weight-800">
+			<div class="header-name header-text">
+				My Vault Accounts
+				<div class="warning-icon">{@html vaultLogo}</div>
 			</div>
-
-			{:else}
-				<div class="header header-text divider text-body1">
-					{#if whitelabel.mainPage.token_columns.token_name.show}
-						<div class="header-name header-text">
-							{whitelabel.mainPage.token_columns.token_name.title}
-						</div>
-					{/if}
-					{#if whitelabel.mainPage.token_columns.token_amount.show}
-						<button class="button__small hide-tokens-button text-body2" on:click={handleHideTokens}>{"hide"}</button>
-					{/if}
-				</div>
-				{#each tokenStorage as token (token.id) }
-					<Token {token} on:reorderToken={handleReorderToken}/>
-				{/each}
+			{#if vaultExist && vaults.length > 0}
+				<div class="header-percent header-text">Portfolio %</div>
 			{/if}
+		</div>
+		{#if vaultExist}
+			{#if vaults.length > 0}
+				{#each vaults as coin (coin.vk) }
+					<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
+				{/each}
+			{:else}
+				<Button 
+				id={"add-new-vaulte-button"}
+				classes={'button__solid button__primary'}
+				width={'232px'}
+				margin={'1rem 0 0 0'}
+				name="Create Vault Account" 
+				click={() => openModal('CoinAdd')} />
+			{/if}
+		{:else}
+			<CoinEmpty />
 		{/if}
-		{#if coinStorage.length !== 0}
-			<div class="header header-accounts header-text text-body1 divider weight-800">
+		{#if oldCoinStorage.length !== 0}
+			<div class="header header-accounts header-text text-body1 weight-800">
 				{#if whitelabel.mainPage.account_info.show}
-					<div class="header-name header-text">{whitelabel.mainPage.account_info.title}</div>
+					<div class="header-name header-text">
+						{whitelabel.mainPage.account_info.title}
+						<div class="warning-icon" on:click={() => openModal("CoinLegacyModal")}>{@html cautionIcon}</div>
+					</div>
 				{/if}
 				{#if whitelabel.mainPage.amount.show}
 					<div class="header-amount header-text">{whitelabel.mainPage.amount.title}</div>
@@ -259,23 +218,21 @@ p{
 					<div class="header-percent header-text">{whitelabel.mainPage.portfolio.title}</div>
 				{/if}
 			</div>	
-			{#each coinStorage as coin (coin.vk) }
+			{#each oldCoinStorage as coin (coin.vk) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
-				<CoinDivider />
 			{/each}
 		{/if}
 		{#if coinsTracked.length > 0}
-			<div class="header header-watched header-text text-body1 divider weight-800">
-				<div class="header-name header-text">Watched Accounts</div>
+			<div class="header header-watched header-text text-body1 weight-800">
+				<div class="header-name header-text">
+					Watched Accounts
+					<div class="warning-icon" on:click={() => openModal("CoinWatchedModal")}>{@html cautionIcon}</div>
+				</div>
 			</div>	
 			<div class="header-msg header-text weight-600">You do not own the private keys for these accounts</div>
 			{#each coinsTracked as coin (coin.vk) }
 				<Coin {coin} refreshTx={handleRefresh} on:reorderAccount={handleReorderAccount}/>
-				<CoinDivider />
 			{/each}
-		{/if}
-		{#if coinStorage.length === 0}
-			<CoinEmpty />
 		{/if}
 	{/if}
 </div>
