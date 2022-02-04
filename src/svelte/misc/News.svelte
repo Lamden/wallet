@@ -35,7 +35,8 @@
             })
             });
         }
-        return arr;
+        let list = arr.sort((a,b)=>{ return b.version.replace('.', '')-a.version.replace('.', '')})
+        return list;
     }
 
     const newsIcons = {

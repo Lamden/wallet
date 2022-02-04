@@ -65,6 +65,7 @@
         if (!$TokenBalancesStore[netKey]) return acountsWithBalances
         Object.keys($TokenBalancesStore[netKey]).forEach(vk => {
             if (typeof $TokenBalancesStore[netKey][vk][token.contractName] !== 'undefined'){
+                if ($TokenBalancesStore[netKey][vk][token.contractName] == '0') return
                 acountsWithBalances.push($CoinStore.find(f => f.vk === vk))
             }
         })

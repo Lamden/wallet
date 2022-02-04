@@ -33,12 +33,11 @@ const fetchUpdates = async () => {
             chrome.storage.local.get("events", function(r){
               let old = r.events || [];
               res.data.forEach(x => {
-                let index = old.findIndex(oldEvent => oldEvent.id = x.id);
+                let index = old.findIndex(oldEvent => oldEvent.id === x.id);
                 if (index !== -1) {
-                  updates.push(old[index])
-                } else {
-                  updates.push(x)
-                }
+                  x.viewed = old[index].viewed
+                } 
+                updates.push(x)
               });
               chrome.storage.local.set({"events": updates});
             });
