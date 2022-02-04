@@ -82,7 +82,7 @@
 				openModal("BackupNotificationModal", {});
 			}
 		}
-		if(!$needsBackup && newEvent && !whatsnewModalViewed){
+		if(!$needsBackup && newEvent && !fullPage.includes($currentPage.name) && !whatsnewModalViewed){
 			openModal("WhatsnewModal", newEvent)
 			whatsnewModalViewed = true
 		} 

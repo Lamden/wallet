@@ -37,6 +37,6 @@
                 classes={'button__solid'} 
                 width={'232px'}
                 name="Learn More" 
-                click={() => switchPage('RestoreMain')} />
+                click={() => window.open('https://docs.lamden.io/docs/wallet/overview', '_blank')} />
     </div>
 </div>
