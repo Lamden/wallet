@@ -11,6 +11,9 @@ export const dappController = (utils, funa, actions) => {
     });
 
     chrome.runtime.onInstalled.addListener(function(details) {
+        if (details.reason === "install") {
+            funa.fetchUpdates()
+        }
         if (details.reason === "update"){
             let currVer = chrome.runtime.getManifest().version;
             let prevVer = details.previousVersion

@@ -135,6 +135,7 @@
         if (!tokenBalancesStore[netKey][vk]) return [];
         let tokens = []
         Object.keys(tokenBalancesStore[netKey][vk]).forEach(key => {
+            if (!tokenBalancesStore[netKey][vk][key] || tokenBalancesStore[netKey][vk][key] == "0") return
             let item = tokenStore[netKey].find(t => t.contractName === key)
             if (item) {
                 item.balance = tokenBalancesStore[netKey][vk][key]
