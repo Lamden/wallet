@@ -324,12 +324,12 @@
         bind:this={divElm}
         class="row-box flex-column text-body1"
         class:active-bg={collapse}
-        class:textwhite={isVaultAccount}
+        class:text-primary={isVaultAccount}
         class:text-primary-dim={!isVaultAccount}
         >
         <div class="coin-main-row flex-row flex-center-center">
             <div class="collapse-btn" on:click={handleCollapse}>
-                <DirectionalChevronIcon strokeWidth={2.75} direction={direction} width="16px" color="white"/>
+                <DirectionalChevronIcon strokeWidth={2.75} direction={direction} width="16px" color="var(--font-primary)"/>
             </div>
             {#if whitelabel.mainPage.logo.show}
                 <div class="logo flex-center-center">
@@ -337,9 +337,9 @@
                 </div>
             {/if}
             {#if whitelabel.mainPage.account_info.show}
-                <div class="name text weight-300">
+                <div class="name text weight-400">
                     <div class="name-box">
-                        <div id={`coin-nickname-${coin.id}`}  class="nickname text-white" on:click={() => switchPage('CoinDetails', coin)}>
+                        <div id={`coin-nickname-${coin.id}`}  class="nickname text-body1 text-primary" on:click={() => switchPage('CoinDetails', coin)}>
                             {`${coin.nickname}`}
                         </div>
                     </div>
@@ -387,7 +387,7 @@
                         <div class="icon">{@html arrowIn}</div>
                     </button>
                 {/if}
-                <button class="button__small address coin-btn flex-row" 
+                <button class="button__small address coin-btn flex-row button__primary" 
                         class:success={copied} 
                         on:click={handleAddressCopy} 
                         title="copy account address"
@@ -395,7 +395,7 @@
                     {formatAccountAddress(coin.vk, 7, 0)}
                     <div class="icon-copy">
                         {#if !copied}
-                            <CopyIcon width="9px" color="var(--font-primary)"/>
+                            <CopyIcon width="9px" color="var(--color-white)"/>
                         {:else}
                             <CheckmarkIcon width="10px" color="var(--success-color)"/>
                         {/if}

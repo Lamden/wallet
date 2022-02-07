@@ -7,7 +7,7 @@
 	//Context
     const { switchPage, firstRun } = getContext('app_functions');
 
-    export let style;
+    export let style = "fill: var(--font-primary)";
 
     $: clickable = !firstRun()
 

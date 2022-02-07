@@ -1,4 +1,5 @@
 <script>
+    import Lamden from 'lamden-js';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
     import InputBox from './InputBox.svelte';
@@ -6,23 +7,26 @@
     export let mnemonics = [];
     export let disabled = true;
     export let disableInputs = [];
+    export let useAnyway = false;
 
     let doms = [];
 
     export const validation = () => {
         let valid = true;
-        doms.forEach((node) => {
-            node.setCustomValidity('');
-            if (!node.value || node.value === '') {
-                node.setCustomValidity("Can't be empty")
-                node.reportValidity()
-                valid = valid & false;
-            } else if(!/^[a-z]+$/.test(node.value)){
-                node.setCustomValidity("Should be lowercase letter")
-                node.reportValidity()
-                valid = valid & false;
-            };
-        })
+        if (!useAnyway) {
+            doms.forEach((node) => {
+                node.setCustomValidity('');
+                if (!node.value || node.value === '') {
+                    node.setCustomValidity("Can't be empty")
+                    node.reportValidity()
+                    valid = valid & false;
+                } else if(!/^[a-z]+$/.test(node.value)){
+                    node.setCustomValidity("Should be lowercase letter")
+                    node.reportValidity()
+                    valid = valid & false;
+                }
+            })
+        }
         return valid;
     }
 

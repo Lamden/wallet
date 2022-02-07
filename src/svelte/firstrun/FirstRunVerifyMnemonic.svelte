@@ -21,6 +21,7 @@
 
     let mnemonics;
     let disableInputs = [];
+    let useAnyway = false;
 
     onMount(() => {
         let vals = new Array(24).fill('');
@@ -53,13 +54,24 @@
 
     const valid = () => {
         if (!mnemonicDom.validation()) { 
+            disabledButton = true;
             return false;
         } 
+        if (!useAnyway) {
+            if (!Lamden.wallet.validateMnemonic(mnemonics.join(' '))) {
+                disabledButton = true;
+                errmsg = "One of the entered words does not match the word list."
+                return false
+            }
+        }
+
         let vault = getVault();
         if (vault.mnemonic === mnemonics.join(' ')) {
             return true
         }
-        errmsg = "The mnemonic word you entered is wrong"
+
+        disabledButton = true;
+        errmsg = "The seed phrase word you entered is wrong."
         return false
     }
     const next = () => {
@@ -70,6 +82,10 @@
 
     const handleMnemonicChanged = (e) => {
         errmsg = undefined;
+        if (useAnyway) {
+            disabledButton = false
+            return
+        }
         let mnemonicsFullFilled = mnemonics.findIndex(word => !word || word === '' ) === -1;
         if (mnemonicsFullFilled) {
             disabledButton = false;
@@ -77,9 +93,25 @@
             disabledButton = true;
         }
     }
+
+    const handleChange = (e) => {
+        errmsg = undefined;
+        if (useAnyway) {
+            disabledButton = false
+        }
+    }
 </script>
 
 <style>
+    .checkbox-text{
+        font-size: 16px;
+        margin-bottom: 1.5rem;
+        align-self: flex-start;
+    }
+    p{
+        margin-top: 0;
+        align-self: flex-start;
+    }
 </style>
 <LeftSideFullPage title={"About Seed Recovery Phrases"} helpLink="/wallet/first_vault_install">
     <div slot="body">
@@ -91,10 +123,15 @@
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column flex-align-center">
             <h6 class="text-primary text-center">Verify Seed Recovery Phrase</h6>
-            <Mnemonic bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} {disableInputs} {mnemonics} disabled={false}/>
+            <Mnemonic bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} {disableInputs} {mnemonics} {useAnyway} disabled={false}/>
             {#if errmsg}
                 <p class="text-warning">{errmsg}</p>
             {/if}
+            <label class="chk-container text-body1 checkbox-text desc">
+                Use non-standard phrase.
+                <input type="checkbox" bind:checked={useAnyway} on:change={handleChange}>
+                <span class="chk-checkmark mark"></span>
+            </label>
             <div class="flex-column flow-buttons">
                 <Button id="next"
                         classes={'button__solid button__primary'}

@@ -370,6 +370,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
     fill: var(--black-color)
 }
 
+.fill-white{
+    fill: var(--color-white)
+}
+
 
 .text-title, h1{
     font-style: normal;

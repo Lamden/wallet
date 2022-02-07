@@ -24,6 +24,9 @@
     let fileName;
     let privateKey;
     let disabledButton = true;
+
+    let useAnyway = false;
+    let errmsg;
     
     let options = [{
         value: 1,
@@ -85,7 +88,20 @@
     const restore = () => {
         if (currentSelect === 1) {
             if (!mnemonicDom.validation()) {
+                disabledButton = true;
                 return;
+            }
+            if (mnemonics.join(' ').trim().split(/\s+/g).length < 12) {
+                disabledButton = true;
+                errmsg = "Must input at least 12 words."
+                return;
+            }
+            if (!useAnyway) {
+                if (!Lamden.wallet.validateMnemonic(mnemonics.join(' '))) {
+                    disabledButton = true;
+                    errmsg = "One of the entered words does not match the word list."
+                    return;
+                }
             }
             let mnemonicStr = mnemonics.join(' ');
             let seed = bip39.mnemonicToSeedSync(mnemonicStr).toString('hex');
@@ -124,6 +140,12 @@
     }
 
     const handleMnemonicChanged = (e) => {
+        errmsg = undefined;
+        if (useAnyway) {
+            disabledButton = false
+            return
+        }
+
         let mnemonicsFullFilled = mnemonics.findIndex(word => !word || word === '' ) === -1;
         if (mnemonicsFullFilled) {
             disabledButton = false;
@@ -142,9 +164,25 @@
         }
     }
 
+    const handleChange = (e) => {
+        errmsg = undefined;
+        if (useAnyway) {
+            disabledButton = false
+        }
+    }
+
 </script>
 
 <style>
+    .checkbox-text{
+        font-size: 16px;
+        margin-bottom: 1.5rem;
+        align-self: flex-start;
+    }
+    p{
+        margin-top: 0;
+        align-self: flex-start;
+    }
     h6{
         margin-top: 0;
         margin-bottom: 1.4rem;
@@ -202,7 +240,15 @@
                 on:selected={handleSelection}
             />
             {#if currentSelect === 1}
-                <Mnemonic bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged}  {mnemonics} disabled={false}/>
+                <Mnemonic bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged}  {mnemonics} {useAnyway} disabled={false}/>
+                {#if errmsg}
+                    <p class="text-warning">{errmsg}</p>
+                {/if}
+                <label class="chk-container text-body1 checkbox-text desc">
+                    Use non-standard phrase.
+                    <input type="checkbox" bind:checked={useAnyway} on:change={handleChange}>
+                    <span class="chk-checkmark mark"></span>
+                </label>
             {:else if currentSelect === 2}
                 <div class="caption-box text-body1">
                     <span class="text-accent" on:click={() => openPicker()}>Click here to choose a file</span>
