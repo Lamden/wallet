@@ -13,7 +13,7 @@
         PendingTxStore } from '../../js/stores/stores.js';
 
     //Components
-    import { CoinHistory, Modal, Modals, Components }  from '../Router.svelte'
+    import { Modal, Modals, Components }  from '../Router.svelte'
     const { Button, Identicons } = Components;
     
     
@@ -32,7 +32,7 @@
     import { copyToClipboard, displayBalanceToFixed } from '../../js/utils.js'
 
     //Context
-    const { switchPage, openModal, closeModal } = getContext('app_functions');
+    const { openModal } = getContext('app_functions');
 
     let refreshing = false;
     let copiedButton = false;
@@ -43,23 +43,12 @@
         lamden: 'CoinLamdenSend'
     }
 
-    let buttons = [
-        {id: "home-btn", name: 'ok', click: () => closeModal(), class: 'button__solid button__primary'},
-    ]
-
     $: coin = $CoinStore.find(f => f.vk === $SettingsStore.currentPage.data.vk) || $SettingsStore.currentPage.data;
     $: background =  hero_bg
     $: balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
     $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
-    $: pendingTxList = () => {
-        let pendingList = []
-        $PendingTxStore.forEach(tx => {
-            if (tx.txInfo.senderVk === coin.vk) pendingList.push(tx)
-        })
-        return pendingList
-    }
 
 	onMount(() => {
         if ($currentNetwork.blockExplorer) fetchTransactions();
@@ -315,8 +304,12 @@
         </div>
         <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${coin.vk}`}/>
     </div>
-    <hr>
-
-    <CoinHistory pendingTxList={pendingTxList()} {coin} {transactionsList} {fetchTransactions} />
-
+    <Button id={'view-transaction-btn'}
+        classes={'button__solid button__outlined'}
+        styles={'align-self: center;'}
+        margin="0 0 1rem"
+        name="View Transaction History" 
+        click={() => {
+            window.open(`${addressLookupURL}/addresses/${coin.vk}`, '_blank')
+        }} />
 </div>

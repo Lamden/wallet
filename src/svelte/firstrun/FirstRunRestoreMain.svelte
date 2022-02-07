@@ -16,7 +16,7 @@
                 switchPage("FirstRunMain")
                 return;
             }
-            currentStep = currentStep - 1;
+            currentStep = 0;
         },
         setFile: (value) => {file = value;},
         setKeyStore: (value) => {keystoreFile = value;},

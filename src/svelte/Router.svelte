@@ -47,7 +47,6 @@ import CoinSendingTx from './coins/CoinSendingTx.svelte';
 import CoinEditNickname from './coins/CoinEditNickname.svelte'; 
 import CoinDelete from './coins/CoinDelete.svelte'; 
 import CoinDeleting from './coins/CoinDeleting.svelte'; 
-import CoinHistory from  './coins/CoinHistory.svelte'; 
 import CoinLamdenReceive from './coins/CoinLamdenReceive.svelte';
 import ConiLamdenSendWarningBox from './coins/ConiLamdenSendWarningBox.svelte';
 import CoinLegacyModal from './coins/CoinLegacyModal.svelte';
@@ -84,11 +83,6 @@ import RestoreMnemonicWarning from './backup_restore/RestoreMnemonicWarning.svel
 import RestoreMnemonicSuccess from './backup_restore/RestoreMnemonicSuccess.svelte';
 import RestoreMnemonicPassword from './backup_restore/RestoreMnemonicPassword.svelte';
 
-
-//History
-import PendingTransactions from './history/PendingTransactions.svelte'
-import PendingTransaction from './history/PendingTransaction.svelte'
-
 //DevTools
 import DevToolsMain from './devtools/DevToolsMain.svelte';
 import DevToolsDocumentation from './devtools/DevToolsDocumentation.svelte';
@@ -111,7 +105,6 @@ import DropDown from './components/DropDown.svelte';
 import MessageBox from './components/MessageBox.svelte';
 import ResultBox from './components/ResultBox.svelte';
 import StrongPW from './components/StrongPW.svelte';
-import Transaction from './components/Transaction.svelte';
 import Kwargs from './components/Kwargs.svelte';
 import Kwarg from './components/Kwarg.svelte';
 import TokenLogo from './components/TokenLogo.svelte'
@@ -136,7 +129,6 @@ import IdeMethodTx from './IDE/IdeMethodTx.svelte';
 
 //Misc
 import LockScreen from './misc/LockScreen.svelte';
-import Transactions from './misc/Transactions.svelte';
 import About from './misc/About.svelte';
 
 //Token
@@ -263,7 +255,6 @@ export const Components = {
     Modal,
     DropDown,
     StrongPW,
-    Transaction,
     Kwargs, Kwarg,
     TokenLogo, TokenEditDetails,
     LightDarkToggle,
@@ -304,15 +295,13 @@ export {
     Nav, NavLogo, NavControls, NavStatus, NavForApp,
     Menu, MenuBox, MenuItem,
     CoinsMain, 
-    Coin, Token, CoinDivider, CoinDetails, CoinEmpty, CoinHistory, CoinAddToken, CoinAddAccount,
+    Coin, Token, CoinDivider, CoinDetails, CoinEmpty, CoinAddToken, CoinAddAccount,
     TokenDetails,
     DevToolsMain, DevToolsDocumentation, DevToolsNetworks,
     BackupMain,
     Restore,
     LockScreen,
     Modal,
-    PendingTransactions, PendingTransaction,
-    Transactions, Transaction,
     About,
     IdeMain, IdeMethods, IdeGetVariable, IdeMonacoEditor, IdeErrorsBox, IdeTabs, IdeTab, IdeMethodTx,
     ConnectionsMain, Connection, ConnectionEmpty,

@@ -87,8 +87,6 @@
     .mask{
         width: 100%;
         height: 100%;
-        background: var(--bg-primary);
-        opacity: 0.5;
         position: absolute;
         z-index: -1;
     }
@@ -96,7 +94,7 @@
 
 <div class="nav text-primary" style="background-image: url({nav_bg});">
     <div class="mask"></div>
-    <NavLogo style={`justify-content: flex-start; margin-top: 30px`}/>
+    <NavLogo style={`justify-content: flex-start; margin-top: 30px;fill: var(--color-white)`}/>
 
     <div class="flex-column flex-align-center details">
         <div class="balance-words text-body1">
@@ -127,6 +125,6 @@
     </div>
 
     {#if whitelabel.nav.showNetworkBox}
-        <NavControls style={`height: 80px;margin: 2rem 61px 2rem 0 `}/>
+        <NavControls style={`height: 80px;margin: 2rem 61px 2rem 0;`}/>
     {/if}
 </div>

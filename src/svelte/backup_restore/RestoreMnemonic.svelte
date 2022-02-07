@@ -30,6 +30,8 @@
     let oldMnemonic;
     let vaultExist = false;
     let disabledButton = true;
+    let useAnyway = false;
+    let errmsg;
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'getMnemonic'}, (res) => {
@@ -42,8 +44,22 @@
 
     const restore = () => {
         if (!mnemonicDom.validation()) {
+            disabledButton = true;
             return;
         }
+        if (mnemonics.join(' ').trim().split(/\s+/g).length < 12) {
+            disabledButton = true;
+            errmsg = "Must input at least 12 words."
+            return;
+        }
+        if (!useAnyway) {
+            if (!Lamden.wallet.validateMnemonic(mnemonics.join(' '))) {
+                disabledButton = true;
+                errmsg = "One of the entered words does not match the word list."
+                return;
+            }
+        }
+
         let isSameMnemonic = oldMnemonic === mnemonics.join(' ');
         if (!vaultExist) {
             let mnemonicStr = mnemonics.join(' ');
@@ -87,16 +103,38 @@
     }
 
     const handleMnemonicChanged = (e) => {
+        errmsg = undefined;
+        if (useAnyway) {
+            disabledButton = false
+            return
+        }
+
         let mnemonicsFullFilled = mnemonics.findIndex(word => !word || word === '' ) === -1;
         if (mnemonicsFullFilled) {
             disabledButton = false;
         } else {
-            disabledButton = true;
+            disabledButton = true;   
+        }
+    }
+
+    const handleChange = (e) => {
+        errmsg = undefined;
+        if (useAnyway) {
+            disabledButton = false
         }
     }
 </script>
 
 <style>
+    .checkbox-text{
+        font-size: 16px;
+        margin-bottom: 1.5rem;
+        align-self: flex-start;
+    }
+    p{
+        margin-top: 0;
+        align-self: flex-start;
+    }
 </style>
 <LeftSideFullPage title={"Remember"} helpLink={"/wallet/restore_overview"}>
     <div slot="body">
@@ -108,7 +146,15 @@
     <div class="flex-row flow-page flex-just-center" in:fade="{{delay: 0, duration: 200}}" slot="content">
         <div class="flex-column flex-align-center">
             <h6 class="text-primary text-center">Restore with Seed Recovery Phrase</h6>
-            <Mnemonic {mnemonics} bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} disabled={false}/>
+            <Mnemonic {mnemonics} bind:this={mnemonicDom} on:mnemonicChanged={handleMnemonicChanged} disabled={false} {useAnyway}/>
+            {#if errmsg}
+                <p class="text-warning">{errmsg}</p>
+            {/if}
+            <label class="chk-container text-body1 checkbox-text desc">
+                Use non-standard phrase.
+                <input type="checkbox" bind:checked={useAnyway} on:change={handleChange}>
+                <span class="chk-checkmark mark"></span>
+            </label>
             <div class="flex-column flow-buttons">
                 <Button id="create-wallet"
                         classes={'button__solid button__primary'}
