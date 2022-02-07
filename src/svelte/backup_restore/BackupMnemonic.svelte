@@ -25,7 +25,9 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'getMnemonic'}, (res) => {
-            mnemonics = res.split(" ");
+            res.split(" ").forEach((word, index) => {
+                mnemonics[index] = word
+            });
             setVault(res)
         })
     });

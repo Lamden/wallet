@@ -66,6 +66,8 @@
             label="Network"
             bgStyle={"transparent"}
             innerHeight={"40px"}
+            labelcolor={'white'}
+            styles={'color: white'}
             on:selected={(e) => handleSelected(e)} 
         />
     </div>

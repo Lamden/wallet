@@ -26,6 +26,8 @@
     // if network dropdown
     export let network = false;
 
+    export let labelcolor;
+
     //DOM Nodes
     let selectElm, customSelectElm, newSelectElm
 
@@ -187,7 +189,7 @@ label{
      class={`custom-select ${classes}`} 
      style={`width:${width}; margin:${margin}; max-width: ${maxWidth}; background: var(--bg-${bgStyle})`}>
      {#if label}
-        <label>{label}</label>
+        <label style={labelcolor?`color: ${labelcolor}`:''}>{label}</label>
      {/if}
     <select id={id} required={required} bind:this={selectElm} disabled={disabled}>
         {#each items as item, index}
