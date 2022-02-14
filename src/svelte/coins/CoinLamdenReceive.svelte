@@ -23,7 +23,7 @@
     let copied = false;
 
     $: coin = modalData.coin;
-    $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
+    $: addressLookupURL = $currentNetwork.blockExplorer;
 
     const handleAddressCopy = () => {
         copyToClipboard(coin.vk)
@@ -79,13 +79,15 @@
                 {/if}
             </div>
         </button>
-        <Button id="lamden-view-account"
-            classes={'button__solid button__primary'} 
-            width={'300px'}
-            margin={'0 0 17px 0'}
-            name="View Account on Lamden" 
-            click={() => openHQTab() }
-        />
+        {#if addressLookupURL}
+            <Button id="lamden-view-account"
+                classes={'button__solid button__primary'} 
+                width={'300px'}
+                margin={'0 0 17px 0'}
+                name="View Account on Lamden" 
+                click={() => openHQTab() }
+            />
+        {/if}
         <Button id="lamden-close"
             classes={'button__solid button__primary'} 
             width={'300px'}

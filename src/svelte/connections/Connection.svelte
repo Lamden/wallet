@@ -33,7 +33,7 @@
     $: dappLogo = dapp ? dapp.logo || false : false;
     $: dappLogoSrc = dappLogo ? `${dapp.url}${dappLogo}` : undefined;
     $: brokenIconLink = checkIfLogoURLBroken(dappLogoSrc);
-    $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
+    $: addressLookupURL = $currentNetwork.blockExplorer;
     $: linkedAccountVK = dapp.vk
     $: linkedAccountInfo = CoinStore.getByVk(linkedAccountVK)
 
@@ -228,7 +228,9 @@
                         <CheckmarkIcon width="18px" color="var(--success-color)"/>
                     {/if}
                 </div>
-                <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${linkedAccountVK}`}/>
+                {#if addressLookupURL}
+                    <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${linkedAccountVK}`}/>
+                {/if}
             </div>
             <p class="account-name text-secondary text-ellipsis">{linkedAccountInfo.nickname} </p>
         </div>

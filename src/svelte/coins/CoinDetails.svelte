@@ -48,7 +48,7 @@
     $: balance = displayBalanceToFixed(BalancesStore.getBalance($currentNetwork, coin.vk), 8) || '0'
     $: sendPage = sendPages[coin.network]
     $: transactionsList = [];
-    $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
+    $: addressLookupURL = $currentNetwork.blockExplorer;
 
 	onMount(() => {
         if ($currentNetwork.blockExplorer) fetchTransactions();
@@ -302,14 +302,18 @@
                 <CheckmarkIcon width="18px" color="var(--success-color)"/>
             {/if}
         </div>
-        <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${coin.vk}`}/>
+        {#if addressLookupURL}
+            <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${coin.vk}`}/>
+        {/if}
     </div>
-    <Button id={'view-transaction-btn'}
-        classes={'button__solid button__outlined'}
-        styles={'align-self: center;'}
-        margin="0 0 1rem"
-        name="View Transaction History" 
-        click={() => {
-            window.open(`${addressLookupURL}/addresses/${coin.vk}`, '_blank')
-        }} />
+    {#if addressLookupURL}
+        <Button id={'view-transaction-btn'}
+            classes={'button__solid button__outlined'}
+            styles={'align-self: center;'}
+            margin="0 0 1rem"
+            name="View Transaction History" 
+            click={() => {
+                window.open(`${addressLookupURL}/addresses/${coin.vk}`, '_blank')
+            }} />
+    {/if}
 </div>

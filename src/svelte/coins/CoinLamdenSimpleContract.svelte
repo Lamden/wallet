@@ -50,7 +50,7 @@ import { rejects } from 'assert';
     $: type = coin? "coin" : "token";
     $: contractName = startingContract || 'currency';
     $: netKey = networkKey($currentNetwork);
-    $: currencySymbol = $currentNetwork.type === "mainnet" ? "Tau" : "dTau";
+    $: currencySymbol = $currentNetwork.currencySymbol;
     $: accounts = creacteAccounts($coinsDropDown, $BalancesStore, $TokenBalancesStore, contractName);
     $: toAccounts = creacteToAccounts($coinsDropDown, from);
     $: buttonGroup = [

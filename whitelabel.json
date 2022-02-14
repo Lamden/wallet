@@ -11,7 +11,7 @@
             "type": "mainnet", 
             "lamden": true, 
             "currencySymbol": "TAU",
-            "blockExplorer": "https://mainnet.lamden.io",
+            "blockExplorer": "https://www.tauhq.com",
             "blockservice_hosts": ["http://165.22.47.195:3535"]
         },
         {
