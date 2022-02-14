@@ -23,7 +23,7 @@
     $: icon = typeIcons[result.type]
     $: resultMessage = result.message ? result.message : result.type;
     $: errorInfo = result.errorInfo ? result.errorInfo : undefined;
-    $: addressLookupURL = $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer;
+    $: addressLookupURL = $currentNetwork.blockExplorer;
 
 </script>
 
@@ -73,7 +73,7 @@ h3#results-subtitle{
         <div class="icon">{@html icon}</div>
         <p id={'results-message'} class="text-body1">{resultMessage}</p>
     </div>
-    {#if result.txHash}
+    {#if result.txHash && addressLookupURL}
         <div>
             <a class="text-link" target="_blank" rel="noopener noreferrer" href={`${addressLookupURL}/transactions/${result.txHash}`}>
                 Click here to view transaction details.

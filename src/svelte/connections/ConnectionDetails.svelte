@@ -44,7 +44,7 @@
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
     $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
     $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
-    $: addressLookupURL = dappInfo ? $currentNetwork.type === "mainnet" ? "https://www.tauhq.com" : $currentNetwork.blockExplorer : undefined;
+    $: addressLookupURL = dappInfo ? $currentNetwork.blockExplorer : undefined;
 
 	onMount(() => {
         if (background.includes('http')){
@@ -238,7 +238,9 @@
         <div class="flex-row flex-align-center current-linked-account text-body1">
             <span>{dappInfo.appName}</span>
             <span class="account-vk">{dappLinkedAccount}</span>
-            <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${dappInfo.vk}`}/>
+            {#if addressLookupURL}
+                <PopoutIcon width="20px" url={`${addressLookupURL}/addresses/${dappInfo.vk}`}/>
+            {/if}
         </div>
         <div class="flex-row flex-align-center account-buttons">
             <Button 					

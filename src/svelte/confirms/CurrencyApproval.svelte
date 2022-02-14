@@ -3,6 +3,9 @@
 
     import { getContext } from 'svelte'
 
+    //Stores
+    import { networkKey, NetworksStore } from '../../js/stores/stores.js';
+
     //Components
     import Button from '../components/Button.svelte'
 
@@ -19,9 +22,14 @@
     const txData = confirmData.messageData.txData
     const wallet = confirmData.messageData.wallet
     const dappInfo = confirmData.messageData.dappInfo
-    const currencySymbol = txData.networkInfo.type === 'mainnet' ? "Tau" : "dTau"
+    const currencySymbol =  getCurrencySymbol(txData.networkInfo)
 
     let prevent = false
+
+    const getCurrencySymbol = (networkObj) => {
+        let found = $NetworksStore.find(network => networkKey(network) === networkKey(networkObj))
+        if (found) return found.currencySymbol
+    }
 
     const getAmount = (amount) => {
         if (!amount) return 0

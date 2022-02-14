@@ -63,7 +63,7 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(500)
             await tokenHelpers.openCoinSendModal(driver)
             await helpers.sleep(500)
-            let name = "dTau"
+            let name = "dTAU"
             await tokenHelpers.validateCoinTokenName(driver, name)
             await tokenHelpers.validateCoinFromAddress(driver, mnemonicWords.vk)
             await tokenHelpers.cancelTransferModal(driver)
