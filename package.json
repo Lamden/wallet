@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -34,7 +34,7 @@
     "url": "https://github.com/Lamden/wallet.git"
   },
   "devDependencies": {
-    "chromedriver": "^94.0.0",
+    "chromedriver": "^97.0.2",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "2.1.0",
