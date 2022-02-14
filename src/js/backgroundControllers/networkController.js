@@ -15,6 +15,9 @@ export const networkController = (utils, services) => {
     });
 
     chrome.runtime.onInstalled.addListener(function(details) {
+        if (details.reason === "install") {
+            purgeNetworksStorage()
+        }
         if (details.reason === "update"){
             let currVer = chrome.runtime.getManifest().version;
             let prevVer = details.previousVersion
