@@ -6,6 +6,7 @@ export const transactionsController = (utils, actions) => {
     let nonceRetryTimes = 5;
     let lastSentDate = new Date();
     let checkingTransactions = false;
+    const validateTypes = utils.validateTypes
 
     const sendLamdenTx = (txBuilder, sentFrom = false) => {
         let network = utils.networks.getCurrent()
@@ -106,6 +107,30 @@ export const transactionsController = (utils, actions) => {
     }
 
     const checkPendingTransactions = async () => {
+        function formatResult (result) {
+                let erroredTx = false;
+                let errorText = `returned an error and `;
+                let statusCode = validateTypes.isNumber(result.status) ? result.status : undefined;
+                let stamps = result.stampsUsed || result.stamps_used || 0;
+                let message = "";
+                result.errors = result.errors? result.errors : result.result && result.result.includes("AssertionError")? [result.result] : undefined;
+                if (validateTypes.isArrayWithValues(result.errors)) {
+                    erroredTx = true;
+                    message = `This transaction returned ${result.errors.length} errors.`;
+                }
+                if (statusCode && erroredTx) errorText = `returned status code ${statusCode} and `;
+
+                return {
+                    title: `Transaction ${erroredTx ? "Failed" : "Successful"}`,
+                    subtitle: `Your transaction ${erroredTx ? `${errorText} ` : ""}used ${stamps} stamps`,
+                    message,
+                    type: `${erroredTx ? "error" : "success"}`,
+                    errorInfo: erroredTx ? result.errors : undefined,
+                    returnResult: result.result || "",
+                    stampsUsed: stamps,
+                    statusCode,
+                };
+        }
         if (!checkingTransactions){
             checkingTransactions = true;
             const transactionsToCheck = pendingTxStore.length;
@@ -119,6 +144,7 @@ export const transactionsController = (utils, actions) => {
                     transactionsChecked = transactionsChecked + 1
                     if (tx.sentFrom) {
                         let info = txBuilder.getAllInfo()
+                        info.resultInfo = formatResult(res.txInfo)
                         info.startBlock = tx.startBlock
                         info.sentFrom = tx.sentFrom
                         utils.sendMessageToTab(tx.sentFrom, 'txStatus', info)
