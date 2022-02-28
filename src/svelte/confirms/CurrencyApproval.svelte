@@ -1,7 +1,7 @@
 <script>
     import whitelabel from '../../../whitelabel.json'
 
-    import { getContext } from 'svelte'
+    import { getContext, onMount } from 'svelte'
 
     //Stores
     import { networkKey, NetworksStore } from '../../js/stores/stores.js';
@@ -22,12 +22,14 @@
     const txData = confirmData.messageData.txData
     const wallet = confirmData.messageData.wallet
     const dappInfo = confirmData.messageData.dappInfo
-    const currencySymbol =  getCurrencySymbol(txData.networkInfo)
 
     let prevent = false
 
-    const getCurrencySymbol = (networkObj) => {
-        let found = $NetworksStore.find(network => networkKey(network) === networkKey(networkObj))
+    $: currencySymbol =  $NetworksStore? getCurrencySymbol($NetworksStore, txData.networkInfo) : 'TAU'
+
+    const getCurrencySymbol = (NetworksStore, networkObj) => {
+        let nets = [...NetworksStore.lamden, ...NetworksStore.user]
+        let found = nets.find(network => networkKey(network) === networkKey(networkObj))
         if (found) return found.currencySymbol
     }
 
