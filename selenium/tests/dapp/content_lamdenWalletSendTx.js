@@ -129,9 +129,10 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)
             await helpers.switchWindow(driver, 0)
             await helpers.ignoreBackupModal(driver)         
-        });/*
+        });
         it('sends a transactions successfully after popup approval', async function() {
             this.timeout(10000);
+            await helpers.switchWindow(driver, 1)
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
             await helpers.sendTx(driver, transaction, false)
             await helpers.approveTxPopup(driver, 2, 1)
@@ -159,7 +160,7 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             let afterApprovalAmount  = await helpers.getApprovalAmount(connectionInfo.wallets[0], dappsInfo.approvalTransaction.kwargs.to);
             console.log({afterApprovalAmount})
             assert.equal(afterApprovalAmount, currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount);
-        });*/
+        });
         it('sends a transactions successfully after Trusted App', async function() {
             this.timeout(30000);
             await helpers.switchWindow(driver, 0)
