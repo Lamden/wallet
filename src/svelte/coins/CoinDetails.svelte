@@ -51,7 +51,6 @@
     $: addressLookupURL = $currentNetwork.blockExplorer;
 
 	onMount(() => {
-        if ($currentNetwork.blockExplorer) fetchTransactions();
         if (background.includes('http')){
             fetch(background)
                 .then(res => {
@@ -60,27 +59,6 @@
                 .catch((err) => brokenBGLink = true)
         }
     });
-
-    const fetchTransactions = () => {
-        if ($currentNetwork.blockExplorer){
-            return fetch(`${$currentNetwork.blockExplorer}/api/transactions/history/${coin.vk}?limit=${whitelabel.accountDetails.transactions.history.amount}`)
-            .then(res => res.json())
-            .then(json => {
-                if (transactionsList.length > 0 && json.data.length > 0){
-                    if (transactionsList[0].hash !== json.data[0].hash) handleRefresh()
-                }
-                transactionsList = json.data
-            }).catch(e => {
-                transactionsList = []
-            })
-            
-        }
-        return [];
-    }
-
-    const delayedRefresh = () => {
-        if($currentNetwork.blockExplorer) setTimeout(fetchTransactions, 10000)
-    }
 
     const handleRefresh = () => {
         if (refreshing) return
@@ -108,11 +86,6 @@
 </script>
 
 <style>
-    hr{
-        height: 0px;
-        border: 1px solid var(--divider-dark);
-        width: 100%;
-    }
     h2{
         margin: 0;
     }
@@ -241,7 +214,7 @@
                         id={'send-coin-btn'} 
                         classes={'button__outlined button__overlay'}
                         name={whitelabel.accountDetails.buttons.send.name}
-                        click={() => openModal(sendPage, {coin, refreshTx: () => delayedRefresh()})} 
+                        click={() => openModal(sendPage, {coin})} 
                         padding={"12px"}
                         margin={'0 15px 15px 0'}
                     >
