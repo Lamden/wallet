@@ -22,10 +22,6 @@
 </script>
 
 <style>
-
-a{
-    margin-top: 10px;
-}
 h6{
     margin-top: 0;
     margin-bottom: 1.4rem;

@@ -63,12 +63,6 @@
 
 <style>
 
-
-.key-box{
-    max-width: 700px;
-    margin: 0 auto;
-}
-
 .header{
     margin-left: 53px;
     border-bottom: 2px solid var(--divider-light);

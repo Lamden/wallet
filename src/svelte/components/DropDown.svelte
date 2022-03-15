@@ -3,7 +3,7 @@
 <script>
     import { createEventDispatcher, onMount, afterUpdate, beforeUpdate} from 'svelte';
     import TokenLogo from './TokenLogo.svelte';
-    import Identicons from './identicons.svelte';
+    import Identicons from './Identicons.svelte';
     const dispatch = createEventDispatcher();
 
     //Props

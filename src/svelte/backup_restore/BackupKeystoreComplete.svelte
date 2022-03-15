@@ -47,10 +47,6 @@
 </script>
 
 <style>
-
-p{
-    margin: 0;
-}
 .link{
         color: var(--font-accent);
 }

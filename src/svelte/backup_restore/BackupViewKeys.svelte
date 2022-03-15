@@ -46,10 +46,6 @@
 </script>
 
 <style>
-.key-box{
-    max-width: 820px;
-    margin: 0 auto;
-}
 
 .header{
     margin-left: 40px;
