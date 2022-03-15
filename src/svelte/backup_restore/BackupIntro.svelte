@@ -42,7 +42,7 @@
             <h6 class="text-primary text-center">Backup {whitelabel.companyName} Vault</h6>
             <div class="flex-column flow-buttons">
                 {#if vaultExist}
-                <Button id={'create-btn'}
+                <Button id={'view-phrase-btn'}
                     classes={'button__solid button__primary'}
                     margin="0 0 1rem"
                     name="View Recovery Phrase" 
@@ -52,7 +52,7 @@
                         changeStep(1)
                     }} />
                 {/if}
-                <Button id={'create-btn'}
+                <Button id={'backup-legacy-btn'}
                         classes={'button__solid'}
                         margin="0 0 1rem"
                         name="Backup Legacy Accounts" 
