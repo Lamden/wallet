@@ -6,7 +6,7 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { currentNetwork, BalancesStore, balanceTotal, networkKey, TokenBalancesStore, DappStore, TokenStore } from '../../js/stores/stores.js';
+    import { currentNetwork, BalancesStore, balanceTotal, networkKey, TokenBalancesStore, DappStore, TokenStore, PriceStore} from '../../js/stores/stores.js';
 
     //Images
     import arrowIn from '../../img/arrow_in.svg';
@@ -27,7 +27,8 @@
         stringToFixed, 
         getTokenBalance, 
         copyToClipboard, 
-        toBigNumber
+        toBigNumber,
+        calcValue
     } from '../../js/utils.js'  
 
     //Images
@@ -62,16 +63,21 @@
 
     const genericIcon_base64_svg = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiPjxjaXJjbGUgc3Ryb2tlPSJub25lIiBmaWxsPSIjOGU3Yjk4IiByPSI0OCUiIGN4PSI1MCUiIGN5PSI1MCUiPjwvY2lyY2xlPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwIDUwKSBzY2FsZSgwLjY5IDAuNjkpIHJvdGF0ZSgwKSB0cmFuc2xhdGUoLTUwIC01MCkiIHN0eWxlPSJmaWxsOiNmZmZmZmYiPjxzdmcgZmlsbD0iI2ZmZmZmZiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgdmVyc2lvbj0iMS4xIiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOmdlb21ldHJpY1ByZWNpc2lvbjt0ZXh0LXJlbmRlcmluZzpnZW9tZXRyaWNQcmVjaXNpb247aW1hZ2UtcmVuZGVyaW5nOm9wdGltaXplUXVhbGl0eTsiIHZpZXdCb3g9IjAgMCA1OCA4OCIgeD0iMHB4IiB5PSIwcHgiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPgogICAKICAgIC5maWwwIHtmaWxsOiNmZmZmZmZ9CiAgIAogIDwvc3R5bGU+PC9kZWZzPjxnPjxwYXRoIGNsYXNzPSJmaWwwIiBkPSJNMCAyNGMwLC0zMSA1OCwtMzMgNTgsLTEgMCwxOSAtMTksMTggLTIzLDM2IC0yLDkgLTE0LDggLTE0LC0yIDAsLTE3IDE0LC0xOCAyMCwtMjkgNCwtOCAtMywtMTYgLTExLC0xNiAtMTcsMCAtMTEsMTkgLTIyLDE5IC00LDAgLTgsLTMgLTgsLTd6bTI4IDY0Yy0xMiwwIC0xMSwtMTggMCwtMTggMTIsMCAxMiwxOCAwLDE4eiI+PC9wYXRoPjwvZz48L3N2Zz48L2c+PC9zdmc+";
     
+    $: onMainnet = $currentNetwork.type === 'mainnet' ? true : false
     $: netKey = networkKey($currentNetwork)
     $: watching = coin.sk === "watchOnly"
     $: balance = BalancesStore.getBalance($currentNetwork, coin.vk)
     $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : '0'
+    $: tauPrice =  $PriceStore['currency'] ? $PriceStore['currency']['value'] : '0'
+    $: balanceValue =  calcValue(balanceStr, tauPrice)
     $: percent = typeof $balanceTotal[netKey] === 'undefined' ? "" : toPercentString();
 
     $: tokenBalance = token && coin ? getTokenBalance(netKey, coin.vk, token.contractName, $TokenBalancesStore) : "0"
     $: tokenBalanceTruncated = stringToFixed(tokenBalance.toString(), 8)
     $: tokenBalanceString = displayBalance(tokenBalanceTruncated)
     $: hasVisibleBalance = toBigNumber(tokenBalanceTruncated).isGreaterThan(0)
+    $: tokenPrice = token && token.contractName ? $PriceStore[token.contractName] ? $PriceStore[token.contractName]['value'] : '0' : '0'
+    $: tokenValue =  calcValue(tokenBalance, calcValue(tokenPrice, tauPrice, null))
 
 
     $: dapps = $DappStore ? Object.values($DappStore).filter(app => !!app[$currentNetwork.type] && app.vk === coin.vk).map((app, index) => {
@@ -193,6 +199,10 @@
     padding-left: 15px;
     width: 240px;
     justify-content: center;
+}
+
+.value {
+    width: 200px;
 }
 
 .percent{
@@ -354,6 +364,14 @@
 
             {/if}
             
+            {#if onMainnet}
+            <div class="weight-400 value flex-column"> 
+                {#if token}
+                    <div>${tokenValue}</div>
+                {/if}
+                <div>${balanceValue}</div>
+            </div>  
+            {/if}
             <div class="text  weight-400 tokensnum"> {`${tokensNum} ${tokensNum===1?'token':'tokens'}`}</div>        
 
             {#if whitelabel.mainPage.portfolio.show && !token}

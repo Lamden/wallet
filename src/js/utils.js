@@ -209,6 +209,20 @@ const displayBalance = (value) => {
     return value.toFormat({  decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
 }
 
+const calcValue = (amout, price, dp=2) => {
+    if (!Encoder.BigNumber.isBigNumber(amout)) amout = Encoder('bigNumber', amout)
+    if (!Encoder.BigNumber.isBigNumber(price)) price = Encoder('bigNumber', price)
+    amout = Encoder('bigNumber', stringToFixed(amout.toString(), 8))
+    price = Encoder('bigNumber', stringToFixed(price.toString(), 8))
+    if (dp) {
+        let value = amout.multipliedBy(price).toFormat(dp, {decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
+        return value
+    } else {
+        let value = amout.multipliedBy(price).toFormat({decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
+        return value
+    }
+}
+
 const createCharmKey = (info, vk) => {
     let key = ''
     if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
@@ -402,6 +416,32 @@ const getTokenFromRocketswap = async (contractName) => {
     return meta;
 }
 
+ const getLastestTauPrice = async () => {
+    try {
+        const api = `https://rocketswap.exchange:2053/api/tau_last_price`;
+        const result = await fetch(api).then(res => res.json());
+        return result
+    } catch {
+        return {
+            value: 0
+        }
+    }
+}
+
+const getTokenPrice = async (tokenContractName) => {
+    try {
+        const api = `https://rocketswap.exchange:2053/api/token/${tokenContractName}`;
+        const result = await fetch(api).then(res => res.json());
+        return {
+            value: result.lp_info.price
+        }
+    } catch {
+        return {
+            value: 0
+        }
+    }
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -417,5 +457,8 @@ module.exports = {
     getTokenTotalBalance,
     getTokenBalance, formatAccountAddress,
     dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL,
-    getTokenFromRocketswap
+    getTokenFromRocketswap,
+    getLastestTauPrice,
+    getTokenPrice,
+    calcValue
   }
