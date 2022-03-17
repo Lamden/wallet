@@ -59,6 +59,7 @@ import { rejects } from 'assert';
         ]
     $: tokens = from? createTokensDropDown(from.vk, BalancesStore) : [];
     $: blockserviceUrl = $currentNetwork.type === "mainnet" ? "http://165.22.47.195:3535" : "http://165.227.181.34:3535";
+    $: apiurl = $currentNetwork.type === "mainnet" ? "https://mainnet.lamden.io" : "https://testnet.lamden.io/";
 
     onMount(() => {
         fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
@@ -226,7 +227,7 @@ import { rejects } from 'assert';
 
     const updateMaxStamps = () => {
         updateStamplimitSuccess = false;
-        fetch(`${$currentNetwork.blockExplorer}/api/stamps/${contractName}/transfer`)
+        fetch(`${apiurl}/api/stamps/${contractName}/transfer`)
             .then(res => {
                 if(res.status !== 200) {
                     rejects("fetch error")

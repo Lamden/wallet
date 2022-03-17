@@ -312,9 +312,6 @@
 .header-amount{
     margin-left: 242px;
 }
-.textwhite{
-    color: white!important;;
-}
 </style>
 {#if !token || (token && hasVisibleBalance)}
     <div class="wrap" class:wrap-leagyc={!isVaultAccount}>

@@ -14,7 +14,7 @@
     import { copyToClipboard } from '../../js/utils.js' 
 
     //Stores
-    import { steps } from '../../js/stores/stores.js';
+    import { steps, CoinStore} from '../../js/stores/stores.js';
 
 	//Components
 	import { Components, LeftSideFullPage }  from '../Router.svelte'
@@ -32,6 +32,12 @@
     let disabledButton = true;
     let useAnyway = false;
     let errmsg;
+
+    $: vaultAccounts = $CoinStore ? [...$CoinStore].map((coin, index) => {
+		coin.id = index
+		return coin
+	}).filter(c => c.type === "vault") : [];
+    $: isVaultAccountsExists = vaultAccounts.length > 0 ? true : false
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'getMnemonic'}, (res) => {
@@ -81,7 +87,7 @@
                 } 
             })
         } else {
-            if (isSameMnemonic) {
+            if (isSameMnemonic && isVaultAccountsExists) {
                 changeStep(12)
             } else {
                 let mnemonicStr = mnemonics.join(' ');

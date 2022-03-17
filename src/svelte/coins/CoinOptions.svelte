@@ -24,7 +24,7 @@
     let options = [
         {id: 'modify-view-btn', name: 'View', desc: 'Private Key', iconComponent: CopyIcon, color: 'primary', click: () => viewWalletSk() },
         {id: 'modify-edit-btn', name: 'Edit', desc: 'Account Nickname', iconComponent: EditIcon, color: 'primary', click: () => showEdit() },
-        {id: 'modify-delete-btn', name: 'Delete', desc: 'Coin from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
+        {id: 'modify-delete-btn', name: 'Delete', desc: 'Account from Wallet', iconComponent: DeleteIcon, color: 'grey', click: () => showDelete() },
     ]
 
     $: coin = getModalData();

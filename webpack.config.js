@@ -6,6 +6,7 @@ var webpack = require("webpack"),
     CopyWebpackPlugin = require("copy-webpack-plugin"),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
     WriteFilePlugin = require("write-file-webpack-plugin");
+    NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
     
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
@@ -38,6 +39,12 @@ var options = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
         include: [
@@ -47,7 +54,7 @@ var options = {
       },
       {
         test: /\.css$/,
-        loader: "style-loader!css-loader",
+        use: ['style-loader', 'css-loader'],
         exclude: /node_modules/
       },
       {
@@ -56,7 +63,10 @@ var options = {
       },
       {
         test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
-        loader: "file-loader?name=[name].[ext]",
+        loader: "file-loader",
+        options: {
+          name: "[name].[ext]"
+        },
         exclude: /node_modules/
       },
       {
@@ -94,7 +104,8 @@ var options = {
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
     }),
-    new CopyWebpackPlugin([{
+    new CopyWebpackPlugin({
+      patterns: [{
         from: "src/manifest.json",
         transform: function (content, path) {
           // generates the manifest file using the package.json informations
@@ -108,7 +119,7 @@ var options = {
       {
         from: "src/jdenticon.min.js"
       }
-    ]),
+    ]}),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "popup.html"),
       filename: "popup.html",
@@ -137,12 +148,13 @@ var options = {
     new WriteFilePlugin(),
     new MonacoWebpackPlugin({
 			languages: ["python"],
-		})
+		}),
+    new NodePolyfillPlugin()
   ]
 };
 
 if (env.NODE_ENV === "development") {
-  options.devtool = "cheap-module-eval-source-map";
+  options.devtool = "eval-cheap-module-source-map";
 }
 
 module.exports = options;

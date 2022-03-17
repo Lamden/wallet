@@ -194,15 +194,6 @@
         white-space: nowrap;
     }
 
-    .header-percent{
-        justify-content: flex-end;
-        margin-right: 28px;  
-        width: 203px;
-    }
-    .logo-space{
-        margin-left: 129px;
-    }
-
     @media only screen and (max-width: 970px) {
         .buttons {
             flex-direction: column;
