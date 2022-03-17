@@ -57,11 +57,6 @@
     p {
         margin: 0;
     }
-    p.intro{
-        font-size: 1.2em;
-        text-align: center;
-        line-height: 1.5;
-    }
     p > strong {
         color: var(--font-warning);
         font-weight: 400;

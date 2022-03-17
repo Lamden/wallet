@@ -459,6 +459,13 @@ const changePassword = async (driver, oldpd, newpd, confirmpd) => {
     await driver.findElement(By.id("change-pw-btn")).click();
 }
 
+const gotoBackup = async (driver) => {
+    await sleep(500)
+    await driver.findElement(By.id("settings")).click();
+    await driver.findElement(By.id("backup-btn")).click();
+    await sleep(500)
+}
+
 const gotoNetwork = async (driver) => {
     await sleep(500)
     await driver.findElement(By.id("settings")).click();
@@ -526,5 +533,6 @@ module.exports = {
     addTrackedAccount,
     gotoNetwork,
     clearNetwork,
-    fillNetworkForm
+    fillNetworkForm,
+    gotoBackup
 }
