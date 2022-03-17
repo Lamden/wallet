@@ -27,8 +27,13 @@ var compiler = webpack(config);
 var server =
   new WebpackDevServer(compiler, {
     hot: true,
-    static: path.join(__dirname, "../build"),
-    headers: { "Access-Control-Allow-Origin": "*" }
+    static: {
+      directory: path.join(__dirname, "../build")
+    },
+    headers: { "Access-Control-Allow-Origin": "*" },
+    devMiddleware: {
+      writeToDisk: true
+    },
   });
 
 server.listen(env.PORT);

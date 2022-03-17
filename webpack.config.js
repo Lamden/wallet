@@ -65,7 +65,7 @@ var options = {
         test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
         loader: "file-loader",
         options: {
-          name: "name=[name].[ext]"
+          name: "[name].[ext]"
         },
         exclude: /node_modules/
       },
