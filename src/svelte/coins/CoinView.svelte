@@ -28,12 +28,12 @@
     let sk;
 
     const handleSubmit = () => {
-        passwordObj.setCustomValidity('');
         if (passwordOkay){
             if (formObj.checkValidity()){
                 copyWalletAddress()
             }
         }else{
+            passwordObj.setCustomValidity('');
             setHash(hashStringValue(passwordObj.value))
             chrome.runtime.sendMessage({type: 'viewPrivateKey', data: { 
                 password: hashStringValue(passwordObj.value),
