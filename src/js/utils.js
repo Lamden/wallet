@@ -428,17 +428,31 @@ const getTokenFromRocketswap = async (contractName) => {
     }
 }
 
-const getTokenPrice = async (tokenContractName) => {
+const getTokenPrice = async (tokenContractNameList = []) => {
     try {
-        const api = `https://rocketswap.exchange:2053/api/token/${tokenContractName}`;
+        const prices = {}
+        const api = `https://rocketswap.exchange:2053/api/get_market_summaries_w_token`;
         const result = await fetch(api).then(res => res.json());
-        return {
-            value: result.lp_info.price
+        if (Array.isArray(result)) {
+            tokenContractNameList.forEach(name => {
+                let index = result.findIndex(token => {
+                    return name === token.contract_name
+                })
+                if (index !== -1) {
+                    let token = result[index]
+                    prices[token.contract_name] = {
+                        value: token.Last
+                    }
+                } else {
+                    prices[name] = {
+                        value: 0
+                    }
+                }
+            })
         }
+        return prices
     } catch {
-        return {
-            value: 0
-        }
+        return {}
     }
 }
 
