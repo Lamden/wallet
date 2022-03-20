@@ -1,11 +1,13 @@
 <script>
-    import { getContext } from 'svelte'
+    import { getContext, onMount } from 'svelte'
 
     //Components
     import Button from '../components/Button.svelte'
+    import InputBox from '../components/InputBox.svelte'
 
     //Images
     import hero_bg from '../../img/backgrounds/hero_bg.png';
+    import approve from '../../img/menu_icons/icon_approve.svg';
 
     //Icons
     import SmartContractIcon from '../icons/SmartContractIcon.svelte'
@@ -13,20 +15,106 @@
     import process from '../../img/menu_icons/icon_process.svg'
     import arrow_right from '../../img/menu_icons/icon_arrow-right-2color.svg'
 
+    import BN from 'bignumber.js'
+
     //Context
     const { approveTx, close, openNewTab } = getContext('confirm_functions');
 
     export let confirmData;
 
+    let stampobj;
+
     const txData = confirmData.messageData.txData
     const wallet = confirmData.messageData.wallet
     const dappInfo = confirmData.messageData.dappInfo
+    const blockserviceUrl = confirmData.messageData.network.blockservice.hosts[0]
+
+    let stampLimit = txData.txInfo.stampLimit;
+    let prevStampLimit = stampLimit;
+    let stampLimitEdit = false;
+    let stampLimitBtnName = 'Change';
 
     let prevent = false
 
+    // default 10
+    let stampRatio = new BN(10)
+    let balances = new BN(0)
+    
+    $: maxStamps = balances.multipliedBy(stampRatio).toNumber()
+    $: errormsg = stampLimit > maxStamps ? "Your Balance Is Insufficient!" : undefined
+
+    onMount(() => {
+        fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
+            .then(res => res.json())
+            .then(res => {
+                stampRatio = new BN(res.value)
+            }).catch(() => stampRatio = new BN(10)) 
+        fetch(`${blockserviceUrl}/current/one/currency/balances/${wallet.vk}`)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if (res.value.__fixed__) {
+                    balances = new BN(res.value.__fixed__)
+                } else {
+                    throw new Error('Fetch balance failed')
+                }
+            }).catch(()=>{
+                chrome.storage.local.get({"balances": {}}, function(getValue) {
+                    let netkey = networkKey(confirmData.messageData.network)
+                    balances = new BN(getValue['balances'][netkey][wallet.vk]['balance'])
+                });
+            })
+    });
+
+
+    function networkKey(networkObj){
+        return `${networkObj.name}|${networkObj.type}|${networkObj.lamden ? 'lamden': 'user'}`
+    }
+    const setStampLimit = (value) => {
+        prevStampLimit = stampLimit
+        stampLimit = value
+    }
+
+    const setValidity = (node, message) => {
+        node.setCustomValidity(message);
+        node.reportValidity();
+    }
+
+    const handleStampClick = () => {
+        if (stampLimitEdit) {
+            stampLimitBtnName = 'Change'
+            stampLimitEdit = false
+            setStampLimit(stampobj.valueAsNumber)
+        } else {
+            stampLimitBtnName = 'Save'
+            stampLimitEdit = true
+            setStampLimit(stampLimit)
+        }
+    }
+
+    const handleCancel = () => {
+        stampLimitBtnName = 'Change'
+        stampLimitEdit = false
+        setStampLimit(prevStampLimit)
+    }
+
+    const handleApprove = () => {
+        if (stampLimit != txData.txInfo.stampLimit) {
+            chrome.runtime.sendMessage({type: 'updateStampLimit', data: stampLimit}, (res) => {
+                if(res && res.success) {
+                    approveTx()
+                }
+            })
+        } else {
+            approveTx()
+        }
+    }
 </script>
 
 <style>
+.error-msg {
+    color: var(--error-color);
+}
 p{
     margin: 0;
 }
@@ -146,6 +234,53 @@ a.help{
                 <p class="item_value text-body2">{txData.txInfo.methodName}</p>
             </div>
         </div>
+        <div class="item flex-row">
+            <div class="item_icon item_icon_size">
+                {@html approve}
+            </div>
+            <div class="item_info flex-column">
+                <p class="text-body2 text-secondary">{`Stamps`}</p>
+                <p class="item_value text-body2 flex flex-align-center">
+                    {#if stampLimitEdit}
+                        <InputBox
+                        value={stampLimit}
+                        min={1}
+                        on:keyup={(e) => {
+                            if (e.key === 'e' || e.key === 'E' || e.key === '.') {
+                                e.preventDefault();
+                            }
+                        }}
+                        on:changed={(e) => {
+                            setValidity(stampobj, '')
+                        }}
+                        bind:thisInput={stampobj}
+                        inputType={"number"}
+                        width={"100px"}
+                        required={true}
+                        autofocus={true} />
+                    {:else} 
+                        {stampLimit}
+                    {/if}
+                    <span class="text-link" on:click={handleStampClick} style="
+                        margin-top: 0;
+                        margin-left: 10px;
+                        word-break: normal; 
+                        color: var(--font-accent);
+                    ">{stampLimitBtnName}</span>
+                    {#if stampLimitEdit}
+                        <span class="text-link" on:click={handleCancel} style="
+                        margin-top: 0;
+                        margin-left: 10px;
+                        word-break: normal; 
+                        color: var(--font-accent);
+                        ">Cancel</span>
+                    {/if}
+                </p>
+            </div>
+        </div>
+        {#if errormsg}
+            <div class="error-msg">{errormsg}</div>
+        {/if}
     </div>
     <div class="kwargs flex-column">
         {#each Object.keys(txData.txInfo.kwargs) as kwarg }
@@ -164,7 +299,8 @@ a.help{
             width={'240px'}
             height={'42px'}
             margin={'0 0 0.5rem 0'}
-            click={approveTx} />
+            disabled={!!errormsg}
+            click={handleApprove} />
         <Button 
             id={'deny-btn'}
             classes={'button__solid'}

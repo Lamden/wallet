@@ -233,6 +233,7 @@ export const messagesHandler = (masterController) => {
                 }
 
                 if (message.type === 'approveTransaction') masterController.dapps.approveTransaction(sender)
+                if (message.type === 'updateStampLimit') sendResponse(masterController.dapps.updateStampLimit(confirmHash, message.data))
             }
 
             /*************************************************

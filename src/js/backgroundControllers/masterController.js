@@ -461,7 +461,16 @@ export const masterController = () => {
             rejectTx: dapps.rejectTx,
             approveTransaction: dapps.approveTransaction,
             getDappInfoByURL: dapps.getDappInfoByURL,
-            validateConnectionMessage: dapps.validateConnectionMessage
+            validateConnectionMessage: dapps.validateConnectionMessage,
+            updateStampLimit: (confirmHash, limit) => {
+                let data = dapps.getConfirmInfo(confirmHash)
+                if (!data) return {success: false}
+                data.messageData.txData.txInfo.stampLimit = limit
+                dapps.setTxToConfirm(confirmHash,data);
+                return {
+                    success: true
+                }
+            }
         },
         "tokens": {
             addToken: tokens.addToken,
