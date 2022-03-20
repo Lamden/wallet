@@ -130,9 +130,50 @@ describe('Content Script - Testing Dapp SendTx API', function () {
             await helpers.switchWindow(driver, 0)
             await helpers.ignoreBackupModal(driver)         
         });
+        it("Show errormsg if stamps is large than user's balance", async function() {
+            await helpers.switchWindow(driver, 1)
+            let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
+            await helpers.sendTx(driver, transaction, false)
+            await helpers.sleep(2000)
+            await helpers.switchWindow(driver, 2)
+            let change_Button = await driver.wait(until.elementLocated(By.id("change-btn")), 500);
+            await change_Button.click()
+            await helpers.sleep(500)
+            let input = await driver.wait(until.elementLocated(By.id("stamp-input")), 500);
+            await input.clear()
+            await input.sendKeys(`99999999`)
+            await change_Button.click()
+            let msg = await driver.findElement(By.css(".error-msg")).getText()
+            let stamps = await driver.findElement(By.id("stamps")).getText()
+            assert.equal(msg, "Your Balance Is Insufficient!")
+            assert.equal(stamps.includes('99999999'), true)
+            await helpers.sleep(1000)
+        });
+        it("Can change stamp limit and send tx successfully", async function() {
+            let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
+            let change_Button = await driver.wait(until.elementLocated(By.id("change-btn")), 500);
+            await change_Button.click()
+            let input = await driver.wait(until.elementLocated(By.id("stamp-input")), 500);
+            await input.clear()
+            await input.sendKeys(`${transaction.stampLimit + 1}`)
+            await change_Button.click()
+            let approve_Button = await driver.wait(until.elementLocated(By.id("approve-btn")), 500);
+            await approve_Button.click()
+            await helpers.switchWindow(driver, 1)
+            let response = await helpers.getTxResult(driver)
+            assert.equal(response.status, "success");
+            let result = response.data
+            assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
+            assert.equal(result.resultInfo.type, 'success')
+            assert.equal(result.signature.length > 0, true)
+            assert.equal(JSON.stringify(result.txInfo.kwargs), JSON.stringify(transaction.kwargs));
+            assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
+            assert.equal(result.txInfo.contractName, connectionInfo.approvals[transaction.networkType].contractName);
+            assert.equal(result.txInfo.methodName, transaction.methodName);
+            assert.equal(result.txInfo.stampLimit, transaction.stampLimit + 1);    
+        });
         it('sends a transactions successfully after popup approval', async function() {
             this.timeout(10000);
-            await helpers.switchWindow(driver, 1)
             let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo)
             await helpers.sendTx(driver, transaction, false)
             await helpers.approveTxPopup(driver, 2, 1)

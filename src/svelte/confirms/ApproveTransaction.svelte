@@ -240,9 +240,10 @@ a.help{
             </div>
             <div class="item_info flex-column">
                 <p class="text-body2 text-secondary">{`Stamps`}</p>
-                <p class="item_value text-body2 flex flex-align-center">
+                <p class="item_value text-body2 flex flex-align-center" id='stamps'>
                     {#if stampLimitEdit}
                         <InputBox
+                        id="stamp-input"
                         value={stampLimit}
                         min={1}
                         on:keyup={(e) => {
@@ -261,14 +262,14 @@ a.help{
                     {:else} 
                         {stampLimit}
                     {/if}
-                    <span class="text-link" on:click={handleStampClick} style="
+                    <span class="text-link" id="change-btn" on:click={handleStampClick} style="
                         margin-top: 0;
                         margin-left: 10px;
                         word-break: normal; 
                         color: var(--font-accent);
                     ">{stampLimitBtnName}</span>
                     {#if stampLimitEdit}
-                        <span class="text-link" on:click={handleCancel} style="
+                        <span class="text-link" id="cancel-btn" on:click={handleCancel} style="
                         margin-top: 0;
                         margin-left: 10px;
                         word-break: normal; 
