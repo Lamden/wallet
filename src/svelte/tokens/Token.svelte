@@ -6,7 +6,7 @@
     import { quintOut } from 'svelte/easing';
 
     //Stores
-    import { TokenBalancesStore, currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { TokenBalancesStore, currentNetwork, networkKey, PriceStore } from '../../js/stores/stores.js';
 
     //Components
     import TokenLogo from '../components/TokenLogo.svelte';
@@ -15,7 +15,7 @@
      import DirectionalChevronIcon from '../icons/DirectionalChevronIcon.svelte'
 
     //Utils
-    import { displayBalance, formatValue, stringToFixed, getTokenBalance} from '../../js/utils.js'  
+    import { displayBalance, formatValue, stringToFixed, getTokenBalance, calcValue} from '../../js/utils.js'  
 
     const dispatch = createEventDispatcher()
 
@@ -24,7 +24,11 @@
     export let vk;
     let logoSize = "30px"
 
+    $: onMainnet = $currentNetwork.type === 'mainnet' ? true : false
+    $: tauPrice =  $PriceStore['currency'] ? $PriceStore['currency']['value'] : '0'
     $: balance = getTokenBalance(networkKey($currentNetwork), vk, token.contractName, $TokenBalancesStore)
+    $: balancePrice =  $PriceStore[token.contractName] ? $PriceStore[token.contractName]['value'] : '0'
+    $: balanceValue =  calcValue(balance, calcValue(balancePrice, tauPrice, null))
 
     //Context
     const { switchPage } = getContext('app_functions');
@@ -57,6 +61,11 @@
 
 .amount{
     padding-left: 15px;
+    justify-content: center;
+    width: 240px;
+}
+
+.value{
     flex-grow: 1;
     justify-content: center;
 }
@@ -80,6 +89,11 @@
     {#if whitelabel.mainPage.token_columns.token_amount.show}
         <div class="amount flex-column text-body2 text-primary-dim">
             {`${displayBalance(stringToFixed(balance, 8))} ${token.tokenSymbol}`}
+        </div>
+    {/if}
+    {#if onMainnet}
+        <div class="value flex-column text-body2 text-primary-dim">
+            ${balanceValue}
         </div>
     {/if}
     <!-- <div class="flex-row flex-center-end">

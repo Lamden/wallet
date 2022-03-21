@@ -209,6 +209,20 @@ const displayBalance = (value) => {
     return value.toFormat({  decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
 }
 
+const calcValue = (amout, price, dp=2) => {
+    if (!Encoder.BigNumber.isBigNumber(amout)) amout = Encoder('bigNumber', amout)
+    if (!Encoder.BigNumber.isBigNumber(price)) price = Encoder('bigNumber', price)
+    amout = Encoder('bigNumber', stringToFixed(amout.toString(), 8))
+    price = Encoder('bigNumber', stringToFixed(price.toString(), 8))
+    if (dp) {
+        let value = amout.multipliedBy(price).toFormat(dp, {decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
+        return value
+    } else {
+        let value = amout.multipliedBy(price).toFormat({decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
+        return value
+    }
+}
+
 const createCharmKey = (info, vk) => {
     let key = ''
     if (typeof info.key !== 'undefined' && typeof info.key === 'string'){
@@ -402,6 +416,46 @@ const getTokenFromRocketswap = async (contractName) => {
     return meta;
 }
 
+ const getLastestTauPrice = async () => {
+    try {
+        const api = `https://rocketswap.exchange:2053/api/tau_last_price`;
+        const result = await fetch(api).then(res => res.json());
+        return result
+    } catch {
+        return {
+            value: 0
+        }
+    }
+}
+
+const getTokenPrice = async (tokenContractNameList = []) => {
+    try {
+        const prices = {}
+        const api = `https://rocketswap.exchange:2053/api/get_market_summaries_w_token`;
+        const result = await fetch(api).then(res => res.json());
+        if (Array.isArray(result)) {
+            tokenContractNameList.forEach(name => {
+                let index = result.findIndex(token => {
+                    return name === token.contract_name
+                })
+                if (index !== -1) {
+                    let token = result[index]
+                    prices[token.contract_name] = {
+                        value: token.Last
+                    }
+                } else {
+                    prices[name] = {
+                        value: 0
+                    }
+                }
+            })
+        }
+        return prices
+    } catch {
+        return {}
+    }
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -417,5 +471,8 @@ module.exports = {
     getTokenTotalBalance,
     getTokenBalance, formatAccountAddress,
     dataURLToBlob, resizeImage, readFileToImage, readBlobToFile, getLogoFromURL,
-    getTokenFromRocketswap
+    getTokenFromRocketswap,
+    getLastestTauPrice,
+    getTokenPrice,
+    calcValue
   }

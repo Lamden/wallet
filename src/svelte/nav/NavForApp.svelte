@@ -6,7 +6,7 @@
     import nav_bg from '../../img/backgrounds/nav_bg.png';
 
     	//Stores
-	import { CoinStore,TokenStore,balanceTotal,currentNetwork,networkKey,SettingsStore } from '../../js/stores/stores.js';
+	import { CoinStore,TokenStore,balanceTotal,currentNetwork,networkKey,SettingsStore, PriceStore} from '../../js/stores/stores.js';
 
     //Icons
 	import RefreshIcon from '../icons/RefreshIcon.svelte'
@@ -20,9 +20,11 @@
     const { openModal } = getContext('app_functions');
 
     //Utils
-	import { displayBalance } from '../../js/utils.js';
+	import { displayBalance, calcValue} from '../../js/utils.js';
 
+    $: onMainnet = $currentNetwork.type === 'mainnet' ? true : false
     $: totalBalance = $balanceTotal[networkKey($currentNetwork)] ? $balanceTotal[networkKey($currentNetwork)] : '0';
+    $: totalBalancePrice = $PriceStore['currency'] ? calcValue($PriceStore['currency']['value'], totalBalance) : 0;
 
     let refreshing = false;
 
@@ -82,7 +84,7 @@
         margin-top: 30px;
     }
     .btns{
-        margin-top: 1.25rem;
+        margin-top: 0.8rem;
     }
     .mask{
         width: 100%;
@@ -109,6 +111,9 @@
                 <RefreshIcon />
             </div>
         </div>
+        {#if onMainnet}
+            <div class="text-body1">Total Balance USD ${totalBalancePrice}</div>
+        {/if}
         <div class="btns">
             <Button
                 id={'add-btn'} 
