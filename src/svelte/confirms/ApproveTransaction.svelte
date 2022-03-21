@@ -28,6 +28,7 @@
     const wallet = confirmData.messageData.wallet
     const dappInfo = confirmData.messageData.dappInfo
     const blockserviceUrl = confirmData.messageData.network.blockservice.hosts[0]
+    const currencySymbol = confirmData.messageData.network.currencySymbol
 
     let stampLimit = txData.txInfo.stampLimit;
     let prevStampLimit = stampLimit;
@@ -41,7 +42,7 @@
     let balances = new BN(0)
     
     $: maxStamps = balances.multipliedBy(stampRatio).toNumber()
-    $: errormsg = stampLimit > maxStamps ? "Your Balance Is Insufficient!" : undefined
+    $: errormsg = stampLimit > maxStamps ? `Insufficient ${currencySymbol} to pay for stamps` : undefined
 
     onMount(() => {
         fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
