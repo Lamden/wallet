@@ -432,6 +432,9 @@
                             My Tokens
                         </div>
                         <div class="header-amount header-text">Amount</div>
+                        {#if onMainnet}
+                            <div class="header-price header-text">Price USD</div>
+                        {/if}
                 </div>
                 <div class="tokenlist">
                     {#each tokenList as token (token.contractName) }

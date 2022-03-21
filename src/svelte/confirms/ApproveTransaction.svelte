@@ -277,6 +277,13 @@ a.help{
                         color: var(--font-accent);
                         ">Cancel</span>
                     {/if}
+                    <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_transfer" target="_blank" style="
+                        margin-top: 0;
+                        margin-left: 10px;
+                        word-break: normal; 
+                        text-decoration: underline;
+                        color: var(--font-accent);
+                        ">help</a>
                 </p>
             </div>
         </div>
