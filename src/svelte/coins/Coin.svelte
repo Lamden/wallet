@@ -247,8 +247,6 @@
                 <div
                   id={`coin-nickname-${coin.id}`}
                   class="nickname text-body1 text-primary"
-                  on:click|stopPropagation={() =>
-                    switchPage("CoinDetails", coin)}
                 >
                   {`${coin.nickname}`}
                 </div>
@@ -459,7 +457,6 @@
   }
   .name-box {
     line-height: 1.1;
-    text-decoration: underline;
   }
   .token-balance {
     margin-bottom: 0.25rem;
