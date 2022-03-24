@@ -52,7 +52,6 @@ const addToken_Save = async (driver, token) => {
 
 const validateTokenOnAccountsScreen = async (driver, token) => {
     await helpers.gotoAccountsPage(driver)
-    await driver.findElement(By.className("wrap-second")).click()
     await driver.wait(until.elementLocated(By.id(`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`)), 15000);
     await validateTokenLogo(driver, token)
     await driver.findElement(By.className("wrap-second")).click()
