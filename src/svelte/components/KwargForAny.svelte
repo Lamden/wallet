@@ -222,7 +222,7 @@
     text-transform: uppercase;
     color: var(--accent-color);
     text-decoration: underline;
-    margin-right: 10px;
+    margin-right: 4px;
     cursor: pointer;
   }
   .label:last-child {

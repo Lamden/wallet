@@ -206,7 +206,7 @@
       class="button__small button__primary expand-btn flex-row"
       on:click={expandAll}
     >
-      Expand All Accounts
+      Expand All
       <div class="icon">
         <ExpandIcon width="18px" color="var(--color-white)" />
       </div>
@@ -216,7 +216,7 @@
       class="button__small button__primary collapse-btn flex-row"
       on:click={collapseAll}
     >
-      Collapse All Accounts
+      Collapse All
       <div class="icon">
         <CollapseIcon width="18px" color="var(--color-white)" />
       </div>
@@ -326,9 +326,12 @@
   }
   .expand-btn,
   .collapse-btn {
-    padding: 8px 14px;
+    padding: 4px 11px;
     margin-left: 10px;
     font-size: 0.8em;
+    letter-spacing: 0.5px;
+    align-items: center;
+    font-weight: bold;
     align-items: center;
   }
 
