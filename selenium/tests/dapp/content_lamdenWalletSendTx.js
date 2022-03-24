@@ -173,15 +173,15 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       await helpers.switchWindow(driver, 2);
       let change_Button = await driver.wait(
         until.elementLocated(By.id("change-btn")),
-        500
+        5000
       );
       await change_Button.click();
       await helpers.sleep(500);
       let input = await driver.wait(
         until.elementLocated(By.id("stamp-input")),
-        500
+        5000
       );
-      await input.clear();
+      await driver.executeScript("arguments[0].value = '';", input)
       await input.sendKeys(`99999999`);
       await change_Button.click();
       let msg = await driver.findElement(By.css(".error-msg")).getText();
@@ -194,19 +194,19 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
       let change_Button = await driver.wait(
         until.elementLocated(By.id("change-btn")),
-        500
+        5000
       );
       await change_Button.click();
       let input = await driver.wait(
         until.elementLocated(By.id("stamp-input")),
-        500
+        5000
       );
-      await input.clear();
+      await driver.executeScript("arguments[0].value = '';", input)
       await input.sendKeys(`${transaction.stampLimit + 1}`);
       await change_Button.click();
       let approve_Button = await driver.wait(
         until.elementLocated(By.id("approve-btn")),
-        500
+        5000
       );
       await approve_Button.click();
       await helpers.switchWindow(driver, 1);
