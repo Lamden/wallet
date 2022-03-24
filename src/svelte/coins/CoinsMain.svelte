@@ -322,7 +322,7 @@
   .top-btns {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 10px;
+    margin-bottom: 1em;
   }
   .expand-btn,
   .collapse-btn {
