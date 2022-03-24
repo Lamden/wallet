@@ -60,6 +60,7 @@
   });
 </script>
 
+<div class="space" />
 <div class="box" id={`kwarg-${index}`} style={`background: ${bgStyle}`}>
   <div class="title">
     {`${argumentInfo.name.toUpperCase()} (${longFormTypes[selectedType]})`}
@@ -186,6 +187,9 @@
 </div>
 
 <style>
+  .space {
+    padding-top: 13px;
+  }
   .box {
     position: relative;
     margin: 0 0 1rem 0;
@@ -209,6 +213,9 @@
     left: 10px;
     top: -8px;
     background: var(--bg-secondary);
+    font-size: 11px;
+    line-height: 16px;
+    padding: 0 4px;
   }
   .box-labels {
     z-index: 666;

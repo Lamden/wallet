@@ -1,123 +1,127 @@
 <script>
-	import { onMount, onDestroy, setContext } from 'svelte';
+  import { onMount, onDestroy, setContext } from "svelte";
 
-	//Stores
-	import { currentThemeName } from '../js/stores/stores.js';
+  //Stores
+  import { currentThemeName } from "../js/stores/stores.js";
 
-    //Images
-    import logo_full from '../img/logo_full.svg';
+  //Images
+  import logo_full from "../img/logo_full.svg";
 
-	//Components
-	import ApproveConnection from './confirms/ApproveConnection.svelte'
-	import ApproveTransaction from './confirms/ApproveTransaction.svelte'
-	import CurrencyApproval from './confirms/CurrencyApproval.svelte'
-	import ChangeAccount from './confirms/ChanageAccount.svelte'
-	
-	setContext('confirm_functions', {
-		approveApp: () => sendApproveApp(),
-		setTrusted: (trusted) => trustedApp = trusted,
-		setFunding: (funding) => setFundingInfo(funding),
-		approveTx: () => sendApprovetx(),
-		close:() => closePopup(),
-		openNewTab: (url) => openNewTab(url),
-		logoFormat: (logo) => fixLogo(logo),
-		setAccount: (account) =>  accountInfo = account
-	});
+  //Components
+  import ApproveConnection from "./confirms/ApproveConnection.svelte";
+  import ApproveTransaction from "./confirms/ApproveTransaction.svelte";
+  import CurrencyApproval from "./confirms/CurrencyApproval.svelte";
+  import ChangeAccount from "./confirms/ChanageAccount.svelte";
 
-	const componentMap = {
-		ApproveConnection, 
-		ApproveTransaction,
-		CurrencyApproval,
-		ChangeAccount
-	}
-	let confirmData;
-	
-	let confirmed = false;
-	let trustedApp = false;
-	let fundingInfo = false;
-	let accountInfo = false;
+  setContext("confirm_functions", {
+    approveApp: () => sendApproveApp(),
+    setTrusted: (trusted) => (trustedApp = trusted),
+    setFunding: (funding) => setFundingInfo(funding),
+    approveTx: () => sendApprovetx(),
+    close: () => closePopup(),
+    openNewTab: (url) => openNewTab(url),
+    logoFormat: (logo) => fixLogo(logo),
+    setAccount: (account) => (accountInfo = account),
+  });
 
-	onMount(() => {		
-		chrome.runtime.sendMessage({type: 'getConfirmInfo'}, (response) => {
-			if (response) confirmData = response
-		})
+  const componentMap = {
+    ApproveConnection,
+    ApproveTransaction,
+    CurrencyApproval,
+    ChangeAccount,
+  };
+  let confirmData;
 
-		themeSet();
+  let confirmed = false;
+  let trustedApp = false;
+  let fundingInfo = false;
+  let accountInfo = false;
 
-		return () => {
-			window.removeEventListener("beforeunload", sendRejection);
-		}
-	});
+  onMount(() => {
+    chrome.runtime.sendMessage({ type: "getConfirmInfo" }, (response) => {
+      if (response) confirmData = response;
+    });
 
-	const confirm = () => confirmed = true;
+    themeSet();
 
-	const setFundingInfo = (funding) => {
-		fundingInfo = funding
-	}
+    return () => {
+      window.removeEventListener("beforeunload", sendRejection);
+    };
+  });
 
-	const sendApproveApp = () => {
-		confirm();
-		chrome.runtime.sendMessage({type: 'approveDapp', data: {trustedApp, fundingInfo, accountInfo}})
-		closePopup()
-	}
+  const confirm = () => (confirmed = true);
 
-	const sendApprovetx = () => {
-		confirm();
-		chrome.runtime.sendMessage({type: 'approveTransaction'})
-		closePopup()
-	}
+  const setFundingInfo = (funding) => {
+    fundingInfo = funding;
+  };
 
-	const closePopup = () => {
-		window.close();
-	}
+  const sendApproveApp = () => {
+    confirm();
+    chrome.runtime.sendMessage({
+      type: "approveDapp",
+      data: { trustedApp, fundingInfo, accountInfo },
+    });
+    closePopup();
+  };
 
-	const openNewTab = (url) => {
-		window.open(url, '_blank');
-	}
+  const sendApprovetx = () => {
+    confirm();
+    chrome.runtime.sendMessage({ type: "approveTransaction" });
+    closePopup();
+  };
 
-	const sendRejection = () => {
-		if (!confirmed) chrome.runtime.sendMessage({type: 'denyPopup', data: confirmData.type})
-	}
+  const closePopup = () => {
+    window.close();
+  };
 
-	const fixLogo = (logo) => logo.substring(0, 1) === '/' ? logo.substring(1, logo.length) : logo
+  const openNewTab = (url) => {
+    window.open(url, "_blank");
+  };
 
-	function themeSet() {
-		let body = document.getElementById("theme-toggle")
-		let lighttheme = getThemeSetting()
-		if (lighttheme) {
-			body.classList.add("light");
-			currentThemeName.set('light')
-		}else currentThemeName.set('dark')
-	}
+  const sendRejection = () => {
+    if (!confirmed)
+      chrome.runtime.sendMessage({ type: "denyPopup", data: confirmData.type });
+  };
 
-	function getThemeSetting() {
-		return JSON.parse(localStorage.getItem("lighttheme"))
-	}
+  const fixLogo = (logo) =>
+    logo.substring(0, 1) === "/" ? logo.substring(1, logo.length) : logo;
 
-	window.addEventListener("beforeunload", sendRejection);
+  function themeSet() {
+    let body = document.getElementById("theme-toggle");
+    let lighttheme = getThemeSetting();
+    if (lighttheme) {
+      body.classList.add("light");
+      currentThemeName.set("light");
+    } else currentThemeName.set("dark");
+  }
+
+  function getThemeSetting() {
+    return JSON.parse(localStorage.getItem("lighttheme"));
+  }
+
+  window.addEventListener("beforeunload", sendRejection);
 </script>
 
-<style>
-	.container{
-		width: -webkit-fill-available;
-	}
-
-	.popup-box{
-		border-bottom: 1px solid gray;
-		padding: 1rem;
-	}
-
-	.logo {
-		width: 100px;
-	}
-
-</style>
-
 {#if confirmData}
-	<div class="flex-column container">
-		<div class="popup-box flex-row">
-			<div class="logo" >{@html logo_full}</div>
-		</div>
-		<svelte:component this={componentMap[confirmData.type]} {confirmData}/>
-	</div>
+  <div class="flex-column container">
+    <div class="popup-box flex-row" style="fill: var(--font-primary)">
+      <div class="logo">{@html logo_full}</div>
+    </div>
+    <svelte:component this={componentMap[confirmData.type]} {confirmData} />
+  </div>
 {/if}
+
+<style>
+  .container {
+    width: -webkit-fill-available;
+  }
+
+  .popup-box {
+    border-bottom: 1px solid gray;
+    padding: 1rem;
+  }
+
+  .logo {
+    width: 100px;
+  }
+</style>

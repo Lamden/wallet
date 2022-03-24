@@ -1118,9 +1118,6 @@ input.submit-button:disabled{
     transform: rotate(45deg);
   }
 
-.row-box:hover .nickname{
-    text-decoration: underline;
-}
 
 .show-on-hover{
     display: none;
