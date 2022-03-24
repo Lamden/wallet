@@ -117,7 +117,7 @@
         <div class="btns">
             <Button
                 id={'add-btn'} 
-                styles={'border: none;'}
+                styles={'border: none; background: var(--button-primary-color);'}
                 classes={'button__outlined button__overlay'}
                 name={whitelabel.mainPage.buttons.add_account.name}
                 click={() => openModal('CoinAdd')}
