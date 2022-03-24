@@ -139,6 +139,19 @@ const createFilesStore = () => {
                 return filesstore;
             })
         },
+        setAnyArgumentType:(argu, type, index) => {
+            //Return if arguments are undefined or incorrect types
+            if (!validateTypes.isString(argu) || !validateTypes.isString(type) || !validateTypes.isInteger(index)) return;
+
+            FilesStore.update(filesstore => {
+                //Set type
+                if (!filesstore[index].anyArgumentType) {
+                    filesstore[index].anyArgumentType = {}
+                }
+                filesstore[index].anyArgumentType[argu] = type;
+                return filesstore;
+            })
+        },
         deleteTab: (index) => {
             //Return if index is undefined or not an integer
             if (!validateTypes.isInteger(index)) return;

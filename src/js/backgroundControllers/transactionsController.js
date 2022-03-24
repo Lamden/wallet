@@ -113,7 +113,7 @@ export const transactionsController = (utils, actions) => {
                 let statusCode = validateTypes.isNumber(result.status) ? result.status : undefined;
                 let stamps = result.stampsUsed || result.stamps_used || 0;
                 let message = "";
-                result.errors = result.errors? result.errors : result.result && result.result.includes("AssertionError")? [result.result] : undefined;
+                result.errors = result.errors? result.errors : result.result && result.result.includes("Error")? [result.result] : undefined;
                 if (validateTypes.isArrayWithValues(result.errors)) {
                     erroredTx = true;
                     message = `This transaction returned ${result.errors.length} errors.`;
