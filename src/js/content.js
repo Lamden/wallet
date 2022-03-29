@@ -47,7 +47,6 @@ document.addEventListener('lamdenWalletSendTx', (event) => {
 
 const lamdenWalletSendTx = (detail) => {  
     chrome.runtime.sendMessage({type: 'dAppSendLamdenTransaction', data: detail}, (response) => {
-
         if (chrome.runtime.lastError) return
         if(response !== 'ok'){
             returnTxStatusToPage(response)
