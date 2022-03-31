@@ -287,34 +287,44 @@ const getWalletResponse = async (driver) => {
 
 const setupSendListener = (driver) => {
     return driver.executeScript(`
-        window.walletTxResult = new Promise((resolve, reject) => {window.txResolver = resolve})
+        window.walletTxResult = {};
+        window.txResolver = {};
+        window.walletTxResult['emptyuid'] = new Promise((resolve, reject) => {window.txResolver['emptyuid'] = resolve})
         document.addEventListener('lamdenWalletTxStatus', (response) => {
             let detail = response.detail
+            let uid;
+            if (detail.data && detail.data.uid) {
+                uid = detail.data.uid
+            } else {
+                uid = 'emptyuid'
+            }
 
             if (detail.data){
                 if (detail.data.blockResult){
                     if(detail.data.blockResult.hash) return
                 }
             }
-            window.txResolver(detail)
+            window.txResolver[uid](detail)
         });
     `);
 }
 
+const createUID = () => hashStringValue(new Date().toISOString())
+
 const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
+    let uid = transactionInfo.uid
+    if (!uid) uid = 'emptyuid'
     return driver.executeScript(`
-        window.walletTxResult = undefined;
-        window.txResolver = undefined;
-        window.walletTxResult = new Promise((resolve, reject) => {window.txResolver = resolve})
+        window.walletTxResult['${uid}'] = new Promise((resolve, reject) => {window.txResolver['${uid}'] = resolve})
         document.dispatchEvent( new CustomEvent('lamdenWalletSendTx', {detail: '${JSON.stringify(transactionInfo)}'} ));
-        ${awaitResponse ? "console.log(await window.walletTxResult); return await window.walletTxResult" : ""}
+        ${awaitResponse ? `console.log(await window.walletTxResult['${uid}']); return await window.walletTxResult['${uid}']` : ""}
     `);
 }
 
-const getTxResult = async (driver) => {
+const getTxResult = async (driver, uid) => {
     return driver.executeScript(`
-        console.log(await window.walletTxResult)
-        return await window.walletTxResult
+        console.log(await window.walletTxResult['${uid}'])
+        return await window.walletTxResult['${uid}']
     `);
 }
 
@@ -534,5 +544,6 @@ module.exports = {
     gotoNetwork,
     clearNetwork,
     fillNetworkForm,
-    gotoBackup
+    gotoBackup,
+    createUID
 }

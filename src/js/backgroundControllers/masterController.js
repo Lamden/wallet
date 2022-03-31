@@ -243,35 +243,41 @@ export const masterController = () => {
   const initiateDAppTxSend = (sender, data, dappInfo, callback = undefined) => {
     const makeTxStatus = (
       status = `Unable to process transaction`,
-      errors = undefined
+      errors = undefined,
+      uid = undefined
     ) => {
+      if (!uid) uid = utils.hashStringValue(new Date().toISOString());
       let txStatus = { status, errors, data };
-      if (callback) callback({ data: { status, errors, data } });
+      if (callback) callback({ data: { status, errors, data, uid} });
       return txStatus;
     };
+    let txInfo = {};
+    let errors = [];
+    try {
+      //Make sure the txInfo was a JSON string (for security)
+      txInfo = JSON.parse(data);
+    } catch (err) {
+      return makeTxStatus(undefined, [
+        "Failed to Parse JSON object",
+        err.message,
+      ]);
+    }
+
+    //Create a unique ID for this transaction for reference later if needed
+    if (!txInfo.uid) txInfo.uid = utils.hashStringValue(new Date().toISOString());
+
     if (accounts.walletIsLocked()) {
-      return makeTxStatus(undefined, ["Lamden Vault is Locked"]);
+      return makeTxStatus(undefined, ["Lamden Vault is Locked"], txInfo.uid);
     } else {
-      let txInfo = {};
-      let errors = [];
       let approvalRequest = false;
       let forceTxApproval = false;
 
-      try {
-        //Make sure the txInfo was a JSON string (for security)
-        txInfo = JSON.parse(data);
-      } catch (err) {
-        return makeTxStatus(undefined, [
-          "Failed to Parse JSON object",
-          err.message,
-        ]);
-      }
 
       //Validate networkType was provided
       if (!utils.validateTypes.isStringWithValue(txInfo.networkType)) {
         return makeTxStatus(undefined, [
           "networkType <string> required but not provided",
-        ]);
+        ], txInfo.uid);
       }
 
       //Get the Lamden Network Object for the network types specified in the txInfo request
@@ -282,7 +288,7 @@ export const masterController = () => {
         errors = [
           `'networkType' <string> '${txInfo.networkType}' is not a valid network type. Valid types are ${utils.networks.LamdenNetworkTypes}.`,
         ];
-        return makeTxStatus(undefined, errors);
+        return makeTxStatus(undefined, errors, txInfo.uid);
       }
 
       //Reject transaction attempt if network type has not been approved
@@ -290,15 +296,12 @@ export const masterController = () => {
         errors = [
           `Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`,
         ];
-        return makeTxStatus(undefined, errors);
+        return makeTxStatus(undefined, errors, txInfo.uid);
       }
 
       try {
         //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
         const wallet = accounts.getAccountByVK(dappInfo.vk);
-        //Create a unique ID for this transaction for reference later if needed
-        if (!txInfo.uid)
-          txInfo.uid = utils.hashStringValue(new Date().toISOString());
         //Set senderVk to the one assocated with this dapp
         txInfo.senderVk = wallet.vk;
         //Check if contractName was supplied
@@ -350,7 +353,7 @@ export const masterController = () => {
         return makeTxStatus(undefined, [
           `Unable to Build ${whitelabel.companyName} Transaction`,
           err.message,
-        ]);
+        ], txInfo.uid);
       }
     }
   };

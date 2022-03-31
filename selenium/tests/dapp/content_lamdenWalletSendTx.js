@@ -84,6 +84,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("Reject tx with missing networkType", async function () {
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
       transaction.networkType = null;
       let response = await helpers.sendTx(driver, transaction, true);
       assert.equal(response.status, "Unable to process transaction");
@@ -95,6 +96,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("Reject tx with invalid Lamden networkType", async function () {
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
       transaction.networkType = "badNetworkType";
       let response = await helpers.sendTx(driver, transaction, true);
       assert.equal(response.status, "Unable to process transaction");
@@ -108,6 +110,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("Reject tx attempt on unapproved Lamden Network", async function () {
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
       transaction.networkType = "mockchain";
       let response = await helpers.sendTx(driver, transaction, true);
       assert.equal(response.status, "Unable to process transaction");
@@ -121,6 +124,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("Forwards error from lamden.js if issues occur building transaction", async function () {
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
       transaction.methodName = 1000;
       let response = await helpers.sendTx(driver, transaction, true);
 
@@ -149,7 +153,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       await popupDeny_Buttom.click();
       await helpers.switchWindow(driver, 1);
       await helpers.sleep(2000, true);
-      let response = await helpers.getTxResult(driver);
+      let response = await helpers.getTxResult(driver, "emptyuid");
       assert.equal(response.status, "Transaction Cancelled");
       assert.equal(response.data.errors.length, 1);
       assert.equal(response.data.errors[0], "User closed Popup window");
@@ -157,8 +161,10 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     it("Rejects tx if wallet is locked", async function () {
       await helpers.lockWallet(driver, 1);
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
       let response = await helpers.sendTx(driver, transaction, true);
       assert.equal(response.status, "Unable to process transaction");
+      assert.equal(response.data.uid, transaction.uid)
       assert.equal(response.data.errors.length, 1);
       assert.equal(response.data.errors[0], "Lamden Vault is Locked");
       await helpers.unlockWallet(driver, walletInfo.walletPassword, 1);
@@ -168,6 +174,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     it("Show errormsg if stamps is large than user's balance", async function () {
       await helpers.switchWindow(driver, 1);
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = "changeStampLimit"
       await helpers.sendTx(driver, transaction, false);
       await helpers.sleep(2000);
       await helpers.switchWindow(driver, 2);
@@ -192,6 +199,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("Can change stamp limit and send tx successfully", async function () {
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = "changeStampLimit"
       let change_Button = await driver.wait(
         until.elementLocated(By.id("change-btn")),
         5000
@@ -210,9 +218,10 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       );
       await approve_Button.click();
       await helpers.switchWindow(driver, 1);
-      let response = await helpers.getTxResult(driver);
+      let response = await helpers.getTxResult(driver, transaction.uid);
       assert.equal(response.status, "success");
       let result = response.data;
+      assert.equal(result.uid, transaction.uid)
       assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
       assert.equal(result.resultInfo.type, "success");
       assert.equal(result.signature.length > 0, true);
@@ -231,11 +240,13 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     it("sends a transactions successfully after popup approval", async function () {
       this.timeout(10000);
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
       await helpers.sendTx(driver, transaction, false);
       await helpers.approveTxPopup(driver, 2, 1);
-      let response = await helpers.getTxResult(driver);
+      let response = await helpers.getTxResult(driver, transaction.uid);
       assert.equal(response.status, "success");
       let result = response.data;
+      assert.equal(result.uid, transaction.uid)
       assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
       assert.equal(result.resultInfo.type, "success");
       assert.equal(result.signature.length > 0, true);
@@ -259,9 +270,10 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       );
       console.log({ currentApprovalAmount });
       let transaction = helpers.getInstance(dappsInfo.approvalTransaction);
+      transaction.uid = helpers.createUID()
       await helpers.sendTx(driver, transaction, false);
       await helpers.approveApprovalPopup(driver, 2, 1);
-      await helpers.getTxResult(driver);
+      await helpers.getTxResult(driver, transaction.uid );
       await helpers.sleep(50000);
       let afterApprovalAmount = await helpers.getApprovalAmount(
         connectionInfo.wallets[0],
@@ -281,11 +293,13 @@ describe("Content Script - Testing Dapp SendTx API", function () {
 
       //Send a transaction with pre-approval
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
+      transaction.uid = helpers.createUID()
 
       let txResponse = await helpers.sendTx(driver, transaction, true);
 
       assert.equal(txResponse.status, "success");
       let result = txResponse.data;
+      assert.equal(result.uid, transaction.uid)
       assert.equal(result.nonceResult.sender, connectionInfo.wallets[0]);
       assert.equal(result.resultInfo.type, "success");
       assert.equal(result.signature.length > 0, true);
