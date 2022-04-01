@@ -93,7 +93,7 @@
   $: tauPrice = $PriceStore["currency"]
     ? $PriceStore["currency"]["value"]
     : "0";
-  $: balanceValue = calcValue(balanceStr, tauPrice);
+  $: balanceValue = calcValue(balance, tauPrice);
   $: percent =
     typeof $balanceTotal[netKey] === "undefined" ? "" : toPercentString();
 
