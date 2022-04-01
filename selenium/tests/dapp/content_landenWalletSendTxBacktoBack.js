@@ -13,7 +13,6 @@ chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 function verify(tx, res){
     // check res is the result of tx
-    console.log(res.data.resultInfo.errorInfo)
     assert.equal(res.status, "success");
     let result = res.data;
     assert.equal(result.resultInfo.type, "success");
