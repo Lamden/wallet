@@ -13,6 +13,7 @@
     currentNetwork,
     networkKey,
     SettingsStore,
+    TokenBalancesStore,
     PriceStore,
   } from "../../js/stores/stores.js";
 
@@ -27,6 +28,9 @@
   //Context
   const { openModal } = getContext("app_functions");
 
+  import Lamden from "lamden-js";
+  const { Encoder } = Lamden;
+
   //Utils
   import { displayBalance, calcValue } from "../../js/utils.js";
 
@@ -34,9 +38,68 @@
   $: totalBalance = $balanceTotal[networkKey($currentNetwork)]
     ? $balanceTotal[networkKey($currentNetwork)]
     : "0";
-  $: totalBalancePrice = $PriceStore["currency"]
-    ? calcValue($PriceStore["currency"]["value"], totalBalance)
-    : 0;
+  $: tauPrice = $PriceStore["currency"]
+    ? $PriceStore["currency"]["value"]
+    : "0";
+  $: totalBalanceVaule = $PriceStore["currency"]
+    ? calcValue($PriceStore["currency"]["value"], totalBalance, null, false)
+    : Encoder("bigNumber", "0");
+  $: totalTokenValue = getTotalTokenValue(
+    tauPrice,
+    $CoinStore,
+    $PriceStore,
+    $currentNetwork,
+    $TokenStore,
+    $TokenBalancesStore
+  );
+  $: totalValue = totalTokenValue.plus(totalBalanceVaule).toFormat(2, {
+    decimalSeparator: ".",
+    groupSeparator: ",",
+    groupSize: 3,
+  });
+
+  const getTotalTokenValue = (
+    tauPrice,
+    CoinStore,
+    PriceStore,
+    currentNetwork,
+    TokenStore,
+    TokenBalancesStore
+  ) => {
+    let netkey = networkKey(currentNetwork);
+    if (
+      !CoinStore ||
+      !tauPrice ||
+      !PriceStore ||
+      !currentNetwork ||
+      currentNetwork.type === "testnet" ||
+      !TokenStore ||
+      !TokenBalancesStore ||
+      !TokenBalancesStore[netkey]
+    ) {
+      return Encoder("bigNumber", "0");
+    }
+    let totalTokenValue = Encoder("bigNumber", "0");
+    Object.keys(TokenBalancesStore[netkey]).forEach((account) => {
+      let coin = CoinStore.find((f) => f.vk === account);
+      // the usd value of tracked accounts will not be calcuated
+      if (coin.sk === "watchOnly") return;
+      Object.keys(TokenBalancesStore[netkey][account]).forEach(
+        (contractName) => {
+          let tokenBalance = TokenBalancesStore[netkey][account][contractName];
+          let tokenPrice = PriceStore[contractName]["value"] || "0";
+          let tokenValue = calcValue(
+            tokenBalance,
+            calcValue(tokenPrice, tauPrice, null),
+            null,
+            false
+          );
+          totalTokenValue = totalTokenValue.plus(tokenValue);
+        }
+      );
+    });
+    return totalTokenValue;
+  };
 
   let refreshing = false;
 
@@ -73,7 +136,7 @@
     </div>
     {#if onMainnet}
       <div class="text-body1" style="color: var(--color-white);">
-        Total Balance USD ${totalBalancePrice}
+        Wallet Total Value ${totalValue}
       </div>
     {/if}
     <div class="btns">

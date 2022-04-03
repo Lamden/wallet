@@ -209,11 +209,15 @@ const displayBalance = (value) => {
     return value.toFormat({  decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
 }
 
-const calcValue = (amout, price, dp=2) => {
+const calcValue = (amout, price, dp=2, format=true) => {
     if (!Encoder.BigNumber.isBigNumber(amout)) amout = Encoder('bigNumber', amout)
     if (!Encoder.BigNumber.isBigNumber(price)) price = Encoder('bigNumber', price)
     amout = Encoder('bigNumber', stringToFixed(amout.toString(), 8))
     price = Encoder('bigNumber', stringToFixed(price.toString(), 8))
+    if (!format) {
+        let value = amout.multipliedBy(price)
+        return value
+    }
     if (dp) {
         let value = amout.multipliedBy(price).toFormat(dp, {decimalSeparator: '.', groupSeparator: ',', groupSize: 3})
         return value
