@@ -57,6 +57,9 @@
   import CopyIcon from "../icons/CopyIcon.svelte";
   import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
 
+  import Lamden from "lamden-js";
+  const { Encoder } = Lamden;
+
   const dispatch = createEventDispatcher();
 
   // Props
@@ -119,6 +122,14 @@
     tokenBalance,
     calcValue(tokenPrice, tauPrice, null)
   );
+  $: totalTokenValue = getTokenValue(
+    tokenList,
+    coin,
+    tauPrice,
+    $PriceStore,
+    $currentNetwork,
+    $TokenBalancesStore
+  );
 
   $: dapps = $DappStore
     ? Object.values($DappStore)
@@ -150,6 +161,51 @@
         .toFixed(2)
         .toString() + " %"
     );
+  };
+
+  const getTokenValue = (
+    tokenList,
+    coin,
+    tauPrice,
+    PriceStore,
+    currentNetwork,
+    TokenBalancesStore
+  ) => {
+    if (
+      !tokenList ||
+      !coin ||
+      !tauPrice ||
+      !PriceStore ||
+      !currentNetwork ||
+      currentNetwork.type === "testnet" ||
+      !TokenBalancesStore
+    ) {
+      return "0";
+    }
+    let value = Encoder("bigNumber", "0");
+    tokenList.forEach((token) => {
+      let tokenbalance = getTokenBalance(
+        networkKey(currentNetwork),
+        coin.vk,
+        token.contractName,
+        TokenBalancesStore
+      );
+      let tokenprice = PriceStore[token.contractName]
+        ? PriceStore[token.contractName]["value"]
+        : "0";
+      let tokenvalue = calcValue(
+        tokenbalance,
+        calcValue(tokenprice, tauPrice, null, false),
+        null,
+        false
+      );
+      value = value.plus(tokenvalue);
+    });
+    return value.toFormat(2, {
+      decimalSeparator: ".",
+      groupSeparator: ",",
+      groupSize: 3,
+    });
   };
 
   const handleAddressCopy = () => {
@@ -273,6 +329,11 @@
               {/if}
               <div>${balanceValue}</div>
             </div>
+            {#if !token}
+              <div class="weight-400 value flex-column">
+                <div>${totalTokenValue}</div>
+              </div>
+            {/if}
           {/if}
           <div class="text  weight-400 tokensnum">
             {`${tokensNum} ${tokensNum === 1 ? "token" : "tokens"}`}

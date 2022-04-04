@@ -229,6 +229,14 @@
         <div class="warning-icon">{@html vaultLogo}</div>
       </div>
       {#if vaultExist && vaults.length > 0}
+        <div class="header-amount header-text">Amount</div>
+        {#if $currentNetwork.type === "mainnet"}
+          <div class="header-amount-value header-text">Amount in USD</div>
+          <div class="header-amount-total-value header-text">
+            Total Account USD
+          </div>
+        {/if}
+        <div class="header-text">Tokens</div>
         <div class="header-percent header-text">Portfolio %</div>
       {/if}
     </div>
@@ -362,7 +370,16 @@
     margin-top: 40px;
   }
   .header-name {
-    width: 100%;
+    width: 406px;
+  }
+  .header-amount {
+    margin-right: 182px;
+  }
+  .header-amount-value {
+    margin-right: 83px;
+  }
+  .header-amount-total-value {
+    margin-right: 58px;
   }
   .header-text {
     display: flex;
@@ -382,6 +399,7 @@
   .header-percent {
     justify-content: flex-end;
     width: 203px;
+    flex: 1;
   }
   .warning-icon {
     width: 20px;
