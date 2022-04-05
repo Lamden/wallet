@@ -231,12 +231,12 @@
       {#if vaultExist && vaults.length > 0}
         <div class="header-amount header-text">Amount</div>
         {#if $currentNetwork.type === "mainnet"}
-          <div class="header-amount-value header-text">Amount in USD</div>
-          <div class="header-amount-total-value header-text">
-            Total Account USD
-          </div>
+          <div class="header-amount-value header-text">Value</div>
         {/if}
-        <div class="header-text">Tokens</div>
+        <div class="tokensnum header-text">Tokens</div>
+        {#if $currentNetwork.type === "mainnet"}
+          <div class="header-amount-total-value header-text">Total Value</div>
+        {/if}
         <div class="header-percent header-text">Portfolio %</div>
       {/if}
     </div>
@@ -373,13 +373,13 @@
     width: 406px;
   }
   .header-amount {
-    margin-right: 182px;
+    margin-right: 180px;
   }
   .header-amount-value {
-    margin-right: 83px;
+    margin-right: 156px;
   }
-  .header-amount-total-value {
-    margin-right: 58px;
+  .tokensnum {
+    margin-right: 145px;
   }
   .header-text {
     display: flex;

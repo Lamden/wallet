@@ -136,7 +136,7 @@
     </div>
     {#if onMainnet}
       <div class="text-body1" style="color: var(--color-white);">
-        Wallet Total Value ${totalValue}
+        Total Wallet USD ${totalValue}
       </div>
     {/if}
     <div class="btns">

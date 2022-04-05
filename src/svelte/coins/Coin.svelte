@@ -283,7 +283,7 @@
         class:text-primary={isVaultAccount}
         class:text-primary-dim={!isVaultAccount}
       >
-        <div class="coin-main-row flex-row flex-center-center">
+        <div class="coin-main-row flex-row flex-align-center">
           <div class="collapse-btn">
             <DirectionalChevronIcon
               strokeWidth={2.75}
@@ -329,15 +329,16 @@
               {/if}
               <div>${balanceValue}</div>
             </div>
-            {#if !token}
-              <div class="weight-400 value flex-column">
-                <div>${totalTokenValue}</div>
-              </div>
-            {/if}
           {/if}
           <div class="text  weight-400 tokensnum">
             {`${tokensNum} ${tokensNum === 1 ? "token" : "tokens"}`}
           </div>
+
+          {#if onMainnet && !token}
+            <div class="weight-400 flex-column">
+              <div>${totalTokenValue}</div>
+            </div>
+          {/if}
 
           {#if whitelabel.mainPage.portfolio.show && !token}
             {#if !watching}
@@ -442,7 +443,7 @@
               <div class="header-name header-text">My Tokens</div>
               <div class="header-amount header-text">Amount</div>
               {#if onMainnet}
-                <div class="header-price header-text">Price USD</div>
+                <div class="header-price header-text">Vaule</div>
               {/if}
             </div>
             <div class="tokenlist">
@@ -627,7 +628,7 @@
     margin-bottom: 2rem;
   }
   .tokensnum {
-    flex-grow: 1;
+    width: 200px;
   }
   .header-amount {
     margin-left: 242px;
