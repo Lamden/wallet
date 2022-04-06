@@ -1,4 +1,6 @@
-import { writable, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import { SettingsStore } from './settingsStore';
+import { ExchangeRateStore } from './exchangeRateStore';
 
 export const createPriceStore = () => {
     //Create Intial Store
@@ -25,3 +27,17 @@ export const createPriceStore = () => {
 }
 //Create BalancesStore instance
 export const PriceStore = createPriceStore();
+
+export const TauPrice = derived([PriceStore, SettingsStore, ExchangeRateStore], ([$PriceStore, $SettingsStore, $ExchangeRateStore]) => {
+    let fiat = $SettingsStore.fiat || "USD"
+    let rate = $ExchangeRateStore.rates && $ExchangeRateStore.rates[fiat]? $ExchangeRateStore.rates[fiat] : 0 
+    if ($PriceStore["currency"]) {
+        if (fiat === "USD") {
+            return $PriceStore["currency"]["value"]
+        } else {
+            return $PriceStore["currency"]["value"] * rate
+        }
+    } else {
+        return '0'
+    }
+})

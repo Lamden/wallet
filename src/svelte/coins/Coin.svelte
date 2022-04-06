@@ -21,6 +21,8 @@
     DappStore,
     TokenStore,
     PriceStore,
+    TauPrice,
+    SettingsStore,
   } from "../../js/stores/stores.js";
 
   //Images
@@ -77,6 +79,8 @@
 
   let copied = false;
 
+  $: currentFiat = $SettingsStore.fiat;
+  $: fiatGraphSymbol = whitelabel.fiat[currentFiat];
   $: collapseStatus = collapse;
 
   $: direction = collapseStatus ? "down" : "right";
@@ -93,10 +97,7 @@
   $: watching = coin.sk === "watchOnly";
   $: balance = BalancesStore.getBalance($currentNetwork, coin.vk);
   $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : "0";
-  $: tauPrice = $PriceStore["currency"]
-    ? $PriceStore["currency"]["value"]
-    : "0";
-  $: balanceValue = calcValue(balance, tauPrice);
+  $: balanceValue = calcValue(balance, $TauPrice);
   $: percent =
     typeof $balanceTotal[netKey] === "undefined" ? "" : toPercentString();
 
@@ -120,12 +121,12 @@
       : "0";
   $: tokenValue = calcValue(
     tokenBalance,
-    calcValue(tokenPrice, tauPrice, null)
+    calcValue(tokenPrice, $TauPrice, null)
   );
   $: totalTokenValue = getTokenValue(
     tokenList,
     coin,
-    tauPrice,
+    $TauPrice,
     $PriceStore,
     $currentNetwork,
     $TokenBalancesStore
@@ -325,9 +326,9 @@
           {#if onMainnet}
             <div class="weight-400 value flex-column">
               {#if token}
-                <div>${tokenValue}</div>
+                <div>{fiatGraphSymbol}{tokenValue}</div>
               {/if}
-              <div>${balanceValue}</div>
+              <div>{fiatGraphSymbol}{balanceValue}</div>
             </div>
           {/if}
           <div class="text  weight-400 tokensnum">
@@ -336,7 +337,7 @@
 
           {#if onMainnet && !token}
             <div class="weight-400 flex-column">
-              <div>${totalTokenValue}</div>
+              <div>{fiatGraphSymbol}{totalTokenValue}</div>
             </div>
           {/if}
 

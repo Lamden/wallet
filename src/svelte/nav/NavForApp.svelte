@@ -15,6 +15,7 @@
     SettingsStore,
     TokenBalancesStore,
     PriceStore,
+    TauPrice,
   } from "../../js/stores/stores.js";
 
   //Icons
@@ -33,19 +34,18 @@
 
   //Utils
   import { displayBalance, calcValue } from "../../js/utils.js";
+  import DropDown from "../components/DropDown.svelte";
 
+  const fiatList = [{ name: "Add Network", value: "add", selected: false }];
+
+  $: currentFiat = $SettingsStore.fiat || "USD";
   $: onMainnet = $currentNetwork.type === "mainnet" ? true : false;
   $: totalBalance = $balanceTotal[networkKey($currentNetwork)]
     ? $balanceTotal[networkKey($currentNetwork)]
     : "0";
-  $: tauPrice = $PriceStore["currency"]
-    ? $PriceStore["currency"]["value"]
-    : "0";
-  $: totalBalanceVaule = $PriceStore["currency"]
-    ? calcValue($PriceStore["currency"]["value"], totalBalance, null, false)
-    : Encoder("bigNumber", "0");
+  $: totalBalanceVaule = calcValue($TauPrice, totalBalance, null, false);
   $: totalTokenValue = getTotalTokenValue(
-    tauPrice,
+    $TauPrice,
     $CoinStore,
     $PriceStore,
     $currentNetwork,
@@ -136,7 +136,9 @@
     </div>
     {#if onMainnet}
       <div class="text-body1" style="color: var(--color-white);">
-        Total Wallet USD ${totalValue}
+        Total Wallet {currentFiat}
+        {whitelabel.fiat[currentFiat]}
+        {totalValue}
       </div>
     {/if}
     <div class="btns">
