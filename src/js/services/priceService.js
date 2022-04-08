@@ -60,19 +60,10 @@ function runPriceService() {
 		});
     }, 10 * 60 * 1000)
 
-    // run every 1 hour if app page open
+    // run every 24 hour
     setInterval(() => {
-        chrome.tabs.query({}, function(tabs) {
-			const foundTab = tabs.find((tab) => {
-				if (typeof tab.url !== 'undefined') return tab.url.includes(`chrome-extension://${chrome.runtime.id}/app.html`)
-				else return false
-			});
-
-			if (foundTab) { 
-                updateExchangeRate
-            }
-		});
-    }, 60 * 60 * 1000)
+        updateExchangeRate()
+    }, 24 * 60 * 60 * 1000)
 
     // listen for price change
     chrome.storage.onChanged.addListener(function(changes) {
