@@ -420,6 +420,29 @@ const getTokenFromRocketswap = async (contractName) => {
     return meta;
 }
 
+const getFiatPrice = async () => {
+    try {
+        const api = `https://api.exchangerate.host/latest?base=USD`;
+        const result = await fetch(api).then(res => res.json());
+        if (result.success) {
+            return {
+                base: result.base,
+                date: result.date,
+                rates: result.rates,
+                success: true
+            }
+        } else {
+            return {
+                success: false
+            }
+        }
+    } catch {
+        return {
+            success: false
+        }
+    }
+}
+
  const getLastestTauPrice = async () => {
     try {
         const api = `https://rocketswap.exchange:2053/api/tau_last_price`;
@@ -478,5 +501,6 @@ module.exports = {
     getTokenFromRocketswap,
     getLastestTauPrice,
     getTokenPrice,
-    calcValue
+    calcValue,
+    getFiatPrice
   }
