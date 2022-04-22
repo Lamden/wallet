@@ -17,6 +17,7 @@
     networkKey,
     PriceStore,
     TauPrice,
+    SettingsStore,
   } from "../../js/stores/stores.js";
 
   //Components
@@ -41,6 +42,8 @@
   export let vk;
   let logoSize = "30px";
 
+  $: currentFiat = $SettingsStore.fiat;
+  $: fiatGraphSymbol = whitelabel.fiat[currentFiat];
   $: onMainnet = $currentNetwork.type === "mainnet" ? true : false;
   $: balance = getTokenBalance(
     networkKey($currentNetwork),
@@ -97,7 +100,7 @@
   {/if}
   {#if onMainnet}
     <div class="value flex-column text-body2 text-primary-dim">
-      ${balanceValue}
+      {fiatGraphSymbol}{balanceValue}
     </div>
   {/if}
   <!-- <div class="flex-row flex-center-end">

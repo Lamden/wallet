@@ -123,9 +123,10 @@
     tokenBalance,
     calcValue(tokenPrice, $TauPrice, null)
   );
-  $: totalTokenValue = getTokenValue(
+  $: totalValue = getTotalValue(
     tokenList,
     coin,
+    balance,
     $TauPrice,
     $PriceStore,
     $currentNetwork,
@@ -164,9 +165,10 @@
     );
   };
 
-  const getTokenValue = (
+  const getTotalValue = (
     tokenList,
     coin,
+    balance,
     tauPrice,
     PriceStore,
     currentNetwork,
@@ -202,6 +204,7 @@
       );
       value = value.plus(tokenvalue);
     });
+    value = value.plus(calcValue(balance, tauPrice, null, false));
     return value.toFormat(2, {
       decimalSeparator: ".",
       groupSeparator: ",",
@@ -335,9 +338,9 @@
             {`${tokensNum} ${tokensNum === 1 ? "token" : "tokens"}`}
           </div>
 
-          {#if onMainnet && !token}
+          {#if onMainnet}
             <div class="weight-400 flex-column">
-              <div>{fiatGraphSymbol}{totalTokenValue}</div>
+              <div>{fiatGraphSymbol}{totalValue}</div>
             </div>
           {/if}
 
