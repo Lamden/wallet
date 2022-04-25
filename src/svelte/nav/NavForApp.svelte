@@ -87,7 +87,9 @@
       Object.keys(TokenBalancesStore[netkey][account]).forEach(
         (contractName) => {
           let tokenBalance = TokenBalancesStore[netkey][account][contractName];
-          let tokenPrice = PriceStore[contractName]["value"] || "0";
+          let tokenPrice = PriceStore[contractName]
+            ? PriceStore[contractName]["value"]
+            : "0";
           let tokenValue = calcValue(
             tokenBalance,
             calcValue(tokenPrice, tauPrice, null),

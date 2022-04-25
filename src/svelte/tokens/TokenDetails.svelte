@@ -90,7 +90,9 @@
   );
   $: vaultExist = vaults.length > 0;
 
-  $: tokenPrice = $PriceStore[token.contractName]["value"] || "0";
+  $: tokenPrice = $PriceStore[token.contractName]
+    ? $PriceStore[token.contractName]["value"]
+    : "0";
   $: totalTokenValue = calcValue(
     $TauPrice,
     calcValue(
@@ -198,7 +200,9 @@
       if (account.sk === "watchOnly") return;
 
       let tokenBalance = TokenBalancesStore[netkey][account.vk][contractName];
-      let tokenPrice = PriceStore[contractName]["value"] || "0";
+      let tokenPrice = PriceStore[contractName]
+        ? PriceStore[contractName]["value"]
+        : "0";
       let tokenValue = calcValue(
         tokenBalance,
         calcValue(tokenPrice, TauPrice, null),
@@ -229,9 +233,11 @@
         <RefreshIcon />
       </div>
     </div>
-    <div class="text-body1">
-      {`Total ${token.tokenSymbol} ${currentFiat} ${fiatGraphSymbol}${totalTokenValue}`}
-    </div>
+    {#if $currentNetwork.type === "mainnet"}
+      <div class="text-body1">
+        {`Total ${token.tokenSymbol} ${currentFiat} ${fiatGraphSymbol}${totalTokenValue}`}
+      </div>
+    {/if}
     <div class="buttons flex-grow">
       {#if whitelabel.tokenDetails.buttons.send.show}
         <Button
