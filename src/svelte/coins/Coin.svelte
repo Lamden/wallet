@@ -288,31 +288,33 @@
         class:text-primary-dim={!isVaultAccount}
       >
         <div class="coin-main-row flex-row flex-align-center">
-          <div class="collapse-btn">
-            <DirectionalChevronIcon
-              strokeWidth={2.75}
-              {direction}
-              width="16px"
-              color="var(--font-primary)"
-            />
-          </div>
-          {#if whitelabel.mainPage.logo.show}
-            <div class="logo flex-center-center">
-              <Identicons margin="0" iconValue={coin.vk} width="27px" />
+          <div class="name">
+            <div class="collapse-btn">
+              <DirectionalChevronIcon
+                strokeWidth={2.75}
+                {direction}
+                width="16px"
+                color="var(--font-primary)"
+              />
             </div>
-          {/if}
-          {#if whitelabel.mainPage.account_info.show}
-            <div class="name text weight-400">
-              <div class="name-box">
-                <div
-                  id={`coin-nickname-${coin.id}`}
-                  class="nickname text-body1 text-primary"
-                >
-                  {`${coin.nickname}`}
+            {#if whitelabel.mainPage.logo.show}
+              <div class="logo flex-center-center">
+                <Identicons margin="0" iconValue={coin.vk} width="27px" />
+              </div>
+            {/if}
+            {#if whitelabel.mainPage.account_info.show}
+              <div class="text weight-400">
+                <div class="name-box">
+                  <div
+                    id={`coin-nickname-${coin.id}`}
+                    class="nickname text-body1 text-primary"
+                  >
+                    {`${coin.nickname}`}
+                  </div>
                 </div>
               </div>
-            </div>
-          {/if}
+            {/if}
+          </div>
           {#if whitelabel.mainPage.amount.show}
             <div class="amount flex-column">
               {#if token}
@@ -339,14 +341,16 @@
           </div>
 
           {#if onMainnet}
-            <div class="weight-400 flex-column">
+            <div class="weight-400 flex-column fiatvalue">
               <div>{fiatGraphSymbol}{totalValue}</div>
             </div>
           {/if}
 
           {#if whitelabel.mainPage.portfolio.show && !token}
             {#if !watching}
-              <div class="percent text  weight-400">{`${percent}`}</div>
+              <div class="percent text weight-400">
+                <div style="padding-right: 26px;">{`${percent}`}</div>
+              </div>
             {/if}
           {/if}
         </div>
@@ -502,24 +506,27 @@
   }
 
   .name {
-    width: 234px;
+    flex-basis: 406px;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
   }
 
   .amount {
-    padding-left: 15px;
-    width: 240px;
+    flex-basis: 240px;
+    min-width: 120px;
     justify-content: center;
   }
 
   .value {
-    width: 200px;
+    flex-basis: 200px;
+    min-width: 63px;
   }
 
   .percent {
     justify-content: flex-end;
-    width: 90px;
-    margin-right: 28px;
     flex-grow: 1;
+    min-width: 90px;
   }
   .name-box {
     line-height: 1.1;
@@ -624,20 +631,27 @@
     );
   }
   .collapse-btn {
-    margin-left: 28px;
     cursor: pointer;
+    flex-basis: 44px;
+    justify-content: end;
+    display: flex;
   }
   .tokenlist {
     padding-left: 64px;
     margin-bottom: 2rem;
   }
   .tokensnum {
-    width: 200px;
+    flex-basis: 200px;
+    min-width: 76px;
   }
   .header-amount {
     margin-left: 242px;
   }
   .header-price {
     margin-left: 180px;
+  }
+  .fiatvalue {
+    flex-basis: 200px;
+    min-width: 100px;
   }
 </style>

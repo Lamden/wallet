@@ -370,16 +370,20 @@
     margin-top: 40px;
   }
   .header-name {
-    width: 406px;
+    flex-basis: 406px;
+    min-width: 300px;
   }
   .header-amount {
-    margin-right: 180px;
+    flex-basis: 240px;
+    min-width: 120px;
   }
   .header-amount-value {
-    margin-right: 156px;
+    flex-basis: 200px;
+    min-width: 63px;
   }
   .tokensnum {
-    margin-right: 145px;
+    flex-basis: 200px;
+    min-width: 76px;
   }
   .header-text {
     display: flex;
@@ -398,13 +402,18 @@
 
   .header-percent {
     justify-content: flex-end;
-    width: 203px;
+    min-width: 90px;
     flex: 1;
+    margin-right: 4px;
   }
   .warning-icon {
     width: 20px;
     margin-left: 10px;
     min-width: 20px;
     cursor: pointer;
+  }
+  .header-amount-total-value {
+    flex-basis: 200px;
+    min-width: 100px;
   }
 </style>
