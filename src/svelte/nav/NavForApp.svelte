@@ -83,7 +83,7 @@
     Object.keys(TokenBalancesStore[netkey]).forEach((account) => {
       let coin = CoinStore.find((f) => f.vk === account);
       // the usd value of tracked accounts will not be calcuated
-      if (coin.sk === "watchOnly") return;
+      if (coin && coin.sk === "watchOnly") return;
       Object.keys(TokenBalancesStore[netkey][account]).forEach(
         (contractName) => {
           let tokenBalance = TokenBalancesStore[netkey][account][contractName];
@@ -190,6 +190,12 @@
     }
   }
 
+  @media (max-width: 960px) {
+    .text-huge {
+      font-size: 46px;
+    }
+  }
+
   .balance-total {
     align-items: center;
     color: var(--font-overlay);
@@ -206,6 +212,7 @@
   }
   .details {
     margin-top: 30px;
+    flex-basis: 500px;
   }
   .btns {
     margin-top: 0.8rem;

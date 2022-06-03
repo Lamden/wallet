@@ -427,16 +427,25 @@
   }
 
   .header-name {
-    width: 406px;
+    flex-basis: 406px;
+    min-width: 300px;
   }
   .header-amount {
-    margin-right: 180px;
+    flex-basis: 240px;
+    min-width: 160px;
   }
   .header-amount-value {
-    margin-right: 156px;
+    flex-basis: 200px;
+    min-width: 63px;
   }
   .tokensnum {
-    margin-right: 145px;
+    flex-basis: 200px;
+    min-width: 76px;
+  }
+
+  .header-amount-total-value {
+    flex-basis: 200px;
+    min-width: 100px;
   }
 
   .header-msg {
@@ -446,13 +455,6 @@
     white-space: nowrap;
   }
 
-  @media only screen and (max-width: 970px) {
-    .buttons {
-      flex-direction: column;
-      align-items: flex-start;
-      margin-top: 2rem;
-    }
-  }
   .warning-icon {
     width: 20px;
     margin-left: 10px;

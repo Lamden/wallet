@@ -342,7 +342,7 @@
     top: 1px;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1100px) {
     .menu-pane {
       width: 280px;
       min-width: 280px;

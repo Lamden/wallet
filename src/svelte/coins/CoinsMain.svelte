@@ -375,7 +375,7 @@
   }
   .header-amount {
     flex-basis: 240px;
-    min-width: 120px;
+    min-width: 160px;
   }
   .header-amount-value {
     flex-basis: 200px;
