@@ -105,6 +105,7 @@ describe('Testing Token Integration - Edit Token Info', function () {
             await tokenHelpers.validateTokenSymbol(driver, frostyToken)
             await tokenHelpers.validateTokenLogo(driver, frostyToken)
             await tokenHelpers.saveTokenModal(driver)
+            //await helpers.sleep(500000)
             await tokenHelpers.validateTokenOnAccountsScreen(driver, frostyToken)
         });
 

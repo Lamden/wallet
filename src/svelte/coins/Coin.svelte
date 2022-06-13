@@ -288,31 +288,35 @@
         class:text-primary-dim={!isVaultAccount}
       >
         <div class="coin-main-row flex-row flex-align-center">
-          <div class="collapse-btn">
-            <DirectionalChevronIcon
-              strokeWidth={2.75}
-              {direction}
-              width="16px"
-              color="var(--font-primary)"
-            />
-          </div>
-          {#if whitelabel.mainPage.logo.show}
-            <div class="logo flex-center-center">
-              <Identicons margin="0" iconValue={coin.vk} width="27px" />
+          <div class="name">
+            <div class="collapse-btn">
+              <DirectionalChevronIcon
+                strokeWidth={2.75}
+                {direction}
+                width="16px"
+                color="var(--font-primary)"
+              />
             </div>
-          {/if}
-          {#if whitelabel.mainPage.account_info.show}
-            <div class="name text weight-400">
-              <div class="name-box">
-                <div
-                  id={`coin-nickname-${coin.id}`}
-                  class="nickname text-body1 text-primary"
-                >
-                  {`${coin.nickname}`}
+            {#if whitelabel.mainPage.logo.show}
+              <div class="logowrap">
+                <div class="logo flex-center-center">
+                  <Identicons margin="0" iconValue={coin.vk} width="27px" />
                 </div>
               </div>
-            </div>
-          {/if}
+            {/if}
+            {#if whitelabel.mainPage.account_info.show}
+              <div class="text weight-400">
+                <div class="name-box">
+                  <div
+                    id={`coin-nickname-${coin.id}`}
+                    class="nickname text-body1 text-primary"
+                  >
+                    {`${coin.nickname}`}
+                  </div>
+                </div>
+              </div>
+            {/if}
+          </div>
           {#if whitelabel.mainPage.amount.show}
             <div class="amount flex-column">
               {#if token}
@@ -339,21 +343,23 @@
           </div>
 
           {#if onMainnet}
-            <div class="weight-400 flex-column">
+            <div class="weight-400 flex-column fiatvalue">
               <div>{fiatGraphSymbol}{totalValue}</div>
             </div>
           {/if}
 
           {#if whitelabel.mainPage.portfolio.show && !token}
             {#if !watching}
-              <div class="percent text  weight-400">{`${percent}`}</div>
+              <div class="percent text weight-400">
+                <div style="padding-right: 26px;">{`${percent}`}</div>
+              </div>
             {/if}
           {/if}
         </div>
         {#if collapseStatus}
           <div class="flex-row coinmenus">
             {#if !token}
-              <div class="flex-row flex-align-center">
+              <div class="flex-row flex-align-center reorder-btns">
                 <button
                   class="button__small button__primary reorder-button"
                   on:click|stopPropagation={handleReorderUp}
@@ -372,75 +378,77 @@
                 </button>
               </div>
             {/if}
-            {#if coin.sk !== "watchOnly"}
+            <div class="coin-btns">
+              {#if coin.sk !== "watchOnly"}
+                <button
+                  id="send-btn"
+                  class:send-btn={!token}
+                  class="button__small button__primary coin-btn flex-row"
+                  on:click|stopPropagation={handleSend}
+                >
+                  {`Send ${
+                    token ? token.tokenSymbol : $currentNetwork.currencySymbol
+                  }`}
+                  <div class="icon">{@html arrowOut}</div>
+                </button>
+                <button
+                  id="receive-btn"
+                  class="button__small button__primary coin-btn flex-row"
+                  on:click|stopPropagation={handleReceive}
+                >
+                  {`Receive ${
+                    token ? token.tokenSymbol : $currentNetwork.currencySymbol
+                  }`}
+                  <div class="icon">{@html arrowIn}</div>
+                </button>
+              {/if}
               <button
-                id="send-btn"
-                class:send-btn={!token}
-                class="button__small button__primary coin-btn flex-row"
-                on:click|stopPropagation={handleSend}
+                class="button__small address coin-btn flex-row button__primary"
+                class:success={copied}
+                on:click|stopPropagation={handleAddressCopy}
+                title="copy account address"
               >
-                {`Send ${
-                  token ? token.tokenSymbol : $currentNetwork.currencySymbol
-                }`}
-                <div class="icon">{@html arrowOut}</div>
+                {formatAccountAddress(coin.vk, 7, 0)}
+                <div class="icon-copy">
+                  {#if !copied}
+                    <CopyIcon width="9px" color="var(--color-white)" />
+                  {:else}
+                    <CheckmarkIcon width="10px" color="var(--success-color)" />
+                  {/if}
+                </div>
               </button>
               <button
-                id="receive-btn"
+                id="history-btn"
                 class="button__small button__primary coin-btn flex-row"
-                on:click|stopPropagation={handleReceive}
+                on:click|stopPropagation={handleHistoryClick}
               >
-                {`Receive ${
-                  token ? token.tokenSymbol : $currentNetwork.currencySymbol
-                }`}
-                <div class="icon">{@html arrowIn}</div>
+                View Transaction History
+                <div class="icon">{@html History}</div>
               </button>
-            {/if}
-            <button
-              class="button__small address coin-btn flex-row button__primary"
-              class:success={copied}
-              on:click|stopPropagation={handleAddressCopy}
-              title="copy account address"
-            >
-              {formatAccountAddress(coin.vk, 7, 0)}
-              <div class="icon-copy">
-                {#if !copied}
-                  <CopyIcon width="9px" color="var(--color-white)" />
-                {:else}
-                  <CheckmarkIcon width="10px" color="var(--success-color)" />
-                {/if}
-              </div>
-            </button>
-            <button
-              id="history-btn"
-              class="button__small button__primary coin-btn flex-row"
-              on:click|stopPropagation={handleHistoryClick}
-            >
-              View Transaction History
-              <div class="icon">{@html History}</div>
-            </button>
-            <button
-              id="options"
-              class="button__small button__primary coin-btn flex-row"
-              on:click|stopPropagation={handleOptionClick}
-            >
-              Options
-              <div class="icon">
-                <SettingsIcon width="12px" color="var(--color-white)" />
-              </div>
-            </button>
-            {#if coin.sk !== "watchOnly"}
-              <div class="dapps">
-                {#each dapps as dapp (dapp.appName)}
-                  <span
-                    class="avatar"
-                    on:click|stopPropagation={() =>
-                      switchPage("ConnectionDetails", dapp)}
-                  >
-                    <img src={`${dapp.url}${dapp.logo}`} alt="" />
-                  </span>
-                {/each}
-              </div>
-            {/if}
+              <button
+                id="options"
+                class="button__small button__primary coin-btn flex-row"
+                on:click|stopPropagation={handleOptionClick}
+              >
+                Options
+                <div class="icon">
+                  <SettingsIcon width="12px" color="var(--color-white)" />
+                </div>
+              </button>
+              {#if coin.sk !== "watchOnly"}
+                <div class="dapps">
+                  {#each dapps as dapp (dapp.appName)}
+                    <span
+                      class="avatar"
+                      on:click|stopPropagation={() =>
+                        switchPage("ConnectionDetails", dapp)}
+                    >
+                      <img src={`${dapp.url}${dapp.logo}`} alt="" />
+                    </span>
+                  {/each}
+                </div>
+              {/if}
+            </div>
           </div>
           {#if tokenList.length > 0}
             <div class="header header-text divider">
@@ -463,6 +471,14 @@
 {/if}
 
 <style>
+  .reorder-btns {
+    margin-top: 22px;
+    align-self: start;
+  }
+  .coin-btns {
+    flex-wrap: wrap;
+    display: flex;
+  }
   .wrap {
     width: 100%;
     height: 100%;
@@ -491,10 +507,17 @@
     flex-wrap: wrap;
   }
 
+  .logowrap {
+    flex-basis: 111px;
+    justify-content: center;
+    display: flex;
+  }
+
   .logo {
+    width: 43px;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
-    margin: 0 34px 0 34px;
     padding: 5px;
     background: black;
     border-radius: 999px;
@@ -502,24 +525,27 @@
   }
 
   .name {
-    width: 234px;
+    flex-basis: 406px;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
   }
 
   .amount {
-    padding-left: 15px;
-    width: 240px;
+    flex-basis: 240px;
+    min-width: 160px;
     justify-content: center;
   }
 
   .value {
-    width: 200px;
+    flex-basis: 200px;
+    min-width: 63px;
   }
 
   .percent {
     justify-content: flex-end;
-    width: 90px;
-    margin-right: 28px;
     flex-grow: 1;
+    min-width: 90px;
   }
   .name-box {
     line-height: 1.1;
@@ -548,13 +574,10 @@
   }
   .coin-btn {
     padding: 8px 14px;
-    margin-left: 10px;
+    margin-left: 14px;
     font-size: 0.8em;
     align-items: center;
-  }
-
-  .send-btn {
-    margin-left: 14px;
+    margin-top: 14px;
   }
 
   .coin-btn > .icon {
@@ -564,7 +587,7 @@
   }
 
   .dapps {
-    margin: 0 8px;
+    margin: 14px 14px 0 14px;
     display: flex;
     align-items: center;
   }
@@ -600,7 +623,7 @@
   .coinmenus {
     padding-left: 82px;
     margin-bottom: 1.5rem;
-    margin-top: 1rem;
+    margin-top: 0.8rem;
   }
   .header-text {
     display: flex;
@@ -624,20 +647,27 @@
     );
   }
   .collapse-btn {
-    margin-left: 28px;
     cursor: pointer;
+    flex-basis: 44px;
+    justify-content: end;
+    display: flex;
   }
   .tokenlist {
     padding-left: 64px;
     margin-bottom: 2rem;
   }
   .tokensnum {
-    width: 200px;
+    flex-basis: 200px;
+    min-width: 76px;
   }
   .header-amount {
     margin-left: 242px;
   }
   .header-price {
     margin-left: 180px;
+  }
+  .fiatvalue {
+    flex-basis: 200px;
+    min-width: 100px;
   }
 </style>

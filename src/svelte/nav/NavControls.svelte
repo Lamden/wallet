@@ -87,13 +87,18 @@
 <style>
   .box {
     position: relative;
-    width: 222px;
-    margin-right: 66px;
+    flex-basis: 300px;
   }
   .wrap {
     position: absolute;
     top: 50%;
-    width: 100%;
+    width: 222px;
     transform: translateY(-65%);
+  }
+
+  @media (max-width: 960px) {
+    .wrap {
+      width: 190px;
+    }
   }
 </style>

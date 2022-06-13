@@ -144,6 +144,9 @@ export const transactionsController = (utils, actions) => {
                     transactionsChecked = transactionsChecked + 1
                     if (tx.sentFrom) {
                         let info = txBuilder.getAllInfo()
+                        if (!res || !res.txInfo) {
+                            return
+                        }
                         info.resultInfo = formatResult(res.txInfo)
                         info.startBlock = tx.startBlock
                         info.sentFrom = tx.sentFrom
