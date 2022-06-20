@@ -29,6 +29,10 @@ const createSettingsStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"settings": startValue}, function(getValue) {
             initialized = true;
+            // defalut USD fiat
+            if (!getValue.settings.fiat) {
+                getValue.settings.fiat = "USD"
+            }
             SettingsStore.set(getValue.settings)
         });
     }
@@ -111,6 +115,12 @@ const createSettingsStore = () => {
         setIsVaultCreated: (value) => {
             SettingsStore.update(settingsStore => {
                 settingsStore.isVaultCreated = value;
+                return settingsStore;
+            }) 
+        },
+        setFiatCurrency: (value) => {
+            SettingsStore.update(settingsStore => {
+                settingsStore.fiat = value;
                 return settingsStore;
             }) 
         }

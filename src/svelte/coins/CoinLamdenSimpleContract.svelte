@@ -18,7 +18,7 @@
 
     //Utils
     import { displayBalanceToFixed, formatAccountAddress, getTokenBalance, stringToFixed} from '../../js/utils.js'
-import { rejects } from 'assert';
+    import { rejects } from 'assert';
 
     //Context
 	const { nextPage } = getContext('tx_functions');

@@ -291,5 +291,14 @@
                 "url": "mailto:team@lamden.io"
             }
         ]
+    },
+    "fiat": {
+        "USD": "$", 
+        "EUR": "€", 
+        "JPY": "J￥", 
+        "GBP": "￡", 
+        "AUD": "$",
+        "CNY": "￥",
+        "CAD": "C$"
     }
 }

@@ -47,6 +47,8 @@ describe('Testing Token Integration - Edit Token Info', function () {
             await tokenHelpers.validateTokenLogo(driver, frostyToken)
             await tokenHelpers.cancelTokenOptionsModal(driver)
             await helpers.gotoAccountsPage(driver)
+            await driver.findElement(By.className('wrap-second')).click()
+            await helpers.sleep(1000)
         });
 
         it('Will save token name if changed', async function() {
@@ -103,6 +105,7 @@ describe('Testing Token Integration - Edit Token Info', function () {
             await tokenHelpers.validateTokenSymbol(driver, frostyToken)
             await tokenHelpers.validateTokenLogo(driver, frostyToken)
             await tokenHelpers.saveTokenModal(driver)
+            //await helpers.sleep(500000)
             await tokenHelpers.validateTokenOnAccountsScreen(driver, frostyToken)
         });
 

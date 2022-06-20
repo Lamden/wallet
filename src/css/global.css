@@ -111,7 +111,7 @@ body{
     --bg-secondary-hover: var(--color-grey-2); 
 
     --font-primary: #373737;
-    --font-primary-dim: #929292;
+    --font-primary-dim: #606060;
     --font-primary-inverse: #E0E0E0;
     --font-secondary-lighter: #cacaca;
     --font-secondary: #7f7f7f;
@@ -1118,9 +1118,6 @@ input.submit-button:disabled{
     transform: rotate(45deg);
   }
 
-.row-box:hover .nickname{
-    text-decoration: underline;
-}
 
 .show-on-hover{
     display: none;

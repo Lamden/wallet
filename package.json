@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "2.1.7",
+  "version": "2.2.0",
   "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -17,6 +17,7 @@
     "test-dapps-wallet-connect": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletConnect.js",
     "test-dapps-get-info": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
     "test-dapps-sendtx": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
+    "test-dapps-sendx-backtoback": "mocha --timeout 60000 selenium/tests/dapp/content_landenWalletSendTxBacktoBack.js",
     "test-tokens": "mocha --recursive --timeout 50000 selenium/tests/ui/tokens/*.js",
     "test-tokens-add": "mocha --timeout 50000 selenium/tests/ui/tokens/tokens-add.js",
     "test-tokens-upload": "mocha --timeout 60000 selenium/tests/ui/tokens/tokens-upload-images.js",

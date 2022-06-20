@@ -12,6 +12,8 @@ export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, netwo
 export { FilesStore, activeTab }  from './filesStore.js';
 export { CacheStore }  from './cacheStore.js';
 export { EventsStore, newEventNum}  from './eventStore.js';
+export { PriceStore, TauPrice} from './priceStore.js'
+export { ExchangeRateStore, FiatListDown } from './exchangeRateStore.js'
 
 //MISC Stores
 export const CURRENT_KS_VERSION = writable("1.0");
