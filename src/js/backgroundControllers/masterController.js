@@ -337,16 +337,29 @@ export const masterController = () => {
         if (approvalRequest) {
           promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
         } else {
-          if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
-            transactions.sendLamdenTx(txBuilder, dappInfo.url);
-          } else {
-            promptApproveTransaction(sender, {
-              txData,
-              wallet,
-              dappInfo: info,
-              network,
-            });
-          }
+            if(['mainnet','testnet'].includes(txBuilder.type)){
+		             if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+		                  transactions.sendLamdenTx(txBuilder, dappInfo.url);
+		             } else {
+                      promptApproveTransaction(sender, {
+                        txData,
+                        wallet,
+                        dappInfo: info,
+                        network,
+                      });
+                 }
+            }else{
+                if (dappInfo[txInfo.networkType].trustedApp && !forceTxApproval) {
+		                 transactions.sendLamdenTx(txBuilder, dappInfo.url);
+		            } else {
+                      promptApproveTransaction(sender, {
+                        txData,
+                        wallet,
+                        dappInfo: info,
+                        network,
+                      });
+                }
+            }
         }
         return callback("ok");
       } catch (err) {

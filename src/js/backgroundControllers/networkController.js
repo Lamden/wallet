@@ -70,12 +70,22 @@ export const networkController = (utils, services) => {
     }
 
     const getLamdenNetwork = (networkType) => {
-        const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase())
-        if (!foundNetwork) return false;
-        return addExtras(new utils.Lamden.Network(foundNetwork))
+    	if(['mainnet','testnet'].includes(networkType)){
+            const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase())
+            if (!foundNetwork) return false;
+            return addExtras(new utils.Lamden.Network(foundNetwork))
+        }else{
+            const foundNetwork = networksStore.user.find(network => network.name === networkType.toLowerCase())
+            if (!foundNetwork) return false;
+            return addExtras(new utils.Lamden.Network(foundNetwork))
+        }
     }
 
     const isAcceptedNetwork = (networkType) => {
+        const foundNetwork = networksStore.user.find(network => network.name === networkType.toLowerCase())
+        if(foundNetwork){
+            LamdenNetworkTypes.push(foundNetwork.name)   
+        }
         return LamdenNetworkTypes.includes(networkType)
     }
 
