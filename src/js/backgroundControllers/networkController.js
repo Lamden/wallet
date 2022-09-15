@@ -3,11 +3,13 @@ import whitelabel from '../../../whitelabel.json'
 
 let lamdenNetworks = whitelabel.networks
 
-export const networkController = (utils, services) => {
+export const networkController = (utils) => {
     let networksStore = {};
-    const LamdenNetworkTypes = ['mainnet','testnet']
+    const LamdenNetworkTypes = ['mainnet','testnet', 'devnet']
 
-    chrome.storage.local.get({"networks":{}},function(getValue) {networksStore = getValue.networks;})
+    chrome.storage.local.get({"networks":{}}, function(getValue) {
+        networksStore = getValue.networks;
+    })
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'networks') networksStore = changes[key].newValue;

@@ -49,12 +49,6 @@ export const createNetworksStore = () => {
         let currentNetwork = foundNetwork(get(NetworksStore), !netKey ? networkStore.current : netKey)
         chrome.runtime.sendMessage({type: 'handleSwitchNetwork', data: currentNetwork})
     }
-
-    const leaveTokenSockets = (netKey = undefined) => {
-        let networkStore = get(NetworksStore);
-        let currentNetwork = foundNetwork(get(NetworksStore), !netKey ? networkStore.current : netKey)
-        chrome.runtime.sendMessage({type: 'leaveTokenSockets', data: currentNetwork})
-    }
     
     //Create Intial Store
     const NetworksStore = writable(startValue);
@@ -100,7 +94,6 @@ export const createNetworksStore = () => {
 
             //If this is already the current network then do nothing
             if (netKey !== get(NetworksStore).current){
-                leaveTokenSockets()
                 NetworksStore.update(networksStore => {
                     //If the network is found then set this as the current network
                     if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
@@ -118,7 +111,6 @@ export const createNetworksStore = () => {
             let foundNetwork = foundNetwork(get(NetworksStore), netKey)
             //If network is found, make it current
             if(foundNetwork){
-                leaveTokenSockets()
                 NetworksStore.update(networksStore => {
                     networksStore.current = netKey;
                     return networksStore;
@@ -193,7 +185,6 @@ export const createNetworksStore = () => {
             if (!networkObj.classname === 'Network') return;
 
             let netKey = networkKey(networkObj)
-            leaveTokenSockets()
             NetworksStore.update(networksStore => {
                 
                 //Filter out the matching network.
