@@ -27,6 +27,9 @@ export const createSocketService = () => {
     })
 
     function start(service){
+        if (socket) {
+            close()
+        }
         let sUrl = new Url(service)
         let path = sUrl.pathname.endsWith('/') ? sUrl.pathname.slice(0, -1) : sUrl.pathname
         socket = io.connect(sUrl.origin, {path: `${path}/socket.io`});
