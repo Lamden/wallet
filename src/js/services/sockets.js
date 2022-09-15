@@ -1,71 +1,99 @@
 import { io } from "socket.io-client";
+import Url from "url-parse";
+
+const networkKey = (networkObj) => {
+    return `${networkObj.name}|${networkObj.type}|${networkObj.lamden ? 'lamden': 'user'}`
+}
 
 export const createSocketService = () => {
-    let testnet_socket
-    let mainnet_socket
 
-    function start(){
-        testnet_socket = io("ws://165.227.181.34:3535");
-        //testnet_socket = io("ws://localhost:3535");
-        mainnet_socket = io("ws://165.22.47.195:3535");
-        
-        testnet_socket.on('connect', () => {
-            console.log("connected to TESTNET wallet block service")
-        })
-        /*
-        testnet_socket.on('new_contract', (data) => {
-            console.log(data)
-        })
-        */
-        mainnet_socket.on('connect', () => {
-            console.log("connected to MAINNET wallet block service")
-        })
+    let socket;
+    let connectionExist = false
+    chrome.storage.local.get({"networks":{}}, function(getValue) {
+        let nets = getValue.networks;
+        if (nets && Object.keys(nets).length > 0) {
+            const networks = [...nets.lamden, ...nets.user]
+            const foundNetwork = networks.find(network => nets.current === networkKey(network))
+            let blockservice = foundNetwork.blockservice_hosts[0];
+            // start socket server
+            if (blockservice) {
+                start(blockservice);
+                document.dispatchEvent(new Event('BlockServiceProvided'));
+            } else {
+                document.dispatchEvent(new Event('BlockServiceNotProvided'));
+                close();
+            }
+        }
+    })
+
+    function start(service){
+        let sUrl = new Url(service)
+        let path = sUrl.pathname.endsWith('/') ? sUrl.pathname.slice(0, -1) : sUrl.pathname
+        socket = io.connect(sUrl.origin, {path: `${path}/socket.io`});
+        socket.on('connect', () => {
+            console.log(`Client ${socket.id} connected to wallet block service: ${service}`)
+            if (!connectionExist) {
+                connectionExist = true;
+                document.dispatchEvent(new Event('BlockServiceConnected'));
+            }
+        })  
+    }
+
+    function close(){
+        if (socket.connected) {
+            socket.disconnect()
+        }
     }
 
     // Currency Balance Services Join and Leave
 
     function joinCurrencyBalanceFeed(accountVk){
-        joinBalanceFeed_Mainnet('currency', 'balances', accountVk)
-        joinBalanceFeed_Testnet('currency', 'balances', accountVk)
+        joinBalanceFeed('currency', 'balances', accountVk)
     }
 
     function leaveCurrencyBalanceFeed(accountVk){
-        leaveBalanceFeed_Mainnet('currency', 'balances', accountVk)
-        leaveBalanceFeed_Testnet('currency', 'balances', accountVk)
+        leaveBalanceFeed('currency', 'balances', accountVk)
     }
 
     // Token Balance Services Join and Leave
-    function joinTokenBalanceFeed(tokenContract, accountVk, network){
-        if (network === 'mainnet') joinBalanceFeed_Mainnet(tokenContract, 'balances', accountVk)
-        if (network === 'testnet') joinBalanceFeed_Testnet(tokenContract, 'balances', accountVk)
+    function joinTokenBalanceFeed(tokenContract, accountVk){
+        joinBalanceFeed(tokenContract, 'balances', accountVk)
     }
 
-    function leaveTokenBalanceFeed(tokenContract, accountVk, network){
-        if (network === 'mainnet') leaveBalanceFeed_Mainnet(tokenContract, 'balances', accountVk)
-        if (network === 'testnet') leaveBalanceFeed_Testnet(tokenContract, 'balances', accountVk)
+    function leaveTokenBalanceFeed(tokenContract, accountVk){
+        leaveBalanceFeed(tokenContract, 'balances', accountVk)
     }
 
     // Global Joins and Leaves
-    function joinBalanceFeed_Mainnet(contract, variable, key){
-        // console.log(`join-${contract}.${variable}:${key}`)
-        mainnet_socket.emit('join', `${contract}.${variable}:${key}`)
+    function joinBalanceFeed(contract, variable, key){
+        if (!socket) return
+        socket.emit('join', `${contract}.${variable}:${key}`)
     }
 
-    function joinBalanceFeed_Testnet(contract, variable, key){
-        testnet_socket.emit('join', `${contract}.${variable}:${key}`)
-        //testnet_socket.emit('join', `new-contracts`)
+    function leaveBalanceFeed(contract, variable, key){
+        if (!socket) return
+        socket.emit('leave', `${contract}.${variable}:${key}`)
     }
 
-    function leaveBalanceFeed_Mainnet(contract, variable, key){
-        // console.log(`leave-${contract}.${variable}:${key}`)
-        mainnet_socket.emit('leave', `${contract}.${variable}:${key}`)
+    function join(room) {
+        if (!socket) return
+        socket.emit('join', room)
     }
 
-    function leaveBalanceFeed_Testnet(contract, variable, key){
-        testnet_socket.emit('leave', `${contract}.${variable}:${key}`)
+    function leave(room) {
+        if (!socket) return
+        socket.emit('leave', room)
     }
 
-    start()
+    function socket_on(event, callback) {
+        if (!socket) return
+        socket.on(event, callback)
+    }
+
+    function socket_off(listener) {
+        if (!socket) return
+        socket.offAny(listener);
+    }
 
     return {
         start,
@@ -73,9 +101,10 @@ export const createSocketService = () => {
         leaveCurrencyBalanceFeed,
         joinTokenBalanceFeed,
         leaveTokenBalanceFeed,
-        testnet_socket_on: (event, callback) => testnet_socket.on(event, callback),
-        mainnet_socket_on: (event, callback) => mainnet_socket.on(event, callback),
-        testnet_socket_off: (event) => testnet_socket.off(event),
-        mainnet_socket_off: (event) => mainnet_socket.off(event)
+        socket_on,
+        socket_off,
+        close,
+        join,
+        leave,
     }
 }
