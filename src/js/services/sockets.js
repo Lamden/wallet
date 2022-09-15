@@ -11,7 +11,7 @@ export const createSocketService = () => {
     let connectionExist = false
     chrome.storage.local.get({"networks":{}}, function(getValue) {
         let nets = getValue.networks;
-        if (nets) {
+        if (nets && Object.keys(nets).length > 0) {
             const networks = [...nets.lamden, ...nets.user]
             const foundNetwork = networks.find(network => nets.current === networkKey(network))
             let blockservice = foundNetwork.blockservice_hosts[0];
@@ -66,26 +66,32 @@ export const createSocketService = () => {
 
     // Global Joins and Leaves
     function joinBalanceFeed(contract, variable, key){
+        if (!socket) return
         socket.emit('join', `${contract}.${variable}:${key}`)
     }
 
     function leaveBalanceFeed(contract, variable, key){
+        if (!socket) return
         socket.emit('leave', `${contract}.${variable}:${key}`)
     }
 
     function join(room) {
+        if (!socket) return
         socket.emit('join', room)
     }
 
     function leave(room) {
+        if (!socket) return
         socket.emit('leave', room)
     }
 
     function socket_on(event, callback) {
+        if (!socket) return
         socket.on(event, callback)
     }
 
     function socket_off(listener) {
+        if (!socket) return
         socket.offAny(listener);
     }
 
