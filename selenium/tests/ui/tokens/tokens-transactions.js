@@ -55,6 +55,9 @@ const whitelabel = require('../../../../whitelabel.json')
             it('Fills in the appropriate Transaction details for My Account of Simple Transaction UI', async function() {
                 let token = tokenInfo.token_1_svg
                 await helpers.sleep(500)
+                let element = driver.findElement(By.className('wrap-second'))
+                await driver.executeScript("arguments[0].click();", element)
+                await helpers.sleep(500)
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
                 await helpers.sleep(500);
@@ -67,6 +70,9 @@ const whitelabel = require('../../../../whitelabel.json')
             it('Fills in the appropriate Transaction details for Advanced Transaction UI', async function() {
                 let token = tokenInfo.token_1_svg
                 await helpers.sleep(500)
+                await helpers.sleep(500)
+                let element = driver.findElement(By.className('wrap-second'))
+                await driver.executeScript("arguments[0].click();", element)
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
                 await helpers.sleep(500);
@@ -79,6 +85,9 @@ const whitelabel = require('../../../../whitelabel.json')
             it('Simple Transaction UI: Renders confirm modal if receiving address is not Lamdenkey', async function() {
                 const to = 'xxxxxx'
                 let token = tokenInfo.token_1_svg
+                await helpers.sleep(500)
+                let element = driver.findElement(By.className('wrap-second'))
+                await driver.executeScript("arguments[0].click();", element)
                 await helpers.sleep(500)
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
@@ -95,6 +104,8 @@ const whitelabel = require('../../../../whitelabel.json')
                 const to = 'xxxxxx'
                 let token = tokenInfo.token_1_svg
                 await helpers.sleep(500)
+                let element = driver.findElement(By.className('wrap-second'))
+                await driver.executeScript("arguments[0].click();", element)
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
                 await driver.wait(until.elementLocated(By.id('advanced')), 5000).click();
@@ -113,6 +124,8 @@ const whitelabel = require('../../../../whitelabel.json')
             it('Can send an approve transaction', async function() {
                 let token = tokenInfo.token_1_svg
                 await helpers.sleep(500)
+                let element = driver.findElement(By.className('wrap-second'))
+                await driver.executeScript("arguments[0].click();", element)
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('approve-token-btn')), 5000).click();
                 await tokenHelpers.validateTransacationFormDetails(driver, token, 'approve')

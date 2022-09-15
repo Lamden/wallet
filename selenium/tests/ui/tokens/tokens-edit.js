@@ -62,6 +62,7 @@ describe('Testing Token Integration - Edit Token Info', function () {
         });
 
         it('Will save token symbol if changed', async function() {
+            await helpers.sleep(100)
             await tokenHelpers.gotoTokenDetails(driver, frostyToken)
             await tokenHelpers.gotoTokenOptions(driver)
             await tokenHelpers.validateTokenSymbol(driver, frostyToken)
