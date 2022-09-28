@@ -28,8 +28,8 @@ describe('Testing Manage Network', function () {
     context('Testing fiat stuff: Can change currency', function() {
         it('Renders ManageNetworkMain.svelte', async function() {
             await driver.findElement(By.id('nav-fiat-currently-selected')).click()
-            await helpers.sleep(500)
-            await driver.findElement(By.id("select-option-3")).click()
+            await helpers.sleep(1000)
+            await driver.findElement(By.css(".fiat-dropdown #select-option-3")).click()
             await helpers.sleep(500)
             let val = await driver.findElement(By.css(".fiatvalue")).getText()
             assert.ok(val.startsWith("€"))

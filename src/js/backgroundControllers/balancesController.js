@@ -143,7 +143,7 @@ export const balancesController = (utils, services, actions) => {
 
     const getUpdate = async (account, network) => {
         let vk = account.vk
-        let balance = await network.blockservice.getCurrentKeyValue('currency', 'balances', vk)
+        let balance = await network.getVariable('currency', 'balances', vk)
             .then(res => {
                 if (!res) return {value : "0"}
                 if (res.notFound) return {value : "0"}

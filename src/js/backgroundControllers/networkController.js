@@ -83,11 +83,11 @@ export const networkController = (utils, services) => {
         const networkInfo = getLamdenNetwork(networkType)
         if (!networkInfo) return false;
         const network = new utils.Lamden.Network(networkInfo)
-        return network.API.contractExists(contractName)
+        return network.contractExists(contractName)
     }
 
     const getLastetBlock = () => {
-        return network.API.getLastetBlock()
+        return network.getLastetBlock()
     }
     return {
         getAll,

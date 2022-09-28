@@ -45,7 +45,7 @@
     $: argValueTracker = {};
     $: balance = !selectedWallet ? '0' : displayBalance(BalancesStore.getBalance($currentNetwork, selectedWallet.vk)) || '0'
     $: stampLimit = 0
-    $: apiurl = $currentNetwork.type === "mainnet" ? "https://mainnet.lamden.io" : "https://testnet.lamden.io/";
+    $: apiurl = $currentNetwork.blockExplorer
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'state_currentStamps'}, (response) => {
@@ -62,7 +62,7 @@
             }
             
         })
-        
+        console.log($currentNetwork)
         getMethods(contractName)
 
 
@@ -87,6 +87,8 @@
         if (!contractName) return 0
         if (!methodName) return 0
 
+        if (!apiurl) return Encoder('bigNumber', 50)
+        
         return await fetch(`${apiurl}/api/stamps/${contractName}/${method}`)
         .then(res => res.json())
 		.then((stampsInfo) => {

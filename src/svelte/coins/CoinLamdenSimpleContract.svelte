@@ -58,15 +58,12 @@
             {id:"my-account-btn", name: 'One of My Accounts', click: () =>  receiverType = 2, class: receiverType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: tokens = from? createTokensDropDown(from.vk, BalancesStore) : [];
-    $: blockserviceUrl = $currentNetwork.type === "mainnet" ? "http://165.22.47.195:3535" : "http://165.227.181.34:3535";
-    $: apiurl = $currentNetwork.type === "mainnet" ? "https://mainnet.lamden.io" : "https://testnet.lamden.io/";
+    $: apiurl = $currentNetwork.blockExplorer
 
     onMount(() => {
-        fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
-            .then(res => res.json())
-            .then(res => {
-                stampRatio = parseInt(res.value)
-            })   
+        $currentNetwork.getVariable("stamp_cost", "S", "value").then(res => {
+            stampRatio = parseInt(res.value)
+        })  
         updateMaxStamps();
     });
 
@@ -227,6 +224,13 @@
 
     const updateMaxStamps = () => {
         updateStamplimitSuccess = false;
+
+        if (!apiurl) {
+            stampLimit = defaultStamps;
+            updateStamplimitSuccess = true;
+            return
+        }
+
         fetch(`${apiurl}/api/stamps/${contractName}/transfer`)
             .then(res => {
                 if(res.status !== 200) {

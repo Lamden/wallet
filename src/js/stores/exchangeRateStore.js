@@ -36,6 +36,7 @@ export const FiatListDown = derived([ExchangeRateStore, SettingsStore], ([$Excha
     
     if (fiatSymbol.indexOf(fiat) === -1 ) fiat = "USD"
 
+    if (!$ExchangeRateStore.rates) return returnList
     Object.keys($ExchangeRateStore.rates).map(key => {
         if (fiatSymbol.indexOf(key) !== -1) {
             returnList.push({

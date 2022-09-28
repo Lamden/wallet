@@ -62,7 +62,7 @@ export const transactionsController = (utils, actions) => {
                 console.log(e)
             }
             if (txBuilder.transactionSigned){  
-                network.blockservice.getLastetBlock().then(res => {
+                network.getLastetBlock().then(res => {
                     txBuilder.startBlock = res;
                     txBuilder.send(undefined, (res, err) => {
                         if (err) throw new Error(err)

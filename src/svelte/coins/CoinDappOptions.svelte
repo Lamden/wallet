@@ -35,7 +35,7 @@
     let currentStep = modelData.startPage;
 
     $: dappInfo = $DappStore[modelData.dappInfo.url];
-    $: stampRatio = $currentNetwork.API.getVariable('stamp_cost', 'S', 'value')
+    $: stampRatio = $currentNetwork.getVariable('stamp_cost', 'S', 'value')
 
 </script>
 

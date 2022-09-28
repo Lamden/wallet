@@ -64,9 +64,10 @@ describe('Testing Manage Network', function () {
             // switch to add network
             await driver.findElement(By.id('undefined-currently-selected')).click()
             await helpers.sleep(500)
-            await driver.findElement(By.id("select-option-3")).click()
+            await driver.findElement(By.id("select-option-4")).click()
         });
         it('Form Valid - Rejects empyty network name', async function() {
+            await helpers.sleep(500)
             await driver.findElement(By.id("save")).click()
             let name = await driver.findElement(By.id("name"))
             let msg = await name.getAttribute('validationMessage')
@@ -117,7 +118,7 @@ describe('Testing Manage Network', function () {
             await helpers.fillNetworkForm(driver, badNetwork);
             await helpers.sleep(1000);
             await driver.findElement(By.id("save")).click()
-            await helpers.sleep(5000);
+            await helpers.sleep(20000);
             let msg = await driver.findElement(By.id("hostlist")).getAttribute('validationMessage')
             assert.equal(msg, 'Cannot contact network')
         })
@@ -139,7 +140,7 @@ describe('Testing Manage Network', function () {
             await helpers.sleep(500)
             await driver.findElement(By.id('undefined-currently-selected')).click()
             await helpers.sleep(500)
-            await driver.findElement(By.id("select-option-3")).click()
+            await driver.findElement(By.id("select-option-4")).click()
             await helpers.clearNetwork(driver);
             await helpers.fillNetworkForm(driver, editNetwork);
             await helpers.sleep(1000);
@@ -153,7 +154,7 @@ describe('Testing Manage Network', function () {
             await helpers.sleep(3000)
             
             // valid result
-            let networkname = await driver.findElement(By.css("#nav-network option:nth-child(3)")).getAttribute('innerText')
+            let networkname = await driver.findElement(By.css("#nav-network option:nth-child(4)")).getAttribute('innerText')
             assert.equal(networkname, editNetwork.name)
         })
     })

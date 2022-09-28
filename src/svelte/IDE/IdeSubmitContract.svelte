@@ -78,7 +78,7 @@
                 setValidation(contractNameField, 'Contract Name must start with "con_"')
                 return
             }
-            let exists = await $currentNetwork.API.contractExists(contractNameField.value)
+            let exists = await $currentNetwork.contractExists(contractNameField.value)
             if (exists){
                 setValidation(contractNameField, 'Contract name already exists on Network.  Please choose another name.')
                 return
