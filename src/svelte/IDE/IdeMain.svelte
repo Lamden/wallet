@@ -100,7 +100,7 @@
   };
 
   const getContract = async (contractName, options) => {
-    let contractInfo = await $currentNetwork.getContractInfo(contractName);
+    let contractInfo = await $currentNetwork.API.getContractInfo(contractName);
     if (contractInfo)
       options.callback(contractInfo, !options.data ? undefined : options.data);
   };

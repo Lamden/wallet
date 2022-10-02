@@ -77,7 +77,7 @@
         }
 
         if (txData.txInfo.args.name){
-            let contractInfo = await $currentNetwork.getContractInfo(contractName);
+            let contractInfo = await $currentNetwork.API.getContractInfo(contractName);
             try {
                 let methods = await $currentNetwork.API.getContractMethods(contractInfo.name, contractInfo.code)
                 FilesStore.addFile(contractInfo.name, contractInfo.code, methods, $currentNetwork);

@@ -32,7 +32,7 @@
             setValidity('Cannot be Empty');
             return;
         }
-        let contractInfo = await $currentNetwork.getContractInfo(contractName)
+        let contractInfo = await $currentNetwork.API.getContractInfo(contractName)
         if (typeof contractInfo === 'undefined'){
             setValidity(`Network Error`);
             return
