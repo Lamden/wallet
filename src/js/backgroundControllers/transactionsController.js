@@ -1,5 +1,4 @@
-
-export const transactionsController = (utils, actions) => {
+export const transactionsController = (utils, services, actions) => {
     let nonceCache = {};
     let pendingTxStore = [];
     let nonceRetryWaitTime = 1000;
@@ -7,6 +6,41 @@ export const transactionsController = (utils, actions) => {
     let lastSentDate = new Date();
     let checkingTransactions = false;
     const validateTypes = utils.validateTypes
+    let isBlockserviceProvided = true
+
+
+    document.addEventListener('BlockServiceConnected', (e) => {
+        services.socketService.socket_on('new-state-changes-by-transaction', processTxData)
+    })
+
+    document.addEventListener('BlockServiceNotProvided', (e) => {
+        // check pending transacations
+        isBlockserviceProvided = false
+        timerTask()
+    })
+
+    document.addEventListener('BlockServiceProvided', (e) => {
+        isBlockserviceProvided = true
+    })
+
+    function processTxData (data) {
+        console.log(data)
+        let info = {}
+        let txInfo = data.message.txInfo
+        let index = pendingTxStore.findIndex(tx => tx.txHash === txInfo.hash)
+        if (index === -1) return;
+        let tx = pendingTxStore[index]
+        info.resultInfo = formatResult(txInfo)
+        info.txHash = txInfo.hash
+        info.txInfo = txInfo
+        info.sentFrom = tx.sentFrom
+        utils.sendMessageToTab(tx.sentFrom, 'txStatus', info)
+        // delete from pendingTxStore
+        pendingTxStore.splice(index, 1)
+
+        // leave tx room
+        services.socketService.leave(txInfo.hash)
+    }
 
     const sendLamdenTx = (txBuilder, sentFrom = false) => {
         let network = utils.networks.getCurrent()
@@ -62,15 +96,12 @@ export const transactionsController = (utils, actions) => {
                 console.log(e)
             }
             if (txBuilder.transactionSigned){  
-                network.getLastetBlock().then(res => {
-                    txBuilder.startBlock = res;
-                    txBuilder.send(undefined, (res, err) => {
-                        if (err) throw new Error(err)
-                        txBuilder.sentFrom = sentFrom;
-                        processSendResponse(txBuilder);
-                        if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
-                    }) 
-                });
+                txBuilder.send(undefined, (res, err) => {
+                    if (err) throw new Error(err)
+                    txBuilder.sentFrom = sentFrom;
+                    processSendResponse(txBuilder);
+                    if (sentFrom) utils.sendMessageToTab(sentFrom, 'txStatus', txBuilder.getAllInfo())
+                }) 
             } 
         })
     }
@@ -97,8 +128,10 @@ export const transactionsController = (utils, actions) => {
         if (result.hash){
             let txData = txBuilder.getAllInfo();
             txData.sentFrom = txBuilder.sentFrom;
-            txData.startBlock = txBuilder.startBlock;
             pendingTxStore.push(txData);
+
+            // Join tx room for listen to tx state
+            services.socketService.join(result.hash);
         }
     }
     
@@ -106,31 +139,38 @@ export const transactionsController = (utils, actions) => {
         pendingTxStore.push(txData);
     }
 
-    const checkPendingTransactions = async () => {
-        function formatResult (result) {
-                let erroredTx = false;
-                let errorText = `returned an error and `;
-                let statusCode = validateTypes.isNumber(result.status) ? result.status : undefined;
-                let stamps = result.stampsUsed || result.stamps_used || 0;
-                let message = "";
-                result.errors = result.errors? result.errors : result.result && result.result.includes("Error")? [result.result] : undefined;
-                if (validateTypes.isArrayWithValues(result.errors)) {
-                    erroredTx = true;
-                    message = `This transaction returned ${result.errors.length} errors.`;
+    const formatResult = (result) => {
+        let erroredTx = false;
+        let errorText = `returned an error and `;
+        let statusCode = validateTypes.isNumber(result.status) ? result.status : undefined;
+        let stamps = result.stampsUsed || result.stamps_used || 0;
+        let message = "";
+        result.errors = result.errors? result.errors : result.result && result.result.includes("Error")? [result.result] : undefined;
+        if (validateTypes.isArrayWithValues(result.errors)) {
+            erroredTx = true;
+            result.errors.forEach((v, i) => {
+                let group = v.match(/Error\(['"].*['"],\)/)
+                if (group.length > 0) {
+                    result.errors[i] = group[0].slice(7, -3)
                 }
-                if (statusCode && erroredTx) errorText = `returned status code ${statusCode} and `;
-
-                return {
-                    title: `Transaction ${erroredTx ? "Failed" : "Successful"}`,
-                    subtitle: `Your transaction ${erroredTx ? `${errorText} ` : ""}used ${stamps} stamps`,
-                    message,
-                    type: `${erroredTx ? "error" : "success"}`,
-                    errorInfo: erroredTx ? result.errors : undefined,
-                    returnResult: result.result || "",
-                    stampsUsed: stamps,
-                    statusCode,
-                };
+            });
+            message = `This transaction returned ${result.errors.length} errors.`;
         }
+        if (statusCode && erroredTx) errorText = `returned status code ${statusCode} and `;
+
+        return {
+            title: `Transaction ${erroredTx ? "Failed" : "Successful"}`,
+            subtitle: `Your transaction ${erroredTx ? `${errorText} ` : ""}used ${stamps} stamps`,
+            message,
+            type: `${erroredTx ? "error" : "success"}`,
+            errorInfo: erroredTx ? result.errors : undefined,
+            returnResult: result.result || "",
+            stampsUsed: stamps,
+            statusCode,
+        };
+}
+
+    const checkPendingTransactions = async () => {
         if (!checkingTransactions){
             checkingTransactions = true;
             const transactionsToCheck = pendingTxStore.length;
@@ -138,20 +178,10 @@ export const transactionsController = (utils, actions) => {
             for (let i = 0; i < transactionsToCheck; i++){
                 const tx = pendingTxStore[i]
                 const txBuilder = new utils.Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
-                txBuilder.startBlock = tx.startBlock
-                await txBuilder.checkBlockserviceForTransactionResult()
-                .then((res) => {
+                await txBuilder.checkForTransactionResult()
+                .then(() => {
                     transactionsChecked = transactionsChecked + 1
-                    if (tx.sentFrom) {
-                        let info = txBuilder.getAllInfo()
-                        if (!res || !res.txInfo) {
-                            return
-                        }
-                        info.resultInfo = formatResult(res.txInfo)
-                        info.startBlock = tx.startBlock
-                        info.sentFrom = tx.sentFrom
-                        utils.sendMessageToTab(tx.sentFrom, 'txStatus', info)
-                    } 
+                    if (tx.sentFrom) utils.sendMessageToTab(tx.sentFrom, 'txStatus', txBuilder.getAllInfo())
                     if (transactionsChecked >= transactionsToCheck){ 
                         pendingTxStore = pendingTxStore.slice(transactionsToCheck)
                         chrome.storage.local.set({"pendingTxs": pendingTxStore}, () => {
@@ -162,6 +192,7 @@ export const transactionsController = (utils, actions) => {
             }
         }
     }
+
 
     // Timer to check pending transacations
     let timerId = setTimeout(async function resolvePendingTxs() {
@@ -181,47 +212,33 @@ export const transactionsController = (utils, actions) => {
         timerId = setTimeout(resolvePendingTxs, 100);
     }, 1000);
 
+    const timerTask = () => {
+        // Timer to check pending transacations
+        let timerId = setInterval(async function resolvePendingTxs() {
+            if (isBlockserviceProvided) {
+                // If block service provided, then clear timer
+                clearInterval(timerId)
+            }
+            if (typeof pendingTxStore.length === 'undefined'){
+                pendingTxStore = []
+                chrome.storage.local.set({"pendingTxs": pendingTxStore})
+            } else {
+                if (Object.keys(nonceCache).length > 0){
+                    if ((new Date().getTime() - new Date(lastSentDate).getTime() > 10000) && !checkingTransactions ){
+                        nonceCache = {}
+                    }
+                }
+                if (!checkingTransactions && pendingTxStore.length > 0){
+                    await checkPendingTransactions()
+                }
+            } 
+        }, 1000);
+    }
+
     return {
         sendLamdenTx,
         sendCurrencyTransaction,
-        processRetry
+        processRetry,
+        processTxData
     }
 }
-
-/*
-const txBatcher = (() => {
-    let queue = []
-    let sending = false
-
-    document.addEventListener('lamdenWalletTxStatus', (response) => {
-        // Set sending to false.
-        // Any Tx result will do, failed or success, as it means the tx hit he masternode at least
-        sending = false
-
-        // deal with response
-    });
-
-    const processTxQueue = async () => {
-        //Process a tx if there are items in the queue and we aren't currently sending
-        if (queue.length > 0 && !sending) {
-            //Call send transaction and then 
-            sendTrasaction(queue[0])
-        }
-    }
-
-    const sendTrasaction = async (txInfo) => {
-        // Send the transaction to the wallet
-        document.dispatchEvent(new CustomEvent('lamdenWalletSendTx', {details: JSON.stringify(txInfo)}));
-    }
-
-    //Check the queue every second
-    setInterval(processTxQueue, 1000)
-
-    return {
-        addToQueue: (txinfo) => queue.push(txInfo)
-    }
-})()
-
-txBatcher.addToQueue(txInfo)
-
-*/

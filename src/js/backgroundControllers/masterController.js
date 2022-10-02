@@ -23,6 +23,13 @@ export const masterController = () => {
     blockservice: BlockService,
   };
 
+  document.addEventListener('BlockServiceConnected', (e) => {
+    // join all sockets when a new blockservice is connected
+    let accountsList = accounts.getSanatizedAccounts();
+    balances.joinAllSockets(accountsList);
+    tokens.joinAllTokenSockets(accountsList);
+  })
+
   utils.networks = Object.freeze(networkController(utils, services));
   const accounts = Object.freeze(accountsController(utils, services));
   const balances = Object.freeze(
@@ -40,6 +47,7 @@ export const masterController = () => {
   const transactions = Object.freeze(
     transactionsController(
       utils,
+      services,
       (() => {
         return {
           decryptString: accounts.decryptString,
@@ -97,7 +105,7 @@ export const masterController = () => {
     let accountsList = accounts.getSanatizedAccounts();
     balances.joinAllSockets(accountsList);
     tokens.joinAllTokenSockets(accountsList);
-    return true;
+    return true
   };
 
   const leaveSockets = () => {
@@ -114,11 +122,6 @@ export const masterController = () => {
   const joinTokenSockets = (networkInfo) => {
     let accountsList = accounts.getSanatizedAccounts();
     tokens.joinAllTokenSockets(accountsList, networkInfo);
-  };
-
-  const leaveTokenSockets = (networkInfo) => {
-    let accountsList = accounts.getSanatizedAccounts();
-    tokens.leaveAllTokenSockets(accountsList, networkInfo);
   };
 
   const unlock = (pwd) => {
@@ -187,9 +190,19 @@ export const masterController = () => {
   };
 
   const handleSwitchNetwork = (networkInfo) => {
-    updateAllBalances();
+    let accountsList = accounts.getSanatizedAccounts();
+    balances.updateAll(accountsList, utils.networks.getNetwork(networkInfo));
     updateAllTokenBalances(networkInfo);
-    joinTokenSockets(networkInfo);
+
+    let blockservice = networkInfo.blockservice_hosts[0];
+    // start socket server
+    if (blockservice) {
+        services.socketService.start(blockservice);
+        document.dispatchEvent(new Event('BlockServiceProvided'));
+    } else {
+        document.dispatchEvent(new Event('BlockServiceNotProvided'));
+        services.socketService.close();
+    }
 
     return true;
   };
@@ -583,7 +596,6 @@ export const masterController = () => {
     leaveSockets,
     joinTokenSockets,
     joinTokenSocket,
-    leaveTokenSockets,
     updateAccountAndTokenBalances,
     viewPrivateKey,
     setMnemonic,

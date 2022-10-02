@@ -58,12 +58,16 @@
             {id:"my-account-btn", name: 'One of My Accounts', click: () =>  receiverType = 2, class: receiverType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: tokens = from? createTokensDropDown(from.vk, BalancesStore) : [];
-    $: apiurl = $currentNetwork.blockExplorer
+    $: blockserviceUrl = $currentNetwork.blockservice.host;
+    $: apiurl = $currentNetwork.blockExplorer ? $currentNetwork.blockExplorer === "www.tauhq.com" ? "mainnet.lamden.io" : $currentNetwork.blockExplorer : undefined;
 
     onMount(() => {
-        $currentNetwork.getVariable("stamp_cost", "S", "value").then(res => {
-            stampRatio = parseInt(res.value)
-        })  
+        fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
+            .then(res => res.json())
+            .then(res => {
+                stampRatio = parseInt(res.value)
+            })   
+        
         updateMaxStamps();
     });
 
@@ -224,14 +228,8 @@
 
     const updateMaxStamps = () => {
         updateStamplimitSuccess = false;
-
-        if (!apiurl) {
-            stampLimit = defaultStamps;
-            updateStamplimitSuccess = true;
-            return
-        }
-
-        fetch(`${apiurl}/api/stamps/${contractName}/transfer`)
+        if (apiurl) {
+            fetch(`${apiurl}/api/stamps/${contractName}/transfer`)
             .then(res => {
                 if(res.status !== 200) {
                     rejects("fetch error")
@@ -246,6 +244,10 @@
                 stampLimit = defaultStamps;
                 updateStamplimitSuccess = true;
             })
+        } else {
+            stampLimit = defaultStamps;
+            updateStamplimitSuccess = true;
+        }
     }
     const maxAmount = () => {
         if (contractName === "currency") {

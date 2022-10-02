@@ -1,12 +1,14 @@
-import { addConsoleHandler } from "selenium-webdriver/lib/logging";
-
 export const balancesController = (utils, services, actions) => {
     let balancesStore = {};
     let updatingBalances = {status: "waiting", time: new Date()};
 
-    chrome.runtime.onSuspend.addListener(removeSocketListeners)
-    chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
-    addSocketListeners()
+    //chrome.runtime.onSuspend.addListener(removeSocketListeners)
+    //chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
+    //addSocketListeners()
+
+    document.addEventListener('BlockServiceConnected', (e) => {
+        addSocketListeners()
+    })
 
     chrome.storage.local.get({"balances":{}},function(getValue) {balancesStore = getValue.balances;})
     chrome.storage.onChanged.addListener(function(changes) {
@@ -16,20 +18,17 @@ export const balancesController = (utils, services, actions) => {
             }
         }
     });
-
+    
     chrome.runtime.onInstalled.addListener(function(details) {
         if (details.reason === "update") clearAllNetworks()
     });
 
     function addSocketListeners() {
-        services.socketService.testnet_socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update, 'testnet'))
-        services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update, 'mainnet'))
-        if (!actions.walletIsLocked()) joinAllSockets()
+        services.socketService.socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update))
     }
 
     function removeSocketListeners() {
-        services.socketService.testnet_socket_off('new-state-changes-one')
-        services.socketService.mainnet_socket_off('new-state-changes-one')
+        services.socketService.socket_off('new-state-changes-one')
         leaveAllSockets()
     }
 
@@ -106,7 +105,7 @@ export const balancesController = (utils, services, actions) => {
         return newBalancesObj;
     }
 
-    const processBalanceSocketUpdate = (update, networkType) => {
+    const processBalanceSocketUpdate = (update) => {
         if (actions.walletIsLocked()) return
         if (!update) return
 
@@ -122,7 +121,7 @@ export const balancesController = (utils, services, actions) => {
             if (room !== `currency.balances:${key}`) return
 
             try{
-                let network = utils.networks.getLamdenNetwork(networkType)
+                let network = utils.networks.getCurrent()
                 let netKey = network.networkKey
 
                 let newValue = utils.getValueFromReturn(value)

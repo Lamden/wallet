@@ -66,6 +66,7 @@
     "node-cryptojs-aes": "^0.4.0",
     "socket.io-client": "^4.2.0",
     "svelte-flatpickr": "^2.4.0",
-    "types-validate-assert": "^1.0.1"
+    "types-validate-assert": "^1.0.1",
+    "url-parse": "^1.5.10"
   }
 }
