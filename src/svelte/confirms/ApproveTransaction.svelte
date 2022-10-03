@@ -44,7 +44,7 @@
   let balances = new BN(0);
 
   $: maxStamps = balances.multipliedBy(stampRatio).toNumber();
-  $: errormsg =
+  $: errormsg = txData.txInfo.error ? txData.txInfo.error :
     stampLimit > maxStamps
       ? `Insufficient ${currencySymbol} to pay for stamps`
       : undefined;
@@ -182,7 +182,7 @@
         {@html approve}
       </div>
       <div class="item_info flex-column">
-        <p class="text-body2 text-secondary">{`Stamp Limit`}</p>
+        <p class="text-body2 text-secondary">{txData.txInfo.isEstimated? `Estimated Stamps` : `Stamp Limit`}</p>
         <p class="item_value text-body2 flex flex-align-center" id="stamps">
           {#if stampLimitEdit}
             <InputBox

@@ -2,7 +2,6 @@
     import whitelabel from '../../../whitelabel.json'
     
     import { onMount, getContext} from 'svelte';
-    import { writable } from 'svelte/store';
     import lamden from 'lamden-js';
     const { Encoder } = lamden;
     import { createEventDispatcher } from 'svelte';
@@ -12,13 +11,11 @@
     import { coinsDropDown, currentNetwork, BalancesStore, networkKey, TokenStore, TokenBalancesStore} from '../../js/stores/stores.js';
 
     //Components
-    import CryptoLogos from '../components/CryptoLogos.svelte';
     import { Components }  from '../Router.svelte'
     const { DropDown, InputBox, Button, TokenLogo } = Components;
 
     //Utils
     import { displayBalanceToFixed, formatAccountAddress, getTokenBalance, stringToFixed} from '../../js/utils.js'
-    import { rejects } from 'assert';
 
     //Context
 	const { nextPage } = getContext('tx_functions');
@@ -31,13 +28,8 @@
     let tokenSymbol;
     let from;
     let to;
-    // default 50
-    let defaultStamps = 50;
-    let updateStamplimitSuccess = false;
-    let stampRatio = 10;
+
     let amount = 0;
-    let stampLimit = defaultStamps;
-    let buferSize = 0.05;
 
     //Props
     export let coin;
@@ -45,7 +37,6 @@
     export let currentPage;
     export let accountList;
     export let startingContract;
-    export let startingMethod;
 
     $: type = coin? "coin" : "token";
     $: contractName = startingContract || 'currency';
@@ -58,18 +49,6 @@
             {id:"my-account-btn", name: 'One of My Accounts', click: () =>  receiverType = 2, class: receiverType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: tokens = from? createTokensDropDown(from.vk, BalancesStore) : [];
-    $: blockserviceUrl = $currentNetwork.blockservice.host;
-    $: apiurl = $currentNetwork.blockExplorer ? $currentNetwork.blockExplorer === "www.tauhq.com" ? "mainnet.lamden.io" : $currentNetwork.blockExplorer : undefined;
-
-    onMount(() => {
-        fetch(`${blockserviceUrl}/current/one/stamp_cost/S/value`)
-            .then(res => res.json())
-            .then(res => {
-                stampRatio = parseInt(res.value)
-            })   
-        
-        updateMaxStamps();
-    });
 
     const createTokensDropDown = () => {
         let returnList = [{
@@ -170,7 +149,6 @@
                 sender: from,
                 txInfo: {
                     senderVk: from.vk.trim(),
-                    stampLimit: stampLimit,
                     contractName: contractName, 
                     methodName: "transfer", 
                     kwargs: {
@@ -188,9 +166,6 @@
             error = "No account was selected."
             return false
         };
-        let ratio = Encoder('bigNumber', stampRatio)
-        let stamps = Encoder('bigNumber', stampLimit);
-        const fee = stamps.dividedBy(ratio);
         const sendAmount = Encoder('bigNumber', amount) ;
         const taublance = BalancesStore.getBalance($currentNetwork, from.vk);
 
@@ -199,18 +174,10 @@
                 error = `Insufficient amount.`
                 return false
             }
-            if (fee.isGreaterThan(taublance.minus(sendAmount))) {
-                error = `Requires at least ${displayBalanceToFixed(fee, 8)} ${currencySymbol} balance to pay the transaction cost.`
-                return false
-            }
         } else {
             const tokenblance = getTokenBalance(netKey, from.vk, contractName, $TokenBalancesStore);
             if (sendAmount.isGreaterThan(tokenblance)) {
                 error = `Insufficient amount.`
-                return false
-            }
-            if (fee.isGreaterThan(taublance)) {
-                error = `Requires at least ${displayBalanceToFixed(fee, 8)} ${currencySymbol} balance to pay the transaction cost.`
                 return false
             }
         }
@@ -225,39 +192,11 @@
 
         return true
     }
-
-    const updateMaxStamps = () => {
-        updateStamplimitSuccess = false;
-        if (apiurl) {
-            fetch(`${apiurl}/api/stamps/${contractName}/transfer`)
-            .then(res => {
-                if(res.status !== 200) {
-                    rejects("fetch error")
-                }
-                return res.json()
-            })
-            .then(res => {
-                let maxStamps = parseInt(res.max);
-                stampLimit = Math.ceil(maxStamps + maxStamps * buferSize);
-                updateStamplimitSuccess = true;
-            }).catch(e => {
-                stampLimit = defaultStamps;
-                updateStamplimitSuccess = true;
-            })
-        } else {
-            stampLimit = defaultStamps;
-            updateStamplimitSuccess = true;
-        }
-    }
     const maxAmount = () => {
         if (contractName === "currency") {
-            let ratio = Encoder('bigNumber', stampRatio)
-            let stamps = Encoder('bigNumber', stampLimit);
-            const fee = stamps.dividedBy(ratio);
             const taublance = BalancesStore.getBalance($currentNetwork, from.vk);
-            let num = taublance.minus(fee);
-            if (num.isGreaterThan(0)){
-                amount = stringToFixed(num, 14);
+            if (taublance.isGreaterThan(0)){
+                amount = stringToFixed(taublance, 14);
             } else {
                 amount = '0'
             }
@@ -396,7 +335,6 @@
                 width={'232px'}
                 margin={'0 0 17px 0'}
                 name="Next"
-                disabled={!updateStamplimitSuccess}
                 click={() => handleNext()} />
     </div>
 </div>

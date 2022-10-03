@@ -166,7 +166,7 @@
         <InputBox
             id={"input-token-name"}
             margin="0 0 2rem 0"
-            bind:value={tokenName}
+            value={tokenName}
             on:keyup={handleTokenNameChange}
             placeholder={`Enter Token Name`}
             label={"Token Name"}
@@ -177,7 +177,7 @@
         <InputBox
             id={"input-token-symbol"}
             margin="0 0 2rem 0"
-            bind:value={tokenSymbol}
+            value={tokenSymbol}
             on:keyup={handleTokenSymbolChange}
             placeholder={`Enter Token Symbol`}
             label={"Token Symbol"}

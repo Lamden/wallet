@@ -88,7 +88,6 @@ const whitelabel = require('../../../../whitelabel.json')
                 await helpers.sleep(500)
                 let element = driver.findElement(By.className('wrap-second'))
                 await driver.executeScript("arguments[0].click();", element)
-                await helpers.sleep(500)
                 await tokenHelpers.gotoTokenDetails(driver, token)
                 await driver.wait(until.elementLocated(By.id('transfer-token-btn')), 5000).click();
                 await helpers.sleep(4000);

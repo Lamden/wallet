@@ -3,8 +3,6 @@
     
     import { onMount} from 'svelte';
     import { writable } from 'svelte/store';
-    import lamden from 'lamden-js';
-    const { Encoder } = lamden;
 
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
@@ -14,12 +12,10 @@
 
     //Components
     import { Components }  from '../Router.svelte'
-    const { DropDown, InputBox, Button, Kwargs, DatePicker, TimeDelta } = Components;
+    const { DropDown, InputBox, Button, Kwargs } = Components;
 
     //Utils
     import { formatKwargs, displayBalance } from '../../js/utils.js'
-    import * as validators from 'types-validate-assert'
-    const { validateTypes } = validators;
 
     //DOM NODES
     let stampsField, contractNameField
@@ -35,75 +31,16 @@
     const MethodArgsStore = writable([])
     let initializedStartingMethod = false;
     let selectedWallet;
-    let contractError = false;
-    let transaction;
-    let stampRatio = 1;
     let kwargs  = []
 
     $: contractName = 'currency'
     $: methodName  = ''
     $: argValueTracker = {};
     $: balance = !selectedWallet ? '0' : displayBalance(BalancesStore.getBalance($currentNetwork, selectedWallet.vk)) || '0'
-    $: stampLimit = 0
-    $: apiurl = $currentNetwork.blockExplorer
 
     onMount(() => {
-        chrome.runtime.sendMessage({type: 'state_currentStamps'}, (response) => {
-            if (response === null){
-                if ($currentNetwork.blockExplorer){
-                fetch(`${$currentNetwork.blockExplorer}/api/lamden/stamps`)
-                    .then(res => res.json())
-                    .then(res => {
-                        stampRatio = parseInt(res.value)
-                    })
-                }
-            }else{
-                stampRatio = parseInt(response)
-            }
-            
-        })
-        console.log($currentNetwork)
         getMethods(contractName)
-
-
     });
-
-    const determineStamps = async () => {
-        if (!selectedWallet) return
-
-        let maxStamps = await getStampCost(contractName, methodName)
-        let bal = BalancesStore.getBalance($currentNetwork, selectedWallet.vk)
-        
-        let userStampsAvailable = bal.multipliedBy(stampRatio)
-        if (maxStamps !== 0 && maxStamps.isGreaterThan(userStampsAvailable)) {
-            stampLimit = parseInt(userStampsAvailable.toString())
-        }
-        else stampLimit = parseInt(maxStamps.toString())
-
-        console.log({stampLimit})
-    }
-
-    const getStampCost = async (contractName, method) => {
-        if (!contractName) return 0
-        if (!methodName) return 0
-
-        if (!apiurl) return Encoder('bigNumber', 50)
-        
-        return await fetch(`${apiurl}/api/stamps/${contractName}/${method}`)
-        .then(res => res.json())
-		.then((stampsInfo) => {
-            console.log({stampsInfo})
-			if (!stampsInfo) {
-				return Encoder('bigNumber', 50)
-			}else{
-                return  Encoder('bigNumber', stampsInfo.max)
-            }
-		})
-		.catch(() => {
-			return Encoder('bigNumber', 50)
-		})
-
-	}
 
     const coinList = () => {
         let returnList = $coinsDropDown.filter(f => f.value && f.value.sk !== "watchOnly").map(c => {
@@ -136,7 +73,6 @@
         MethodArgsStore.set(method.arguments);
         methodName = method.name
         kwargs = [];
-        determineStamps()
     }
 
     const saveArgValue = (arg, e) => {
@@ -154,28 +90,15 @@
 
     const handleNext = () => {
         console.log(kwargs);
-        if (validateFields()){
-            dispatch('contractDetails', {
-                sender: selectedWallet,
-                txInfo: {
-                    senderVk: selectedWallet.vk,
-                    stampLimit,
-                    'contractName': contractNameField.value, 
-                    methodName, 
-                    'kwargs': formatKwargs(kwargs)
-                }
-            })
-        }
-    }
-
-    const validateFields = () => {
-        stampsField.setCustomValidity('')
-        if (stampLimit <= 0) {
-            stampsField.setCustomValidity('Stamps must be greater than 0')
-            stampsField.reportValidity()
-            return false;
-        }
-        return true
+        dispatch('contractDetails', {
+            sender: selectedWallet,
+            txInfo: {
+                senderVk: selectedWallet.vk,
+                'contractName': contractNameField.value, 
+                methodName, 
+                'kwargs': formatKwargs(kwargs)
+            }
+        })
     }
 
     const clearValidation = (e) => {
@@ -185,7 +108,6 @@
 
     const handleSelectedWallet = (e) => {
         selectedWallet = e.detail.selected.value
-        if ($currentNetwork.blockExplorer) determineStamps();
     }
 
     const handleNewArgValues = (e) => {
@@ -241,16 +163,6 @@
     </p>
 
     <div class="contract-details">
-        <InputBox
-            id="stamp-input"
-            width="100%"
-            bind:value={stampLimit}
-            bind:thisInput={stampsField}
-            label={"Stamp Limit"}
-            margin="0 0 1rem 0"
-            inputType={"number"}
-            required={true}
-        />
         <InputBox
             id="contract-input"
             width="100%"

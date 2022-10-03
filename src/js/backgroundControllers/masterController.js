@@ -15,6 +15,17 @@ import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
 import fauna from "../services/fauna.js";
 
+const makeTx = (data) => {
+  return {
+      "payload": {
+          "contract": data.contractName,
+          "function": data.methodName,
+          "kwargs": data.kwargs,
+          "sender": data.senderVk,
+      }
+  }
+}
+
 export const masterController = () => {
   const utils = controllerUtils;
 
@@ -341,27 +352,67 @@ export const masterController = () => {
           txInfo.contractName = dappInfo[txInfo.networkType].contractName;
         }
 
-        //Create a Lamden Transaction
-        const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo);
-        const info = (({ appName, url, logo }) => ({ appName, url, logo }))(
-          dappInfo
-        );
-        const txData = txBuilder.getAllInfo();
-        if (approvalRequest) {
-          promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
-        } else {
-          if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
-            transactions.sendLamdenTx(txBuilder, dappInfo.url);
+        if (txInfo.stampLimit) {
+          //Create a Lamden Transaction
+          const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo);
+          const info = (({ appName, url, logo }) => ({ appName, url, logo }))(
+            dappInfo
+          );
+          const txData = txBuilder.getAllInfo();
+          if (approvalRequest) {
+            promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
           } else {
-            promptApproveTransaction(sender, {
-              txData,
-              wallet,
-              dappInfo: info,
-              network,
-            });
+            if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+              transactions.sendLamdenTx(txBuilder, dappInfo.url);
+            } else {
+              promptApproveTransaction(sender, {
+                txData,
+                wallet,
+                dappInfo: info,
+                network,
+              });
+            }
           }
+          return callback("ok");
+        } else {
+          fetch(`${network.blockservice.host}/stamps/estimation`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(makeTx(txInfo)),
+          }).then(r => r.json()).then(d => {
+              txInfo.stampLimit = Math.ceil(d['stamps_used'] * 1.05)
+
+              //Create a Lamden Transaction
+              const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo);
+
+              const info = (({ appName, url, logo }) => ({ appName, url, logo }))(
+                dappInfo
+              );
+              const txData = txBuilder.getAllInfo();
+              txData.txInfo.isEstimated = true;
+              if (d.status !== 0) {
+                let group = d.result.match(/Error\(['"].*['"],\)/)
+                if (group.length > 0) {
+                    txData.txInfo.error = group[0].slice(7, -3)
+                }
+              }
+              if (approvalRequest) {
+                promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
+              } else {
+                if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+                  transactions.sendLamdenTx(txBuilder, dappInfo.url);
+                } else {
+                  promptApproveTransaction(sender, {
+                    txData,
+                    wallet,
+                    dappInfo: info,
+                    network,
+                  });
+                }
+              }
+              return callback("ok");
+          })
         }
-        return callback("ok");
       } catch (err) {
         return makeTxStatus(undefined, [
           `Unable to Build ${whitelabel.companyName} Transaction`,
