@@ -37,6 +37,7 @@
     $: methodName  = ''
     $: argValueTracker = {};
     $: balance = !selectedWallet ? '0' : displayBalance(BalancesStore.getBalance($currentNetwork, selectedWallet.vk)) || '0'
+    $: stampLimit = ''
 
     onMount(() => {
         getMethods(contractName)
@@ -94,6 +95,7 @@
             sender: selectedWallet,
             txInfo: {
                 senderVk: selectedWallet.vk,
+                stampLimit,
                 'contractName': contractNameField.value, 
                 methodName, 
                 'kwargs': formatKwargs(kwargs)
@@ -163,6 +165,18 @@
     </p>
 
     <div class="contract-details">
+        {#if !$currentNetwork.blockservice.host} 
+            <InputBox
+                id="stamp-input"
+                width="100%"
+                bind:value={stampLimit}
+                bind:thisInput={stampsField}
+                label={"Stamp Limit"}
+                margin="0 0 1rem 0"
+                inputType={"number"}
+                required={true}
+            />
+        {/if}
         <InputBox
             id="contract-input"
             width="100%"

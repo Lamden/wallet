@@ -29,6 +29,8 @@
     let from;
     let to;
 
+    let stampLimit = 50;
+
     let amount = 0;
 
     //Props
@@ -151,6 +153,7 @@
                     senderVk: from.vk.trim(),
                     contractName: contractName, 
                     methodName: "transfer", 
+                    stampLimit,
                     kwargs: {
                         amount: Encoder("float", amount),
                         to: Encoder("str", to.trim())
@@ -326,6 +329,17 @@
     >
         <span slot="button" class="max-btn" on:click={maxAmount}>Max</span>
     </InputBox>
+    {#if !$currentNetwork.blockservice.host} 
+        <InputBox
+            id="stamp-input"
+            width="100%"
+            bind:value={stampLimit}
+            label={"Stamp Limit"}
+            margin="0 0 1rem 0"
+            inputType={"number"}
+            required={true}
+        />
+    {/if}
     <div id="advanced" on:click={ () => { nextPage() } }>
         <span class="text-accent">Click Here To Send An Advanced Transaction</span>
     </div>

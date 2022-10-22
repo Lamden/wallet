@@ -376,7 +376,7 @@ export const tokenController = (utils, services, actions) => {
 
         await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
             try{
-                let newBalances = keysReturnToTokenStoreObject(balances)
+                let newBalances = keysReturnToTokenStoreObject(balances ? balances : [])
                 token_balances[netKey] = newBalances
                 saveTokensBalancesToStorage()
             }catch(e){
