@@ -29,7 +29,7 @@
             "type": "testnet", 
             "lamden": true, 
             "currencySymbol": "dTAU2",
-            "blockExplorer": "https://testnet.lamden.io",
+            "blockExplorer": "https://testnetv2.tauhq.com",
             "blockservice_hosts": ["https://testnet-v2-bs-lon.lamden.io", "https://testnet-v2-bs-sf.lamden.io", "https://testnet-v2-bs-bang.lamden.io"]
         }
     ],
