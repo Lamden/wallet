@@ -77,14 +77,29 @@ export const balancesController = (utils, services, actions) => {
                 key: account.vk
             }
         })
-        network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
-            if (balances.length > 0){
-                let newBalances = processBalances(balances, accountsList)
-                let netKey = network.networkKey
-                balancesStore[netKey] = newBalances
-                setStore(balancesStore)
-            }
-        })
+        if (network.blockservice.host) {
+            network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
+                if (balances.length > 0){
+                    let newBalances = processBalances(balances, accountsList)
+                    let netKey = network.networkKey
+                    balancesStore[netKey] = newBalances
+                    setStore(balancesStore)
+                }
+            })
+        } else {
+            let res = keysToGet.map(item => network.getVariable('currency', 'balances', item.key).then(res => {
+                res.key = item.key
+                return res
+            }))
+            Promise.all(res).then(balances => {
+                if (balances.length > 0){
+                    let newBalances = processBalances(balances, accountsList)
+                    let netKey = network.networkKey
+                    balancesStore[netKey] = newBalances
+                    setStore(balancesStore)
+                }
+            })
+        }
     }
 
     const processBalance = (balance, account) => {
