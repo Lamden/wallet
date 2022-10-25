@@ -273,8 +273,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       transaction.uid = helpers.createUID()
       await helpers.sendTx(driver, transaction, false);
       await helpers.approveApprovalPopup(driver, 2, 1);
-      await helpers.getTxResult(driver, transaction.uid );
-      await helpers.sleep(50000);
+      await helpers.sleep(40000);
       let afterApprovalAmount = await helpers.getApprovalAmount(
         connectionInfo.wallets[0],
         dappsInfo.approvalTransaction.kwargs.to

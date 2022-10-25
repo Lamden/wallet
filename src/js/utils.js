@@ -257,7 +257,7 @@ const getKeyValue = async (networkObj, contractName, variableName, key, format =
         'number': 0,
         'string': 'None'
     }
-    let response = await networkObj.API.getVariable(contractName, variableName, key)
+    let response = await networkObj.getVariable(contractName, variableName, key)
     if (!response) return defaults[format];
     if (response.__fixed__) return response.__fixed__
     return response

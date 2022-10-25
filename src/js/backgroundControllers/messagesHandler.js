@@ -199,11 +199,7 @@ export const messagesHandler = (masterController) => {
                         masterController.tokens.refreshOneTokenBalances(message.data)
                         return true;
                     }
-                    // Call leave all token sockets for a network
-                    if (message.type === 'leaveTokenSockets') {
-                        sendResponse(masterController.leaveTokenSockets(message.data))
-                    }
-                    // Call leave all token sockets for a network
+                    // Call join all token sockets for a network
                     if (message.type === 'joinTokenSocket') {
                         sendResponse(masterController.joinTokenSocket(message.data))
                     }

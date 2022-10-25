@@ -72,6 +72,7 @@
     />
     <DropDown
       id="nav-fiat"
+      classes="fiat-dropdown"
       network={true}
       items={fiatList}
       label="Currency"

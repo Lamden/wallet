@@ -26,6 +26,8 @@
     //Props
     export let modalData;
 
+    let buferSize = 0.05;
+
     let steps = [
         {page: 'CoinLamdenSimpleContract', back: -1, cancelButton: true},
         {page: 'CoinLamdenContract', back: -1, cancelButton: true},
@@ -75,6 +77,17 @@
             initstep = 2;
         }
     });
+
+    const makeTx = (data) => {
+        return {
+            "payload": {
+                "contract": data.contractName,
+                "function": data.methodName,
+                "kwargs": data.kwargs,
+                "sender": data.senderVk,
+            }
+        }
+    }
 
     const reset = () => {
         if (txMethod === "transfer") {
@@ -136,16 +149,48 @@
         if(e.type === "contractDetails") {
             txui = "advanced";
         }
-
-        if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
-            message.text = `The receiving address ${txData.txInfo.kwargs.to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`
-            if (!isLamdenKey(txData.txInfo.kwargs.to)) {
-                currentStep = 3
-                return
+        if ($currentNetwork.blockservice.host) {
+            fetch(`${$currentNetwork.blockservice.host}/stamps/estimation`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(makeTx(txData.txInfo)),
+            }).then(r => r.json()).then(d => {
+                if (d.status === 0) {
+                    txData.txInfo.stampLimit = Math.ceil(d['stamps_used'] * (buferSize + 1))
+                    if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
+                        message.text = `The receiving address ${txData.txInfo.kwargs.to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`
+                        if (!isLamdenKey(txData.txInfo.kwargs.to)) {
+                            currentStep = 3
+                            return
+                        }
+                    }
+                    currentStep = 4
+                } else {
+                    let group = d.result.match(/Error\(['"].*['"],\)/)
+                    if (group.length > 0) {
+                        resultInfo.errorInfo = []
+                        resultInfo.errorInfo[0] = group[0].slice(7, -3)
+                    }
+                    resultInfo.buttons = [
+                        {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'},
+                        {name: 'Back', click: () => txui === "simple" ? currentStep = 1 : currentStep = 2, class: 'button__solid'}
+                    ]
+                    resultInfo.title = `Transaction Failed`
+                    resultInfo.subtitle = `Your transaction will fail, please edit and then resend the transaction`
+                    resultInfo.type = 'error'
+                    currentStep = 6
+                }
+            })
+        } else {
+            if (txData.txInfo && txData.txInfo.kwargs && txData.txInfo.kwargs.to){
+                message.text = `The receiving address ${txData.txInfo.kwargs.to} is not a valid Lamden address. Proceeding could result in a loss of funds. Continue?`
+                if (!isLamdenKey(txData.txInfo.kwargs.to)) {
+                    currentStep = 3
+                    return
+                }
             }
+            currentStep = 4
         }
-
-        currentStep = 4; 
     }
 
     const createTxDetails = () => {

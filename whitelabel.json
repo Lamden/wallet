@@ -22,6 +22,15 @@
             "currencySymbol": "dTAU",
             "blockExplorer": "https://testnet.lamden.io",
             "blockservice_hosts": ["http://165.227.181.34:3535"]
+        },
+        {
+            "name": "Lamden Testnet_V2", 
+            "hosts": ["https://testnet-v2-master-lon.lamden.io", "https://testnet-v2-master-sf.lamden.io", "https://testnet-v2-master-bang.lamden.io"], 
+            "type": "testnet", 
+            "lamden": true, 
+            "currencySymbol": "dTAU2",
+            "blockExplorer": "https://testnetv2.tauhq.com",
+            "blockservice_hosts": ["https://testnet-v2-bs-lon.lamden.io", "https://testnet-v2-bs-sf.lamden.io", "https://testnet-v2-bs-bang.lamden.io"]
         }
     ],
     "firstRun_setup":{

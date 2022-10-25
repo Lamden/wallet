@@ -3,13 +3,16 @@ export const tokenController = (utils, services, actions) => {
     let token_balances = {};
     let socketNetworks = ["mainnet", "testnet"]
 
-    chrome.runtime.onSuspend.addListener(removeSocketListeners)
-    chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
-    addSocketListeners()
+    //chrome.runtime.onSuspend.addListener(removeSocketListeners)
+    //chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
+    //addSocketListeners()
 
 
-    services.socketService.testnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'testnet'))
-    services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'mainnet'))
+    document.addEventListener('BlockServiceConnected', (e) => {
+        addSocketListeners()
+    })
+
+    //services.socketService.socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update))
 
     const LST002_RS_TOKEN_METADATA = [
         'token_name',
@@ -35,14 +38,12 @@ export const tokenController = (utils, services, actions) => {
     });
 
     function addSocketListeners() {
-        services.socketService.testnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'testnet'))
-        services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update, 'mainnet'))
+        services.socketService.socket_on('new-state-changes-one', (update) => processTokenBalanceSocketUpdate(update))
         if (!actions.walletIsLocked()) joinAllTokenSockets()
     }
 
     function removeSocketListeners() {
-        services.socketService.testnet_socket_off('new-state-changes-one')
-        services.socketService.mainnet_socket_off('new-state-changes-one')
+        services.socketService.socket_off('new-state-changes-one')
         leaveAllTokenSockets()
     }
 
@@ -129,7 +130,7 @@ export const tokenController = (utils, services, actions) => {
 
     const getContractInfo = async (contractName) => {
         let network = utils.networks.getCurrent()
-        let contractInfo = await network.API.getContractInfo(contractName)
+        let contractInfo = await network.getContractInfo(contractName)
         if (!contractInfo) return false
         if (contractInfo.error) return false
         let contractDetails = await Promise.all([
@@ -232,7 +233,6 @@ export const tokenController = (utils, services, actions) => {
 
     const deleteTokenAll = async (callback = undefined) => {
         let network = utils.networks.getCurrent()
-        leaveAllTokenSockets()
         tokens[network.networkKey] = []
         saveTokensToStorage();
         leaveAllTokenSockets();
@@ -246,7 +246,7 @@ export const tokenController = (utils, services, actions) => {
         if (!socketNetworks.includes(network.type)) return
 
         accountsList.map(account => {
-            services.socketService.joinTokenBalanceFeed(tokenContract, account.vk, network.type)
+            services.socketService.joinTokenBalanceFeed(tokenContract, account.vk)
         })
     }
 
@@ -267,7 +267,7 @@ export const tokenController = (utils, services, actions) => {
         if (networkTokens && accountsList){
             accountsList.map(account => {
                 networkTokens.map(token => {
-                    services.socketService.joinTokenBalanceFeed(token.contractName, account.vk, network.type)
+                    services.socketService.joinTokenBalanceFeed(token.contractName, account.vk)
                 })
             })
         }
@@ -284,7 +284,7 @@ export const tokenController = (utils, services, actions) => {
         let accounts = actions.getSanatizedAccounts()
 
         accounts.map(account => {
-            services.socketService.leaveTokenBalanceFeed(tokenContract, account.vk, networkType)
+            services.socketService.leaveTokenBalanceFeed(tokenContract, account.vk)
         })
     }
 
@@ -305,7 +305,7 @@ export const tokenController = (utils, services, actions) => {
         if (networkTokens && accountsList){
             accountsList.map(account => {
                 networkTokens.map(token => {
-                    services.socketService.leaveTokenBalanceFeed(token.contractName, account.vk, network.type)
+                    services.socketService.leaveTokenBalanceFeed(token.contractName, account.vk)
                 })
             })
         }
@@ -374,18 +374,34 @@ export const tokenController = (utils, services, actions) => {
             })
         })
 
-        await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
-            try{
-                let newBalances = keysReturnToTokenStoreObject(balances)
-                token_balances[netKey] = newBalances
-                saveTokensBalancesToStorage()
-            }catch(e){
-                console.log(e)
-            }
-        })
+        if (network.blockservice.host) {
+            await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
+                try{
+                    let newBalances = keysReturnToTokenStoreObject(balances ? balances : [])
+                    token_balances[netKey] = newBalances
+                    saveTokensBalancesToStorage()
+                }catch(e){
+                    console.log(e)
+                }
+            })
+        } else {
+            let res = keysToGet.map(item => network.getVariable(item.contractName, item.variableName, item.key).then(res => {
+                res.key = item.key
+                return res
+            }))
+            Promise.all(res).then(balances => {
+                try{
+                    let newBalances = keysReturnToTokenStoreObject(balances ? balances : [])
+                    token_balances[netKey] = newBalances
+                    saveTokensBalancesToStorage()
+                }catch(e){
+                    console.log(e)
+                }
+            })
+        }
     }
 
-    const processTokenBalanceSocketUpdate = (update, networkType) => {
+    const processTokenBalanceSocketUpdate = (update) => {
         if (!update) return
         if (actions.walletIsLocked()) return
 
@@ -402,7 +418,7 @@ export const tokenController = (utils, services, actions) => {
             if (room !== `${contractName}.balances:${key}`) return
 
             try{
-                let network = utils.networks.getLamdenNetwork(networkType)
+                let network = utils.networks.getCurrent()
                 let netKey = network.networkKey
         
                 let newValue = utils.getValueFromReturn(value)

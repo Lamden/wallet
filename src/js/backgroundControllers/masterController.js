@@ -15,6 +15,17 @@ import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
 import fauna from "../services/fauna.js";
 
+const makeTx = (data) => {
+  return {
+      "payload": {
+          "contract": data.contractName,
+          "function": data.methodName,
+          "kwargs": data.kwargs,
+          "sender": data.senderVk,
+      }
+  }
+}
+
 export const masterController = () => {
   const utils = controllerUtils;
 
@@ -22,6 +33,13 @@ export const masterController = () => {
     socketService: SocketService.createSocketService(),
     blockservice: BlockService,
   };
+
+  document.addEventListener('BlockServiceConnected', (e) => {
+    // join all sockets when a new blockservice is connected
+    let accountsList = accounts.getSanatizedAccounts();
+    balances.joinAllSockets(accountsList);
+    tokens.joinAllTokenSockets(accountsList);
+  })
 
   utils.networks = Object.freeze(networkController(utils, services));
   const accounts = Object.freeze(accountsController(utils, services));
@@ -40,6 +58,7 @@ export const masterController = () => {
   const transactions = Object.freeze(
     transactionsController(
       utils,
+      services,
       (() => {
         return {
           decryptString: accounts.decryptString,
@@ -97,7 +116,7 @@ export const masterController = () => {
     let accountsList = accounts.getSanatizedAccounts();
     balances.joinAllSockets(accountsList);
     tokens.joinAllTokenSockets(accountsList);
-    return true;
+    return true
   };
 
   const leaveSockets = () => {
@@ -114,11 +133,6 @@ export const masterController = () => {
   const joinTokenSockets = (networkInfo) => {
     let accountsList = accounts.getSanatizedAccounts();
     tokens.joinAllTokenSockets(accountsList, networkInfo);
-  };
-
-  const leaveTokenSockets = (networkInfo) => {
-    let accountsList = accounts.getSanatizedAccounts();
-    tokens.leaveAllTokenSockets(accountsList, networkInfo);
   };
 
   const unlock = (pwd) => {
@@ -187,9 +201,19 @@ export const masterController = () => {
   };
 
   const handleSwitchNetwork = (networkInfo) => {
-    updateAllBalances();
+    let accountsList = accounts.getSanatizedAccounts();
+    balances.updateAll(accountsList, utils.networks.getNetwork(networkInfo));
     updateAllTokenBalances(networkInfo);
-    joinTokenSockets(networkInfo);
+
+    let blockservice = networkInfo.blockservice_hosts[0];
+    // start socket server
+    if (blockservice) {
+        services.socketService.start(blockservice);
+        document.dispatchEvent(new Event('BlockServiceProvided'));
+    } else {
+        document.dispatchEvent(new Event('BlockServiceNotProvided'));
+        services.socketService.close();
+    }
 
     return true;
   };
@@ -328,27 +352,67 @@ export const masterController = () => {
           txInfo.contractName = dappInfo[txInfo.networkType].contractName;
         }
 
-        //Create a Lamden Transaction
-        const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo);
-        const info = (({ appName, url, logo }) => ({ appName, url, logo }))(
-          dappInfo
-        );
-        const txData = txBuilder.getAllInfo();
-        if (approvalRequest) {
-          promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
-        } else {
-          if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
-            transactions.sendLamdenTx(txBuilder, dappInfo.url);
+        if (txInfo.stampLimit) {
+          //Create a Lamden Transaction
+          const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo);
+          const info = (({ appName, url, logo }) => ({ appName, url, logo }))(
+            dappInfo
+          );
+          const txData = txBuilder.getAllInfo();
+          if (approvalRequest) {
+            promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
           } else {
-            promptApproveTransaction(sender, {
-              txData,
-              wallet,
-              dappInfo: info,
-              network,
-            });
+            if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+              transactions.sendLamdenTx(txBuilder, dappInfo.url);
+            } else {
+              promptApproveTransaction(sender, {
+                txData,
+                wallet,
+                dappInfo: info,
+                network,
+              });
+            }
           }
+          return callback("ok");
+        } else {
+          fetch(`${network.blockservice.host}/stamps/estimation`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(makeTx(txInfo)),
+          }).then(r => r.json()).then(d => {
+              txInfo.stampLimit = Math.ceil(d['stamps_used'] * 1.05)
+
+              //Create a Lamden Transaction
+              const txBuilder = new utils.Lamden.TransactionBuilder(network, txInfo);
+
+              const info = (({ appName, url, logo }) => ({ appName, url, logo }))(
+                dappInfo
+              );
+              const txData = txBuilder.getAllInfo();
+              txData.txInfo.isEstimated = true;
+              if (d.status !== 0) {
+                let group = d.result.match(/Error\(['"].*['"],\)/)
+                if (group.length > 0) {
+                    txData.txInfo.error = group[0].slice(7, -3)
+                }
+              }
+              if (approvalRequest) {
+                promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
+              } else {
+                if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+                  transactions.sendLamdenTx(txBuilder, dappInfo.url);
+                } else {
+                  promptApproveTransaction(sender, {
+                    txData,
+                    wallet,
+                    dappInfo: info,
+                    network,
+                  });
+                }
+              }
+              return callback("ok");
+          })
         }
-        return callback("ok");
       } catch (err) {
         return makeTxStatus(undefined, [
           `Unable to Build ${whitelabel.companyName} Transaction`,
@@ -583,7 +647,6 @@ export const masterController = () => {
     leaveSockets,
     joinTokenSockets,
     joinTokenSocket,
-    leaveTokenSockets,
     updateAccountAndTokenBalances,
     viewPrivateKey,
     setMnemonic,

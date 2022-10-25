@@ -1,12 +1,14 @@
-import { addConsoleHandler } from "selenium-webdriver/lib/logging";
-
 export const balancesController = (utils, services, actions) => {
     let balancesStore = {};
     let updatingBalances = {status: "waiting", time: new Date()};
 
-    chrome.runtime.onSuspend.addListener(removeSocketListeners)
-    chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
-    addSocketListeners()
+    //chrome.runtime.onSuspend.addListener(removeSocketListeners)
+    //chrome.runtime.onSuspendCanceled.addListener(addSocketListeners)
+    //addSocketListeners()
+
+    document.addEventListener('BlockServiceConnected', (e) => {
+        addSocketListeners()
+    })
 
     chrome.storage.local.get({"balances":{}},function(getValue) {balancesStore = getValue.balances;})
     chrome.storage.onChanged.addListener(function(changes) {
@@ -16,20 +18,17 @@ export const balancesController = (utils, services, actions) => {
             }
         }
     });
-
+    
     chrome.runtime.onInstalled.addListener(function(details) {
         if (details.reason === "update") clearAllNetworks()
     });
 
     function addSocketListeners() {
-        services.socketService.testnet_socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update, 'testnet'))
-        services.socketService.mainnet_socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update, 'mainnet'))
-        if (!actions.walletIsLocked()) joinAllSockets()
+        services.socketService.socket_on('new-state-changes-one', (update) => processBalanceSocketUpdate(update))
     }
 
     function removeSocketListeners() {
-        services.socketService.testnet_socket_off('new-state-changes-one')
-        services.socketService.mainnet_socket_off('new-state-changes-one')
+        services.socketService.socket_off('new-state-changes-one')
         leaveAllSockets()
     }
 
@@ -78,14 +77,29 @@ export const balancesController = (utils, services, actions) => {
                 key: account.vk
             }
         })
-        network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
-            if (balances.length > 0){
-                let newBalances = processBalances(balances, accountsList)
-                let netKey = network.networkKey
-                balancesStore[netKey] = newBalances
-                setStore(balancesStore)
-            }
-        })
+        if (network.blockservice.host) {
+            network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
+                if (balances.length > 0){
+                    let newBalances = processBalances(balances, accountsList)
+                    let netKey = network.networkKey
+                    balancesStore[netKey] = newBalances
+                    setStore(balancesStore)
+                }
+            })
+        } else {
+            let res = keysToGet.map(item => network.getVariable('currency', 'balances', item.key).then(res => {
+                res.key = item.key
+                return res
+            }))
+            Promise.all(res).then(balances => {
+                if (balances.length > 0){
+                    let newBalances = processBalances(balances, accountsList)
+                    let netKey = network.networkKey
+                    balancesStore[netKey] = newBalances
+                    setStore(balancesStore)
+                }
+            })
+        }
     }
 
     const processBalance = (balance, account) => {
@@ -106,7 +120,7 @@ export const balancesController = (utils, services, actions) => {
         return newBalancesObj;
     }
 
-    const processBalanceSocketUpdate = (update, networkType) => {
+    const processBalanceSocketUpdate = (update) => {
         if (actions.walletIsLocked()) return
         if (!update) return
 
@@ -122,7 +136,7 @@ export const balancesController = (utils, services, actions) => {
             if (room !== `currency.balances:${key}`) return
 
             try{
-                let network = utils.networks.getLamdenNetwork(networkType)
+                let network = utils.networks.getCurrent()
                 let netKey = network.networkKey
 
                 let newValue = utils.getValueFromReturn(value)
@@ -143,7 +157,7 @@ export const balancesController = (utils, services, actions) => {
 
     const getUpdate = async (account, network) => {
         let vk = account.vk
-        let balance = await network.blockservice.getCurrentKeyValue('currency', 'balances', vk)
+        let balance = await network.getVariable('currency', 'balances', vk)
             .then(res => {
                 if (!res) return {value : "0"}
                 if (res.notFound) return {value : "0"}

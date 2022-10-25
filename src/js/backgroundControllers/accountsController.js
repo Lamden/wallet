@@ -348,7 +348,6 @@ export const accountsController = (utils, services) => {
     const signTx = (txBuilder) => {
         let account = getAccountByVK(txBuilder.sender)
         if (!account) throw new Error(`Error: Account address ${xBuilder.sender} not in Lamden Vault.`)
-        console.log("here")
         // let sk = decryptString(account.sk)
         // console.log(sk)
         txBuilder.sign(decryptString(account.sk))
