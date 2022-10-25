@@ -118,7 +118,7 @@ describe('Testing Manage Network', function () {
             await helpers.fillNetworkForm(driver, badNetwork);
             await helpers.sleep(1000);
             await driver.findElement(By.id("save")).click()
-            await helpers.sleep(20000);
+            await helpers.sleep(30000);
             let msg = await driver.findElement(By.id("hostlist")).getAttribute('validationMessage')
             assert.equal(msg, 'Cannot contact network')
         })
