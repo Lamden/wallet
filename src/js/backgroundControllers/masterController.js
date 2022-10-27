@@ -9,6 +9,7 @@ import { transactionsController } from "./transactionsController.js";
 import { tokenController } from "./tokenController.js";
 import { queryStateController } from "./queryStateController.js";
 import { eventController } from "./eventController.js";
+import { nodesController } from "./nodesController.js";
 
 // Services
 import * as SocketService from "../services/sockets.js";
@@ -43,6 +44,7 @@ export const masterController = () => {
 
   utils.networks = Object.freeze(networkController(utils, services));
   const accounts = Object.freeze(accountsController(utils, services));
+  const nodes = Object.freeze(nodesController(utils));
   const balances = Object.freeze(
     balancesController(
       utils,
@@ -628,6 +630,7 @@ export const masterController = () => {
     balances,
     utils,
     state,
+    nodes,
     createPassword,
     changePassword,
     deleteAccount,

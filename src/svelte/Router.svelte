@@ -88,6 +88,9 @@ import DevToolsMain from './devtools/DevToolsMain.svelte';
 import DevToolsDocumentation from './devtools/DevToolsDocumentation.svelte';
 import DevToolsNetworks from './devtools/DevToolsNetworks.svelte';
 import DevToolsDeleteNetwork from './devtools/DevToolsDeleteNetwork.svelte';
+
+//Dashboard
+import DashboardMain from './dashboard/DashboardMain.svelte';
  
 //Components
 import Button from './components/Button.svelte';
@@ -238,6 +241,7 @@ export const Pages = {
     About, 
     IdeMain,
     ConnectionsMain, ConnectionDetails,
+    DashboardMain,
     ...FirstRun 
 };
 
@@ -310,6 +314,7 @@ export {
     ChangePasswordSlot, ChangePasswordFinish,
     ManageNetwork,
     ManageNetworkMain,
-    ManageNetwokFinish
+    ManageNetwokFinish,
+    DashboardMain
 };
 </script>
