@@ -47,6 +47,8 @@
     }
   });
 
+  afterUpdate(() => dispatchSelected())
+
   const dispatchSelected = () => {
     if (selectElm.selectedIndex >= 0)
       dispatch("selected", { id, selected: items[selectElm.selectedIndex] });

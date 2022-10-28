@@ -142,7 +142,6 @@
         contractName = e.detail.selected.value.contractName;
         tokenSymbol = e.detail.selected.value.tokenSymbol;
         amount = 0;
-        updateMaxStamps();
     }
 
     const handleNext = () => {

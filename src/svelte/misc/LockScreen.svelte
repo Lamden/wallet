@@ -57,10 +57,6 @@
     margin-bottom: 16px;
 }
 
-.text-box{
-    margin-bottom: 16px;
-}
-
 .lockscreen{
     box-sizing: border-box;
     display: flex;

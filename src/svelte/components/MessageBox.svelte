@@ -34,12 +34,12 @@
     /*margin: 1rem 0 2rem;*/
     margin: 3rem 0 0.5rem;
     width: 100%;
+    justify-content: center;
 }
 
 .icon{
     margin-right: 14px;
     min-width: 30px;
-    margin-top: -4px;
 }
 
 .checkmark{
