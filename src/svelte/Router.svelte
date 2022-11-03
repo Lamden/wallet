@@ -91,6 +91,9 @@ import DevToolsDeleteNetwork from './devtools/DevToolsDeleteNetwork.svelte';
 
 //Dashboard
 import DashboardMain from './dashboard/DashboardMain.svelte';
+import AddNewNode from './dashboard/AddNewNode.svelte';
+import AddNewMotion from './dashboard/AddNewMotion.svelte';
+import Vote from './dashboard/Vote.svelte';
  
 //Components
 import Button from './components/Button.svelte';
@@ -288,7 +291,10 @@ export const Modals = {
     BackupNotificationModal,
     Settings,
     WhatsnewModal,
-    CoinWatchedModal
+    CoinWatchedModal,
+    AddNewNode,
+    AddNewMotion,
+    Vote
 }
 
 export const Layouts = {

@@ -215,6 +215,12 @@ export const messagesHandler = (masterController) => {
                         masterController.nodes.updateNodes()
                         return true
                     }
+
+                    // Add node
+                    if (message.type === 'addUnregisterNode') {
+                        masterController.nodes.addUnregisterNode(message.data)
+                        return true
+                    }
                 }
             }
 

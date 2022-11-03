@@ -75,7 +75,7 @@
           {#if whitelabel.mainPage.logo.show}
             <div class="logowrap">
               <div class="logo flex-center-center">
-                <Identicons margin="0" iconValue={"2121"} width="27px" />
+                <Identicons margin="0" iconValue={data.vk} width="27px" />
               </div>
             </div>
           {/if}

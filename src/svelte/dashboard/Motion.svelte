@@ -3,21 +3,13 @@
   
     import {
       getContext,
-      afterUpdate,
       createEventDispatcher,
     } from "svelte";
   
     //Stores
     import {
       currentNetwork,
-      BalancesStore,
-      balanceTotal,
       networkKey,
-      TokenBalancesStore,
-      DappStore,
-      TokenStore,
-      PriceStore,
-      TauPrice,
       SettingsStore,
     } from "../../js/stores/stores.js";
   
@@ -27,26 +19,23 @@
     import History from "../../img/history.svg";
   
     import SettingsIcon from "../icons/SettingsIcon.svelte";
-  
+    
+    //Utils
+  import {
+    displayBalance,
+    stringToFixed,
+    getTokenBalance,
+    toBigNumber,
+    calcValue,
+    formatAccountAddress,
+  } from "../../js/utils.js";
+
     //Components
   
-    import { Token, Components } from "../Router.svelte";
+    import { Components } from "../Router.svelte";
     const { Identicons, TokenLogo } = Components;
   
-    //Utils
-    import {
-      formatAccountAddress,
-      displayBalance,
-      stringToFixed,
-      getTokenBalance,
-      copyToClipboard,
-      toBigNumber,
-      calcValue,
-    } from "../../js/utils.js";
-  
     //Icons
-    import CheckmarkIcon from "../icons/CheckmarkIcon.svelte";
-    import CopyIcon from "../icons/CopyIcon.svelte";
     import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
   
     import Lamden from "lamden-js";
@@ -55,160 +44,25 @@
     const dispatch = createEventDispatcher();
   
     // Props
-    export let coin;
-    export let token;
-    export let refreshTx;
+    export let data;
     export let collapse = false;
   
     let divElm;
   
-    let copied = false;
-  
-    $: currentFiat = $SettingsStore.fiat;
-    $: fiatGraphSymbol = whitelabel.fiat[currentFiat];
     $: collapseStatus = collapse;
   
     $: direction = collapseStatus ? "down" : "right";
   
     //Context
     const { switchPage, openModal } = getContext("app_functions");
-
-    $: addressLookupURL = $currentNetwork.blockExplorer;
-    $: onMainnet = $currentNetwork.type === "mainnet" ? true : false;
-    $: netKey = networkKey($currentNetwork);
-    $: balance = BalancesStore.getBalance($currentNetwork, '');
-    $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : "0";
-    $: balanceValue = calcValue(balance, $TauPrice);
-    $: percent =
-      typeof $balanceTotal[netKey] === "undefined" ? "" : '';
-  
-    $: tokenBalance = 0
-    $: tokenBalanceTruncated = stringToFixed(tokenBalance.toString(), 8);
-    $: tokenBalanceString = displayBalance(tokenBalanceTruncated);
-    $: tokenPrice =
-      token && token.contractName
-        ? $PriceStore[token.contractName]
-          ? $PriceStore[token.contractName]["value"]
-          : "0"
-        : "0";
-    $: tokenValue = calcValue(
-      tokenBalance,
-      calcValue(tokenPrice, $TauPrice, null)
-    );
-    $: totalValue = getTotalValue(
-      tokenList,
-      coin,
-      balance,
-      $TauPrice,
-      $PriceStore,
-      $currentNetwork,
-      $TokenBalancesStore
-    );
-  
-    $: tokenList = getTokens(netKey, '', $TokenStore, $TokenBalancesStore);
-  
-    const getTotalValue = (
-      tokenList,
-      coin,
-      balance,
-      tauPrice,
-      PriceStore,
-      currentNetwork,
-      TokenBalancesStore
-    ) => {
-      if (
-        !tokenList ||
-        !coin ||
-        !tauPrice ||
-        !PriceStore ||
-        !currentNetwork ||
-        currentNetwork.type === "testnet" ||
-        !TokenBalancesStore
-      ) {
-        return "0";
-      }
-      let value = Encoder("bigNumber", "0");
-      tokenList.forEach((token) => {
-        let tokenbalance = getTokenBalance(
-          networkKey(currentNetwork),
-          '',
-          token.contractName,
-          TokenBalancesStore
-        );
-        let tokenprice = PriceStore[token.contractName]
-          ? PriceStore[token.contractName]["value"]
-          : "0";
-        let tokenvalue = calcValue(
-          tokenbalance,
-          calcValue(tokenprice, tauPrice, null, false),
-          null,
-          false
-        );
-        value = value.plus(tokenvalue);
-      });
-      value = value.plus(calcValue(balance, tauPrice, null, false));
-      return value.toFormat(2, {
-        decimalSeparator: ".",
-        groupSeparator: ",",
-        groupSize: 3,
-      });
-    };
-  
-    const handleReorderUp = () => {
-      dispatch("reorderAccount", { id: coin.id, direction: "up" });
-    };
-    const handleReorderDown = () => {
-      dispatch("reorderAccount", { id: coin.id, direction: "down" });
-    };
-  
-    const handleSend = () => {
-      if (token) {
-        openModal("TokenLamdenSend", {
-          token,
-          coin,
-          txMethod: "transfer",
-          refreshTx: () => refreshTx(),
-        });
-      } else {
-        openModal("CoinLamdenSend", { coin, refreshTx: () => refreshTx() });
-      }
-    };
-  
-    const handleReceive = () => {
-      openModal("CoinLamdenReceive", { coin });
-    };
   
     const handleCollapse = () => {
       collapseStatus = !collapseStatus;
       dispatch("collapseChange", { vk: '', value: collapseStatus });
     };
-  
-    const getTokens = (netKey, vk, tokenStore, tokenBalancesStore) => {
-      if (!tokenStore[netKey]) return [];
-      if (!tokenBalancesStore[netKey]) return [];
-      if (!tokenBalancesStore[netKey][vk]) return [];
-      let tokens = [];
-      Object.keys(tokenBalancesStore[netKey][vk]).forEach((key) => {
-        if (
-          !tokenBalancesStore[netKey][vk][key] ||
-          tokenBalancesStore[netKey][vk][key] == "0"
-        )
-          return;
-        let item = tokenStore[netKey].find((t) => t.contractName === key);
-        if (item) {
-          item.balance = tokenBalancesStore[netKey][vk][key];
-          tokens.push(item);
-        }
-      });
-      return tokens;
-    };
-  
-    const handleHistoryClick = () => {
-      window.open(`${addressLookupURL}/addresses/`, "_blank");
-    };
-  
-    const handleOptionClick = () => {
-      openModal("CoinModify", coin);
+
+    const handleVote = () => {
+      openModal("Vote", {data});
     };
   </script>
   
@@ -229,36 +83,81 @@
                 color="var(--font-primary)"
               />
             </div>
-            <div>
-                REMOVE_MEMBER
+            <div class="logowrap">
+              <div class="logo flex-center-center">
+                <Identicons margin="0" iconValue={data.police} width="27px" />
+              </div>
             </div>
-            <div>Closed</div>
+            <!-- <div class="text weight-400 text-body1 text-primary">
+                {formatAccountAddress(data.vk, 6, 4)}
+            </div> -->
           </div>
-
+          <div class="police">{data.police}</div>
+          <div class="motion">{data.name}</div>
+          <div class="result">{data.yays} yays / {data.nays} nays</div>
+          <div class="status">{data.status}</div>
         </div>
         {#if collapseStatus}
-        <div class="header header-text divider">
-            <div class="header-name header-text">Votes</div>
-        </div>
-        <div class="tokenlist">
-          <div>
-            <div class="logo">
-              <Identicons margin="0" iconValue={"2121"} width="27px" />
-            </div>
-            <div class="">
-              Yes
+          <div class="details">
+              <button
+              id="history-btn"
+              class="button__small button__primary coin-btn flex-row"
+              on:click|stopPropagation={handleVote}
+            >
+              Vote
+              <div class="icon">{@html History}</div>
+            </button>
+          </div>
+          <div class="header header-text divider">
+              <div class="header-name header-text">Votes</div>
+          </div>
+          <div class="votelist">
+            {#each data.positions as item }
+              <div class="vote">
+                <div class="logo2">
+                  <Identicons margin="0" iconValue={item.vk} width="27px" />
+                </div>
+                <div class="vote-name">
+                  {formatAccountAddress(item.vk, 6, 4)}
+                </div>
+                <div class="vote-res">
+                  {item.value ? "✔️" : "❌" }
+                </div>
+              </div>
+            {/each}
+            <div class="vote">
+              <div class="logo2">
+                <Identicons margin="0" iconValue={"2121"} width="27px" />
+              </div>
+              <div class="vote-name">
+                {formatAccountAddress("xxadaedqd2qdrqdqdqdqdqdq", 6, 4)}
+              </div>
+              <div class="vote-res">
+                ❌
+              </div>
             </div>
           </div>
-        </div>
         {/if}
       </div>
     </div>
   </div>
   
   <style>
-    .reorder-btns {
-      margin-top: 22px;
-      align-self: start;
+    .vote-res {
+      width: 240px;
+    }
+    .vote-name {
+      width: 184px;
+    }
+    .details {
+      padding-left: 82px;
+      margin-bottom: 1.5rem;
+      margin-top: 0.8rem;
+    }
+    .vote {
+      display: flex;
+      align-items: center;
+      padding: 1rem 28px 0 0;
     }
     .coin-btns {
       flex-wrap: wrap;
@@ -271,9 +170,6 @@
       box-sizing: border-box;
       border-radius: 6px;
       background-image: linear-gradient(#a26bfa, #4f06c6);
-    }
-    .wrap-leagyc {
-      background: var(--outline);
     }
     .wrap-second {
       background-color: var(--bg-primary);
@@ -309,28 +205,45 @@
       border: 3px solid var(--color-grey-3);
     }
   
+    .logo2 {
+      width: 30px;
+      margin-right: 44px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      padding: 2px;
+      background: black;
+      border-radius: 999px;
+      border: 2px solid var(--color-grey-3);
+    }
+
     .name {
-      flex-basis: 406px;
+      flex-basis: 340px;
       min-width: 300px;
       display: flex;
       align-items: center;
     }
-  
-    .amount {
+    .police {
+      flex-basis: 240px;
+      min-width: 160px;
+      justify-content: center;
+    }
+    .motion {
       flex-basis: 240px;
       min-width: 160px;
       justify-content: center;
     }
   
-    .value {
-      flex-basis: 200px;
-      min-width: 63px;
+    .status {
+      flex-basis: 240px;
+      min-width: 160px;
+      justify-content: center;
     }
   
-    .percent {
-      justify-content: flex-end;
-      flex-grow: 1;
-      min-width: 90px;
+    .result {
+      flex-basis: 240px;
+      min-width: 160px;
+      justify-content: center;
     }
     .name-box {
       line-height: 1.1;
@@ -437,8 +350,8 @@
       justify-content: end;
       display: flex;
     }
-    .tokenlist {
-      padding-left: 64px;
+    .votelist {
+      padding-left: 80px;
       margin-bottom: 2rem;
     }
     .tokensnum {
