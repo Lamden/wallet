@@ -103,15 +103,6 @@
                     "page": {
                         "name": "DevToolsMain"
                     }
-                },
-                {
-                    "id": "nodeadmin", 
-                    "show": true,
-                    "logo": "devtools", 
-                    "name": "Node Admin", 
-                    "page": {
-                        "name": "DashboardMain"
-                    }
                 }
             ]
         },
@@ -135,6 +126,30 @@
                     "name": "Sign out & Lock", 
                     "page": {
                         "name": "LockScreen"
+                    }   
+                }
+            ]
+        },
+        {
+            "heading": "Node Dashbord",
+            "show": true,
+            "items":[
+                {
+                    "id": "dashboard", 
+                    "show": true,
+                    "logo": "setting", 
+                    "name": "Statistics", 
+                    "page": {
+                        "name": "Dashboard"
+                    }
+                },
+                {
+                    "id": "node-lists", 
+                    "show": true,
+                    "logo": "signout", 
+                    "name": "My Nodes", 
+                    "page": {
+                        "name": "DashboardNodeList"
                     }   
                 }
             ]

@@ -55,9 +55,12 @@ export const nodesController = (utils) => {
         chrome.storage.local.set({"nodes": nodesStore});
     }
 
-    const addUnregisterNode = (vk) => {
+    const addUnregisterNode = (vk, callback = undefined) => {
         let index = nodesStore.findIndex(item => vk === item.vk)
-        if (index > -1) return;
+        if (index > -1) {
+            if (callback) callback({success: false, msg: "Node Already exists"})
+            return;
+        }
 
         let network = utils.networks.getCurrent()
         let netKey = network.networkKey
@@ -68,6 +71,7 @@ export const nodesController = (utils) => {
             netKey: netKey
         })
         chrome.storage.local.set({"nodes": nodesStore});
+        if (callback) callback({success: true, msg: "Success Added"})
     }
 
     return {

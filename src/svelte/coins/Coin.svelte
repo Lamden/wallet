@@ -13,6 +13,7 @@
 
   //Stores
   import {
+    NodesStore,
     currentNetwork,
     BalancesStore,
     balanceTotal,
@@ -23,6 +24,7 @@
     PriceStore,
     TauPrice,
     SettingsStore,
+    coinsDropDown,
   } from "../../js/stores/stores.js";
 
   //Images
@@ -60,6 +62,7 @@
   import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
 
   import Lamden from "lamden-js";
+    import CoinDelete from "./CoinDelete.svelte";
   const { Encoder } = Lamden;
 
   const dispatch = createEventDispatcher();
@@ -145,6 +148,7 @@
   $: tokenList = getTokens(netKey, coin.vk, $TokenStore, $TokenBalancesStore);
   $: tokensNum = tokenList.length;
   $: isVaultAccount = coin.type === "vault";
+  $: isNodeAccount = $NodesStore.findIndex(x => x.vk === coin.vk && x.netKey === netKey) > -1
 
   afterUpdate(() => {
     balance = BalancesStore.getBalance($currentNetwork, coin.vk);
@@ -277,7 +281,7 @@
 </script>
 
 {#if !token || (token && hasVisibleBalance)}
-  <div class="wrap" class:wrap-leagyc={!isVaultAccount}>
+  <div class="wrap badge-box" class:wrap-leagyc={!isVaultAccount}>
     <div class="wrap-second" on:click={handleCollapse}>
       <div
         id={`coin-row-${coin.id}`}
@@ -307,12 +311,12 @@
             {#if whitelabel.mainPage.account_info.show}
               <div class="text weight-400">
                 <div class="name-box">
-                  <div
+                  <span
                     id={`coin-nickname-${coin.id}`}
                     class="nickname text-body1 text-primary"
                   >
                     {`${coin.nickname}`}
-                  </div>
+                  </span>
                 </div>
               </div>
             {/if}
@@ -467,10 +471,32 @@
         {/if}
       </div>
     </div>
+    {#if isNodeAccount}
+      <div class="badge text weight-400">Node</div>
+    {/if}
   </div>
 {/if}
 
 <style>
+  .badge-box {
+    position: relative;
+  }
+  .badge {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(50%, -50%);
+    color: white;
+    transform-origin: 100% 0%;
+    background: #ff4d4f;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: 10px;
+    height: 20px;
+    min-width: 20px;
+    z-index: auto;
+    padding: 0 10px;
+  }
   .reorder-btns {
     margin-top: 22px;
     align-self: start;

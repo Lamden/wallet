@@ -19,18 +19,18 @@
 
   //Utils
   import {
-    displayBalance,
-    stringToFixed,
-    getTokenBalance,
-    toBigNumber,
-    calcValue,
     formatAccountAddress,
+    copyToClipboard
   } from "../../js/utils.js";
 
   //Icons
+  import CheckmarkIcon from "../icons/CheckmarkIcon.svelte";
+  import CopyIcon from "../icons/CopyIcon.svelte";
   import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
+  import History from "../../img/history.svg";
 
   import Lamden from "lamden-js";
+    import About from "../misc/About.svelte";
   const { Encoder } = Lamden;
 
   const dispatch = createEventDispatcher();
@@ -41,6 +41,7 @@
 
   let divElm;
 
+  let copied = false;
 
   $: currentFiat = $SettingsStore.fiat;
   $: collapseStatus = collapse;
@@ -50,28 +51,58 @@
   //Context
   const { switchPage, openModal } = getContext("app_functions");
 
-  $: onMainnet = $currentNetwork.type === "mainnet" ? true : false;
   $: netKey = networkKey($currentNetwork);
 
+  const handleCollapse = () => {
+    collapseStatus = !collapseStatus;
+  };
+
+  const handleAddressCopy = () => {
+    copyToClipboard(data.vk);
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  };
+
+  const handleRegister = () => {
+    openModal("NodeTx", {
+      account: data.vk,
+      txInfo: {
+        contractName: "elect_masternodes",
+        methodName: "register",
+        kwargs: {},
+      }
+    });
+  };
+
+  const handleUnRegister = () => {
+    openModal("NodeTx", {
+      account: data.vk,
+      txInfo: {
+        contractName: "elect_masternodes",
+        methodName: "unregister",
+        kwargs: {},
+      }
+    });
+  };
 
 </script>
 
 <div class="wrap">
-  <div class="wrap-second">
+  <div class="wrap-second" on:click={handleCollapse}>
     <div
       bind:this={divElm}
-      class="row-box flex-column text-body1 ext-primar"
+      class="row-box flex-column text-body1"
     >
       <div class="coin-main-row flex-row flex-align-center">
         <div class="name">
-          <!-- <div class="collapse-btn">
+          <div class="collapse-btn">
             <DirectionalChevronIcon
               strokeWidth={2.75}
               {direction}
               width="16px"
               color="var(--font-primary)"
             />
-          </div> -->
+          </div>
           {#if whitelabel.mainPage.logo.show}
             <div class="logowrap">
               <div class="logo flex-center-center">
@@ -90,11 +121,64 @@
           <span>{data.status}<span>
         </div>
       </div>
+      {#if collapseStatus}
+        <div class="flex-row coinmenus">
+          <div class="coin-btns">
+            <button
+              class="button__small address coin-btn flex-row button__primary"
+              class:success={copied}
+              on:click|stopPropagation={handleAddressCopy}
+              title="copy account address"
+            >
+              {formatAccountAddress(data.vk, 7, 0)}
+              <div class="icon-copy">
+                {#if !copied}
+                  <CopyIcon width="9px" color="var(--color-white)" />
+                {:else}
+                  <CheckmarkIcon width="10px" color="var(--success-color)" />
+                {/if}
+              </div>
+            </button>
+            {#if data.status === "unregister"}
+              <button
+                id="history-btn"
+                class="button__small button__primary coin-btn flex-row"
+                on:click|stopPropagation={handleRegister}
+              >
+                Register
+                <div class="icon">{@html History}</div>
+              </button>
+            {:else if data.status === "candidate"}
+              <button
+                id="history-btn"
+                class="button__small button__primary coin-btn flex-row"
+                on:click|stopPropagation={handleUnRegister}
+              >
+                UnRegister
+                <div class="icon">{@html History}</div>
+              </button>
+            {:else}
+              <button
+                id="history-btn"
+                class="button__small button__primary coin-btn flex-row"
+                on:click|stopPropagation={handleRegister}
+              >
+                Vote
+                <div class="icon">{@html History}</div>
+              </button>
+            {/if}
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
 </div>
 
 <style>
+  .coin-btns {
+    flex-wrap: wrap;
+    display: flex;
+  }
   .wrap {
     width: 100%;
     height: 100%;

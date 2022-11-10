@@ -91,9 +91,12 @@ import DevToolsDeleteNetwork from './devtools/DevToolsDeleteNetwork.svelte';
 
 //Dashboard
 import DashboardMain from './dashboard/DashboardMain.svelte';
+import DashboardNodeList from './dashboard/DashboardNodeList.svelte';
 import AddNewNode from './dashboard/AddNewNode.svelte';
 import AddNewMotion from './dashboard/AddNewMotion.svelte';
 import Vote from './dashboard/Vote.svelte';
+import NodeMethodTx from './dashboard/NodeMethodTx.svelte';
+import NodeTx from './dashboard/NodeTx.svelte';
  
 //Components
 import Button from './components/Button.svelte';
@@ -245,6 +248,7 @@ export const Pages = {
     IdeMain,
     ConnectionsMain, ConnectionDetails,
     DashboardMain,
+    DashboardNodeList,
     ...FirstRun 
 };
 
@@ -294,7 +298,9 @@ export const Modals = {
     CoinWatchedModal,
     AddNewNode,
     AddNewMotion,
-    Vote
+    Vote,
+    NodeMethodTx,
+    NodeTx
 }
 
 export const Layouts = {
@@ -321,6 +327,7 @@ export {
     ManageNetwork,
     ManageNetworkMain,
     ManageNetwokFinish,
-    DashboardMain
+    DashboardMain,
+    DashboardNodeList
 };
 </script>
