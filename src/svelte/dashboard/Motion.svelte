@@ -85,14 +85,14 @@
             </div>
             <div class="logowrap">
               <div class="logo flex-center-center">
-                <Identicons margin="0" iconValue={data.police} width="27px" />
+                <Identicons margin="0" iconValue={data.policy} width="27px" />
               </div>
             </div>
             <!-- <div class="text weight-400 text-body1 text-primary">
                 {formatAccountAddress(data.vk, 6, 4)}
             </div> -->
           </div>
-          <div class="police">{data.police}</div>
+          <div class="policy">{data.policy}</div>
           <div class="motion">{data.name}</div>
           <div class="result">{data.yays} yays / {data.nays} nays</div>
           <div class="status">{data.status}</div>
@@ -219,30 +219,30 @@
 
     .name {
       flex-basis: 340px;
-      min-width: 300px;
+      min-width: 160px;
       display: flex;
       align-items: center;
     }
-    .police {
+    .policy {
       flex-basis: 240px;
-      min-width: 160px;
+      min-width: 100px;
       justify-content: center;
     }
     .motion {
       flex-basis: 240px;
-      min-width: 160px;
+      min-width: 100px;
       justify-content: center;
     }
   
     .status {
       flex-basis: 240px;
-      min-width: 160px;
+      min-width: 100px;
       justify-content: center;
     }
   
     .result {
       flex-basis: 240px;
-      min-width: 160px;
+      min-width: 100px;
       justify-content: center;
     }
     .name-box {

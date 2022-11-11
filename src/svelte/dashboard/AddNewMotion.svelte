@@ -2,7 +2,7 @@
     import { getContext, onMount } from 'svelte';
     
 	//Stores
-    import { coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
+    import { coinsDropDown, currentNetwork, NodesStore, CoinStore, networkKey  } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
@@ -36,6 +36,11 @@
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
         {page: 'ResultBox', back: -1, cancelButton: false}
     ]
+
+    $: netKey = networkKey($currentNetwork)
+    $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
+    $: memberNodes = nodes.filter(k => k.status === "node")
+    $: memberNodesAccount = $coinsDropDown.filter(c => memberNodes.findIndex(x => c.value.vk === x.vk) > -1 || !c.value )
 
     onMount(() => {
         getPolicies("election_house")
@@ -181,7 +186,7 @@
         <div class="flex-column">
             <h2>{`Create New Motion`}</h2>
             <DropDown  
-                items={$coinsDropDown}
+                items={memberNodesAccount}
                 id={'mycoins'} 
                 label={'Select Account Linked With Node'}
                 margin="0 0 1rem 0"

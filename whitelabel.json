@@ -138,9 +138,9 @@
                     "id": "dashboard", 
                     "show": true,
                     "logo": "setting", 
-                    "name": "Statistics", 
+                    "name": "Dashboard", 
                     "page": {
-                        "name": "Dashboard"
+                        "name": "DashboardMain"
                     }
                 },
                 {

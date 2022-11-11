@@ -27,11 +27,6 @@
         
     let cardList = [
         {
-            name: 'Nodes',
-            desc: '26/47',
-            logo: nodeicon
-        },
-        {
             name: 'Reawards',
             desc: '20,649,472.7302',
             logo: tau
@@ -45,6 +40,7 @@
 
     $: netKey = networkKey($currentNetwork)
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
+    $: memberNodes = nodes.filter(k => k.status === "node")
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
@@ -82,7 +78,7 @@
             .then(res => res.json())
             .then(data => data[name].S)
         let motion = {
-            police: "masternodes",
+            policy: "masternodes",
             status:  new Date(data.motion_opened).getTime() + 86400000 < new Date().getTime(),
             yays: data.yays,
             nays: data.nays,
@@ -128,8 +124,8 @@
 </script>
 <style>
     .motion-header-name {
-        flex-basis: 342px;
-        min-width: 260px;
+        flex-basis: 340px;
+        min-width: 160px;
     }
     .node-list {
         display: flex;
@@ -143,12 +139,12 @@
         font-weight: 800;
     }
     .header-name {
-        flex-basis: 260px;
-        min-width: 260px;
+        flex-basis: 240px;
+        min-width: 160px;
     }
     .node-type {
         flex-basis: 240px;
-        min-width: 160px;
+        min-width: 100px;
     }
     .top-btns {
         display: flex;
@@ -186,6 +182,7 @@
         display: flex;
         flex-direction: row;
         margin-top: 1rem;
+        flex-wrap: wrap;
     }
 </style>
 <div class="card-box">
@@ -209,7 +206,7 @@
     </div>
     <div class="header header-text text-body1 weight-800">
         <div class="motion-header-name header-text">Motion List</div>
-        <div class="node-type header-text">Police</div>
+        <div class="node-type header-text">Policy</div>
         <!-- <div class="node-type header-text">Rewards</div> -->
         <div class="node-type header-text">Motion</div>
         <div class="node-type header-text">Result</div>
@@ -220,7 +217,7 @@
     {/each}
 </div>
 <hr>
-{#if nodes.length > 0}
+{#if memberNodes.length > 0}
     <div class="node-list">
         <div class="top-btns">
             <button
@@ -235,19 +232,19 @@
             </button>
         </div>
         <div class="header header-text text-body1 weight-800">
-            <div class="header-name header-text">Node List</div>
+            <div class="header-name header-text">My Network Nodes</div>
             <div class="node-type header-text">Type</div>
             <!-- <div class="node-type header-text">Rewards</div> -->
             <div class="node-type header-text">Status</div>
         </div>
-        {#each nodes as item }
+        {#each memberNodes as item }
             <Node data={item} />
         {/each}
     </div>
 {:else}
 <div class="empty">
     <div class="text-body1 comment">
-        You have no nodes.
+        You have no member nodes.
     </div>
     <div class="buttons">
         <Button 

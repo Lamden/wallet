@@ -105,7 +105,7 @@
             </div>
         </button>
     </div>
-    {#if unregisterNodes.length > 0}
+    {#if memberNodes.length > 0}
         <div class="node-list">
             <div class="header header-text text-body1 weight-800">
                 <div class="header-name header-text">My Network Nodes</div>
@@ -119,7 +119,7 @@
         </div>
         <hr>
     {/if}
-    {#if unregisterNodes.length > 0}
+    {#if candidateNodes.length > 0}
         <div class="node-list">
             <div class="header header-text text-body1 weight-800">
                 <div class="header-name header-text">My Nodes Candidates</div>
