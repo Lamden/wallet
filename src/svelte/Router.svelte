@@ -95,7 +95,7 @@ import DashboardNodeList from './dashboard/DashboardNodeList.svelte';
 import AddNewNode from './dashboard/AddNewNode.svelte';
 import AddNewMotion from './dashboard/AddNewMotion.svelte';
 import Vote from './dashboard/Vote.svelte';
-import NodeMethodTx from './dashboard/NodeMethodTx.svelte';
+import MethodTx from './dashboard/MethodTx.svelte';
 import NodeTx from './dashboard/NodeTx.svelte';
  
 //Components
@@ -299,7 +299,7 @@ export const Modals = {
     AddNewNode,
     AddNewMotion,
     Vote,
-    NodeMethodTx,
+    MethodTx,
     NodeTx
 }
 

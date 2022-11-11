@@ -21,7 +21,7 @@
 
   let account = modalData.account
   let steps = [
-    { page: "NodeMethodTx", back: 0, cancelButton: true },
+    { page: "MethodTx", back: 0, cancelButton: true },
     { page: "CoinSendingTx", back: -1, cancelButton: false },
     { page: "ResultBox", back: -1, cancelButton: false },
   ];

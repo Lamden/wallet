@@ -39,7 +39,9 @@
 
     const sendTx = () => {
         txData.sender = selectedWallet;
-        txData.txInfo.stampLimit = stampLimit;
+        if (!txData.txInfo.stampLimit) {
+            txData.txInfo.stampLimit = stampLimit;
+        }
         txData.txInfo.senderVk = txData.sender.vk
         dispatch('saveTxDetails', txData);
     }

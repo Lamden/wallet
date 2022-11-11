@@ -125,17 +125,6 @@
                 </div>
               </div>
             {/each}
-            <div class="vote">
-              <div class="logo2">
-                <Identicons margin="0" iconValue={"2121"} width="27px" />
-              </div>
-              <div class="vote-name">
-                {formatAccountAddress("xxadaedqd2qdrqdqdqdqdqdq", 6, 4)}
-              </div>
-              <div class="vote-res">
-                ❌
-              </div>
-            </div>
           </div>
         {/if}
       </div>

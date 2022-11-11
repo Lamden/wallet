@@ -1,56 +1,148 @@
 <script>
-    import { getContext } from 'svelte';
+    import { getContext, setContext } from 'svelte';
     
+    //Images
+    import spinner from '../../img/menu_icons/icon_spinner.svg';
+
 	//Stores
-    import { coinsDropDown, currentNetwork } from '../../js/stores/stores.js';
+    import { coinsDropDown, currentNetwork, NodesStore, CoinStore, networkKey } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
+
+    import BN from "bignumber.js";
+
     //Utils
     import { formatKwargs } from '../../js/utils.js'
-    const { Button, DropDown } = Components;
+    import BackupNotificationModal from '../backup_restore/BackupNotificationModal.svelte';
+    const { Button, DropDown, Loading} = Components;
 
     //Context
     const { closeModal, getModalData } = getContext('app_functions');
 
-    const handleSelectedWallet = (e) => {
-        if (!e.detail.selected.value) return;
-        selectedWallet = e.detail.selected.value;
-    }
-
     let modelData = getModalData();
 
-    //DOM Nodes
-    let formObj;
+    $: netKey = networkKey($currentNetwork)
+    $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
+    $: memberNodes = nodes.filter(k => k.status === "node")
+    $: memberNodesAccount = $coinsDropDown.filter(c => memberNodes.findIndex(x => c.value.vk === x.vk) > -1 || !c.value )
 
     let txData = {};
     let resultInfo = {};
 
     let selectedWallet;
 
+    let buferSize = 0.05;
+
     let agree = true
+    let checkApproving = false
+    let needApprove = true
+    let showAccountsDropdown = true
 
     let currentStep = 0
 
     let steps = [
+        {page: 'MethodTx', back: -1, cancelButton: false},
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
         {page: 'ResultBox', back: -1, cancelButton: false}
     ]
 
+    setContext("tx_functions", {
+        home: () => closeModal(),
+        close: () => closeModal()
+    });
+
+    const checkApproveAmount = async () => {
+        return await $currentNetwork.getVariable('currency', 'balances', `${selectedWallet.vk}:elect_masternodes`)
+    }
+
+    const nextPage = () => {
+        currentStep = currentStep + 1
+    }
+
     const handleSubmit = () => {
-        console.log(modelData)
-        if(formObj.checkValidity()){
-            saveTxDetails()
+        if (needApprove) {
+            txData = {
+                sender: selectedWallet,
+                txInfo: {
+                    senderVk: selectedWallet.vk.trim(),
+                    contractName: "currency", 
+                    methodName: "approve", 
+                    kwargs: formatKwargs([{name: "to", type: "str", value: "elect_masternodes"}, {name: "amount", type: "float", value: 1000}])
+                }
+            }
+        } else {
+            txData = {
+                sender: selectedWallet,
+                txInfo: {
+                    senderVk: selectedWallet.vk.trim(),
+                    contractName: "election_house", 
+                    methodName: "vote", 
+                    kwargs: formatKwargs([{name: "policy", type: "str", value: modelData.data.policy}, {name: "value", type: "Any", value: [modelData.data.value, agree]}])
+                }
+            }
         }
+        nextPage()
+    }
+
+    
+    const handleSelectedWallet = (e) => {
+        if (!e.detail.selected.value) return;
+        selectedWallet = e.detail.selected.value;
+        checkApproving = true
+        checkApproveAmount().then(res => {
+            let amount;
+            if (!res.value) {
+                amount = new BN(0)
+            } else if (res.value.__fixed__) {
+                amount = new BN(res.value.__fixed__)
+            } else {
+                amount = new BN(res.value)
+            }
+            if (amount.isGreaterThan(50)) { 
+                needApprove = false
+            } else {
+                needApprove = true
+            }
+            checkApproving = false
+        })
+    }
+
+    const goVote = () => {
+        needApprove = false
+        currentStep = 0
+        // hide accounts dropdown
+        showAccountsDropdown = false
     }
 
     const resultDetails = (e) => {
-        txallInfo = e.detail
         resultInfo = e.detail.resultInfo;
-        resultInfo.buttons = buttons;
+        if (needApprove && resultInfo.statusCode === 0) {
+            resultInfo.buttons = [
+                {name: 'Vote', click: () => goVote(), class: 'button__solid button__primary'},
+                {name: 'Close', click: () => closeModal(), class: 'button__solid'}
+            ]
+        } else {
+            resultInfo.buttons = [
+                {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'}
+            ];
+        }
         resultInfo.txHash = e.detail.txHash;
         nextPage();
     }
+
+    const createTxDetails = () => {
+        let txDetails = [
+            { name: "Contract Name", value: txData.txInfo.contractName },
+            { name: "Function", value: txData.txInfo.methodName },
+        ];
+        Object.keys(txData.txInfo.kwargs).map((arg) => {
+        let argValue = txData.txInfo.kwargs[arg];
+        txDetails.push({ name: `${arg}`, value: JSON.stringify(argValue) });
+        return arg;
+        });
+        return txDetails;
+    };
 
     const makeTx = (data) => {
         return {
@@ -64,15 +156,6 @@
     }
 
     const saveTxDetails = () => {
-        txData = {
-            sender: selectedWallet,
-            txInfo: {
-                senderVk: selectedWallet.vk.trim(),
-                contractName: "election_house", 
-                methodName: "vote", 
-                kwargs: formatKwargs([{name: "policy", type: "str", value: modelData.data.policy}, {name: "value", type: "Any", value: [modelData.data.value, agree]}])
-            }
-        }
         if ($currentNetwork.blockservice.host) {
             fetch(`${$currentNetwork.blockservice.host}/stamps/estimation`, {
                 method: "POST",
@@ -94,11 +177,10 @@
                     resultInfo.title = `Transaction Failed`
                     resultInfo.subtitle = `Your transaction will fail, please edit and then resend the transaction`
                     resultInfo.type = 'error'
-                    currentStep = 2
+                    currentStep = 3
                 }
             })
         } else {
-            stampLimit = 120
             nextPage()
         }
     }
@@ -117,11 +199,13 @@
     justify-content: center;
     align-items: center;
 }
-.disabled{
-    background: var(--bg-secondary);
-}
 .vote-box{
     justify-content: space-evenly;
+}
+
+
+.spinner{
+	width: 20px;
 }
 </style>
 
@@ -129,41 +213,49 @@
 <div class="confirm-tx flex-column">
     <div class="flex-column">
         <h2>{`Vote`}</h2>
-        <DropDown  
-            items={$coinsDropDown}
-            id={'mycoins'} 
-            label={'Select Account Linked With Node'}
-            margin="0 0 1rem 0"
-            required={true}
-            on:selected={(e) => handleSelectedWallet(e)}
-        />
-        <div class="flex padding text-body2 vote-box">
-            <label>
-                <input id="trusted" type="radio" bind:group={agree} value={true}>
-                <strong>Yay</strong>
-            </label>
-            <label >
-                <input id="not-trusted" type="radio" bind:group={agree} value={false}>
-                <strong>Nay</strong>
-            </label>
-        </div>
-        <form on:submit|preventDefault={() => handleSubmit() } bind:this={formObj} target="_self">
-            <div class="buttons flex-column">
-                <input  id="confirmTx-btn"
-                        value="Confirm"
-                        class="button__solid button__primary submit submit-button submit-button-text"
-                        class:disabled={selectedWallet === undefined}
-                        disabled={selectedWallet === undefined ? 'disabled' : ''}
-                        type="submit" >
-                <Button classes={'button__text text-caption'} 
-                        width={'125px'}
-                        height={'24px'}
-                        padding={0}
-                        margin={'17px 0'}
-                        name="Cancel" 
-                        click={() => closeModal()} />
+        {#if showAccountsDropdown}
+            <DropDown  
+                items={memberNodesAccount}
+                id={'mycoins'} 
+                label={'Select Account Linked With Node'}
+                margin="0 0 1rem 0"
+                required={true}
+                on:selected={(e) => handleSelectedWallet(e)}
+            />
+        {/if}
+        {#if !needApprove}
+            <div class="flex padding text-body2 vote-box">
+                <label>
+                    <input id="trusted" type="radio" bind:group={agree} value={true}>
+                    <strong>Yay</strong>
+                </label>
+                <label >
+                    <input id="not-trusted" type="radio" bind:group={agree} value={false}>
+                    <strong>Nay</strong>
+                </label>
             </div>
-        </form>
+        {/if}
+        <div class="buttons flex-column">
+            <Button classes={'button__solid button__primary'} 
+                    padding={0}
+                    width={'240px'}
+                    name={checkApproving ? "Checking" : needApprove ? "Approve" : "Confirm"} 
+                    disabled={selectedWallet === undefined || checkApproving}
+                    click={() => handleSubmit()} >
+                    <div slot="icon-after">
+                        {#if checkApproving}
+                            <div class="spinner">{@html spinner}</div>
+                        {/if}
+                    </div>
+            </Button>
+            <Button classes={'button__text text-caption'} 
+                    width={'125px'}
+                    height={'24px'}
+                    padding={0}
+                    margin={'17px 0'}
+                    name="Cancel" 
+                    click={() => closeModal()} />
+        </div>
     </div>
 </div>
 {:else}
@@ -171,6 +263,9 @@
         this={Modals[steps[currentStep-1].page]}
         result={resultInfo}
         {txData}
+        account={selectedWallet.vk}
+        txDetails={createTxDetails()}
+        on:saveTxDetails={saveTxDetails}
         on:txResult={(e) => resultDetails(e)}
     />
 {/if}
