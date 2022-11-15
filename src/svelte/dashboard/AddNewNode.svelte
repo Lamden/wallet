@@ -61,7 +61,7 @@
             selected: true
         }]
 
-        NodesStore.filter(n => n.netKey === netKey && CoinStore.findIndex(c => c.vk === n.vk) === -1).forEach(k => {
+        NodesStore.filter(n => n.netKey === netKey && n.status === "node" && CoinStore.findIndex(c => c.vk === n.vk) === -1).forEach(k => {
             list.push({
                 value: k,
                 name: `${formatAccountAddress(k.vk, 8, 10)}`,

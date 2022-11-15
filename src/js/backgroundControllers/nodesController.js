@@ -17,7 +17,7 @@ export const nodesController = (utils) => {
         let network = utils.networks.getCurrent()
         let netKey = network.networkKey
         // clear old data 
-        nodesStore.filter(t => t.netKey !== netKey || t.status === 'unregister')
+        nodesStore = nodesStore.filter(t => t.netKey !== netKey || t.status === 'unregister')
 
         // get nodes
         let res = await network.getVariable('masternodes', 'S', 'members')
