@@ -41,11 +41,13 @@
     $: netKey = networkKey($currentNetwork)
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
     $: memberNodes = nodes.filter(k => k.status === "node")
+    $: allMemberNodes = $NodesStore.filter(n => n.netKey === netKey && n.status === "node")
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
         getPolicies("election_house")
         getCurrentMasterNodeMotion()
+        console.log(nodes)
     })
 
     //Context
@@ -86,9 +88,6 @@
             positions: []
         }
 
-        for (const [key, value] of Object.entries(data.positions)) {
-            motion.positions.push({vk: key, value: value})
-        }
         const len = data.members.length 
         if ( new Date(data.motion_opened).getTime() + 86400000 < new Date().getTime()) {
             motion.status = "open"
@@ -97,6 +96,17 @@
         } else {
             motion.status = "❌" 
         } 
+
+        for (const m of allMemberNodes) {
+            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
+            if (data.positions[m.vk] === null) {
+                motion.positions.push({vk: m.vk, value: 1, isNodeOwner})
+            } else if (data.positions[m.vk] === true) {
+                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
+            } else {
+                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
+            }
+        }
 
         // process masternode motion
         switch(motion.value) {
@@ -118,7 +128,6 @@
         }
         motions.push(motion)
         motions = motions
-        console.log(motions)
     }
 
 </script>
@@ -192,18 +201,6 @@
 </div>
 
 <div class="node-list">
-    <div class="top-btns">
-        <button
-            id="add-motion-btn"
-            class="button__small button__primary add-node-btn flex-row"
-            on:click={openNewMotionModal}
-        >
-            Create Motion
-            <div class="icon">
-                <ExpandIcon width="18px" color="var(--color-white)" />
-            </div>
-        </button>
-    </div>
     <div class="header header-text text-body1 weight-800">
         <div class="motion-header-name header-text">Motion List</div>
         <div class="node-type header-text">Policy</div>

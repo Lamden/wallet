@@ -39,6 +39,7 @@
     import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
   
     import Lamden from "lamden-js";
+    import MenuItem from "../menu/MenuItem.svelte";
     const { Encoder } = Lamden;
   
     const dispatch = createEventDispatcher();
@@ -61,8 +62,8 @@
       dispatch("collapseChange", { vk: '', value: collapseStatus });
     };
 
-    const handleVote = () => {
-      openModal("Vote", {data});
+    const handleVote = (account) => {
+      openModal("Vote", {data, account});
     };
   </script>
   
@@ -98,17 +99,7 @@
           <div class="status">{data.status}</div>
         </div>
         {#if collapseStatus}
-          <div class="details">
-              <button
-              id="history-btn"
-              class="button__small button__primary coin-btn flex-row"
-              on:click|stopPropagation={handleVote}
-            >
-              Vote
-              <div class="icon">{@html History}</div>
-            </button>
-          </div>
-          <div class="header header-text divider">
+          <div class="header header-text votes">
               <div class="header-name header-text">Votes</div>
           </div>
           <div class="votelist">
@@ -121,7 +112,16 @@
                   {formatAccountAddress(item.vk, 6, 4)}
                 </div>
                 <div class="vote-res">
-                  {item.value ? "✔️" : "❌" }
+                  <div>{item.value === 0 ? "➖" : item.value === 1 ? "❌" : "✔️" }</div>
+                  {#if item.isNodeOwner}
+                    <button
+                      id="history-btn"
+                      class="button__small button__primary coin-btn flex-row"
+                      on:click|stopPropagation={() => handleVote(item.vk)}
+                    >
+                      Vote
+                    </button>
+                  {/if}
                 </div>
               </div>
             {/each}
@@ -134,9 +134,14 @@
   <style>
     .vote-res {
       width: 240px;
+      display: flex;
+      align-items: center;
     }
     .vote-name {
       width: 184px;
+    }
+    .votes {
+      margin-top: 1.5rem;
     }
     .details {
       padding-left: 82px;
@@ -261,10 +266,9 @@
     }
     .coin-btn {
       padding: 8px 14px;
-      margin-left: 14px;
       font-size: 0.8em;
+      margin-left: 12px;
       align-items: center;
-      margin-top: 14px;
     }
   
     .coin-btn > .icon {

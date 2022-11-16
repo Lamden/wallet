@@ -2,24 +2,24 @@
     import { getContext, onMount } from 'svelte';
     
 	//Stores
-    import { coinsDropDown, currentNetwork, NodesStore, CoinStore, networkKey  } from '../../js/stores/stores.js';
+    import { coinsDropDown, currentNetwork, NodesStore, CoinStore, networkKey } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
-    const { Button, DropDown, Kwargs} = Components;
+    const { Button, DropDown, Kwargs, InputBox} = Components;
 
     //Context
-    const { closeModal } = getContext('app_functions');
+    const { closeModal, getModalData } = getContext('app_functions');
 
     //Utils
-    import { formatKwargs } from '../../js/utils.js'
+    import { formatKwargs, formatAccountAddress} from '../../js/utils.js'
 
     //DOM Nodes
     let formObj;
 
     let buferSize = 0.05;
 
-    let selectedWallet, selectedPolicie;
+    let selectedPolicie;
     let args = []
     let txData = {};
     let resultInfo = {};
@@ -37,10 +37,13 @@
         {page: 'ResultBox', back: -1, cancelButton: false}
     ]
 
+    let modelData = getModalData();
+
     $: netKey = networkKey($currentNetwork)
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
     $: memberNodes = nodes.filter(k => k.status === "node")
     $: memberNodesAccount = $coinsDropDown.filter(c => memberNodes.findIndex(x => c.value.vk === x.vk) > -1 || !c.value )
+    $: selectedWallet = CoinStore.getByVk(modelData.account)
 
     onMount(() => {
         getPolicies("election_house")
@@ -71,11 +74,6 @@
             }
         }
         policies = list
-    }
-
-    const handleSelectedWallet = (e) => {
-        if (!e.detail.selected.value) return;
-        selectedWallet = e.detail.selected.value;
     }
 
     const handleSelectedMotion = (e) => {
@@ -185,14 +183,7 @@
     <div class="confirm-tx flex-column">
         <div class="flex-column">
             <h2>{`Create New Motion`}</h2>
-            <DropDown  
-                items={memberNodesAccount}
-                id={'mycoins'} 
-                label={'Select Account Linked With Node'}
-                margin="0 0 1rem 0"
-                required={true}
-                on:selected={(e) => handleSelectedWallet(e)}
-            />
+            <InputBox label="Account" value={formatAccountAddress(selectedWallet.vk, 8, 8)} disabled={true} margin="0 0 1rem 0" />
             <DropDown  
                 items={policies}
                 id={'policies'} 
@@ -207,8 +198,8 @@
                     <input  id="confirmTx-btn"
                             value="Confirm"
                             class="button__solid button__primary submit submit-button submit-button-text"
-                            class:disabled={selectedWallet === undefined}
-                            disabled={selectedWallet === undefined ? 'disabled' : ''}
+                            class:disabled={selectedWallet === undefined || selectedPolicie === undefined}
+                            disabled={selectedWallet === undefined || selectedPolicie === undefined ? 'disabled' : ''}
                             type="submit" >
                     <Button classes={'button__text text-caption'} 
                             width={'125px'}

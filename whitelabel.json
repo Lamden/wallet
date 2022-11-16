@@ -138,7 +138,7 @@
                     "id": "dashboard", 
                     "show": true,
                     "logo": "setting", 
-                    "name": "Dashboard", 
+                    "name": "Network Dashboard", 
                     "page": {
                         "name": "DashboardMain"
                     }

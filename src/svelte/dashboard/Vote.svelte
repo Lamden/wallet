@@ -13,9 +13,8 @@
     import BN from "bignumber.js";
 
     //Utils
-    import { formatKwargs } from '../../js/utils.js'
-    import BackupNotificationModal from '../backup_restore/BackupNotificationModal.svelte';
-    const { Button, DropDown, Loading} = Components;
+    import { formatKwargs, formatAccountAddress} from '../../js/utils.js'
+    const { Button, DropDown, InputBox} = Components;
 
     //Context
     const { closeModal, getModalData } = getContext('app_functions');
@@ -26,11 +25,10 @@
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
     $: memberNodes = nodes.filter(k => k.status === "node")
     $: memberNodesAccount = $coinsDropDown.filter(c => memberNodes.findIndex(x => c.value.vk === x.vk) > -1 || !c.value )
+    $: selectedWallet = CoinStore.getByVk(modelData.account)
 
     let txData = {};
     let resultInfo = {};
-
-    let selectedWallet;
 
     let buferSize = 0.05;
 
@@ -214,14 +212,7 @@
     <div class="flex-column">
         <h2>{`Vote`}</h2>
         {#if showAccountsDropdown}
-            <DropDown  
-                items={memberNodesAccount}
-                id={'mycoins'} 
-                label={'Select Account Linked With Node'}
-                margin="0 0 1rem 0"
-                required={true}
-                on:selected={(e) => handleSelectedWallet(e)}
-            />
+            <InputBox label="Account" value={formatAccountAddress(selectedWallet.vk, 8, 8)} disabled={true} margin="0 0 1rem 0" />
         {/if}
         {#if !needApprove}
             <div class="flex padding text-body2 vote-box">

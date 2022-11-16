@@ -43,7 +43,6 @@
 
   let copied = false;
 
-  $: currentFiat = $SettingsStore.fiat;
   $: collapseStatus = collapse;
 
   $: direction = collapseStatus ? "down" : "right";
@@ -83,6 +82,10 @@
         kwargs: {},
       }
     });
+  };
+
+  const openNewMotionModal = () => {
+        openModal("AddNewMotion", { account: data.vk });
   };
 
 </script>
@@ -161,9 +164,9 @@
               <button
                 id="history-btn"
                 class="button__small button__primary coin-btn flex-row"
-                on:click|stopPropagation={handleRegister}
+                on:click|stopPropagation={openNewMotionModal}
               >
-                Vote
+                Create Motion
                 <div class="icon">{@html History}</div>
               </button>
             {/if}
