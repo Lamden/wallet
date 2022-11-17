@@ -26,7 +26,7 @@
     //Props
     export let modalData;
 
-    let buferSize = 0.05;
+    let buferSize = 0.1;
 
     let steps = [
         {page: 'CoinLamdenSimpleContract', back: -1, cancelButton: true},
