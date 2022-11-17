@@ -3,7 +3,7 @@
     import Lamden from 'lamden-js'
     
 	//Stores
-    import { coinsDropDown, NodesStore, CoinStore, currentNetwork, networkKey } from '../../js/stores/stores.js';
+    import { coinsDropDown, NodesStore, CoinStore, currentNetwork, networkKey, SettingsStore } from '../../js/stores/stores.js';
 
     import {  formatAccountAddress, isLamdenKey, randomString} from '../../js/utils'
 

@@ -2,7 +2,7 @@
     import whitelabel from '../../../whitelabel.json'
     
     import { onMount, getContext} from 'svelte';
-    import lamden from 'lamden-js';
+    import lamden, { Network } from 'lamden-js';
     const { Encoder } = lamden;
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
@@ -24,10 +24,12 @@
     let receiverField;
 
     let error = undefined;
+    let nameResolveError = undefined;
     let receiverType = 1;
     let tokenSymbol;
     let from;
     let to;
+    let loading = false;
 
     let stampLimit = 50;
 
@@ -146,25 +148,28 @@
     }
 
     const handleNext = () => {
-        if (validate()){
-            dispatch('contractSimpleDetails', {
-                sender: from,
-                txInfo: {
-                    senderVk: from.vk.trim(),
-                    contractName: contractName, 
-                    methodName: "transfer", 
-                    stampLimit,
-                    kwargs: {
-                        amount: Encoder("float", amount),
-                        to: Encoder("str", to.trim())
+        validate().then(res => {
+            if (res) {
+                dispatch('contractSimpleDetails', {
+                    sender: from,
+                    txInfo: {
+                        senderVk: from.vk.trim(),
+                        contractName: contractName, 
+                        methodName: "transfer", 
+                        stampLimit,
+                        kwargs: {
+                            amount: Encoder("float", amount),
+                            to: Encoder("str", to.trim())
+                        }
                     }
-                }
-            })
-        }
+                })
+            }
+        })
     }
 
-    const validate = () => {
+    const validate = async () => {
         error = undefined;
+        nameResolveError = undefined;
         if (!from) {
             error = "No account was selected."
             return false
@@ -193,7 +198,34 @@
             }
         }
 
-        return true
+        // all name is lowercase
+        let receiver = to.trim().toLowerCase()
+        if (receiver.endsWith('.tau')) {
+            loading = true
+            let success = false
+            console.log()
+            await fetch(`${$currentNetwork.nameService}/${receiver}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    to = data.response
+                    success = true
+                } else {
+                    nameResolveError = data.response
+                    success = false
+                }
+            })
+            .catch(() => {
+                nameResolveError = "Network Error. Can not resolve the receiver address."
+                success = false
+            })
+            .finally(() => {
+                loading = false
+            })
+            return success
+        } else {
+            return true
+        }
     }
     const maxAmount = () => {
         if (contractName === "currency") {
@@ -216,7 +248,7 @@
     }
     .receiver{
         display: flex;
-        align-items: center;
+        flex-direction: column;
     }
     .buttons{
         padding-top: 27px;
@@ -302,17 +334,18 @@
                 height="39px"
                 placeholder={"Enter receiver address"}
                 label={"To Address"}
-                margin="0 0 1rem 0"
                 required={true}
                 bind:thisInput={receiverField}
                 on:changed={() => to = receiverField.value}
             />
+            {#if nameResolveError}
+                <div id="dropdown-error" class="text-warning">{nameResolveError}</div>
+            {/if}
         {:else}
             <DropDown
                 items={toAccounts} 
                 id={'receiver-dropdown'}
                 label={'To Address'} 
-                margin="0 0 1rem 0"
                 required={true}
                 on:selected={handleReceiverAddrSelect}
             />
@@ -323,7 +356,7 @@
         width="100%"
         bind:value={amount}
         label={"Amount"}
-        margin="0 0 2rem 0"
+        margin="1rem 0 2rem 0"
         inputType={"number"}
         required={true}
     >
@@ -349,6 +382,8 @@
                 width={'232px'}
                 margin={'0 0 17px 0'}
                 name="Next"
+                loadingText = "Resolving Name"
+                loading = {loading}
                 click={() => handleNext()} />
     </div>
 </div>

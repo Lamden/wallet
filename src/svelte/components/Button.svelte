@@ -48,7 +48,7 @@
     <div class="text-button" class:responsive={responsive}> {loading ? loadingText : name} </div>
     <div>
         {#if loading}
-            <div class="spinner" width={20}>{@html spinner}</div>
+            <div class="spinner" style="width: 20px">{@html spinner}</div>
         {/if}
     </div>
     <slot name="icon-after"></slot>

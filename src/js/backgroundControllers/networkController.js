@@ -47,7 +47,6 @@ export const networkController = (utils) => {
         if (networkObj.blockExplorer){
             networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
         }
-        
     }
 
     const addExtras = (networkObj) => {
