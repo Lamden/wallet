@@ -113,7 +113,7 @@
                 </div>
                 <div class="vote-res">
                   <div>{item.value === 0 ? "➖" : item.value === 1 ? "❌" : "✔️" }</div>
-                  {#if item.isNodeOwner}
+                  {#if item.isNodeOwner && item.value === 0}
                     <button
                       id="history-btn"
                       class="button__small button__primary coin-btn flex-row"

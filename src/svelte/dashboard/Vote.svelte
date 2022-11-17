@@ -92,7 +92,7 @@
                     senderVk: selectedWallet.vk.trim(),
                     contractName: "election_house", 
                     methodName: "vote", 
-                    kwargs: formatKwargs([{name: "policy", type: "str", value: modelData.data.policy}, {name: "value", type: "Any", value: [modelData.data.value, agree]}])
+                    kwargs: formatKwargs([{name: "policy", type: "str", value: modelData.data.policy}, {name: "value", type: "Any", value: ["vote_on_motion", agree]}])
                 }
             }
         }
