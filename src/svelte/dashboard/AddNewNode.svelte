@@ -88,7 +88,7 @@
                     const account = {
                         'network': 'lamden',
                         'name': 'Lamden',
-                        'nickname' : `Node Wallet ${randomString(6)}`,
+                        'nickname' : `Node-Wallet-${randomString(6)}`,
                         'symbol': $currentNetwork.currencySymbol,
                         'vk': vk,
                         'sk': privateKey
@@ -97,8 +97,8 @@
                         if (result.added){
                             resultMsg = {type:'success', text: result.reason}
                             SettingsStore.setLastCoinAddedType('normal')
-                            chrome.runtime.sendMessage({type: 'joinSocket', data: coinInfo.vk})
-                            chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coinInfo.vk})
+                            chrome.runtime.sendMessage({type: 'joinSocket', data: account.vk})
+                            chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: account.vk})
                         }
 
                         if (!result.added){
