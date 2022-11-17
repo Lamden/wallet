@@ -11,7 +11,6 @@
     //Props
     export let tokenMeta;
     export let disableInputs = false;
-    export let error = "";
 
     const dispatch = createEventDispatcher()
 

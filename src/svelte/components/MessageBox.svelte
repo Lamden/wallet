@@ -40,7 +40,6 @@
 .icon{
     margin-right: 14px;
     min-width: 30px;
-    margin-top: -4px;
 }
 
 .checkmark{

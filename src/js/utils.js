@@ -142,7 +142,11 @@ const formatKwargs = (kwargsList) => {
     kwargs = {}
     kwargsList.forEach(item => {
         if (item.value !== "" && typeof item.value !== 'undefined') {
-            kwargs[item.name] = Encoder(item.type, item.value)
+            if (item.type === "Any") {
+                kwargs[item.name] = Encoder(item.selectedType, item.value);
+              } else {
+                kwargs[item.name] = Encoder(item.type, item.value);
+            }
         }
     })
     return kwargs;

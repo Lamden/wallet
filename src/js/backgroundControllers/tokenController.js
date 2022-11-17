@@ -374,15 +374,31 @@ export const tokenController = (utils, services, actions) => {
             })
         })
 
-        await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
-            try{
-                let newBalances = keysReturnToTokenStoreObject(balances ? balances : [])
-                token_balances[netKey] = newBalances
-                saveTokensBalancesToStorage()
-            }catch(e){
-                console.log(e)
-            }
-        })
+        if (network.blockservice.host) {
+            await network.blockservice.getCurrentKeysValues(keysToGet).then(balances => {
+                try{
+                    let newBalances = keysReturnToTokenStoreObject(balances ? balances : [])
+                    token_balances[netKey] = newBalances
+                    saveTokensBalancesToStorage()
+                }catch(e){
+                    console.log(e)
+                }
+            })
+        } else {
+            let res = keysToGet.map(item => network.getVariable(item.contractName, item.variableName, item.key).then(res => {
+                res.key = item.key
+                return res
+            }))
+            Promise.all(res).then(balances => {
+                try{
+                    let newBalances = keysReturnToTokenStoreObject(balances ? balances : [])
+                    token_balances[netKey] = newBalances
+                    saveTokensBalancesToStorage()
+                }catch(e){
+                    console.log(e)
+                }
+            })
+        }
     }
 
     const processTokenBalanceSocketUpdate = (update) => {
