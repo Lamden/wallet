@@ -1,4 +1,7 @@
 <script>
+    //Images
+    import spinner from '../../img/menu_icons/icon_spinner.svg';
+
     //Props
     export let id;
     export let name = '';
@@ -13,6 +16,8 @@
     export let tabIndex;
     export let spellcheck = true;
     export let responsive = false
+    export let loading = false;
+    export let loadingText = "loading";
 </script>
 
 <style>
@@ -40,6 +45,11 @@
         type="button"
     >
     <slot name="icon-before" ></slot>
-    <div class="text-button" class:responsive={responsive}> {name} </div>
+    <div class="text-button" class:responsive={responsive}> {loading ? loadingText : name} </div>
+    <div>
+        {#if loading}
+            <div class="spinner" width={20}>{@html spinner}</div>
+        {/if}
+    </div>
     <slot name="icon-after"></slot>
  </button>
