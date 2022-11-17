@@ -1,11 +1,11 @@
 <script>
-    import { getContext, setContext } from 'svelte';
+    import { getContext, onMount, setContext } from 'svelte';
     
     //Images
     import spinner from '../../img/menu_icons/icon_spinner.svg';
 
 	//Stores
-    import { coinsDropDown, currentNetwork, NodesStore, CoinStore, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork, CoinStore, networkKey } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
@@ -14,17 +14,13 @@
 
     //Utils
     import { formatKwargs, formatAccountAddress} from '../../js/utils.js'
-    const { Button, DropDown, InputBox} = Components;
+    const { Button, InputBox} = Components;
 
     //Context
     const { closeModal, getModalData } = getContext('app_functions');
 
     let modelData = getModalData();
 
-    $: netKey = networkKey($currentNetwork)
-    $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
-    $: memberNodes = nodes.filter(k => k.status === "node")
-    $: memberNodesAccount = $coinsDropDown.filter(c => memberNodes.findIndex(x => c.value.vk === x.vk) > -1 || !c.value )
     $: selectedWallet = CoinStore.getByVk(modelData.account)
 
     let txData = {};
@@ -50,8 +46,28 @@
         close: () => closeModal()
     });
 
+    onMount(() => {
+        checkApproving = true
+        checkApproveAmount().then(res => {
+            let amount;
+            if (!res.value) {
+                amount = new BN(0)
+            } else if (res.value.__fixed__) {
+                amount = new BN(res.value.__fixed__)
+            } else {
+                amount = new BN(res.value)
+            }
+            if (amount.isGreaterThan(50)) { 
+                needApprove = false
+            } else {
+                needApprove = true
+            }
+            checkApproving = false
+        })
+    })
+
     const checkApproveAmount = async () => {
-        return await $currentNetwork.getVariable('currency', 'balances', `${selectedWallet.vk}:elect_masternodes`)
+        return await $currentNetwork.getVariable('currency', 'balances', `${modelData.account}:elect_masternodes`)
     }
 
     const nextPage = () => {
@@ -83,28 +99,6 @@
         nextPage()
     }
 
-    
-    const handleSelectedWallet = (e) => {
-        if (!e.detail.selected.value) return;
-        selectedWallet = e.detail.selected.value;
-        checkApproving = true
-        checkApproveAmount().then(res => {
-            let amount;
-            if (!res.value) {
-                amount = new BN(0)
-            } else if (res.value.__fixed__) {
-                amount = new BN(res.value.__fixed__)
-            } else {
-                amount = new BN(res.value)
-            }
-            if (amount.isGreaterThan(50)) { 
-                needApprove = false
-            } else {
-                needApprove = true
-            }
-            checkApproving = false
-        })
-    }
 
     const goVote = () => {
         needApprove = false
@@ -212,7 +206,7 @@
     <div class="flex-column">
         <h2>{`Vote`}</h2>
         {#if showAccountsDropdown}
-            <InputBox label="Account" value={formatAccountAddress(selectedWallet.vk, 8, 8)} disabled={true} margin="0 0 1rem 0" />
+            <InputBox label="Account" value={formatAccountAddress(modelData.account, 8, 8)} disabled={true} margin="0 0 1rem 0" />
         {/if}
         {#if !needApprove}
             <div class="flex padding text-body2 vote-box">

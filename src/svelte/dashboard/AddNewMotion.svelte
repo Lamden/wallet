@@ -39,10 +39,6 @@
 
     let modelData = getModalData();
 
-    $: netKey = networkKey($currentNetwork)
-    $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
-    $: memberNodes = nodes.filter(k => k.status === "node")
-    $: memberNodesAccount = $coinsDropDown.filter(c => memberNodes.findIndex(x => c.value.vk === x.vk) > -1 || !c.value )
     $: selectedWallet = CoinStore.getByVk(modelData.account)
 
     onMount(() => {

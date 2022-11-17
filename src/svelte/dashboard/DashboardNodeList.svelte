@@ -113,7 +113,7 @@
                 <!-- <div class="node-type header-text">Rewards</div> -->
                 <div class="node-type header-text">Status</div>
             </div>
-            {#each nodes as item }
+            {#each memberNodes as item }
                 <Node data={item} />
             {/each}
         </div>
@@ -127,7 +127,7 @@
                 <!-- <div class="node-type header-text">Rewards</div> -->
                 <div class="node-type header-text">Status</div>
             </div>
-            {#each nodes as item }
+            {#each candidateNodes as item }
                 <Node data={item} />
             {/each}
         </div>
@@ -141,7 +141,7 @@
                 <!-- <div class="node-type header-text">Rewards</div> -->
                 <div class="node-type header-text">Status</div>
             </div>
-            {#each nodes as item }
+            {#each unregisterNodes as item }
                 <Node data={item} />
             {/each}
         </div>
