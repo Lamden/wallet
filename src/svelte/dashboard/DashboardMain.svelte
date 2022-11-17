@@ -216,18 +216,6 @@
 <hr>
 {#if memberNodes.length > 0}
     <div class="node-list">
-        <div class="top-btns">
-            <button
-                id="add-node-btn"
-                class="button__small button__primary add-node-btn flex-row"
-                on:click={openNewNodeModal}
-            >
-                Add Node
-                <div class="icon">
-                    <ExpandIcon width="18px" color="var(--color-white)" />
-                </div>
-            </button>
-        </div>
         <div class="header header-text text-body1 weight-800">
             <div class="header-name header-text">My Network Nodes</div>
             <div class="node-type header-text">Type</div>
