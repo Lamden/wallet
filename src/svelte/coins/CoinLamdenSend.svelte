@@ -51,7 +51,7 @@
     let txui = "simple";  // "simple", "advanced";
     let txallInfo; // used to retry fetch result
 
-    let buferSize = 0.05;
+    let buferSize = 0.1;
 
     $: coin = modalData.coin;
 
