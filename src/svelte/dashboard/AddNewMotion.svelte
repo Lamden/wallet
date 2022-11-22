@@ -224,7 +224,7 @@
             <DropDown  
                 items={policies}
                 id={'policies'} 
-                label={'Select Policie'}
+                label={'Select Policy'}
                 margin="0 0 1rem 0"
                 required={true}
                 on:selected={(e) => handleSelectedPolicy(e)}
