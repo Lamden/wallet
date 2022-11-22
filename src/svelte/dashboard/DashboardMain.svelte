@@ -45,9 +45,7 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
-        getPolicies("election_house")
         getCurrentMasterNodeMotion()
-        console.log(nodes)
     })
 
     //Context
@@ -55,23 +53,6 @@
 
     const openNewNodeModal = () => {
         openModal("AddNewNode");
-    }
-
-    const openNewMotionModal = () => {
-        openModal("AddNewMotion");
-    }
-
-    const getMethods = async (contract) => {
-        let methods = await $currentNetwork.API.getContractMethods(contract)
-        console.log(methods)
-        //if (methods.length > 0) setArgs(methods[0], contract)
-    }
-
-    const getPolicies = async (contract) => {
-        return await fetch(`${$currentNetwork.blockservice.host}/contracts/${contract}`)
-            .then(res => res.json())
-            .then(data => data[contract].policies)
-        //if (methods.length > 0) setArgs(methods[0], contract)
     }
 
     const getCurrentMasterNodeMotion = async () => {
@@ -113,6 +94,7 @@
             case 1:
                 // REMOVE_MEMBER
                 motion.name = "Remove Member"
+                motion.desc = `This is a motion to remove member ${data.member_in_question}`
                 break;
             case 2:
                 // ADD_SEAT

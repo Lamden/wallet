@@ -1,8 +1,10 @@
 <script>
     import { getContext, onMount } from 'svelte';
+
+    import policy from '../../../policy.json'
     
 	//Stores
-    import { coinsDropDown, currentNetwork, NodesStore, CoinStore, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork, CoinStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
@@ -14,12 +16,15 @@
     //Utils
     import { formatKwargs, formatAccountAddress} from '../../js/utils.js'
 
+    import Lamden from "lamden-js";
+    const { Encoder } = Lamden;
+
     //DOM Nodes
     let formObj;
 
     let buferSize = 0.05;
 
-    let selectedPolicie;
+    let selectedPolicie, selectedMotion;
     let args = []
     let txData = {};
     let resultInfo = {};
@@ -27,6 +32,11 @@
     let policies = [{
         value: undefined,
         name: `Select Policie`,
+        selected: true
+    }]
+    let motions = [{
+        value: undefined,
+        name: `Select Motion`,
         selected: true
     }]
 
@@ -42,7 +52,7 @@
     $: selectedWallet = CoinStore.getByVk(modelData.account)
 
     onMount(() => {
-        getPolicies("election_house")
+        getPolicies()
     })
 
     const handleSubmit = () => {
@@ -51,45 +61,76 @@
         }
     }
 
-    const getPolicies = async (contract) => {
+    const getPolicies = () => {
         let list = [{
             value: undefined,
             name: `Select Policie`,
             selected: true
         }]
 
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${contract}`)
-            .then(res => res.json())
-            .then(data => data[contract].policies)
-        for (const [key, value] of Object.entries(data)) {
-            if (value) {
-                list.push({
-                    name: key,
-                    value: key,
-                })
-            }
+        for (const key of Object.keys(policy)) {
+            list.push({
+                name: key,
+                value: key,
+            })
         }
         policies = list
     }
 
-    const handleSelectedMotion = (e) => {
-        if (!e.detail.selected.value) return;
-        selectedPolicie = e.detail.selected.value;
-        getVoteArgType(selectedPolicie)
+    const getMotions = () => {
+        let list = [{
+            value: undefined,
+            name: `Select Motion`,
+            selected: true
+        }]
+
+        for (const key of Object.keys(policy[selectedPolicie])) {
+            list.push({
+                name: key,
+                value: key,
+            })
+        }
+        motions = list
     }
 
-    const getVoteArgType = async (contract) => {
-        let methods = await $currentNetwork.API.getContractMethods(contract)
-        let data = methods.find(x => x.name === 'vote').arguments
-        let obj = data.find(t => t.name === 'obj')
-        obj.name = "value"
-        args = [obj]
+    const handleSelectedPolicy = (e) => {
+        if (!e.detail.selected.value) return;
+        selectedPolicie = e.detail.selected.value;
+        getMotions();                                               
+    }
+
+    const handleSelectedMotion = (e) => {
+        if (!e.detail.selected.value) return;
+        selectedMotion = e.detail.selected.value;
+        if (policy[selectedPolicie][selectedMotion] instanceof Array) {
+            args = [...policy[selectedPolicie][selectedMotion].filter(x => x.show)];  
+        } else {
+            args = [policy[selectedPolicie][selectedMotion]];  
+        }                                                
     }
 
     const handleNewArgValues = (e) => {
-        kwargs = e.detail.argumentList
+        kwargs = []
+        if (!selectedPolicie || !selectedMotion) return []
+        if (policy[selectedPolicie][selectedMotion] instanceof Array) {
+            const obj = [...policy[selectedPolicie][selectedMotion]]
+            for (const k of e.detail.argumentList) {
+                for (var i=0; i< obj.length; i++) {
+                    if (obj[i].name === k.name) {
+                        obj[i].value = k.value
+                    }
+                }
+            }
+            kwargs.push({
+                name: "value",
+                type: "Any",
+                value: obj.map(x => x.value && Encoder(x.type, x.value))
+            })
+        } else {
+            kwargs = [...e.detail.argumentList]
+        }
         kwargs.push({name: "policy", type: "str", value: selectedPolicie})
-        // {name: "policy", type: "str"}
+        console.log(kwargs)
     }
 
     const nextPage = () => {
@@ -184,6 +225,14 @@
                 items={policies}
                 id={'policies'} 
                 label={'Select Policie'}
+                margin="0 0 1rem 0"
+                required={true}
+                on:selected={(e) => handleSelectedPolicy(e)}
+            />
+            <DropDown  
+                items={motions}
+                id={'motions'} 
+                label={'Select Motion'}
                 margin="0 0 1rem 0"
                 required={true}
                 on:selected={(e) => handleSelectedMotion(e)}

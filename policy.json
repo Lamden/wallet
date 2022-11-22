@@ -1,0 +1,72 @@
+{
+    "masternodes": {
+        "Add Seat": [{
+            "type": "str",
+            "name": "introduce_motion",
+            "value": "introduce_motion"
+        }, {
+            "type": "int",
+            "name": "motion",
+            "value": 2
+        }],
+        "Remove Seat": [{
+            "type": "str",
+            "name": "introduce_motion",
+            "value": "introduce_motion"
+        }, {
+            "type": "int",
+            "name": "motion",
+            "value": 3
+        }],
+        "Remove Member": [{
+            "type": "str",
+            "name": "introduce_motion",
+            "value": "introduce_motion"
+        }, {
+            "type": "int",
+            "name": "motion",
+            "value": 1
+        }, {
+            "type": "str",
+            "name": "vk",
+            "show": true
+        }]
+    },
+    "con_dao": {
+        "Funds": [{
+            "type": "str",
+            "name": "recipient",
+            "show": true
+        },{
+            "type": "float",
+            "name": "amount",
+            "show": true
+        }]
+    },
+    "rewards": {
+        "Rewards": [{
+            "type": "int",
+            "name": "masternodes",
+            "show": true
+        },{
+            "type": "int",
+            "name": "blackhole",
+            "show": true
+        },{
+            "type": "int",
+            "name": "foundation",
+            "show": true
+        },{
+            "type": "int",
+            "name": "developer",
+            "show": true
+        }]
+    },
+    "stamp_cost": {
+        "Stamp Cost": {
+            "type": "int",
+            "name": "value",
+            "show": true
+        }
+    }
+}

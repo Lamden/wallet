@@ -99,6 +99,9 @@
           <div class="status">{data.status}</div>
         </div>
         {#if collapseStatus}
+          {#if data.desc}
+          <div class="motion-info">{data.desc}</div>
+          {/if}
           <div class="header header-text votes">
               <div class="header-name header-text">Votes</div>
           </div>
@@ -132,6 +135,10 @@
   </div>
   
   <style>
+    .motion-info {
+      margin-top: 1rem;
+      margin-left: 5rem;
+    }
     .vote-res {
       width: 240px;
       display: flex;
@@ -143,19 +150,10 @@
     .votes {
       margin-top: 1.5rem;
     }
-    .details {
-      padding-left: 82px;
-      margin-bottom: 1.5rem;
-      margin-top: 0.8rem;
-    }
     .vote {
       display: flex;
       align-items: center;
       padding: 1rem 28px 0 0;
-    }
-    .coin-btns {
-      flex-wrap: wrap;
-      display: flex;
     }
     .wrap {
       width: 100%;
