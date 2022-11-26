@@ -63,6 +63,16 @@ export const dappController = (utils, funa, actions) => {
         if (!validateTypes.isStringWithValue(messageData.version)) {
             errors.push("'version' <string> required to process connect request")
         }
+
+        // default network version 1
+        if (!messageData.networkVersion) {
+            messageData.networkVersion = 1
+        }
+
+        if (messageData.networkVersion !== 1 || messageData.networkVersion !== 2) {
+            errors.push("'networkVersion' <int> must be 1 or 2")
+        }
+
         if (typeof messageData.charms !== 'undefined') {
             if (validateTypes.isArrayWithValues(messageData.charms)){
                 messageData.charms.forEach((charm, index) => {
@@ -164,12 +174,14 @@ export const dappController = (utils, funa, actions) => {
     }
     
     const addNew = (appUrl, vk, messageData, trustedApp) => {
+        let syu = `${networkObj.name}|${networkObj.type}`
         //remvove trailing slash from url
         if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
         if (!dappsStore[appUrl][messageData.networkType]) dappsStore[appUrl][messageData.networkType] = {}
         dappsStore[appUrl][messageData.networkType].contractName = messageData.contractName
         dappsStore[appUrl][messageData.networkType].trustedApp = trustedApp;
         dappsStore[appUrl][messageData.networkType].version = messageData.version;
+        dappsStore[appUrl][messageData.networkType].networkVersion = messageData.networkVersion;
         //Remove slashes at start of icon paths
         if (utils.validateTypes.isArrayWithValues(messageData.charms)){
             messageData.charms.forEach(charm => {
@@ -196,6 +208,7 @@ export const dappController = (utils, funa, actions) => {
         }
         dappsStore[dappInfo.url].logo = utils.addCharAtStart(connectionInfo.logo, '/')
         dappsStore[dappInfo.url][connectionInfo.networkType].version = connectionInfo.version
+        dappsStore[dappInfo.url][connectionInfo.networkType].networkVersion = connectionInfo.networkVersion
         if (typeof connectionInfo.charms !== 'undefined') {
             dappsStore[dappInfo.url][connectionInfo.networkType].charms = connectionInfo.charms
         }else{
