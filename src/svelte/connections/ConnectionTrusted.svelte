@@ -22,13 +22,14 @@
     //Props
     export let dappInfo;
 
-    let trusted = dappInfo[$currentNetwork.type].trustedApp;
+    let symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
+    let trusted = dappInfo[symbol].trustedApp;
     let sending = false;
     let brokenLogoLink = false;
 
     onMount(() => {
         if (typeof trusted === 'undefined') {
-            if (dappInfo[$currentNetwork.type].stampPreApproval > 0){
+            if (dappInfo[symbol].stampPreApproval > 0){
                 trusted = true;
             }else{
                 trusted = false;
@@ -39,7 +40,7 @@
 
     const handleChange = () => {
         sending = true;
-        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
+        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkVersion: $currentNetwork.version, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
             sending = false;
         })
     }
@@ -109,7 +110,7 @@
     <p class="text-body2">
         Automatic transactions make for a better user experience as some DApps can send frequent transactions.
         Once automatic transactions are enabled you will no longer receive popups when <strong>{dappInfo.appName}</strong> sends transations
-        to its smart contract <strong>{dappInfo[$currentNetwork.type].contractName}</strong>.  Transactions to other contracts will always trigger a popup.
+        to its smart contract <strong>{dappInfo[symbol].contractName}</strong>.  Transactions to other contracts will always trigger a popup.
     </p>
     <a class="text-link" href="https://docs.lamden.io/docs/wallet/accounts_linked_create#make-account-trusted" rel="noopener noreferrer" target="_blank">
         learn more about automatic transactions

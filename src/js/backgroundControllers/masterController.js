@@ -168,7 +168,7 @@ export const masterController = () => {
     if (walletInfo.locked === false) {
       let approvals = {};
       Object.keys(dappInfo).forEach((key) => {
-        if (utils.networks.LamdenNetworkTypes.includes(key)) {
+        if (utils.networks.LamdenNetworkTypes.includes(key.replace(/V\d\|/i, ""))) {
           approvals[key] = dappInfo[key];
           if (!approvals[key].version) approvals[key].version = "0.0.1";
         }
@@ -280,6 +280,17 @@ export const masterController = () => {
     try {
       //Make sure the txInfo was a JSON string (for security)
       txInfo = JSON.parse(data);
+      // check networkVersion
+      if (txInfo.networkVersion) {
+        if (txInfo.networkVersion !== 1 && txInfo.networkVersion !== 2) {
+            errors = [
+              "'networkVersion' <int> must be 1 or 2",
+            ];
+            return makeTxStatus(undefined, errors, txInfo.uid);
+          }
+      } else {
+          txInfo.networkVersion = 1
+      }
     } catch (err) {
       return makeTxStatus(undefined, [
         "Failed to Parse JSON object",
@@ -306,7 +317,8 @@ export const masterController = () => {
 
       //Get the Lamden Network Object for the network types specified in the txInfo request
       const network = utils.networks.getLamdenNetwork(
-        txInfo.networkType.toLowerCase()
+        txInfo.networkType.toLowerCase(),
+        txInfo.networkVersion
       );
       if (!network) {
         errors = [
@@ -316,7 +328,7 @@ export const masterController = () => {
       }
 
       //Reject transaction attempt if network type has not been approved
-      if (!dappInfo[txInfo.networkType.toLowerCase()]) {
+      if (!dappInfo[`V${txInfo.networkVersion}|${txInfo.networkType.toLowerCase()}`]) {
         errors = [
           `Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`,
         ];
@@ -324,6 +336,7 @@ export const masterController = () => {
       }
 
       try {
+        let symbol = `V${txInfo.networkVersion}|${txInfo.networkType}`
         //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
         const wallet = accounts.getAccountByVK(dappInfo.vk);
         //Set senderVk to the one assocated with this dapp
@@ -342,14 +355,14 @@ export const masterController = () => {
             //Check if the provided contract Name differs from the approved one
             // If so, then force the user to approve the transaction (ignoring auto tx settings)
             if (
-              txInfo.contractName !== dappInfo[txInfo.networkType].contractName
+              txInfo.contractName !== dappInfo[symbol].contractName
             ) {
               forceTxApproval = true;
             }
           }
         } else {
           //Set the contract name to the one approved by the user for the dApp
-          txInfo.contractName = dappInfo[txInfo.networkType].contractName;
+          txInfo.contractName = dappInfo[symbol].contractName;
         }
 
         if (txInfo.stampLimit) {
@@ -362,7 +375,7 @@ export const masterController = () => {
           if (approvalRequest) {
             promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
           } else {
-            if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+            if (dappInfo[symbol].trustedApp && !forceTxApproval) {
               transactions.sendLamdenTx(txBuilder, dappInfo.url);
             } else {
               promptApproveTransaction(sender, {
@@ -399,7 +412,7 @@ export const masterController = () => {
               if (approvalRequest) {
                 promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
               } else {
-                if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+                if (dappInfo[symbol].trustedApp && !forceTxApproval) {
                   transactions.sendLamdenTx(txBuilder, dappInfo.url);
                 } else {
                   promptApproveTransaction(sender, {
@@ -440,7 +453,8 @@ export const masterController = () => {
     } else {
       const windowId = utils.createUID();
       messageData.network = utils.networks.getLamdenNetwork(
-        messageData.networkType
+        messageData.networkType,
+        messageData.networkVersion
       );
       messageData.accounts = accounts.getSanatizedAccounts();
       if (reapprove) {
@@ -496,31 +510,6 @@ export const masterController = () => {
       }
       return false;
     }
-  };
-
-  const checkSwapSeenHashes = (data, callback = undefined) => {
-    const { hash } = data;
-    let network = utils.networks.getLamdenNetwork("mainnet");
-    let keyInfo = {
-      contractName: "con_token_swap",
-      variableName: "seen_hashes",
-      key: hash,
-    };
-    let lookupKeyStr = `${keyInfo.contractName}.${keyInfo.variableName}:${keyInfo.key}`;
-    network.blockExplorer_API.getKeys([keyInfo]).then((res) => {
-      if (!res || !Array.isArray(res)) {
-        callback(null);
-        return;
-      }
-
-      let returnedValue = res.find((kvp) => kvp.key === lookupKeyStr);
-      if (returnedValue) {
-        callback(returnedValue.value);
-      } else {
-        callback(null);
-      }
-    });
-    return true;
   };
 
   // vertify the password and view private key
@@ -642,7 +631,6 @@ export const masterController = () => {
     initiateAppTxSend,
     initiateDAppTxSend,
     promptApproveDapp,
-    checkSwapSeenHashes,
     joinSockets,
     leaveSockets,
     joinTokenSockets,

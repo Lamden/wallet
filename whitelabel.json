@@ -12,7 +12,9 @@
             "lamden": true, 
             "currencySymbol": "TAU",
             "blockExplorer": "https://www.tauhq.com",
-            "blockservice_hosts": ["http://165.22.47.195:3535"]
+            "blockservice_hosts": ["http://165.22.47.195:3535"],
+            "nameService": "",
+            "version": 1
         },
         {
             "name": "Lamden Testnet", 
@@ -21,7 +23,9 @@
             "lamden": true, 
             "currencySymbol": "dTAU",
             "blockExplorer": "https://testnet.lamden.io",
-            "blockservice_hosts": ["http://165.227.181.34:3535"]
+            "blockservice_hosts": ["http://165.227.181.34:3535"],
+            "nameService": "",
+            "version": 1
         },
         {
             "name": "Lamden Testnet_V2", 
@@ -30,7 +34,8 @@
             "lamden": true, 
             "currencySymbol": "dTAU2",
             "blockExplorer": "https://testnetv2.tauhq.com",
-            "blockservice_hosts": ["https://testnet-v2-bs-lon.lamden.io", "https://testnet-v2-bs-sf.lamden.io", "https://testnet-v2-bs-bang.lamden.io"]
+            "blockservice_hosts": ["https://testnet-v2-bs-lon.lamden.io", "https://testnet-v2-bs-sf.lamden.io", "https://testnet-v2-bs-bang.lamden.io"],
+            "version": 2
         }
     ],
     "firstRun_setup":{

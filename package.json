@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -30,6 +30,10 @@
     "test-backup-view-accounts": "mocha --timeout 60000 selenium/tests/ui/backup/backup-view-accounts.js",
     "test-misc": "mocha --timeout 60000  selenium/tests/ui/misc/*.js",
     "test-misc-network": "mocha --timeout 60000  selenium/tests/ui/misc/network.js",
+    "test-dapps-wallet-connect-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletConnect_v2.js",
+    "test-dapps-get-info-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletGetInfo_v2.js",
+    "test-dapps-sendtx-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletSendTx_v2.js",
+    "test-dapps-sendx-backtoback-v2": "mocha --timeout 60000 selenium/tests/dapp/content_landenWalletSendTxBacktoBack_v2.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -38,7 +42,7 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.12.0",
-    "chromedriver": "^106.0.1",
+    "chromedriver": "^107.0.3",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "2.1.0",
