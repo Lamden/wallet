@@ -9,7 +9,7 @@ const assert = require('assert');
 const { CryptoJS } = nodeCryptoJs;
 const mnemonicWords = require("../fixtures/mnemonic.json")
 
-const { testnetMasternode, testnetBlockService } = config;
+const { testnetMasternode, testnetBlockService, testnetBlockService_v2} = config;
 
 const wait_sync = (seconds) => {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, seconds);
@@ -147,6 +147,13 @@ const lockWallet = async (driver, switchback) => {
 const changeToTestnet = async (driver) => {
     await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
     let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-1")), 5000);
+    navNetwork.click()
+    await sleep(2000, true)
+}
+
+const changeToTestnetV2 = async (driver) => {
+    await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
+    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-2")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
@@ -364,7 +371,7 @@ const getAccountBalance = (vk) => {
     })
 }
 
-const getApprovalAmount = (sender, to) => {
+const getApprovalAmount = (sender, to, version = 1) => {
     return new Promise(resolver => {
         const resolveRequest = (data) => {
             if (typeof data.value === 'undefined') return resolver(0)
@@ -372,8 +379,9 @@ const getApprovalAmount = (sender, to) => {
             if (data.value.__fixed__) return resolver(parseInt(data.value.__fixed__))
             else return resolver(parseInt(data.value))  
         }
-        console.log(`${testnetBlockService}/current/one/currency/balances/${sender}:${to}`)
-        makeHttpRequest(`${testnetBlockService}/current/one/currency/balances/${sender}:${to}`, resolveRequest)
+        let api = version === 2 ? testnetBlockService_v2 : testnetBlockService
+        console.log(`${api}/current/one/currency/balances/${sender}:${to}`)
+        makeHttpRequest(`${api}/current/one/currency/balances/${sender}:${to}`, resolveRequest)
     })
 }
 
@@ -545,5 +553,6 @@ module.exports = {
     clearNetwork,
     fillNetworkForm,
     gotoBackup,
-    createUID
+    createUID,
+    changeToTestnetV2
 }

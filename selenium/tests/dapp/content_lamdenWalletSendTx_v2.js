@@ -6,9 +6,8 @@ let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config");
 const helpers = require("../../helpers/helpers");
 let walletInfo = require("../../fixtures/walletInfo");
-let dappsInfo = require("../../fixtures/dappsInfo.json");
-var validators = require("types-validate-assert");
-const { validateTypes } = validators;
+let dappsInfo = require("../../fixtures/dappsInfo_v2.json");
+
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -32,6 +31,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       walletInfo,
       false
     );
+    await helpers.changeToTestnetV2(driver)
   });
 
   after(() => {
@@ -193,7 +193,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       await change_Button.click();
       let msg = await driver.findElement(By.css(".error-msg")).getText();
       let stamps = await driver.findElement(By.id("stamps")).getText();
-      assert.equal(msg, "Insufficient dTAU to pay for stamps");
+      assert.equal(msg, "Insufficient dTAU2 to pay for stamps");
       assert.equal(stamps.includes("99999999"), true);
       await helpers.sleep(1000);
     });
@@ -232,7 +232,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals[`V${transaction.networkVersion}|${transaction.networkType}`].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit + 1);
@@ -257,7 +257,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals[`V${transaction.networkVersion}|${transaction.networkType}`].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);
@@ -266,7 +266,8 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       this.timeout(60000);
       let currentApprovalAmount = await helpers.getApprovalAmount(
         connectionInfo.wallets[0],
-        dappsInfo.approvalTransaction.kwargs.to
+        dappsInfo.approvalTransaction.kwargs.to,
+        2
       );
       console.log({ currentApprovalAmount });
       let transaction = helpers.getInstance(dappsInfo.approvalTransaction);
@@ -276,7 +277,8 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       await helpers.sleep(40000);
       let afterApprovalAmount = await helpers.getApprovalAmount(
         connectionInfo.wallets[0],
-        dappsInfo.approvalTransaction.kwargs.to
+        dappsInfo.approvalTransaction.kwargs.to,
+        2
       );
       console.log({ afterApprovalAmount });
       assert.equal(
@@ -309,7 +311,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals[`V${transaction.networkVersion}|${transaction.networkType}`].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);

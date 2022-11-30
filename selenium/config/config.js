@@ -49,6 +49,7 @@ const config = {
     walletExtentionID: chromeConfig.walletExtentionID,
     port: 5656,
     testnetMasternode: "https://testnet-master-1.lamden.io:443",
-    testnetBlockService: "http://165.227.181.34:3535"
+    testnetBlockService: "http://165.227.181.34:3535",
+    testnetBlockService_v2: "https://testnet-v2-bs-lon.lamden.io"
 }
 module.exports = config

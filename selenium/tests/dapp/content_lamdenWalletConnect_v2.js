@@ -1,25 +1,16 @@
 const assert = require('assert');
-const {Builder, By, until} = require('selenium-webdriver');
+const {Builder, By} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
 let walletInfo = require("../../fixtures/walletInfo")
-let dappsInfo = require("../../fixtures/dappsInfo.json")
+let dappsInfo = require("../../fixtures/dappsInfo_v2.json")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
-/*
-NEEDS THE FOLLOWING SMART CONTRACTS ON TESTNET
-
-con_wallet_testing
-con_wallet_testing_2
-
-*/
-
 describe('Content Script - Testing Dapp Connection API', function () {
     let driver;
-    let connectionInfo;
     let httpServer;
 
     before(async function() {
@@ -317,12 +308,13 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response;
             
+            console.log(response)
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V1|testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['V1|testnet'].version, connection.version);
-            assert.equal(response.approvals['V1|testnet'].trustedApp, true);
-            assert.equal(response.approvals['V1|testnet'].charms.length, 1);
+            assert.equal(response.approvals['V2|testnet'].contractName, connection.contractName);
+            assert.equal(response.approvals['V2|testnet'].version, connection.version);
+            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
+            assert.equal(response.approvals['V2|testnet'].charms.length, 1);
         });
         it('POPUP: Can Update connection info if version is greater', async function() {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_basic)
@@ -334,10 +326,10 @@ describe('Content Script - Testing Dapp Connection API', function () {
             
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V1|testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['V1|testnet'].version, dappsInfo.updatedConnectionInfo_basic.version);
-            assert.equal(response.approvals['V1|testnet'].trustedApp, true);
-            assert.equal(response.approvals['V1|testnet'].charms.length, 2);
+            assert.equal(response.approvals['V2|testnet'].contractName, connection.contractName);
+            assert.equal(response.approvals['V2|testnet'].version, dappsInfo.updatedConnectionInfo_basic.version);
+            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
+            assert.equal(response.approvals['V2|testnet'].charms.length, 2);
         });
         it('POPUP: Can Update smart contract after reapproval if version is greater', async function() {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_smartcontract)
@@ -350,10 +342,10 @@ describe('Content Script - Testing Dapp Connection API', function () {
             
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V1|testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['V1|testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
-            assert.equal(response.approvals['V1|testnet'].trustedApp, true);
-            assert.equal(typeof response.approvals['V1|testnet'].charms === 'undefined', true);
+            assert.equal(response.approvals['V2|testnet'].contractName, connection.contractName);
+            assert.equal(response.approvals['V2|testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
+            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
+            assert.equal(typeof response.approvals['V2|testnet'].charms === 'undefined', true);
         });
         it('Does nothing if a smart contract update is sent with an equal or lower version', async function() {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_basic)
@@ -371,10 +363,10 @@ describe('Content Script - Testing Dapp Connection API', function () {
 
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V1|testnet'].contractName, dappsInfo.updatedConnectionInfo_smartcontract.contractName);
-            assert.equal(response.approvals['V1|testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
-            assert.equal(response.approvals['V1|testnet'].trustedApp, true);
-            assert.equal(typeof response.approvals['V1|testnet'].charms === 'undefined', true);
+            assert.equal(response.approvals['V2|testnet'].contractName, dappsInfo.updatedConnectionInfo_smartcontract.contractName);
+            assert.equal(response.approvals['V2|testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
+            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
+            assert.equal(typeof response.approvals['V2|testnet'].charms === 'undefined', true);
         });
     })
 })

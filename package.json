@@ -30,6 +30,10 @@
     "test-backup-view-accounts": "mocha --timeout 60000 selenium/tests/ui/backup/backup-view-accounts.js",
     "test-misc": "mocha --timeout 60000  selenium/tests/ui/misc/*.js",
     "test-misc-network": "mocha --timeout 60000  selenium/tests/ui/misc/network.js",
+    "test-dapps-wallet-connect-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletConnect_v2.js",
+    "test-dapps-get-info-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletGetInfo_v2.js",
+    "test-dapps-sendtx-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletSendTx_v2.js",
+    "test-dapps-sendx-backtoback-v2": "mocha --timeout 60000 selenium/tests/dapp/content_landenWalletSendTxBacktoBack_v2.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {

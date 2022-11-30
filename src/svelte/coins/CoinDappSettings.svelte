@@ -32,12 +32,12 @@
 
     $: symbol = coin.is_token ? coin.token_symbol : coin.symbol;
     $: balance = displayBalance(BalancesStore.getBalance($currentNetwork, coin.vk).toLocaleString('en'))
-    $: trustedApp = dappInfo[$currentNetwork.type].trustedApp;
+    $: trustedApp = dappInfo[symbol].trustedApp;
     $: ratio = 0;
     $: addressLink = `${$currentNetwork.blockExplorer}/addresses/${coin.vk}`
     $: options = [
         {id: 'preapproval-btn', name: 'Automatic Transactions', desc: `get rid of popups`, icon: verified_app, color: 'primary', click: () => showPreApprove() },
-        {id: 'revoke-btn', name: 'Revoke Access', desc: `remove access to ${$currentNetwork.type}`, icon: deleteIcon, color: 'grey', click: () => showRevokeAccess() }
+        {id: 'revoke-btn', name: 'Revoke Access', desc: `remove access to ${symbol}`, icon: deleteIcon, color: 'grey', click: () => showRevokeAccess() }
     ]
 
     onMount(() => {
@@ -144,7 +144,7 @@ p{
             </div>
             <div class="flex-row align-center">
                 <p>Contract Name:</p>
-                <p>{dappInfo[$currentNetwork.type].contractName}</p>
+                <p>{dappInfo[symbol].contractName}</p>
             </div>
             <div class="flex-row align-center">
                 <p>Account Address:</p>

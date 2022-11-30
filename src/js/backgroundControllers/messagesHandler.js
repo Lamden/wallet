@@ -41,17 +41,18 @@ export const messagesHandler = (masterController) => {
                 return
             }else{
                 try{
+                    let symbol = `V${connectionMessage.networkVersion}|${connectionMessage.networkType}`
                     //If this dApp is already approved get send the wallet info
-                    if (dappInfo[connectionMessage.networkType].contractName === connectionMessage.contractName){
+                    if (dappInfo[symbol].contractName === connectionMessage.contractName){
                         //if the connection info is a greater version than the one that exists
-                        let version = dappInfo[connectionMessage.networkType].version || "0.0.1"
+                        let version = dappInfo[symbol].version || "0.0.1"
                         if (connectionMessage.version > version){
                             masterController.dapps.updateDapp(dappInfo, connectionMessage)
                         }
                         sendResponse(masterController.getWalletInfo(dappInfo));
                         return
                     }else{
-                        let version = dappInfo[connectionMessage.networkType].version || "0.0.1"
+                        let version = dappInfo[symbol].version || "0.0.1"
                         if (connectionMessage.version > version){
                             masterController.promptApproveDapp(sender, connectionMessage, true, dappInfo)
                             

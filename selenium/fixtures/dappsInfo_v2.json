@@ -1,0 +1,68 @@
+{
+    "basicConnectionInfo": {
+        "appName": "Dapp Testing",
+        "version": "1.0.0",
+        "contractName": "con_wallet_testing",
+        "networkType": "testnet",
+        "networkVersion": 2,
+        "logo": "/images/logo.png"
+    },
+    "charmsInfo": [{
+        "formatAs": "string",
+        "iconPath": "/images/charm.png",
+        "variableName": "yourState",
+        "key": "wallet_testing",
+        "name": "Testing Value"
+    }],
+    "updatedConnectionInfo_basic": {
+        "appName": "Dapp Testing Updating",
+        "version": "1.0.1",
+        "contractName": "con_wallet_testing",
+        "networkType": "testnet",
+        "logo": "/images/logo2.png",
+        "networkVersion": 2,
+        "backgound": "/images/background2.png"
+    },
+    "updatedConnectionInfo_smartcontract": {
+        "appName": "Dapp Testing Updating",
+        "version": "1.0.2",
+        "contractName": "con_wallet_testing_2",
+        "networkType": "testnet",
+        "logo": "/images/logo2.png",
+        "networkVersion": 2,
+        "backgound": "/images/background2.png"
+    },
+    "background": "/images/background.png",
+    "basicTransactionInfo":{
+        "methodName": "set_value",
+        "networkType": "testnet",
+        "networkVersion": 2,
+        "kwargs":{
+            "key_name": "con_wallet_testing",
+            "key_value" : ""
+        },
+        "stampLimit": 30
+    },
+    "approvalTransaction": {
+        "contractName": "currency",
+        "methodName": "approve",
+        "networkType": "testnet",
+        "networkVersion": 2,
+        "kwargs":{
+            "to": "con_wallet_testing",
+            "amount" : 1
+        },
+        "stampLimit": 20
+    },
+    "nonStandardTransactionInfo":{
+        "contractName": "con_wallet_testing_2",
+        "methodName": "set_value",
+        "networkType": "testnet",
+        "networkVersion": 2,
+        "kwargs":{
+            "key_name": "con_wallet_testing_2",
+            "key_value" : ""
+        },
+        "stampLimit": 20
+    }
+}
