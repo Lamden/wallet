@@ -4,7 +4,7 @@ let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
 let walletInfo = require("../../fixtures/walletInfo")
-let dappsInfo = require("../../fixtures/dappsInfo.json")
+let dappsInfo = require("../../fixtures/dappsInfo_v2.json")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -58,7 +58,7 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
         assert.equal(response.locked, false)
         assert.equal(response.walletVersion.length > 0, true)
         assert.equal(response.wallets.length > 0, true)
-        assert.equal(response.approvals[`V1|${dappsInfo.basicConnectionInfo.networkType}`].contractName, dappsInfo.basicConnectionInfo.contractName)
+        assert.equal(response.approvals[`V${dappsInfo.basicConnectionInfo.networkVersion}|${dappsInfo.basicConnectionInfo.networkType}`].contractName, dappsInfo.basicConnectionInfo.contractName)
     });
 
     it('Hide info when wallet is locked', async function() {

@@ -23,7 +23,7 @@
             "lamden": true, 
             "currencySymbol": "dTAU",
             "blockExplorer": "https://testnet.lamden.io",
-            "blockservice_hosts": [],
+            "blockservice_hosts": ["http://165.227.181.34:3535"],
             "nameService": "",
             "version": 1
         },

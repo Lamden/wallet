@@ -170,7 +170,7 @@ export const masterController = () => {
     if (walletInfo.locked === false) {
       let approvals = {};
       Object.keys(dappInfo).forEach((key) => {
-        if (utils.networks.LamdenNetworkTypes.includes(key)) {
+        if (utils.networks.LamdenNetworkTypes.includes(key.replace(/V\d\|/i, ""))) {
           approvals[key] = dappInfo[key];
           if (!approvals[key].version) approvals[key].version = "0.0.1";
         }
@@ -284,7 +284,7 @@ export const masterController = () => {
       txInfo = JSON.parse(data);
       // check networkVersion
       if (txInfo.networkVersion) {
-        if (txInfo.networkVersion !== 1 || txInfo.networkVersion !== 2) {
+        if (txInfo.networkVersion !== 1 && txInfo.networkVersion !== 2) {
             errors = [
               "'networkVersion' <int> must be 1 or 2",
             ];
@@ -330,7 +330,7 @@ export const masterController = () => {
       }
 
       //Reject transaction attempt if network type has not been approved
-      if (!dappInfo[txInfo.networkType.toLowerCase()]) {
+      if (!dappInfo[`V${txInfo.networkVersion}|${txInfo.networkType.toLowerCase()}`]) {
         errors = [
           `Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`,
         ];
@@ -338,6 +338,7 @@ export const masterController = () => {
       }
 
       try {
+        let symbol = `V${txInfo.networkVersion}|${txInfo.networkType}`
         //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
         const wallet = accounts.getAccountByVK(dappInfo.vk);
         //Set senderVk to the one assocated with this dapp
@@ -356,14 +357,14 @@ export const masterController = () => {
             //Check if the provided contract Name differs from the approved one
             // If so, then force the user to approve the transaction (ignoring auto tx settings)
             if (
-              txInfo.contractName !== dappInfo[txInfo.networkType].contractName
+              txInfo.contractName !== dappInfo[symbol].contractName
             ) {
               forceTxApproval = true;
             }
           }
         } else {
           //Set the contract name to the one approved by the user for the dApp
-          txInfo.contractName = dappInfo[txInfo.networkType].contractName;
+          txInfo.contractName = dappInfo[symbol].contractName;
         }
 
         if (txInfo.stampLimit) {
@@ -376,7 +377,7 @@ export const masterController = () => {
           if (approvalRequest) {
             promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
           } else {
-            if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+            if (dappInfo[symbol].trustedApp && !forceTxApproval) {
               transactions.sendLamdenTx(txBuilder, dappInfo.url);
             } else {
               promptApproveTransaction(sender, {
@@ -413,7 +414,7 @@ export const masterController = () => {
               if (approvalRequest) {
                 promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
               } else {
-                if (dappInfo[txBuilder.type].trustedApp && !forceTxApproval) {
+                if (dappInfo[symbol].trustedApp && !forceTxApproval) {
                   transactions.sendLamdenTx(txBuilder, dappInfo.url);
                 } else {
                   promptApproveTransaction(sender, {

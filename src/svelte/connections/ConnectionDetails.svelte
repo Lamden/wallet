@@ -37,13 +37,14 @@
     let copied = false
 
 
+    $: symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
     $: dapp = $SettingsStore.currentPage.data
     $: dappInfo = $DappStore[dapp.url]
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
     $: dappLinkedAccount = dappInfo ? dappInfo.vk : false;
     $: background = dappInfo ? dappInfo.background ? brokenBGLink ?  dapp_default_bg : `${dappInfo.url}${dappInfo.background}` : dapp_default_bg : hero_bg
-    $: thisNetworkApproved = dappInfo ? typeof dappInfo[$currentNetwork.type] === 'undefined' ? false : true : false;
-    $: trustedApp = thisNetworkApproved ? dappInfo[$currentNetwork.type].trustedApp : false;
+    $: thisNetworkApproved = dappInfo ? typeof dappInfo[symbol] === 'undefined' ? false : true : false;
+    $: trustedApp = thisNetworkApproved ? dappInfo[symbol].trustedApp : false;
     $: addressLookupURL = dappInfo ? $currentNetwork.blockExplorer : undefined;
 
 	onMount(() => {
@@ -195,7 +196,7 @@
                         </div>
                         <div class="flex-row align-center">
                             <p>Contract Name:</p>
-                            <p>{dappInfo[$currentNetwork.type].contractName}</p>
+                            <p>{dappInfo[symbol].contractName}</p>
                         </div>
                     {/if}
                 </div>
