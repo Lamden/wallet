@@ -67,6 +67,7 @@
   style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle});`}
 >
   {#if label !== ""}
+    <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="inputbox-label"> {label} </label>
   {/if}
 

@@ -21,7 +21,6 @@
   export let innerHeight = "unset";
   export let classes = "";
   export let required = false;
-  export let sideBox = false;
   export let boxHeight = "242px";
   export let bgStyle = "primary";
   export let logoWidth = "20px";
@@ -79,6 +78,7 @@
   style={`width:${width}; margin:${margin}; max-width: ${maxWidth}; background: var(--bg-${bgStyle})`}
 >
   {#if label}
+    <!-- svelte-ignore a11y-label-has-associated-control -->
     <label style={labelcolor ? `color: ${labelcolor}` : ""}>{label}</label>
   {/if}
   <select {id} {required} bind:this={selectElm} {disabled}>

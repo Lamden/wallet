@@ -11,9 +11,6 @@
     //Context
     const { setFile, nextPage, back} = getContext('functions');
 
-    //Props
-    export let restore = false;
-
     let disabledButton = true;
     let fileName;
     $: activeButton = disabledButton ? '' : ' button__primary'

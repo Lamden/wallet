@@ -14,7 +14,6 @@
     export let styles = '';
     export let disabled = false;
     export let tabIndex;
-    export let spellcheck = true;
     export let responsive = false
     export let loading = false;
     export let loadingText = "loading";

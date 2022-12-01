@@ -87,13 +87,6 @@
 .options:hover{
     filter: brightness(125%);
 }
-.primary{
-    background-color: var(--primary-color);
-}
-
-.grey{
-    background-color: var(--bg-secondary);
-}
 
 .icon{
     width: 20px;

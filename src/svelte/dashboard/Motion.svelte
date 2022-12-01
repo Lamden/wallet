@@ -174,12 +174,6 @@
       box-sizing: border-box;
     }
   
-    .text {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-  
     .logowrap {
       flex-basis: 111px;
       justify-content: center;
@@ -237,82 +231,11 @@
       min-width: 100px;
       justify-content: center;
     }
-    .name-box {
-      line-height: 1.1;
-    }
-    .token-balance {
-      margin-bottom: 0.25rem;
-    }
-  
-    .address {
-      background: var(--primary-color);
-      cursor: pointer;
-      border-radius: 16px;
-    }
-    .address:hover {
-      background: var(--bg-secondary-hover);
-    }
-    .address.success {
-      color: var(--success-color);
-      border: 1px solid var(--success-color);
-    }
-    .icon-copy {
-      width: 10px;
-      height: 10px;
-      margin-left: 8px;
-      margin-bottom: 4px;
-    }
     .coin-btn {
       padding: 8px 14px;
       font-size: 0.8em;
       margin-left: 12px;
       align-items: center;
-    }
-  
-    .coin-btn > .icon {
-      width: 12px;
-      height: 12px;
-      margin-left: 8px;
-    }
-  
-    .dapps {
-      margin: 14px 14px 0 14px;
-      display: flex;
-      align-items: center;
-    }
-  
-    .dapps .avatar {
-      display: inline-block;
-      width: 23px;
-      height: 23px;
-      border-radius: 50%;
-      border: 2px solid white;
-      background: var(--bg-secondary);
-      overflow: hidden;
-      cursor: pointer;
-    }
-    .dapps .avatar:not(:first-child) {
-      margin-left: -8px;
-    }
-  
-    .dapps .avatar:hover {
-      position: relative;
-      width: 25px;
-      height: 25px;
-      z-index: 635;
-    }
-    .dapps .avatar img {
-      width: 100%;
-      height: 100%;
-      max-width: 100%;
-      max-height: 100%;
-      vertical-align: middle;
-    }
-  
-    .coinmenus {
-      padding-left: 82px;
-      margin-bottom: 1.5rem;
-      margin-top: 0.8rem;
     }
     .header-text {
       display: flex;
@@ -344,20 +267,6 @@
     .votelist {
       padding-left: 80px;
       margin-bottom: 2rem;
-    }
-    .tokensnum {
-      flex-basis: 200px;
-      min-width: 76px;
-    }
-    .header-amount {
-      margin-left: 242px;
-    }
-    .header-price {
-      margin-left: 180px;
-    }
-    .fiatvalue {
-      flex-basis: 200px;
-      min-width: 100px;
     }
   </style>
   

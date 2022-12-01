@@ -16,7 +16,6 @@
 
     //Props
     export let keys;
-    export let restore = false;
     let done = false;
     let errorMsg = ""
     let completedKeys = 0;

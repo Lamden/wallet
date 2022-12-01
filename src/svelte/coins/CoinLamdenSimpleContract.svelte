@@ -299,6 +299,7 @@
     </div>
     <div class="inputbox" style={`margin: 0 0 0.5rem 0; width: "100%"; background: var(--bg-primary);`}>
         {#if type === "token"}
+            <!-- svelte-ignore a11y-label-has-associated-control -->
             <label class="inputbox-label"> Token </label>
             <div class="mainbox" id="tokeninput">
                 <TokenLogo margin="0 10px 0 0" width={"20px"} tokenMeta={token} />

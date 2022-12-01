@@ -137,20 +137,6 @@
         flex-basis: 240px;
         min-width: 100px;
     }
-    .top-btns {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 1em;
-    }
-    .add-node-btn {
-        padding: 4px 11px;
-        margin-left: 10px;
-        font-size: 0.8em;
-        letter-spacing: 0.5px;
-        align-items: center;
-        font-weight: bold;
-        align-items: center;
-    }
     .buttons{
         display: flex;
         justify-content: flex-start;

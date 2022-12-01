@@ -2,7 +2,6 @@
     export let width = "20";
     export let margin = "0";
     export let color = "var(--font-primary-inverse)";
-    export let click = undefined;
 
     $: height = width;
 

@@ -8,7 +8,6 @@
     //Props
     export let coin = {};
     export let styles;
-    export let dark = true;
 
     $: logo = coin.logo ? coin.logo : logos[coin.network] ? logos[coin.network][coin.symbol.replace("-", "_")] || logos[coin.network].default : logos['lamden'].default;
 

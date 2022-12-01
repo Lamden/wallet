@@ -111,6 +111,7 @@
 </script>
 
 {#if showLabel}
+  <!-- svelte-ignore a11y-label-has-associated-control -->
   <label
     class="inputbox-label text-link"
     bind:this={lableElm}
@@ -136,6 +137,7 @@
   />
   {#each dateValues as value, index}
     <div class="inputbox">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="inputbox-label"> {labels[index]} </label>
       <input
         class="mainbox input:required:invalid input:focus:invalid"
