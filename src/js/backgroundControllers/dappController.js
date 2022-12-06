@@ -1,3 +1,5 @@
+import { version } from "html-webpack-plugin";
+
 export const dappController = (utils, funa, actions) => {
     let dappsStore = {};
     let txToConfirm = {};
@@ -23,7 +25,7 @@ export const dappController = (utils, funa, actions) => {
             if (prevVer <= "1.8.0" && currVer > prevVer){
                 purgeDappConnections()
             }
-            if (prevVer <= "2.3.1" && currVer > prevVer){
+            if (currVer > prevVer){
                 purgeDappNetworkKeys()
             }
             funa.fetchUpdates()
@@ -261,11 +263,15 @@ export const dappController = (utils, funa, actions) => {
         let allnetworks = utils.networks.getAll()
 
         Object.keys(dappsStore).forEach(dappURL => {
-
             allnetworks.forEach(network => {
+                let ver = network.version ? network.version : 1
                 if (dappsStore[dappURL][network.type]) {
-                    dappsStore[dappURL][`V${network.version}|${network.type}`] = dappsStore[dappURL][network.type]
+                    dappsStore[dappURL][`V${ver}|${network.type}`] = dappsStore[dappURL][network.type]
                     delete dappsStore[dappURL][network.type]
+                    changed = true
+                } else if(dappsStore[dappURL][`Vundefined|${network.type}`]) {
+                    dappsStore[dappURL][`V${ver}|${network.type}`] = dappsStore[dappURL][`Vundefined|${network.type}`]
+                    delete dappsStore[dappURL][`Vundefined|${network.type}`]
                     changed = true
                 }
             })
