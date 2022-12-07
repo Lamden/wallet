@@ -1,5 +1,3 @@
-import { version } from "html-webpack-plugin";
-
 export const dappController = (utils, funa, actions) => {
     let dappsStore = {};
     let txToConfirm = {};
