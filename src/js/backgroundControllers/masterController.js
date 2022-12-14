@@ -443,7 +443,8 @@ export const masterController = () => {
   ) => {
     let exists = await utils.networks.contractExists(
       messageData.networkType,
-      messageData.contractName
+      messageData.contractName,
+      messageData.networkVersion
     );
     if (!exists) {
       const errors = [

@@ -232,7 +232,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals["testnet"].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit + 1);
@@ -257,7 +257,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals["testnet"].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);
@@ -309,7 +309,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals["testnet"].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);

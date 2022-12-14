@@ -97,7 +97,7 @@ export const networkController = (utils) => {
         getNetwork,
         getLamdenNetwork,
         isAcceptedNetwork,
-        contractExists: (networkType, contractName) => contractExists(networkType, contractName),
+        contractExists: (networkType, contractName, version = 1) => contractExists(networkType, contractName, version),
         getLastetBlock,
         LamdenNetworkTypes
     }
