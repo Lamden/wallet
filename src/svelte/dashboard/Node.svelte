@@ -27,14 +27,9 @@
   import CheckmarkIcon from "../icons/CheckmarkIcon.svelte";
   import CopyIcon from "../icons/CopyIcon.svelte";
   import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
-  import History from "../../img/history.svg";
   import PlusIcon from '../../img/menu_icons/icon_plus.svg';
   import arrowIn from "../../img/arrow_in.svg";
   import arrowOut from "../../img/arrow_out.svg";
-
-  import Lamden from "lamden-js";
-
-  const dispatch = createEventDispatcher();
 
   // Props
   export let data;
@@ -122,7 +117,7 @@
           <span>{data.type}<span>
         </div>
         <div class="text weight-400 status">
-          <span>{data.status}<span>
+          <span>{data.status === "node" ? "Node Member" : data.status}<span>
         </div>
       </div>
       {#if collapseStatus}
