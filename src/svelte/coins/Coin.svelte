@@ -286,6 +286,10 @@
   const handleOptionClick = () => {
     openModal("CoinModify", coin);
   };
+
+  const handleManageClick = () => {
+    switchPage("DashboardNodeList");
+  }
 </script>
 
 {#if !token || (token && hasVisibleBalance)}
@@ -450,6 +454,18 @@
                   <SettingsIcon width="12px" color="var(--color-white)" />
                 </div>
               </button>
+              {#if isNodeAccount} 
+                  <button
+                  id="options"
+                  class="button__small button__primary coin-btn flex-row"
+                  on:click|stopPropagation={handleManageClick}
+                >
+                  Manage
+                  <div class="icon">
+                    <SettingsIcon width="12px" color="var(--color-white)" />
+                  </div>
+                </button>
+              {/if}
               {#if coin.sk !== "watchOnly"}
                 <div class="dapps">
                   {#each dapps as dapp (dapp.appName)}
