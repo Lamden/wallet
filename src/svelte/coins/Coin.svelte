@@ -289,7 +289,7 @@
 </script>
 
 {#if !token || (token && hasVisibleBalance)}
-  <div class="wrap badge-box" class:wrap-leagyc={!isVaultAccount}>
+  <div class="wrap" class:wrap-leagyc={!isVaultAccount}>
     <div class="wrap-second" on:click={handleCollapse}>
       <div
         id={`coin-row-${coin.id}`}
@@ -324,6 +324,9 @@
                     class="nickname text-body1 text-primary"
                   >
                     {`${coin.nickname}`}
+                    {#if isNodeAccount}
+                      <span class="badge weight-400">Node</span>
+                    {/if}
                   </span>
                 </div>
               </div>
@@ -479,31 +482,17 @@
         {/if}
       </div>
     </div>
-    {#if isNodeAccount}
-      <div class="badge text weight-400">Node</div>
-    {/if}
   </div>
 {/if}
 
 <style>
-  .badge-box {
-    position: relative;
-  }
   .badge {
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translate(50%, -50%);
-    color: white;
-    transform-origin: 100% 0%;
-    background: #ff4d4f;
-    white-space: nowrap;
-    text-align: center;
+    background-color: var(--accent-color);
+    color: var(--font-black);
     border-radius: 10px;
-    height: 20px;
-    min-width: 20px;
-    z-index: auto;
-    padding: 0 10px;
+    padding: 0 8px;
+    font-weight: 800;
+    margin: 10px;
   }
   .reorder-btns {
     margin-top: 22px;
@@ -703,5 +692,8 @@
   .fiatvalue {
     flex-basis: 200px;
     min-width: 100px;
+  }
+  .nickname {
+    white-space: nowrap;
   }
 </style>

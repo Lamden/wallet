@@ -89,14 +89,11 @@
                 <Identicons margin="0" iconValue={data.policy} width="27px" />
               </div>
             </div>
-            <!-- <div class="text weight-400 text-body1 text-primary">
-                {formatAccountAddress(data.vk, 6, 4)}
-            </div> -->
           </div>
           <div class="policy">{data.policy}</div>
           <div class="motion">{data.name}</div>
           <div class="result">{data.yays} yays / {data.nays} nays</div>
-          <div class="status">{data.status}</div>
+          <div class="status">{data.status === 1 ? "Starting" : "---"}</div>
         </div>
         {#if collapseStatus}
           {#if data.desc}
@@ -116,7 +113,7 @@
                 </div>
                 <div class="vote-res">
                   <div>{item.value === 0 ? "➖" : item.value === 1 ? "❌" : "✔️" }</div>
-                  {#if item.isNodeOwner && item.value === 0}
+                  {#if data.status === 1 && item.isNodeOwner && item.value === 0}
                     <button
                       id="history-btn"
                       class="button__small button__primary coin-btn flex-row"
@@ -128,7 +125,8 @@
                 </div>
               </div>
             {/each}
-          </div>
+          </div> 
+
         {/if}
       </div>
     </div>

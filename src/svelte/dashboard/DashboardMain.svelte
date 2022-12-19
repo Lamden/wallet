@@ -10,19 +10,16 @@
 
     //Images
     import doco from '../../img/menu_icons/icon_doco.svg';
-    import nodeicon from '../../img/menu_icons/icon_network.svg';
     import tau from '../../img/coin_logos/lamden_logo_white.svg';
 
     //Components
 	import { Components }  from '../Router.svelte'
-    import ExpandIcon from "../icons/ExpandIcon.svelte";
-    import { keysFromNew } from "../../js/crypto/wallets.js";
 
     import Card from './Card.svelte';
 
     const { Button } = Components;
 
-    let policies, motions = []
+    let motions = []
 
         
     let cardList = [
@@ -40,12 +37,15 @@
 
     $: netKey = networkKey($currentNetwork)
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
+    // user's nodes
     $: memberNodes = nodes.filter(k => k.status === "node")
+    // all nodes
     $: allMemberNodes = $NodesStore.filter(n => n.netKey === netKey && n.status === "node")
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
         getCurrentMasterNodeMotion()
+        getCurrentDaoMotion()
     })
 
     //Context
@@ -62,22 +62,19 @@
             .then(data => data[name].S)
         let motion = {
             policy: "masternodes",
-            status:  new Date(data.motion_opened).getTime() + 86400000 < new Date().getTime(),
             yays: data.yays,
             nays: data.nays,
             value: data.current_motion,
             positions: []
         }
 
-        const len = data.members.length 
-        if ( new Date(data.motion_opened).getTime() + 86400000 < new Date().getTime()) {
-            motion.status = "open"
-        } else if (motion.yays > len) {
-            motion.status = "✔️"
+        if (data.motion_start && new Date(data.motion_opened).getTime() + 86400000 < new Date().getTime()) {
+            motion.status = 1
         } else {
-            motion.status = "❌" 
-        } 
+            motion.status = 0
+        }
 
+        if (!data.positions) data.positions = []
         for (const m of allMemberNodes) {
             let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
             if (data.positions[m.vk] === null) {
@@ -108,6 +105,47 @@
                 motion.name = "No Motion"
                 // NO_MOTION
         }
+        motions.push(motion)
+        motions = motions
+    }
+
+    const getCurrentDaoMotion = async () => {
+        let name = "con_dao"
+        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
+            .then(res => res.json())
+            .then(data => data[name].S)
+        data.motion_start = 1671198815144
+        let amount = data.amount ? data.amount.__fixed__? data.amount.__fixed__ : data.amount : 0
+        let motion = {
+            policy: name,
+            name: data.motion_start? "Dao" : "No Motion",
+            desc: data.motion_start? `${data.recipient_vk} will get ${amount} ${$currentNetwork.currencySymbol}s ` : null,
+            yays: data.yays,
+            nays: data.nays,
+            positions: []
+        }
+
+        console.log(data.motion_period)
+        console.log(new Date(data.motion_period).getTime())
+        if (data.motion_start && new Date(data.motion_start).getTime() + new Date(data.motion_period).getTime() < new Date().getTime()) {
+            motion.status = 1
+        } else {
+            motion.status = 0
+        }
+
+        if (!data.positions) data.positions = []
+
+        for (const m of allMemberNodes) {
+            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
+            if (data.positions[m.vk] === null) {
+                motion.positions.push({vk: m.vk, value: 1, isNodeOwner})
+            } else if (data.positions[m.vk] === true) {
+                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
+            } else {
+                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
+            }
+        }
+
         motions.push(motion)
         motions = motions
     }
