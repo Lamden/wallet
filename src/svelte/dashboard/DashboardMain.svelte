@@ -11,15 +11,17 @@
     //Images
     import doco from '../../img/menu_icons/icon_doco.svg';
     import tau from '../../img/coin_logos/lamden_logo_white.svg';
+    import heart from '../../img/menu_icons/icon_heart.svg';
 
     //Components
-	import { Components }  from '../Router.svelte'
+	import { Components }  from '../Router.svelte';
 
     import Card from './Card.svelte';
 
     const { Button } = Components;
 
     let motions = []
+    let daoBalance = 0
 
         
     let cardList = [
@@ -27,6 +29,11 @@
             name: 'Reawards',
             desc: '20,649,472.7302',
             logo: tau
+        },
+        {
+            name: 'Dao Balance',
+            desc: daoBalance,
+            logo: heart
         },
         {
             name: 'Guide',
@@ -46,6 +53,7 @@
         chrome.runtime.sendMessage({type: 'updateNodes'})
         getCurrentMasterNodeMotion()
         getCurrentDaoMotion()
+        getStatics()
     })
 
     //Context
@@ -114,7 +122,6 @@
         let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
             .then(res => res.json())
             .then(data => data[name].S)
-        data.motion_start = 1671198815144
         let amount = data.amount ? data.amount.__fixed__? data.amount.__fixed__ : data.amount : 0
         let motion = {
             policy: name,
@@ -148,6 +155,19 @@
 
         motions.push(motion)
         motions = motions
+    }
+
+    const getStatics = async () => {
+        let res1 = await $currentNetwork.getVariable("currency", "balances", "con_dao")
+        if (res1.value) {
+            if (res1.value.__fixed__) {
+                daoBalance = res1.value.__fixed__
+            } else {
+                daoBalance = res1.value
+            }
+        } else {
+            daoBalance = 0
+        }
     }
 
 </script>
