@@ -45,8 +45,9 @@
     }
 
     const getTotalRewards = async () => {
+        let stamp = new Date().getTime() - 24 * 60 * 60 * 1000
         try {
-            totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total?recipient=${vk}`)
+            totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total?recipient=${vk}&start=${stamp}`)
             .then(res => res.json())
             .then(data => data.amount)  
         } catch {
