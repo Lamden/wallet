@@ -109,7 +109,7 @@
               </div>
             </div>
           {/if}
-          <div class="text weight-400 text-body1 text-primary">
+          <div class="text weight-400 text-body1 text-primary text-link" on:click={() => switchPage("NodeDetails", {vk: data.vk})}>
                 {formatAccountAddress(data.vk, 6, 4)}
           </div>
         </div>

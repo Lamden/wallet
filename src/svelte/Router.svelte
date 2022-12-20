@@ -97,6 +97,7 @@ import AddNewMotion from './dashboard/AddNewMotion.svelte';
 import Vote from './dashboard/Vote.svelte';
 import MethodTx from './dashboard/MethodTx.svelte';
 import NodeTx from './dashboard/NodeTx.svelte';
+import NodeDetails from './dashboard/NodeDetails.svelte'; 
  
 //Components
 import Button from './components/Button.svelte';
@@ -188,6 +189,7 @@ export const RestorePages = {
     RestorePassword, 
     RestoreAddWallets,
     RestoreSaveWallets,
+
     RestoreComplete,  
     RestoreOptions,
     RestoreIntro,
@@ -249,6 +251,7 @@ export const Pages = {
     ConnectionsMain, ConnectionDetails,
     DashboardMain,
     DashboardNodeList,
+    NodeDetails,
     ...FirstRun 
 };
 
