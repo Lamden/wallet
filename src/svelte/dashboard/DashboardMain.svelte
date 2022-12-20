@@ -13,6 +13,8 @@
     import tau from '../../img/coin_logos/lamden_logo_white.svg';
     import heart from '../../img/menu_icons/icon_heart.svg';
 
+    import utils from "../../js/utils"
+
     //Components
 	import { Components }  from '../Router.svelte';
 
@@ -22,12 +24,13 @@
 
     let motions = []
     let daoBalance = 0
+    let totalRewards = 0
 
         
     let cardList = [
         {
             name: 'Reawards',
-            desc: '20,649,472.7302',
+            desc: totalRewards,
             logo: tau
         },
         {
@@ -76,7 +79,7 @@
             positions: []
         }
 
-        if (data.motion_start && new Date(data.motion_opened).getTime() + 86400000 < new Date().getTime()) {
+        if (data.motion_start && utils.decodePythonTime(data.motion_opened, "time") + 86400000 < new Date().getTime()) {
             motion.status = 1
         } else {
             motion.status = 0
@@ -132,9 +135,7 @@
             positions: []
         }
 
-        console.log(data.motion_period)
-        console.log(new Date(data.motion_period).getTime())
-        if (data.motion_start && new Date(data.motion_start).getTime() + new Date(data.motion_period).getTime() < new Date().getTime()) {
+        if (data.motion_start && utils.decodePythonTime(data.motion_start, "delta") + utils.decodePythonTime(data.motion_period, "delta") < new Date().getTime()) {
             motion.status = 1
         } else {
             motion.status = 0
@@ -168,6 +169,11 @@
         } else {
             daoBalance = 0
         }
+
+        totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total`)
+            .then(res => res.json())
+            .then(data => data.amount)
+
     }
 
 </script>

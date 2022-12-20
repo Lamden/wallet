@@ -495,6 +495,53 @@ function randomString(length) {
     return result;
 }
 
+
+function decodePythonTime(value, format) {
+    if (format === 'time') {
+        let arr = value.__time__
+        arr[1] = arr[1] - 1
+        return new Date(...arr).getTime()
+    } else if (format === 'delta') {
+        let arr = value.__delta__
+        let timestamp = 0
+        for (let i = 0; i<arr.length; i++) {
+            switch(i){
+                case 0:
+                    // days
+                    timestamp = timestamp + arr[0] * 24 * 60 * 60 * 1000
+                    break
+                case 1:
+                    // seconds
+                    timestamp = timestamp + arr[1] * 1000
+                    break
+                case 2:
+                    // microseconds
+                    timestamp = timestamp + arr[2] / 1000
+                    break
+                case 3: 
+                    // milliseconds
+                    timestamp = timestamp + arr[3]
+                    break
+                case 4:
+                    // minutes
+                    timestamp = timestamp + arr[4] * 60 * 1000
+                    break
+                case 5:
+                    // hours
+                    timestamp = timestamp + arr[5] * 60 * 60 * 1000
+                    break
+                case 6:
+                    // weeks
+                    timestamp = timestamp + arr[6] * 24 * 60 * 60 * 1000
+                    break
+                default:
+                    break
+            }
+        }
+        return timestamp
+    }
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -515,5 +562,6 @@ module.exports = {
     getTokenPrice,
     calcValue,
     getFiatPrice,
-    randomString
+    randomString,
+    decodePythonTime
   }
