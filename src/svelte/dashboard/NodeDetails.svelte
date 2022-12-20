@@ -37,7 +37,7 @@
     })
 
     const getRegisterTime = async () => {
-        let res = await $currentNetwork.getVariable("elect_masternodes", "candidate_state", `registered:${"0d5077e53bdb2250ae83f2ea078ed571ba5ddba6c474cc1d24568f7d62d57da7"}`)
+        let res = await $currentNetwork.getVariable("elect_masternodes", "candidate_state", `registered:${vk}`)
         if (res.value) {
             let timeStamp = Math.floor(res.blockNum / 1000000)
             registerTime = new Date(timeStamp)
