@@ -61,15 +61,6 @@
     flex-grow: 1;
 }
 
-.name{
-    width: 141px;
-    height: 88px;
-    border-bottom: 1px dashed var(--divider-dark);
-    margin-right: 16px;
-    display: flex;
-    align-items: center;
-}
-
 .key-info{
     display: flex;
     width: 141px;

@@ -10,12 +10,10 @@
     export let label = '';
     export let placeholder = '';
     export let pattern;
-    export let required = false;
     export let width = '100%';
     export let height = '38px';
     export let margin = 'unset';
     export let spellcheck = false;
-    export let readonly = false
     export let autofocus = false;
     export let disabled = false;
     export let bgStyle = "primary"
@@ -123,6 +121,7 @@
 </style>
 <div class="inputbox" style={`margin: ${margin}; width: ${width}; background: var(--bg-${bgStyle});`}>
     {#if label !== ""}
+        <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="inputbox-label"> {label} </label>
     {/if}
 

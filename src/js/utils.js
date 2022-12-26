@@ -142,7 +142,7 @@ const formatKwargs = (kwargsList) => {
     kwargs = {}
     kwargsList.forEach(item => {
         if (item.value !== "" && typeof item.value !== 'undefined') {
-            if (item.type === "Any") {
+            if (item.type === "Any" && item.selectedType) {
                 kwargs[item.name] = Encoder(item.selectedType, item.value);
               } else {
                 kwargs[item.name] = Encoder(item.type, item.value);
@@ -282,7 +282,7 @@ const getTokenBalance = (netKey, vk, contractName, tokenBalancesStore) => {
 }
 
 const formatAccountAddress = (account, lsize = 4, rsize = 4) => {
-    return account.substring(0, lsize) + ' ... ' + account.substring(account.length - rsize)
+    return account.substring(0, lsize) + '...' + account.substring(account.length - rsize)
   }
 
 const isLamdenKey = ( key ) => {
@@ -487,6 +487,61 @@ const getTokenPrice = async (tokenContractNameList = []) => {
     }
 }
 
+function randomString(length) {
+    var str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var result = '';
+    for (var i = length; i > 0; --i) 
+        result += str[Math.floor(Math.random() * str.length)];
+    return result;
+}
+
+
+function decodePythonTime(value, format) {
+    if (format === 'time') {
+        let arr = value.__time__
+        arr[1] = arr[1] - 1
+        return new Date(...arr).getTime()
+    } else if (format === 'delta') {
+        let arr = value.__delta__
+        let timestamp = 0
+        for (let i = 0; i<arr.length; i++) {
+            switch(i){
+                case 0:
+                    // days
+                    timestamp = timestamp + arr[0] * 24 * 60 * 60 * 1000
+                    break
+                case 1:
+                    // seconds
+                    timestamp = timestamp + arr[1] * 1000
+                    break
+                case 2:
+                    // microseconds
+                    timestamp = timestamp + arr[2] / 1000
+                    break
+                case 3: 
+                    // milliseconds
+                    timestamp = timestamp + arr[3]
+                    break
+                case 4:
+                    // minutes
+                    timestamp = timestamp + arr[4] * 60 * 1000
+                    break
+                case 5:
+                    // hours
+                    timestamp = timestamp + arr[5] * 60 * 60 * 1000
+                    break
+                case 6:
+                    // weeks
+                    timestamp = timestamp + arr[6] * 24 * 60 * 60 * 1000
+                    break
+                default:
+                    break
+            }
+        }
+        return timestamp
+    }
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -506,5 +561,7 @@ module.exports = {
     getLastestTauPrice,
     getTokenPrice,
     calcValue,
-    getFiatPrice
+    getFiatPrice,
+    randomString,
+    decodePythonTime
   }

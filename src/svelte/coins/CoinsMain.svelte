@@ -34,9 +34,6 @@
   //Context
   const { switchPage, openModal } = getContext("app_functions");
 
-  //Props
-  export let name;
-
   let accountsCollapse = {};
 
   $: vaultExist = false;

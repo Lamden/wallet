@@ -42,6 +42,7 @@
 </script>
 
 {#if label}
+  <!-- svelte-ignore a11y-label-has-associated-control -->
   <label class="inputbox-label">
     {label}
   </label>
@@ -60,6 +61,7 @@
   </div>
   {#each timeBoxes as value, index}
     <div class="inputbox">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="inputbox-label"> {timeBoxes[index].label} </label>
       <input
         class="mainbox input:required:invalid input:focus:invalid"

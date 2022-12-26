@@ -136,6 +136,30 @@
             ]
         },
         {
+            "heading": "Node Dashbord",
+            "show": true,
+            "items":[
+                {
+                    "id": "dashboard", 
+                    "show": true,
+                    "logo": "setting", 
+                    "name": "Network Dashboard", 
+                    "page": {
+                        "name": "DashboardMain"
+                    }
+                },
+                {
+                    "id": "node-lists", 
+                    "show": true,
+                    "logo": "signout", 
+                    "name": "My Nodes", 
+                    "page": {
+                        "name": "DashboardNodeList"
+                    }   
+                }
+            ]
+        },
+        {
             "heading": "About & Info",
             "show": true,
             "items":[

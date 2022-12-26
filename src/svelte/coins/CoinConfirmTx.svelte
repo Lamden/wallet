@@ -13,7 +13,6 @@
     const { nextPage, back } = getContext('tx_functions');
 
     //Props
-    export let currentPage;
     export let txData;
     export let txDetails;
 

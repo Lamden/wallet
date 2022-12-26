@@ -13,6 +13,7 @@
 
   //Stores
   import {
+    NodesStore,
     currentNetwork,
     BalancesStore,
     balanceTotal,
@@ -23,6 +24,7 @@
     PriceStore,
     TauPrice,
     SettingsStore,
+    coinsDropDown,
   } from "../../js/stores/stores.js";
 
   //Images
@@ -60,6 +62,7 @@
   import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
 
   import Lamden from "lamden-js";
+    import CoinDelete from "./CoinDelete.svelte";
   const { Encoder } = Lamden;
 
   const dispatch = createEventDispatcher();
@@ -145,6 +148,7 @@
   $: tokenList = getTokens(netKey, coin.vk, $TokenStore, $TokenBalancesStore);
   $: tokensNum = tokenList.length;
   $: isVaultAccount = coin.type === "vault";
+  $: isNodeAccount = $NodesStore.findIndex(x => x.vk === coin.vk && x.netKey === netKey) > -1
 
   afterUpdate(() => {
     balance = BalancesStore.getBalance($currentNetwork, coin.vk);
@@ -282,6 +286,10 @@
   const handleOptionClick = () => {
     openModal("CoinModify", coin);
   };
+
+  const handleManageClick = () => {
+    switchPage("DashboardNodeList");
+  }
 </script>
 
 {#if !token || (token && hasVisibleBalance)}
@@ -315,12 +323,15 @@
             {#if whitelabel.mainPage.account_info.show}
               <div class="text weight-400">
                 <div class="name-box">
-                  <div
+                  <span
                     id={`coin-nickname-${coin.id}`}
                     class="nickname text-body1 text-primary"
                   >
                     {`${coin.nickname}`}
-                  </div>
+                    {#if isNodeAccount}
+                      <span class="badge weight-400">Node</span>
+                    {/if}
+                  </span>
                 </div>
               </div>
             {/if}
@@ -443,6 +454,18 @@
                   <SettingsIcon width="12px" color="var(--color-white)" />
                 </div>
               </button>
+              {#if isNodeAccount} 
+                  <button
+                  id="options"
+                  class="button__small button__primary coin-btn flex-row"
+                  on:click|stopPropagation={handleManageClick}
+                >
+                  Manage
+                  <div class="icon">
+                    <SettingsIcon width="12px" color="var(--color-white)" />
+                  </div>
+                </button>
+              {/if}
               {#if coin.sk !== "watchOnly"}
                 <div class="dapps">
                   {#each dapps as dapp (dapp.appName)}
@@ -479,6 +502,14 @@
 {/if}
 
 <style>
+  .badge {
+    background-color: var(--accent-color);
+    color: var(--font-black);
+    border-radius: 10px;
+    padding: 0 8px;
+    font-weight: 800;
+    margin: 10px;
+  }
   .reorder-btns {
     margin-top: 22px;
     align-self: start;
@@ -677,5 +708,8 @@
   .fiatvalue {
     flex-basis: 200px;
     min-width: 100px;
+  }
+  .nickname {
+    white-space: nowrap;
   }
 </style>

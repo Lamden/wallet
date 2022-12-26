@@ -17,8 +17,6 @@
   //Context
   const { switchPage } = getContext("app_functions");
 
-  export let style;
-
   $: dropwonList = createNetworkList($networksDropDownList);
   $: fiatList = $FiatListDown;
 
