@@ -29,7 +29,7 @@
         
     let cardList = [
         {
-            name: 'Reawards',
+            name: 'Rewards',
             desc: totalRewards,
             logo: tau
         },
