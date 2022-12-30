@@ -2,7 +2,7 @@
     "basicConnectionInfo": {
         "appName": "Dapp Testing",
         "version": "1.0.0",
-        "contractName": "con_wallet_testing",
+        "contractName": "con_wallet_testing_v2",
         "networkType": "testnet",
         "networkVersion": 2,
         "logo": "/images/logo.png"
@@ -17,7 +17,7 @@
     "updatedConnectionInfo_basic": {
         "appName": "Dapp Testing Updating",
         "version": "1.0.1",
-        "contractName": "con_wallet_testing",
+        "contractName": "con_wallet_testing_v2",
         "networkType": "testnet",
         "logo": "/images/logo2.png",
         "networkVersion": 2,
@@ -26,7 +26,7 @@
     "updatedConnectionInfo_smartcontract": {
         "appName": "Dapp Testing Updating",
         "version": "1.0.2",
-        "contractName": "con_wallet_testing_2",
+        "contractName": "con_wallet_testing_v2_2",
         "networkType": "testnet",
         "logo": "/images/logo2.png",
         "networkVersion": 2,
@@ -38,7 +38,7 @@
         "networkType": "testnet",
         "networkVersion": 2,
         "kwargs":{
-            "key_name": "con_wallet_testing",
+            "key_name": "con_wallet_testing_v2_2",
             "key_value" : ""
         },
         "stampLimit": 30
@@ -49,18 +49,18 @@
         "networkType": "testnet",
         "networkVersion": 2,
         "kwargs":{
-            "to": "con_wallet_testing",
+            "to": "con_wallet_testing_v2_2",
             "amount" : 1
         },
         "stampLimit": 20
     },
     "nonStandardTransactionInfo":{
-        "contractName": "con_wallet_testing_2",
+        "contractName": "con_wallet_testing_v2_2",
         "methodName": "set_value",
         "networkType": "testnet",
         "networkVersion": 2,
         "kwargs":{
-            "key_name": "con_wallet_testing_2",
+            "key_name": "con_wallet_testing_v2_2",
             "key_value" : ""
         },
         "stampLimit": 20
