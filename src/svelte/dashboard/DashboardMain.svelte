@@ -80,6 +80,7 @@
         }
 
         if (data.motion_start && utils.decodePythonTime(data.motion_opened, "time") + 86400000 < new Date().getTime()) {
+            // starting
             motion.status = 1
         } else {
             motion.status = 0
@@ -88,9 +89,9 @@
         if (!data.positions) data.positions = []
         for (const m of allMemberNodes) {
             let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-            if (data.positions[m.vk] === null) {
+            if (data.positions[m.vk] === null && motion.status) {
                 motion.positions.push({vk: m.vk, value: 1, isNodeOwner})
-            } else if (data.positions[m.vk] === true) {
+            } else if (data.positions[m.vk] === true && motion.status) {
                 motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
             } else {
                 motion.positions.push({vk: m.vk, value: 0, isNodeOwner})

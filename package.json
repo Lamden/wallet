@@ -34,6 +34,7 @@
     "test-dapps-get-info-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletGetInfo_v2.js",
     "test-dapps-sendtx-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletSendTx_v2.js",
     "test-dapps-sendx-backtoback-v2": "mocha --timeout 60000 selenium/tests/dapp/content_landenWalletSendTxBacktoBack_v2.js",
+    "test-dashboard-mainpage": "mocha --timeout 60000 selenium/tests/ui/dashboard/dashboardMainPage.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
