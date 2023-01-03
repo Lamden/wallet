@@ -9,7 +9,7 @@
 
     //Components
 	import { Components }  from '../Router.svelte'
-    import ExpandIcon from "../icons/ExpandIcon.svelte";
+    import PlusIcon from "../icons/PlusIcon.svelte";
 
     const { Button } = Components;
 
@@ -101,7 +101,7 @@
         >
             Add Node
             <div class="icon">
-                <ExpandIcon width="18px" color="var(--color-white)" />
+                <PlusIcon width="18px" color="var(--color-white)" />
             </div>
         </button>
     </div>
