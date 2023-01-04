@@ -73,7 +73,47 @@
         let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
             .then(res => res.json())
             .then(data => data[name].S)
-        
+
+        let motion = {
+            policy: "rewards",
+            yays: data.vote_count,
+            nays: 0,
+            positions: []
+        }
+
+        if (data.election_start) {
+            // check whether ended
+            let isOver = data['vote_count'] >= data['min_votes_required'] 
+            || new Date().getTime() - utils.decodePythonTime(data['election_start'], "time") >= utils.decodePythonTime(data['election_max_length'], "delta")
+
+            if (!isOver) {
+                // starting
+                motion.status = 1
+            } else {
+                motion.status = 0
+            }
+
+            for (const m of allMemberNodes) {
+                let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
+                if (data.has_voted[m.vk] && !isOver) {
+                    motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
+                } else {
+                    motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
+                }
+            }
+        } else {
+            motion.status = 0
+            for (const m of allMemberNodes) {
+                let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
+                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
+            }
+        }
+
+        motion.name = motion.status ? "rewards" : "No Motion",
+        motion.desc = `masternode: ${data.value[0].__fixed__}<br> blackhole: ${data.value[1].__fixed__} <br> foundation: ${data.value[2].__fixed__} <br> developer: ${data.value[3].__fixed__}`
+
+        motions.push(motion)
+        motions = motions
     }
 
     const getStampCostMotion = async () => {
@@ -84,7 +124,7 @@
         
         let motion = {
             policy: "stamp_cost",
-            yays: 0,
+            yays: data.vote_count,
             nays: 0,
             positions: []
         }
@@ -118,6 +158,7 @@
         }
 
         motion.name = motion.status ? "Stamps" : "No Motion",
+        motion.desc = `Current value is ${data.value}`
 
         motions.push(motion)
         motions = motions

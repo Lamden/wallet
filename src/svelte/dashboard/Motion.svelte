@@ -97,7 +97,7 @@
         </div>
         {#if collapseStatus}
           {#if data.desc}
-          <div class="motion-info">{data.desc}</div>
+          <div class="motion-info">{@html data.desc}</div>
           {/if}
           <div class="header header-text votes">
               <div class="header-name header-text">Votes</div>
