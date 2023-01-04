@@ -49,12 +49,12 @@
     },];
 
     $: buttonGroup = [
-            {id:"add-existing-token-btn", name: 'Add Existing', click: () => handleButtonGroupChange(1), class: addType === 1 ? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
-            {id:"add-custom-token-btn", name: 'BRAND NEW', click: () =>  handleButtonGroupChange(2), class: addType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
+            {id:"add-existing-btn", name: 'Add Existing', click: () => handleButtonGroupChange(1), class: addType === 1 ? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
+            {id:"add-brand-new-btn", name: 'BRAND NEW', click: () =>  handleButtonGroupChange(2), class: addType === 2 ? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: buttonGroup2 = [
-            {id:"add-existing-token-btn", name: 'Create New Account', click: () => handleButtonGroup2Change(true), class: createNew? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
-            {id:"add-custom-token-btn", name: 'Already Have An Account', click: () =>  handleButtonGroup2Change(false), class: !createNew? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
+            {id:"create-new-account-btn", name: 'Create New Account', click: () => handleButtonGroup2Change(true), class: createNew? ' button__primary buttonGroup__left' : 'buttonGroup__left' },
+            {id:"already-have-account-btn", name: 'Already Have An Account', click: () =>  handleButtonGroup2Change(false), class: !createNew? ' button__primary buttonGroup__right' : 'buttonGroup__right' },
         ]
     $: netKey = networkKey($currentNetwork)
     $: nodes = createExistingNodes($NodesStore, $CoinStore)

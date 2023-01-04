@@ -93,7 +93,7 @@
           <div class="policy">{data.policy}</div>
           <div class="motion">{data.name}</div>
           <div class="result">{data.yays} yays / {data.nays} nays</div>
-          <div class="status">{data.status === 1 ? "Starting" : "---"}</div>
+          <div class="status">{data.status === 1 ? "Starting" : "Not Start"}</div>
         </div>
         {#if collapseStatus}
           {#if data.desc}
