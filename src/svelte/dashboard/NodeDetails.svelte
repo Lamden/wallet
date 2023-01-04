@@ -58,7 +58,7 @@
 
     const getRewards7Day = async () => {
         try {
-            let res = await fetch(`${$currentNetwork.blockservice.host}/rewards/lastdays?days=7`)
+            let res = await fetch(`${$currentNetwork.blockservice.host}/rewards/lastdays?days=7&recipient=${vk}`)
             .then(res => res.json())
             rewards7Days =  res
         } catch {
