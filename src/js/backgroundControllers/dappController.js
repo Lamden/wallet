@@ -22,7 +22,7 @@ export const dappController = (utils, funa, actions) => {
                 initiateTrustedApp()
             }
             if (prevVer <= "1.8.0" && currVer > prevVer){
-                purgeDappConnections()
+                // purgeDappConnections()
             }
             if (currVer > prevVer){
                 purgeDappNetworkKeys()
@@ -260,9 +260,14 @@ export const dappController = (utils, funa, actions) => {
 
         Object.keys(dappsStore).forEach(dappURL => {
             allnetworks.forEach(network => {
+                let ver = network.networkName === "arko" ? 2 : 1
                 if (dappsStore[dappURL][network.type]) {
-                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][network.type]
+                    dappsStore[dappURL][`legacy|${network.type}`] = dappsStore[dappURL][network.type]
                     delete dappsStore[dappURL][network.type]
+                    changed = true
+                } else if(dappsStore[dappURL][`V${ver}|${network.type}`]) {
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`V${ver}|${network.type}`]
+                    delete dappsStore[dappURL][`V${ver}|${network.type}`]
                     changed = true
                 } else if(dappsStore[dappURL][`undefined|${network.type}`]) {
                     dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`undefined|${network.type}`]

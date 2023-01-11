@@ -30,7 +30,7 @@
             "version": 1
         },
         {
-            "name": "Lamden Testnet_V2", 
+            "name": "Arko", 
             "hosts": ["https://testnet-v2-master-lon.lamden.io", "https://testnet-v2-master-sf.lamden.io", "https://testnet-v2-master-bang.lamden.io"], 
             "type": "testnet", 
             "lamden": true, 
