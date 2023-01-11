@@ -168,9 +168,15 @@ export const masterController = () => {
     if (walletInfo.locked === false) {
       let approvals = {};
       Object.keys(dappInfo).forEach((key) => {
-        if (utils.networks.LamdenNetworkTypes.includes(key.replace(/V\d\|/i, ""))) {
-          approvals[key] = dappInfo[key];
-          if (!approvals[key].version) approvals[key].version = "0.0.1";
+        let args = key.split('|')
+        if (utils.networks.LamdenNetworkTypes.includes(args[1])) {
+          let obj = dappInfo[key]
+          if (!obj[key].version) obj[key].version = "0.0.1"
+          if (args[0] === "legacy") {
+            approvals[args[1]] = obj
+          } else {
+            approvals[args[0]][args[1]] = obj
+          }
         }
       });
 

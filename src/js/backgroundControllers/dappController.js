@@ -7,6 +7,7 @@ export const dappController = (utils, funa, actions) => {
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'dapps') dappsStore = changes[key].newValue;
+            if (key === 'networks') purgeDappNetworkKeys();
         }
     });
 
@@ -259,11 +260,11 @@ export const dappController = (utils, funa, actions) => {
         Object.keys(dappsStore).forEach(dappURL => {
             allnetworks.forEach(network => {
                 if (dappsStore[dappURL][network.type]) {
-                    dappsStore[dappURL][`${ver}|${network.type}`] = dappsStore[dappURL][network.type]
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][network.type]
                     delete dappsStore[dappURL][network.type]
                     changed = true
                 } else if(dappsStore[dappURL][`undefined|${network.type}`]) {
-                    dappsStore[dappURL][`${ver}|${network.type}`] = dappsStore[dappURL][`undefined|${network.type}`]
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`undefined|${network.type}`]
                     delete dappsStore[dappURL][`undefined|${network.type}`]
                     changed = true
                 }

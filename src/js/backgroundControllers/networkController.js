@@ -71,8 +71,8 @@ export const networkController = (utils) => {
         return addExtras(network)
     } 
 
-    const getLamdenNetwork = (networkType, networkName) => {
-        const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase() && networkName === network.name)
+    const getLamdenNetwork = (networkType, networkName="legacy") => {
+        const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase() && networkName === network.networkName)
         if (!foundNetwork) return false;
         return addExtras(new utils.Lamden.Network(foundNetwork))
     }

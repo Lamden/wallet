@@ -39,7 +39,7 @@ export const messagesHandler = (masterController) => {
             if (validateTypes.hasKeys(connectionMessage, ['errors'])){
                 sendErrors(connectionMessage.errors)
                 return
-            }else{
+            }else if(dappInfo){
                 try{
                     let symbol = `${connectionMessage.networkName}|${connectionMessage.networkType}`
                     //If this dApp is already approved get send the wallet info
@@ -62,6 +62,9 @@ export const messagesHandler = (masterController) => {
                 }catch (e){
                     console.log(e)
                 }
+                masterController.promptApproveDapp(sender, connectionMessage)
+                return
+            } else {
                 masterController.promptApproveDapp(sender, connectionMessage)
                 return
             }
