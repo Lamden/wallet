@@ -42,21 +42,26 @@ export const messagesHandler = (masterController) => {
             }else if(dappInfo){
                 try{
                     let symbol = `${connectionMessage.networkName}|${connectionMessage.networkType}`
-                    //If this dApp is already approved get send the wallet info
-                    if (dappInfo[symbol].contractName === connectionMessage.contractName){
-                        //if the connection info is a greater version than the one that exists
-                        let version = dappInfo[symbol].version || "0.0.1"
-                        if (connectionMessage.version > version){
-                            masterController.dapps.updateDapp(dappInfo, connectionMessage)
+                    if (dappInfo[symbol]) {
+                        //If this dApp is already approved get send the wallet info
+                        if (dappInfo[symbol].contractName === connectionMessage.contractName){
+                            //if the connection info is a greater version than the one that exists
+                            let version = dappInfo[symbol].version || "0.0.1"
+                            if (connectionMessage.version > version){
+                                masterController.dapps.updateDapp(dappInfo, connectionMessage)
+                            }
+                            sendResponse(masterController.getWalletInfo(dappInfo));
+                            return
+                        }else{
+                            let version = dappInfo[symbol].version || "0.0.1"
+                            if (connectionMessage.version > version){
+                                masterController.promptApproveDapp(sender, connectionMessage, true, dappInfo)
+                                
+                            }
+                            return
                         }
-                        sendResponse(masterController.getWalletInfo(dappInfo));
-                        return
-                    }else{
-                        let version = dappInfo[symbol].version || "0.0.1"
-                        if (connectionMessage.version > version){
-                            masterController.promptApproveDapp(sender, connectionMessage, true, dappInfo)
-                            
-                        }
+                    } else {
+                        masterController.promptApproveDapp(sender, connectionMessage)
                         return
                     }
                 }catch (e){

@@ -2,7 +2,7 @@
     import { getContext, onMount } from 'svelte';
 
 	//Stores
-    import { currentNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork, currentNetworkName} from '../../js/stores/stores.js';
 
     //Components
     import { Modals, Components, Icons } from '../Router.svelte';
@@ -22,7 +22,7 @@
     //Props
     export let dappInfo;
 
-    let symbol = `${$currentNetwork.version}|${$currentNetwork.type}`
+    let symbol = `${$currentNetworkName}|${$currentNetwork.type}`
     let trusted = dappInfo[symbol].trustedApp;
     let sending = false;
     let brokenLogoLink = false;
@@ -40,7 +40,7 @@
 
     const handleChange = () => {
         sending = true;
-        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkName: $currentNetwork.name, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
+        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkName: $currentNetworkName, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
             sending = false;
         })
     }

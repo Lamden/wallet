@@ -18,19 +18,6 @@ document.addEventListener('lamdenWalletGetInfo', () => getWalletInfo());
 const lamdenWalletConnect = (detail) => {  
     chrome.runtime.sendMessage({type: 'lamdenWalletConnect', data: detail}, (response) => {
         if(!chrome.runtime.lastError && response !== 'ok'){
-            if (response.approvals) {
-                let info = {}
-                info.V2 = {}
-                Object.keys(response.approvals).forEach(k => {
-                    let args = k.split('|')
-                    if (args[0].toLowerCase() === "v1") {
-                        info[args[1]] = response.approvals[k]
-                    } else {
-                        info.V2[args[1]] = response.approvals[k]
-                    }
-                })
-                response.approvals = info
-            }
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
         }
     });

@@ -8,7 +8,7 @@ export { TokenBalancesStore, tokenBalanceTotal} from './tokenBalancesStore.js';
 export { PendingTxStore} from './pendingTxStore.js';
 export { SettingsStore, currentPage, needsBackup  } from './settingsStore.js';
 export { DappStore, dappsDropDown } from './dappStore.js';
-export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList, currentNetworkOnline } from './networksStore.js';
+export { NetworksStore, allNetworks, networksDropDownList, currentNetwork, networkTypesDropDownList, currentNetworkOnline, currentNetworkName } from './networksStore.js';
 export { FilesStore, activeTab }  from './filesStore.js';
 export { CacheStore }  from './cacheStore.js';
 export { EventsStore, newEventNum}  from './eventStore.js';

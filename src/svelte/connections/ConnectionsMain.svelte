@@ -10,14 +10,25 @@
   //Props
   export let name;
 
+  $: networkName = getNetworkName($currentNetwork)
   $: dappStorage = $DappStore
     ? Object.values($DappStore)
-        .filter((app) => !!app[`${$currentNetwork.name}|${$currentNetwork.type}`])
+        .filter((app) => !!app[`${networkName}|${$currentNetwork.type}`])
         .map((app, index) => {
           app.id = index;
           return app;
         })
     : [];
+  
+   const getNetworkName = (network) => {
+      let net = whitelabel.networks.find(t => network.name === t.name)
+      if (net) {
+        return net.networkName
+      } else {
+        return "legacy"
+      }
+   }
+
 </script>
 
 <div class="connectionsmain text-primary">

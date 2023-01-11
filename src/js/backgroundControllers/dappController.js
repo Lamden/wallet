@@ -51,21 +51,21 @@ export const dappController = (utils, funa, actions) => {
         if (!validateTypes.isStringWithValue(messageData.logo)) {
             errors.push("'logo' <string> required to process connect request")
         }
+        if (!validateTypes.isStringWithValue(messageData.version)) {
+            errors.push("'version' <string> required to process connect request")
+        }
         if (typeof messageData.background !== 'undefined') {
             if (!validateTypes.isStringWithValue(messageData.background)) {
                 errors.push("'background' <string> was provided but invalid.")
             }
         }    
+        
         if (validateTypes.isStringWithValue(messageData.networkType)){
             if (!utils.networks.isAcceptedNetwork(messageData.networkType)){
                 errors.push(`'networkType' <string> '${messageData.networkType}' is not a valid network type.`)
             }
         }else{
             errors.push("'networkType' <string> required to process connect request")
-        }
-
-        if (!validateTypes.isStringWithValue(messageData.networkName)) {
-            errors.push("'networkName' <string> required to process connect request")
         }
 
         // default network name legacy
@@ -182,6 +182,7 @@ export const dappController = (utils, funa, actions) => {
         dappsStore[appUrl][symbol].trustedApp = trustedApp;
         dappsStore[appUrl][symbol].networkName = messageData.networkName;
         dappsStore[appUrl][symbol].networkType = messageData.networkType;
+        dappsStore[appUrl][symbol].version = messageData.version;
         //Remove slashes at start of icon paths
         if (utils.validateTypes.isArrayWithValues(messageData.charms)){
             messageData.charms.forEach(charm => {
