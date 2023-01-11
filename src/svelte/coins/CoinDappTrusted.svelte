@@ -22,7 +22,7 @@
     //Props
     export let dappInfo;
 
-    let symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
+    let symbol = `${$currentNetwork.name}|${$currentNetwork.type}`
     let trusted = dappInfo[symbol].trustedApp;
     let sending = false;
     let brokenLogoLink = false;
@@ -45,7 +45,7 @@
 
     const handleChange = () => {
         sending = true;
-        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkVersion: $currentNetwork.version, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
+        chrome.runtime.sendMessage({type: 'setTrusted', data: {dappUrl: dappInfo.url, networkName: $currentNetwork.name, networkType: $currentNetwork.type, trusted}}, (trustedSet) => {
             sending = false;
         })
     }

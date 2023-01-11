@@ -12,7 +12,7 @@
 
   $: dappStorage = $DappStore
     ? Object.values($DappStore)
-        .filter((app) => !!app[`V${$currentNetwork.version}|${$currentNetwork.type}`])
+        .filter((app) => !!app[`${$currentNetwork.name}|${$currentNetwork.type}`])
         .map((app, index) => {
           app.id = index;
           return app;

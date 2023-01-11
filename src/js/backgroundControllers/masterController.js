@@ -280,16 +280,9 @@ export const masterController = () => {
     try {
       //Make sure the txInfo was a JSON string (for security)
       txInfo = JSON.parse(data);
-      // check networkVersion
-      if (txInfo.networkVersion) {
-        if (txInfo.networkVersion !== 1 && txInfo.networkVersion !== 2) {
-            errors = [
-              "'networkVersion' <int> must be 1 or 2",
-            ];
-            return makeTxStatus(undefined, errors, txInfo.uid);
-          }
-      } else {
-          txInfo.networkVersion = 1
+      // check networkName
+      if (!txInfo.networkName) {
+          txInfo.networkName = "legacy"
       }
     } catch (err) {
       return makeTxStatus(undefined, [
@@ -318,7 +311,7 @@ export const masterController = () => {
       //Get the Lamden Network Object for the network types specified in the txInfo request
       const network = utils.networks.getLamdenNetwork(
         txInfo.networkType.toLowerCase(),
-        txInfo.networkVersion
+        txInfo.networkName
       );
       if (!network) {
         errors = [
@@ -328,7 +321,7 @@ export const masterController = () => {
       }
 
       //Reject transaction attempt if network type has not been approved
-      if (!dappInfo[`V${txInfo.networkVersion}|${txInfo.networkType.toLowerCase()}`]) {
+      if (!dappInfo[`${txInfo.networkName}|${txInfo.networkType.toLowerCase()}`]) {
         errors = [
           `Transactions on '${txInfo.networkType}' have not been approved for ${dappInfo.url}.`,
         ];
@@ -336,7 +329,7 @@ export const masterController = () => {
       }
 
       try {
-        let symbol = `V${txInfo.networkVersion}|${txInfo.networkType}`
+        let symbol = `${txInfo.networkName}|${txInfo.networkType}`
         //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
         const wallet = accounts.getAccountByVK(dappInfo.vk);
         //Set senderVk to the one assocated with this dapp
@@ -444,7 +437,7 @@ export const masterController = () => {
     let exists = await utils.networks.contractExists(
       messageData.networkType,
       messageData.contractName,
-      messageData.networkVersion
+      messageData.networkName
     );
     if (!exists) {
       const errors = [
@@ -455,7 +448,7 @@ export const masterController = () => {
       const windowId = utils.createUID();
       messageData.network = utils.networks.getLamdenNetwork(
         messageData.networkType,
-        messageData.networkVersion
+        messageData.networkName
       );
       messageData.accounts = accounts.getSanatizedAccounts();
       if (reapprove) {

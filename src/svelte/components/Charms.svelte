@@ -8,7 +8,7 @@
     //Props
     export let dappInfo;
 
-    $: symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
+    $: symbol = `${$currentNetwork.name}|${$currentNetwork.type}`
     $: currentNetworkInfo = dappInfo[symbol]
     $: charms = currentNetworkInfo.charms || []
     $: contractName = currentNetworkInfo.contractName

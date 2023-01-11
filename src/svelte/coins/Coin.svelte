@@ -135,7 +135,7 @@
 
   $: dapps = $DappStore
     ? Object.values($DappStore)
-        .filter((app) => !!app[`V${$currentNetwork.version}|${$currentNetwork.type}`] && app.vk === coin.vk)
+        .filter((app) => !!app[`${$currentNetwork.name}|${$currentNetwork.type}`] && app.vk === coin.vk)
         .map((app, index) => {
           app.id = index;
           return app;

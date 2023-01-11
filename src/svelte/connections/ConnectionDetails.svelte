@@ -37,7 +37,7 @@
     let copied = false
 
 
-    $: symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
+    $: symbol = `${$currentNetwork.version}|${$currentNetwork.type}`
     $: dapp = $SettingsStore.currentPage.data
     $: dappInfo = $DappStore[dapp.url]
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;

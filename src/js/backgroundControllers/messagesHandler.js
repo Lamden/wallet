@@ -41,7 +41,7 @@ export const messagesHandler = (masterController) => {
                 return
             }else{
                 try{
-                    let symbol = `V${connectionMessage.networkVersion}|${connectionMessage.networkType}`
+                    let symbol = `${connectionMessage.networkName}|${connectionMessage.networkType}`
                     //If this dApp is already approved get send the wallet info
                     if (dappInfo[symbol].contractName === connectionMessage.contractName){
                         //if the connection info is a greater version than the one that exists
