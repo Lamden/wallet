@@ -58,7 +58,7 @@ describe('Content Script - Testing Dapp GetInfo API', function () {
         assert.equal(response.locked, false)
         assert.equal(response.walletVersion.length > 0, true)
         assert.equal(response.wallets.length > 0, true)
-        assert.equal(response.approvals[`V1|${dappsInfo.basicConnectionInfo.networkType}`].contractName, dappsInfo.basicConnectionInfo.contractName)
+        assert.equal(response.approvals[`${dappsInfo.basicConnectionInfo.networkType}`].contractName, dappsInfo.basicConnectionInfo.contractName)
     });
 
     it('Hide info when wallet is locked', async function() {

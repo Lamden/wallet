@@ -272,3 +272,17 @@ export const currentNetworkOnline = derived(
         currentNetwork.ping().then(set)
     }
 );
+
+
+export const currentNetworkName = derived(
+	NetworksStore,
+	$NetworksStore => {
+        let found = foundNetwork($NetworksStore, $NetworksStore.current);
+        let net = whitelabel.networks.find(t => found.name === t.name)
+        if (net) {
+            return net.networkName
+        } else {
+            return "legacy"
+        }
+    }
+);

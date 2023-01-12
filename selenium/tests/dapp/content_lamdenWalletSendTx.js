@@ -232,7 +232,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals["testnet"].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit + 1);
@@ -257,13 +257,13 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals["testnet"].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);
     });
     it("Sends Currency/Approval transaction after Popup", async function () {
-      this.timeout(60000);
+      this.timeout(80000);
       let currentApprovalAmount = await helpers.getApprovalAmount(
         connectionInfo.wallets[0],
         dappsInfo.approvalTransaction.kwargs.to
@@ -273,7 +273,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       transaction.uid = helpers.createUID()
       await helpers.sendTx(driver, transaction, false);
       await helpers.approveApprovalPopup(driver, 2, 1);
-      await helpers.sleep(40000);
+      await helpers.sleep(50000);
       let afterApprovalAmount = await helpers.getApprovalAmount(
         connectionInfo.wallets[0],
         dappsInfo.approvalTransaction.kwargs.to
@@ -309,7 +309,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals["V1|testnet"].contractName
+        connectionInfo.approvals["testnet"].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);

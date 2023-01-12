@@ -37,7 +37,8 @@
     let copied = false
 
 
-    $: symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
+    $: networkName = getNetworkName($currentNetwork)
+    $: symbol = `${networkName}|${$currentNetwork.type}`
     $: dapp = $SettingsStore.currentPage.data
     $: dappInfo = $DappStore[dapp.url]
     $: dappLogo = dappInfo ? dappInfo.logo || false : false;
@@ -62,6 +63,15 @@
         copied = true;
         setTimeout(() => copied = false, 2000)
     }
+
+    const getNetworkName = (network) => {
+      let net = whitelabel.networks.find(t => network.name === t.name)
+      if (net) {
+        return net.networkName
+      } else {
+        return "legacy"
+      }
+   }
 
 </script>
 

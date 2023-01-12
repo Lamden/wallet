@@ -22,7 +22,7 @@
 
     export let confirmData;
 
-    let oldSmartContract = confirmData.messageData.oldConnection[`V${confirmData.messageData.networkVersion}|${confirmData.messageData.networkType}`].contractName
+    let oldSmartContract = confirmData.messageData.oldConnection[`${confirmData.messageData.networkName}|${confirmData.messageData.networkType}`].contractName
 
 </script>
 

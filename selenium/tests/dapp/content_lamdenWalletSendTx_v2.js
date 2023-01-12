@@ -55,6 +55,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
   context("lamdenWalletSendTx", function () {
     it("Returns error if event detail is not a JSON string", async function () {
       let transaction = "";
+      //await helpers.sleep(500000);
       let response = await helpers.sendTx(driver, transaction, true);
       assert.equal(response.errors.length, 1);
       assert.equal(
@@ -232,7 +233,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals[`V${transaction.networkVersion}|${transaction.networkType}`].contractName
+        connectionInfo.approvals[`${transaction.networkName}`][`${transaction.networkType}`].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit + 1);
@@ -257,7 +258,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals[`V${transaction.networkVersion}|${transaction.networkType}`].contractName
+        connectionInfo.approvals[`${transaction.networkName}`][`${transaction.networkType}`].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);
@@ -287,7 +288,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       );
     });
     it("sends a transactions successfully after Trusted App", async function () {
-      this.timeout(30000);
+      this.timeout(60000);
       await helpers.switchWindow(driver, 0);
       await helpers.setAsTrustedDapp(driver);
       await helpers.switchWindow(driver, 1);
@@ -311,7 +312,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       assert.equal(result.txInfo.senderVk, connectionInfo.wallets[0]);
       assert.equal(
         result.txInfo.contractName,
-        connectionInfo.approvals[`V${transaction.networkVersion}|${transaction.networkType}`].contractName
+        connectionInfo.approvals[`${transaction.networkName}`][`${transaction.networkType}`].contractName
       );
       assert.equal(result.txInfo.methodName, transaction.methodName);
       assert.equal(result.txInfo.stampLimit, transaction.stampLimit);

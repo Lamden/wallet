@@ -306,15 +306,14 @@ describe('Content Script - Testing Dapp Connection API', function () {
             await helpers.sendConnectRequest(driver, connection, false)
             await helpers.approvePopup(driver, 2, 1, true, {show: false})
             let response = await helpers.getWalletResponse(driver)
-            connectionInfo = response;
             
             console.log(response)
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V2|testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['V2|testnet'].version, connection.version);
-            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
-            assert.equal(response.approvals['V2|testnet'].charms.length, 1);
+            assert.equal(response.approvals['arko']['testnet'].contractName, connection.contractName);
+            assert.equal(response.approvals['arko']['testnet'].version, connection.version);
+            assert.equal(response.approvals['arko']['testnet'].trustedApp, true);
+            assert.equal(response.approvals['arko']['testnet'].charms.length, 1);
         });
         it('POPUP: Can Update connection info if version is greater', async function() {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_basic)
@@ -326,10 +325,10 @@ describe('Content Script - Testing Dapp Connection API', function () {
             
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V2|testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['V2|testnet'].version, dappsInfo.updatedConnectionInfo_basic.version);
-            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
-            assert.equal(response.approvals['V2|testnet'].charms.length, 2);
+            assert.equal(response.approvals['arko']['testnet'].contractName, connection.contractName);
+            assert.equal(response.approvals['arko']['testnet'].version, dappsInfo.updatedConnectionInfo_basic.version);
+            assert.equal(response.approvals['arko']['testnet'].trustedApp, true);
+            assert.equal(response.approvals['arko']['testnet'].charms.length, 2);
         });
         it('POPUP: Can Update smart contract after reapproval if version is greater', async function() {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_smartcontract)
@@ -342,10 +341,10 @@ describe('Content Script - Testing Dapp Connection API', function () {
             
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V2|testnet'].contractName, connection.contractName);
-            assert.equal(response.approvals['V2|testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
-            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
-            assert.equal(typeof response.approvals['V2|testnet'].charms === 'undefined', true);
+            assert.equal(response.approvals['arko']['testnet'].contractName, connection.contractName);
+            assert.equal(response.approvals['arko']['testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
+            assert.equal(response.approvals['arko']['testnet'].trustedApp, true);
+            assert.equal(typeof response.approvals['arko']['testnet'].charms === 'undefined', true);
         });
         it('Does nothing if a smart contract update is sent with an equal or lower version', async function() {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_basic)
@@ -363,10 +362,10 @@ describe('Content Script - Testing Dapp Connection API', function () {
 
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
-            assert.equal(response.approvals['V2|testnet'].contractName, dappsInfo.updatedConnectionInfo_smartcontract.contractName);
-            assert.equal(response.approvals['V2|testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
-            assert.equal(response.approvals['V2|testnet'].trustedApp, true);
-            assert.equal(typeof response.approvals['V2|testnet'].charms === 'undefined', true);
+            assert.equal(response.approvals['arko']['testnet'].contractName, dappsInfo.updatedConnectionInfo_smartcontract.contractName);
+            assert.equal(response.approvals['arko']['testnet'].version, dappsInfo.updatedConnectionInfo_smartcontract.version);
+            assert.equal(response.approvals['arko']['testnet'].trustedApp, true);
+            assert.equal(typeof response.approvals['arko']['testnet'].charms === 'undefined', true);
         });
     })
 })

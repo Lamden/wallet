@@ -2,9 +2,9 @@
     "basicConnectionInfo": {
         "appName": "Dapp Testing",
         "version": "1.0.0",
-        "contractName": "con_wallet_testing",
+        "contractName": "con_wallet_testing_v2",
         "networkType": "testnet",
-        "networkVersion": 2,
+        "networkName": "arko",
         "logo": "/images/logo.png"
     },
     "charmsInfo": [{
@@ -17,28 +17,28 @@
     "updatedConnectionInfo_basic": {
         "appName": "Dapp Testing Updating",
         "version": "1.0.1",
-        "contractName": "con_wallet_testing",
+        "contractName": "con_wallet_testing_v2",
         "networkType": "testnet",
         "logo": "/images/logo2.png",
-        "networkVersion": 2,
+        "networkName": "arko",
         "backgound": "/images/background2.png"
     },
     "updatedConnectionInfo_smartcontract": {
         "appName": "Dapp Testing Updating",
         "version": "1.0.2",
-        "contractName": "con_wallet_testing_2",
+        "contractName": "con_wallet_testing_v2_2",
         "networkType": "testnet",
         "logo": "/images/logo2.png",
-        "networkVersion": 2,
+        "networkName": "arko",
         "backgound": "/images/background2.png"
     },
     "background": "/images/background.png",
     "basicTransactionInfo":{
         "methodName": "set_value",
         "networkType": "testnet",
-        "networkVersion": 2,
+        "networkName": "arko",
         "kwargs":{
-            "key_name": "con_wallet_testing",
+            "key_name": "con_wallet_testing_v2_2",
             "key_value" : ""
         },
         "stampLimit": 30
@@ -47,20 +47,20 @@
         "contractName": "currency",
         "methodName": "approve",
         "networkType": "testnet",
-        "networkVersion": 2,
+        "networkName": "arko",
         "kwargs":{
-            "to": "con_wallet_testing",
+            "to": "con_wallet_testing_v2_2",
             "amount" : 1
         },
         "stampLimit": 20
     },
     "nonStandardTransactionInfo":{
-        "contractName": "con_wallet_testing_2",
+        "contractName": "con_wallet_testing_v2_2",
         "methodName": "set_value",
         "networkType": "testnet",
-        "networkVersion": 2,
+        "networkName": "arko",
         "kwargs":{
-            "key_name": "con_wallet_testing_2",
+            "key_name": "con_wallet_testing_v2_2",
             "key_value" : ""
         },
         "stampLimit": 20
