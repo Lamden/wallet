@@ -33,6 +33,9 @@
 
 </script>
 <style>
+    .icon {
+        margin-left: 4px;
+    }
     .node-list {
         display: flex;
         flex-direction: column;

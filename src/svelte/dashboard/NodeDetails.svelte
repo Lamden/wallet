@@ -20,10 +20,11 @@
     let registerTime = new Date(0)
 
     let totalRewards = 0
+    let totalRewards24hr = 0
     let rewards7Days = []
 
-    $: data = $SettingsStore.currentPage.data
-    $: vk = data.vk ? data.vk : ""
+    export let vk = ''
+
     $: currencySymbol = $currentNetwork.currencySymbol
     $: balance = BalancesStore.getBalance($currentNetwork, vk)
     $: balanceStr = balance ? displayBalance(stringToFixed(balance, 8)) : "0";
@@ -33,6 +34,7 @@
     onMount(() => {
         getRegisterTime()
         getTotalRewards()
+        getTotalRewards24hr()
         getRewards7Day()
     })
 
@@ -40,14 +42,27 @@
         let res = await $currentNetwork.getVariable("elect_masternodes", "candidate_state", `registered:${vk}`)
         if (res.value) {
             let timeStamp = Math.floor(res.blockNum / 1000000)
-            registerTime = new Date(timeStamp)
+            let t = new Date(timeStamp)
+            registerTime = `${t.getFullYear()}-${t.getMonth() + 1}-${t.getDay()}`
+        } else {
+            registerTime = "Genesis"
+        }
+    }
+
+    const getTotalRewards24hr = async () => {
+        let stamp = new Date().getTime() - 24 * 60 * 60 * 1000
+        try {
+            totalRewards24hr = await fetch(`${$currentNetwork.blockservice.host}/rewards/total?recipient=${vk}&start=${stamp}`)
+            .then(res => res.json())
+            .then(data => data.amount)  
+        } catch {
+            totalRewards24hr = 0
         }
     }
 
     const getTotalRewards = async () => {
-        let stamp = new Date().getTime() - 24 * 60 * 60 * 1000
         try {
-            totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total?recipient=${vk}&start=${stamp}`)
+            totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total?recipient=${vk}`)
             .then(res => res.json())
             .then(data => data.amount)  
         } catch {
@@ -62,7 +77,7 @@
             .then(res => res.json())
             rewards7Days =  res
         } catch {
-            //
+            rewards7Days = []
         }
     }
 
@@ -81,8 +96,12 @@
                 <div class="text-bold">{balanceStr} {currencySymbol}</div>
             </div>
             <div class="item">
-                <div class="text-subtitle title">Rewards 24H</div>
+                <div class="text-subtitle title">Total Rewards</div>
                 <div class="text-bold">{displayBalance(stringToFixed(totalRewards, 8))} {currencySymbol}</div>
+            </div>
+            <div class="item">
+                <div class="text-subtitle title">Rewards 24H</div>
+                <div class="text-bold">{displayBalance(stringToFixed(totalRewards24hr, 8))} {currencySymbol}</div>
             </div>
         </div>
         <div class="divider" />
@@ -93,7 +112,7 @@
             </div>
             <div class="item flex space-between">
                 <div class="text-subtitle title no-margin">Register Time</div>
-                <div class="text-bold">{`${registerTime.getFullYear()}-${registerTime.getMonth() + 1}-${registerTime.getDay()}`}</div>
+                <div class="text-bold">{registerTime}</div>
             </div>
             <div class="item">
                 <div class="text-subtitle title">Address</div>
@@ -120,8 +139,9 @@
         background-color: var(--secondary-color);
         border-radius: 8px;
         padding: 16px;
-        width: 630px;
+        min-width: 320px;
         margin-bottom: 36px;
+        flex-grow: 1;
     }
     .icon-copy {
         margin-left: 8px;
@@ -148,13 +168,10 @@
         background-color: var(--error-color);
     }
 
-
-
     .wrap {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding-top: 36px;
+        justify-content: start;
+        padding: 36px 24px 0 24px;
     }
 
     .card {

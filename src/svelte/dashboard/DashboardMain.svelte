@@ -27,7 +27,7 @@
     let totalRewards = 0
 
         
-    let cardList = [
+    $: cardList = [
         {
             name: 'Rewards',
             desc: totalRewards,
@@ -157,11 +157,41 @@
             }
         }
 
-        motion.name = motion.status ? "Stamps" : "No Motion",
-        motion.desc = `Current value is ${data.value}`
+        motion.name = motion.status ? "Stamps" : "No Motion"
+
+        let data2 = await fetch(`${$currentNetwork.blockservice.host}/rootkey_history?contract=stamp_cost&variable=S&root_key=value`)
+            .then(res => res.json())
+            .then(data => data['history'])
+
+        let changedTime = ""
+        if (data2.length > 0) {
+            let timeStamp = Math.floor(data2[0].blockNum / 1000000)
+            let strarr = new Date(timeStamp).toDateString().split(' ')
+            changedTime = `Changed: ${strarr[1]} ${strarr[2]}, ${strarr[3]}`
+        } else {
+            changedTime = "Changed: Genesis"
+        }
+
+        motion.desc = `
+            Current Stamp Ratio: ${data.value} Stamps/${$currentNetwork.currencySymbol}
+            <p class="text-secondary">${changedTime}</p>
+        `
 
         motions.push(motion)
         motions = motions
+    }
+
+    const getStampCostHistory = async () => {
+        let data = await fetch(`${$currentNetwork.blockservice.host}/rootkey_history?contract=stamp_cost&variable=S&root_key=value`)
+            .then(res => res.json())
+            .then(data => data['history'])
+        if (data.length > 0) {
+            let timeStamp = Math.floor(data[0].blockNum / 1000000)
+            let strarr = new Date(timeStamp).toDateString().split(' ')
+            `Changed: ${strarr[1]} ${strarr[2]}, ${strarr[3]}`
+        } else {
+            "Changed: Genesis"
+        }
     }
 
     const getCurrentMasterNodeMotion = async () => {
@@ -220,7 +250,7 @@
     }
 
     const getCurrentDaoMotion = async () => {
-        let name = "con_dao"
+        let name = "dao"
         let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
             .then(res => res.json())
             .then(data => data[name].S)
@@ -271,7 +301,7 @@
 
         totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total`)
             .then(res => res.json())
-            .then(data => data.amount)
+            .then(data => utils.displayBalance(data.amount))
 
     }
 
@@ -293,7 +323,7 @@
         font-weight: 800;
     }
     .header-name {
-        flex-basis: 240px;
+        flex-basis: 260px;
         min-width: 160px;
     }
     .node-type {
@@ -333,7 +363,7 @@
 
 <div class="node-list">
     <div class="header header-text text-body1 weight-800">
-        <div class="motion-header-name header-text">Motion List</div>
+        <div class="motion-header-name header-text">Policy List</div>
         <div class="node-type header-text">Policy</div>
         <!-- <div class="node-type header-text">Rewards</div> -->
         <div class="node-type header-text">Motion</div>

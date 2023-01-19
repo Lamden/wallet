@@ -68,7 +68,7 @@
   </script>
   
   <div class="wrap">
-    <div class="wrap-second" on:click={handleCollapse}>
+    <div class="wrap-second">
       <div
         bind:this={divElm}
         class="row-box flex-column text-body1 text-primar"
@@ -76,7 +76,7 @@
       >
         <div class="coin-main-row flex-row flex-align-center">
           <div class="name">
-            <div class="collapse-btn">
+            <div class="collapse-btn" on:click={handleCollapse}>
               <DirectionalChevronIcon
                 strokeWidth={2.75}
                 {direction}
@@ -93,7 +93,7 @@
           <div class="policy">{data.policy}</div>
           <div class="motion">{data.name}</div>
           <div class="result">{data.yays} yays / {data.nays} nays</div>
-          <div class="status">{data.status === 1 ? "Starting" : "Not Start"}</div>
+          <div class="status">{data.status === 1 ? "Open" : "Closed"}</div>
         </div>
         {#if collapseStatus}
           {#if data.desc}

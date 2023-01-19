@@ -294,7 +294,7 @@
 
 {#if !token || (token && hasVisibleBalance)}
   <div class="wrap" class:wrap-leagyc={!isVaultAccount}>
-    <div class="wrap-second" on:click={handleCollapse}>
+    <div class="wrap-second">
       <div
         id={`coin-row-${coin.id}`}
         bind:this={divElm}
@@ -305,7 +305,7 @@
       >
         <div class="coin-main-row flex-row flex-align-center">
           <div class="name">
-            <div class="collapse-btn">
+            <div class="collapse-btn" on:click={handleCollapse}>
               <DirectionalChevronIcon
                 strokeWidth={2.75}
                 {direction}
