@@ -273,9 +273,9 @@
   }
 
   .coinmenus {
-    padding-left: 82px;
+    padding-left: 12px;
     margin-bottom: 1.5rem;
-    margin-top: 0.8rem;
+    margin-top: 0.6rem;
   }
 
   .collapse-btn {

@@ -1,5 +1,5 @@
 <script>
-    import { getContext, onMount } from 'svelte';
+    import { getContext, onMount, setContext } from 'svelte';
 
     import policy from '../../../policy.json'
     
@@ -41,6 +41,8 @@
     }]
 
     let currentStep = 0
+
+    let txallInfo
 
     let steps = [
         {page: 'CoinSendingTx', back: -1, cancelButton: false},
@@ -191,10 +193,16 @@
     const resultDetails = (e) => {
         txallInfo = e.detail
         resultInfo = e.detail.resultInfo;
-        resultInfo.buttons = buttons;
         resultInfo.txHash = e.detail.txHash;
+        resultInfo.buttons = [
+            {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'}
+        ]
         nextPage();
     }
+
+    setContext('tx_functions', {
+        home: () => closeModal()
+	});
 
 </script>
 

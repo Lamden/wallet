@@ -334,10 +334,9 @@ describe('Content Script - Testing Dapp Connection API', function () {
             let connection = helpers.getInstance(dappsInfo.updatedConnectionInfo_smartcontract)
 
             await helpers.sendConnectRequest(driver, connection, false)
-            await helpers.sleep(2000, true)
+            await helpers.sleep(3000, true)
             await helpers.approveReApprovePopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
-            connectionInfo = response;
             
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
