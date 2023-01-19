@@ -1,6 +1,6 @@
 <script>
     //Stores
-    import { currentNetwork } from '../../js/stores/stores.js';
+    import { currentNetwork, currentNetworkName } from '../../js/stores/stores.js';
 
     //Components
     import Charm from './Charm.svelte'
@@ -8,7 +8,7 @@
     //Props
     export let dappInfo;
 
-    $: symbol = `V${$currentNetwork.version}|${$currentNetwork.type}`
+    $: symbol = `${$currentNetworkName}|${$currentNetwork.type}`
     $: currentNetworkInfo = dappInfo[symbol]
     $: charms = currentNetworkInfo.charms || []
     $: contractName = currentNetworkInfo.contractName

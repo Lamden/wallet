@@ -7,6 +7,7 @@ export const dappController = (utils, funa, actions) => {
     chrome.storage.onChanged.addListener(function(changes) {
         for (let key in changes) {
             if (key === 'dapps') dappsStore = changes[key].newValue;
+            if (key === 'networks') purgeDappNetworkKeys();
         }
     });
 
@@ -21,7 +22,7 @@ export const dappController = (utils, funa, actions) => {
                 initiateTrustedApp()
             }
             if (prevVer <= "1.8.0" && currVer > prevVer){
-                purgeDappConnections()
+                // purgeDappConnections()
             }
             if (prevVer <= "2.3.1" && currVer > prevVer){
                 purgeDappNetworkKeys()
@@ -50,11 +51,15 @@ export const dappController = (utils, funa, actions) => {
         if (!validateTypes.isStringWithValue(messageData.logo)) {
             errors.push("'logo' <string> required to process connect request")
         }
+        if (!validateTypes.isStringWithValue(messageData.version)) {
+            errors.push("'version' <string> required to process connect request")
+        }
         if (typeof messageData.background !== 'undefined') {
             if (!validateTypes.isStringWithValue(messageData.background)) {
                 errors.push("'background' <string> was provided but invalid.")
             }
         }    
+        
         if (validateTypes.isStringWithValue(messageData.networkType)){
             if (!utils.networks.isAcceptedNetwork(messageData.networkType)){
                 errors.push(`'networkType' <string> '${messageData.networkType}' is not a valid network type.`)
@@ -63,17 +68,9 @@ export const dappController = (utils, funa, actions) => {
             errors.push("'networkType' <string> required to process connect request")
         }
 
-        if (!validateTypes.isStringWithValue(messageData.version)) {
-            errors.push("'version' <string> required to process connect request")
-        }
-
-        // default network version 1
-        if (!messageData.networkVersion) {
-            messageData.networkVersion = 1
-        }
-
-        if (messageData.networkVersion !== 1 && messageData.networkVersion !== 2) {
-            errors.push("'networkVersion' <int> must be 1 or 2")
+        // default network name legacy
+        if (!messageData.networkName) {
+            messageData.networkName = "legacy"
         }
 
         if (typeof messageData.charms !== 'undefined') {
@@ -177,14 +174,15 @@ export const dappController = (utils, funa, actions) => {
     }
     
     const addNew = (appUrl, vk, messageData, trustedApp) => {
-        let symbol = `V${messageData.networkVersion}|${messageData.networkType}`
+        let symbol = `${messageData.networkName}|${messageData.networkType}`
         //remvove trailing slash from url
         if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
         if (!dappsStore[appUrl][symbol]) dappsStore[appUrl][symbol] = {}
         dappsStore[appUrl][symbol].contractName = messageData.contractName
         dappsStore[appUrl][symbol].trustedApp = trustedApp;
+        dappsStore[appUrl][symbol].networkName = messageData.networkName;
+        dappsStore[appUrl][symbol].networkType = messageData.networkType;
         dappsStore[appUrl][symbol].version = messageData.version;
-        dappsStore[appUrl][symbol].networkVersion = messageData.networkVersion;
         //Remove slashes at start of icon paths
         if (utils.validateTypes.isArrayWithValues(messageData.charms)){
             messageData.charms.forEach(charm => {
@@ -204,7 +202,7 @@ export const dappController = (utils, funa, actions) => {
 
     const updateDapp = (dappInfo, connectionInfo, reapprove = false) => {
 
-        let symbol = `V${connectionInfo.networkVersion}|${connectionInfo.networkType}`
+        let symbol = `${connectionInfo.networkName}|${connectionInfo.networkType}`
 
         dappsStore[dappInfo.url].appName = connectionInfo.appName
         if (utils.validateTypes.isStringWithValue(connectionInfo.background)){
@@ -214,7 +212,7 @@ export const dappController = (utils, funa, actions) => {
         }
         dappsStore[dappInfo.url].logo = utils.addCharAtStart(connectionInfo.logo, '/')
         dappsStore[dappInfo.url][symbol].version = connectionInfo.version
-        dappsStore[dappInfo.url][symbol].networkVersion = connectionInfo.networkVersion
+        dappsStore[dappInfo.url][symbol].networkName = connectionInfo.networkName
         if (typeof connectionInfo.charms !== 'undefined') {
             dappsStore[dappInfo.url][symbol].charms = connectionInfo.charms
         }else{
@@ -225,7 +223,7 @@ export const dappController = (utils, funa, actions) => {
     }
 
     const updateSmartContract = (dappInfo, connectionInfo) => {
-        let symbol = `V${connectionInfo.networkVersion}|${connectionInfo.networkType}`
+        let symbol = `${connectionInfo.networkName}|${connectionInfo.networkType}`
         dappsStore[dappInfo.url][symbol].contractName = connectionInfo.contractName
         chrome.storage.local.set({"dapps": dappsStore});
     }
@@ -263,9 +261,18 @@ export const dappController = (utils, funa, actions) => {
         Object.keys(dappsStore).forEach(dappURL => {
 
             allnetworks.forEach(network => {
+                let ver = network.networkName === "arko" ? 2 : 1
                 if (dappsStore[dappURL][network.type]) {
-                    dappsStore[dappURL][`V${network.version}|${network.type}`] = dappsStore[dappURL][network.type]
+                    dappsStore[dappURL][`legacy|${network.type}`] = dappsStore[dappURL][network.type]
                     delete dappsStore[dappURL][network.type]
+                    changed = true
+                } else if(dappsStore[dappURL][`V${ver}|${network.type}`]) {
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`V${ver}|${network.type}`]
+                    delete dappsStore[dappURL][`V${ver}|${network.type}`]
+                    changed = true
+                } else if(dappsStore[dappURL][`undefined|${network.type}`]) {
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`undefined|${network.type}`]
+                    delete dappsStore[dappURL][`undefined|${network.type}`]
                     changed = true
                 }
             })
@@ -341,7 +348,7 @@ export const dappController = (utils, funa, actions) => {
     }
 
     const setTrusted = (data) => {
-        let symbol = `V${data.networkVersion}|${data.networkType}`
+        let symbol = `${data.networkName}|${data.networkType}`
         try{
             delete dappsStore[data.dappUrl][symbol].stampPreApproval
             delete dappsStore[data.dappUrl][symbol].stampsUsed

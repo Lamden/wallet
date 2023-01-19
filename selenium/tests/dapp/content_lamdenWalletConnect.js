@@ -316,7 +316,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
             await helpers.approvePopup(driver, 2, 1, true, {show: false})
             let response = await helpers.getWalletResponse(driver)
             connectionInfo = response;
-            
+
             assert.equal(response.errors, null);
             assert.equal(response.wallets.length, 1);
             assert.equal(response.approvals['testnet'].contractName, connection.contractName);

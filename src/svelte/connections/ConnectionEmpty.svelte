@@ -12,5 +12,5 @@
 </style>
 
 <div id="connection-empty" class="empty">
-    <h3> You have no <strong>{$currentNetwork.type.toUpperCase()}</strong> connections.</h3>
+    <h3> You have no <strong>{$currentNetwork.name.toUpperCase()}</strong> connections.</h3>
 </div>

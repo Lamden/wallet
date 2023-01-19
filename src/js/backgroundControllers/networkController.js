@@ -70,8 +70,8 @@ export const networkController = (utils) => {
         return addExtras(network)
     } 
 
-    const getLamdenNetwork = (networkType, version = 1) => {
-        const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase() && version === network.version)
+    const getLamdenNetwork = (networkType, networkName="legacy") => {
+        const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase() && networkName === network.networkName)
         if (!foundNetwork) return false;
         return addExtras(new utils.Lamden.Network(foundNetwork))
     }
@@ -80,8 +80,8 @@ export const networkController = (utils) => {
         return LamdenNetworkTypes.includes(networkType)
     }
 
-    const contractExists = (networkType, contractName, version = 1) => {
-        const networkInfo = getLamdenNetwork(networkType, version)
+    const contractExists = (networkType, contractName, networkName = "legacy") => {
+        const networkInfo = getLamdenNetwork(networkType, networkName)
         if (!networkInfo) return false;
         const network = new utils.Lamden.Network(networkInfo)
         return network.contractExists(contractName)
