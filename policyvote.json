@@ -46,7 +46,7 @@
     "upgrade": {
         "Vote": {
             "type": "bool",
-            "name": "position",
+            "name": "value",
             "show": true
         }
     }
