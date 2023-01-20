@@ -3,7 +3,7 @@
       getContext,
       onMount
     } from "svelte";
-    import { NodesStore, networkKey, currentNetwork, CoinStore} from "../../js/stores/stores.js";
+    import { NodesStore, networkKey, currentNetwork, CoinStore, PolicyStore, freshPolicy} from "../../js/stores/stores.js";
 
     import Node from "./Node.svelte";
     import Motion from "./Motion.svelte";
@@ -22,11 +22,11 @@
 
     const { Button } = Components;
 
-    let motions = []
     let daoBalance = 0
     let totalRewards = 0
 
-        
+    $: netKey = networkKey($currentNetwork)
+    $: motions = $PolicyStore && $PolicyStore[netKey] ? $PolicyStore[netKey] : [];
     $: cardList = [
         {
             name: 'Rewards',
@@ -45,7 +45,6 @@
         },
     ]
 
-    $: netKey = networkKey($currentNetwork)
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
     // user's nodes
     $: memberNodes = nodes.filter(k => k.status === "node")
@@ -54,12 +53,8 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
-        getCurrentMasterNodeMotion()
-        getCurrentDaoMotion()
-        getRewardsMotion()
-        getStampCostMotion()
         getStatics()
-        getUpgradeMotion()
+        freshPolicy("all")
     })
 
     //Context
@@ -67,247 +62,6 @@
 
     const openNewNodeModal = () => {
         openModal("AddNewNode");
-    }
-
-    const getRewardsMotion = async () => {
-        let name = "rewards"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name].S)
-
-        let motion = {
-            policy: "rewards",
-            yays: data.vote_count,
-            nays: 0,
-            positions: []
-        }
-
-        if (data.election_start) {
-            // check whether ended
-            let isOver = data['vote_count'] >= data['min_votes_required'] 
-            || new Date().getTime() - utils.decodePythonTime(data['election_start'], "time") >= utils.decodePythonTime(data['election_max_length'], "delta")
-
-            if (!isOver) {
-                // starting
-                motion.status = 1
-            } else {
-                motion.status = 0
-            }
-
-            for (const m of allMemberNodes) {
-                let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-                if (data.has_voted[m.vk] && !isOver) {
-                    motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-                } else {
-                    motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-                }
-            }
-        } else {
-            motion.status = 0
-            for (const m of allMemberNodes) {
-                let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        motion.name = motion.status ? "rewards" : "No Motion",
-        motion.desc = `<p>Current Reward Split: </p>masternode: ${data.value[0].__fixed__}<br> blackhole: ${data.value[1].__fixed__} <br> foundation: ${data.value[2].__fixed__} <br> developer: ${data.value[3].__fixed__}`
-
-        motions.push(motion)
-        motions = motions
-    }
-
-    const getStampCostMotion = async () => {
-        let name = "stamp_cost"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name].S)
-        
-        let motion = {
-            policy: "stamp_cost",
-            yays: data.vote_count,
-            nays: 0,
-            positions: []
-        }
-
-        if (data.election_start) {
-            // check whether ended
-            let isOver = data['vote_count'] >= data['min_votes_required'] 
-            || new Date().getTime() - utils.decodePythonTime(data['election_start'], "time") >= utils.decodePythonTime(data['election_max_length'], "delta")
-
-            if (!isOver) {
-                // starting
-                motion.status = 1
-            } else {
-                motion.status = 0
-            }
-
-            for (const m of allMemberNodes) {
-                let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-                if (data.has_voted[m.vk] && !isOver) {
-                    motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-                } else {
-                    motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-                }
-            }
-        } else {
-            motion.status = 0
-            for (const m of allMemberNodes) {
-                let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        motion.name = motion.status ? "Stamps" : "No Motion"
-
-        let data2 = await fetch(`${$currentNetwork.blockservice.host}/rootkey_history?contract=stamp_cost&variable=S&root_key=value`)
-            .then(res => res.json())
-            .then(data => data['history'])
-
-        let changedTime = ""
-        if (data2.length > 0) {
-            let timeStamp = Math.floor(data2[0].blockNum / 1000000)
-            let strarr = new Date(timeStamp).toDateString().split(' ')
-            changedTime = `Changed: ${strarr[1]} ${strarr[2]}, ${strarr[3]}`
-        } else {
-            changedTime = "Changed: Genesis"
-        }
-
-        motion.desc = `
-            Current Stamp Ratio: ${data.value} Stamps/${$currentNetwork.currencySymbol}
-            <p class="text-secondary">${changedTime}</p>
-        `
-
-        motions.push(motion)
-        motions = motions
-    }
-
-    const getCurrentMasterNodeMotion = async () => {
-        let name = "masternodes"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name].S)
-        let motion = {
-            policy: "masternodes",
-            yays: data.yays,
-            nays: data.nays,
-            value: data.current_motion,
-            positions: []
-        }
-        let stamp = utils.decodePythonTime(data.motion_opened, "time") + 86400000
-        if (data.motion_opened && stamp > new Date().getTime()) {
-            // starting
-            motion.status = 1
-        } else {
-            motion.status = 0
-        }
-
-        if (!data.positions) data.positions = []
-        for (const m of allMemberNodes) {
-            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-            if (data.positions[m.vk] === true && motion.status) {
-                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-            } else {
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        // process masternode motion
-        switch(motion.value) {
-            case 1:
-                // REMOVE_MEMBER
-                motion.name = "Remove Member"
-                motion.desc = `This is a motion to remove member ${data.member_in_question}`
-                break;
-            case 2:
-                // ADD_SEAT
-                motion.name = "Add Seat"
-                break;
-            case 3:
-                // REMOVE_SEAT
-                motion.name = "Remove Seat"
-                break;
-            default:
-                motion.name = "No Motion"
-                // NO_MOTION
-        }
-        motions.push(motion)
-        motions = motions
-    }
-
-    const getCurrentDaoMotion = async () => {
-        let name = "dao"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name].S)
-        let amount = data.amount ? data.amount.__fixed__? data.amount.__fixed__ : data.amount : 0
-        let isStart = utils.decodePythonTime(data.motion_start, "time") + utils.decodePythonTime(data.motion_period, "delta") > new Date().getTime()
-        let motion = {
-            policy: name,
-            name: isStart? "Dao" : "No Motion",
-            desc: isStart? `${data.recipient_vk} will get ${amount} ${$currentNetwork.currencySymbol}s ` : null,
-            yays: data.yays,
-            nays: data.nays,
-            positions: []
-        }
-
-        if (isStart) {
-            motion.status = 1
-        } else {
-            motion.status = 0
-        }
-
-        if (!data.positions) data.positions = []
-
-        for (const m of allMemberNodes) {
-            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-            if (data.positions[m.vk] === true) {
-                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-            } else {
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        motions.push(motion)
-        motions = motions
-    }
-
-    const getUpgradeMotion = async () => {
-        let name = "upgrade"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name])
-        let isStart =  data['vote_state']['started'] && new Date().getTime() <= utils.decodePythonTime(data['vote_state']['started'], "time") + 7 * 24 * 60 * 60 * 1000
-        let motion = {
-            policy: name,
-            name: isStart? "Upgrade" : "No Motion",
-            desc: isStart? `Click the links below to view the update. 
-            <p><a target="_blank" class="text-link" href="https://github.com/Lamden/lamden/tree/${data['vote_state']['lamden_tag']}">https://github.com/Lamden/lamden/tree/${data['vote_state']['lamden_tag']}</a></p>
-            <p><a class="text-link" target="_blank" href="https://github.com/Lamden/contracting/tree/${data['vote_state']['contracting_tag']}">https://github.com/Lamden/contracting/tree/${data['vote_state']['contracting_tag']}</a></p>` : null,
-            yays: data['vote_state'].yays ? data['vote_state'].yays : 0,
-            nays: data['vote_state'].nays ? data['vote_state'].nays : 0,
-            positions: []
-        }
-
-        if (isStart) {
-            motion.status = 1
-        } else {
-            motion.status = 0
-        }
-
-        if (!data['vote_state'].positions) data['vote_state'].positions = []
-
-        for (const m of allMemberNodes) {
-            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-            if (data['vote_state'].positions[m.vk] === true) {
-                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-            } else {
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        motions.push(motion)
-        motions = motions
     }
 
     const getStatics = async () => {

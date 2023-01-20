@@ -15,6 +15,7 @@ export { EventsStore, newEventNum}  from './eventStore.js';
 export { PriceStore, TauPrice} from './priceStore.js'
 export { ExchangeRateStore, FiatListDown } from './exchangeRateStore.js'
 export { NodesStore } from './nodesStore.js'
+export { PolicyStore, freshPolicy } from './policyStore.js'
 
 //MISC Stores
 export const CURRENT_KS_VERSION = writable("1.0");

@@ -497,6 +497,7 @@ function randomString(length) {
 
 
 function decodePythonTime(value, format) {
+    if (!value) return 0
     if (format === 'time') {
         let arr = value.__time__
         arr[1] = arr[1] - 1

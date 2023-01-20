@@ -4,7 +4,7 @@
     import policy from '../../../policy.json'
     
 	//Stores
-    import { currentNetwork, CoinStore } from '../../js/stores/stores.js';
+    import { currentNetwork, CoinStore, freshPolicy } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
@@ -207,7 +207,11 @@
         resultInfo = e.detail.resultInfo;
         resultInfo.txHash = e.detail.txHash;
         resultInfo.buttons = [
-            {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'}
+            {name: 'Home', click: () => {
+                closeModal();
+                freshPolicy(selectedPolicie);
+                console.log(`fresh ${selectedPolicie}`)
+            }, class: 'button__solid button__primary'}
         ]
         nextPage();
     }

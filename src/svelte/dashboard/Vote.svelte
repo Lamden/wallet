@@ -5,7 +5,7 @@
     import spinner from '../../img/menu_icons/icon_spinner.svg';
 
 	//Stores
-    import { currentNetwork, CoinStore, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork, CoinStore, networkKey, freshPolicy } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
@@ -140,7 +140,11 @@
             ]
         } else {
             resultInfo.buttons = [
-                {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'}
+                {name: 'Home', click: () => {
+                    closeModal();
+                    freshPolicy(selectedPolicie);
+                    console.log(`fresh ${selectedPolicie}`)
+                }, class: 'button__solid button__primary'}
             ];
         }
         resultInfo.txHash = e.detail.txHash;
