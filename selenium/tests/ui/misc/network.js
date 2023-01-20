@@ -68,7 +68,8 @@ describe('Testing Manage Network', function () {
         });
         it('Form Valid - Rejects empyty network name', async function() {
             await helpers.sleep(500)
-            await driver.findElement(By.id("save")).click()
+            let element = await driver.findElement(By.id("save"))
+            driver.executeScript("arguments[0].click();", element)
             let name = await driver.findElement(By.id("name"))
             let msg = await name.getAttribute('validationMessage')
             assert.equal(msg, 'Please fill out this field.')

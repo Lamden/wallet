@@ -47,7 +47,7 @@ describe('Testing Token Integration - Edit Token Info', function () {
             await tokenHelpers.validateTokenLogo(driver, frostyToken)
             await tokenHelpers.cancelTokenOptionsModal(driver)
             await helpers.gotoAccountsPage(driver)
-            await driver.findElement(By.className('wrap-second')).click()
+            await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
             await helpers.sleep(1000)
         });
 

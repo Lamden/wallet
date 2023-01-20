@@ -114,6 +114,10 @@
                     kwargs: formatKwargs(kwargs)
                 }
             }
+            // handle for upgrade policy
+            if (selectedPolicie === "upgrade") {
+                txData.txInfo.contractName = "upgrade"
+            }
         }
         nextPage()
     }
@@ -200,24 +204,28 @@
     const handleNewArgValues = (e) => {
         kwargs = []
         if (!selectedPolicie || !selectedMotion) return []
-        if (policy[selectedPolicie][selectedMotion] instanceof Array) {
-            const obj = [...policy[selectedPolicie][selectedMotion]]
-            for (const k of e.detail.argumentList) {
-                for (var i=0; i< obj.length; i++) {
-                    if (obj[i].name === k.name) {
-                        obj[i].value = k.value
+        if (selectedPolicie !== 'upgrade') {
+            if (policy[selectedPolicie][selectedMotion] instanceof Array) {
+                const obj = [...policy[selectedPolicie][selectedMotion]]
+                for (const k of e.detail.argumentList) {
+                    for (var i=0; i< obj.length; i++) {
+                        if (obj[i].name === k.name) {
+                            obj[i].value = k.value
+                        }
                     }
                 }
+                kwargs.push({
+                    name: "value",
+                    type: "Any",
+                    value: obj.map(x => x.value && Encoder(x.type, x.value))
+                })
+            } else {
+                kwargs = [...e.detail.argumentList]
             }
-            kwargs.push({
-                name: "value",
-                type: "Any",
-                value: obj.map(x => x.value && Encoder(x.type, x.value))
-            })
+            kwargs.push({name: "policy", type: "str", value: selectedPolicie})
         } else {
             kwargs = [...e.detail.argumentList]
         }
-        kwargs.push({name: "policy", type: "str", value: selectedPolicie})
         console.log(kwargs)
     }
 

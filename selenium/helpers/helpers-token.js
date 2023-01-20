@@ -54,7 +54,7 @@ const validateTokenOnAccountsScreen = async (driver, token) => {
     await helpers.gotoAccountsPage(driver)
     await driver.wait(until.elementLocated(By.id(`token-row-${token.tokenSymbol}-${token.tokenName.replace(" ", "")}`)), 15000);
     await validateTokenLogo(driver, token)
-    await driver.findElement(By.className("wrap-second")).click()
+    await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
 }
 
 const validateTokenNotOnAccountsScreen = async (driver, token)=> {
@@ -179,8 +179,7 @@ const saveTokenModal = async (driver, token) => {
 }
 
 const gotoTokenDetails = async (driver, token) => {
-    let element = driver.findElement(By.className('wrap-second'))
-    await driver.executeScript("arguments[0].click();", element)
+    await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
     await helpers.sleep(500);
     await driver.findElement(By.xpath(`//div[contains(text(),'${token.tokenName}')]`)).click()
 }
@@ -219,13 +218,13 @@ const openAccountsScreen = async (driver) => {
 }
 
 const openCoinReceiveModal = async (driver) => {
-    await driver.findElement(By.className("wrap-second")).click()
+    await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
     await helpers.sleep(2000)
     await driver.findElement(By.id('receive-btn')).click();
 }
 
 const openCoinSendModal = async (driver) => {
-    await driver.findElement(By.className("wrap-second")).click()
+    await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
     await helpers.sleep(1000)
     await driver.findElement(By.id('send-btn')).click();
 }

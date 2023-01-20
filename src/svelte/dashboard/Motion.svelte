@@ -122,13 +122,6 @@
                       Vote
                     </button>
                   {/if}
-                  <button
-                  id="history-btn"
-                  class="button__small button__primary coin-btn flex-row"
-                  on:click|stopPropagation={() => handleVote(item.vk)}
-                >
-                  Vote
-                </button>
                 </div>
               </div>
             {/each}

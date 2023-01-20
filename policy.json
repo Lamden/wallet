@@ -70,10 +70,14 @@
         }
     },
     "upgrade": {
-        "Upgrade": {
-            "type": "bool",
-            "name": "value",
+        "Upgrade": [{
+            "type": "str",
+            "name": "lamden_tag",
             "show": true
-        }
+        }, {
+            "type": "str",
+            "name": "contracting_tag",
+            "show": true 
+        }]
     }
 }
