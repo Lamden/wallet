@@ -40,7 +40,7 @@
         },
         {
             name: 'Guide',
-            desc: [{url: "", name: "Node Installation Guide"}, {url: "", name: "How to use admin dashbord"}],
+            desc: [{url: "https://arko.lamden.io", name: "Node Installation Guide"}, {url: "https://docs.lamden.io", name: "How to use admin dashbord"}],
             logo: doco
         },
     ]
