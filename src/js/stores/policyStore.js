@@ -328,9 +328,9 @@ const getUpgradeMotion = async () => {
     let motion = {
         policy: name,
         name: isStart? "Upgrade" : "No Motion",
-        desc: isStart? `Click the links below to view the update. 
-        <p><a target="_blank" class="text-link" href="https://github.com/Lamden/lamden/tree/${data['vote_state']['lamden_tag']}">https://github.com/Lamden/lamden/tree/${data['vote_state']['lamden_tag']}</a></p>
-        <p><a class="text-link" target="_blank" href="https://github.com/Lamden/contracting/tree/${data['vote_state']['contracting_tag']}">https://github.com/Lamden/contracting/tree/${data['vote_state']['contracting_tag']}</a></p>` : null,
+        desc: isStart? `Click the links below to view the current update. 
+        <p><a target="_blank" class="text-link" href="https://github.com/Lamden/lamden/tree/${data['vote_state']['lamden_tag']}">Current Lamden Code</a></p>
+        <p><a class="text-link" target="_blank" href="https://github.com/Lamden/contracting/tree/${data['vote_state']['contracting_tag']}">Current Contracting Code</a></p>` : null,
         yays: data['vote_state'].yays ? data['vote_state'].yays : 0,
         nays: data['vote_state'].nays ? data['vote_state'].nays : 0,
         positions: []
