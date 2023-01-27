@@ -64,7 +64,7 @@ describe('Testing Manage Network', function () {
             // switch to add network
             await driver.findElement(By.id('undefined-currently-selected')).click()
             await helpers.sleep(500)
-            await driver.findElement(By.id("select-option-4")).click()
+            await driver.findElement(By.id("select-option-5")).click()
         });
         it('Form Valid - Rejects empyty network name', async function() {
             await helpers.sleep(500)
@@ -141,7 +141,7 @@ describe('Testing Manage Network', function () {
             await helpers.sleep(500)
             await driver.findElement(By.id('undefined-currently-selected')).click()
             await helpers.sleep(500)
-            await driver.findElement(By.id("select-option-4")).click()
+            await driver.findElement(By.id("select-option-5")).click()
             await helpers.clearNetwork(driver);
             await helpers.fillNetworkForm(driver, editNetwork);
             await helpers.sleep(1000);
@@ -155,7 +155,7 @@ describe('Testing Manage Network', function () {
             await helpers.sleep(3000)
             
             // valid result
-            let networkname = await driver.findElement(By.css("#nav-network option:nth-child(4)")).getAttribute('innerText')
+            let networkname = await driver.findElement(By.css("#nav-network option:nth-child(5)")).getAttribute('innerText')
             assert.equal(networkname, editNetwork.name)
         })
     })

@@ -153,7 +153,7 @@ const changeToTestnet = async (driver) => {
 
 const changeToTestnetV2 = async (driver) => {
     await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
-    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-2")), 5000);
+    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-3")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
@@ -492,6 +492,7 @@ const gotoNetwork = async (driver) => {
 }
 
 const clearNetwork = async (driver) => {
+    await sleep(500)
     await driver.findElement(By.id("name")).clear();
     await driver.findElement(By.id("currencySymbol")).clear();
     await driver.findElements(By.css("#mainbox-hostlist>div>.text-btn")).then(res => {

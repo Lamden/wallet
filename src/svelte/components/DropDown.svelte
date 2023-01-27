@@ -46,6 +46,14 @@
     }
   });
 
+  afterUpdate(() => {
+    if (network) {
+        items.forEach((item, index) => {
+            selectElm.options[index].selected = item.selected;
+        });
+    }
+  })
+
   const dispatchSelected = () => {
     if (selectElm.selectedIndex >= 0)
       dispatch("selected", { id, selected: items[selectElm.selectedIndex] });
@@ -114,10 +122,10 @@
           </div>
         {/if}
         <div>
-          {#if network && typeof displayItems[selectElm.selectedIndex].value.status != "undefined"}
+          {#if network && typeof displayItems[selectElm.selectedIndex].value.online != "undefined"}
             <span
               class="mark"
-              class:online={displayItems[selectElm.selectedIndex].value.status}
+              class:online={displayItems[selectElm.selectedIndex].value.online}
             />
           {/if}
           {displayItems[selectElm.selectedIndex].name}
@@ -154,8 +162,8 @@
             </div>
           {/if}
           <div>
-            {#if network && typeof item.value.status != "undefined"}
-              <span class="mark" class:online={item.value.status} />
+            {#if network && typeof item.value.online != "undefined"}
+              <span class="mark" class:online={item.value.online} />
             {/if}
             {item.name}
           </div>

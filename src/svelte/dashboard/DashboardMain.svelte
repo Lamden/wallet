@@ -65,7 +65,7 @@
     }
 
     const getStatics = async () => {
-        let res1 = await $currentNetwork.getVariable("currency", "balances", "con_dao")
+        let res1 = await $currentNetwork.getVariable("currency", "balances", "dao")
         if (res1.value) {
             if (res1.value.__fixed__) {
                 daoBalance = res1.value.__fixed__

@@ -56,6 +56,7 @@ export const networkController = (utils) => {
     }
 
     const getAll = () => {
+        if (!Array.isArray(networksStore.user)) networksStore.user = []
         return [...networksStore.user, ...networksStore.lamden]
     }
 

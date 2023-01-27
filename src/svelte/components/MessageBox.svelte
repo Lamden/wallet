@@ -16,6 +16,7 @@
     //Props
     export let message = getModalData();
 
+    $: title = message.title;
     $: text = message.text;
     $: type = message.type;
     $: buttons = message.buttons;
@@ -32,7 +33,7 @@
     align-items: flex-start;
     /*padding-top: 65px;*/
     /*margin: 1rem 0 2rem;*/
-    margin: 3rem 0 0.5rem;
+    margin: 2rem 0 0.5rem;
     width: 100%;
     justify-content: center;
 }
@@ -56,11 +57,14 @@ h2{
 </style>
 
 <div class="message-box flex-column">
+    {#if title}
+        <h2 id={'message-title'}>{title}</h2>
+    {/if}
     <div class="message flex-row">
         {#if type === 'error'}<div id={"error"} class="icon">{@html errorCircle}</div>{/if}  
         {#if type === 'caution'}<div id={"caution"} class="icon">{@html caution}</div>{/if}
         {#if type === 'success'}<div id={"success"} class="icon checkmark">{@html successCircle}</div>{/if}
-        <h2 id={'message-text'}>{text}</h2>
+        <div id={'message-text'} class="text-body1">{@html text}</div>
     </div>
     <div class="buttons flex-row">
         {#each buttons as button, index}

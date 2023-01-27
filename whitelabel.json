@@ -32,11 +32,11 @@
         {
             "name": "Arko Mainnet", 
             "hosts": ["https://arko-mn-1.lamden.io", "https://arko-mn-2.lamden.io", "https://arko-mn-3.lamden.io"], 
-            "type": "testnet", 
+            "type": "mainnet", 
             "lamden": true, 
             "networkName": "arko",
-            "currencySymbol": "dTAU2",
-            "blockExplorer": "https://testnetv2.tauhq.com",
+            "currencySymbol": "TAU",
+            "blockExplorer": "https://arko.tauhq.com",
             "blockservice_hosts": ["https://arko-bs-1.lamden.io", "https://arko-bs-2.lamden.io", "https://arko-bs-3.lamden.io"],
             "version": 2
         },
