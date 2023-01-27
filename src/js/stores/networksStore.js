@@ -225,7 +225,8 @@ export const networksDropDownList = derived(
             return networkKey(network) === $NetworksStore.current
         }
         function pushItem(item){
-            if (new Date().getTime() < 1675116000000 && item.networkName === "arko") {
+            console.log(item)
+            if (new Date().getTime() < 1675116000000 && item.networkName === "arko" && item.type === "mainnet") {
                 return
             }
             item.status = false

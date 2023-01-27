@@ -38,7 +38,7 @@
   $: displayItems = [...items];
 
   onMount(() => {
-    if (selectElm.options) {
+    if (selectElm && selectElm.options) {
       items.forEach((item, index) => {
         selectElm.options[index].selected = item.selected;
       });
@@ -47,7 +47,7 @@
   });
 
   afterUpdate(() => {
-    if (network) {
+    if (network && selectElm) {
         items.forEach((item, index) => {
             selectElm.options[index].selected = item.selected;
         });
