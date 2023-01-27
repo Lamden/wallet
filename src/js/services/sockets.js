@@ -29,16 +29,15 @@ export const createSocketService = () => {
     function start(service){
         if (socket) {
             close()
+            connectionExist = false
         }
         let sUrl = new Url(service)
         let path = sUrl.pathname.endsWith('/') ? sUrl.pathname.slice(0, -1) : sUrl.pathname
         socket = io.connect(sUrl.origin, {path: `${path}/socket.io`});
         socket.on('connect', () => {
             console.log(`Client ${socket.id} connected to wallet block service: ${service}`)
-            if (!connectionExist) {
-                connectionExist = true;
-                document.dispatchEvent(new Event('BlockServiceConnected'));
-            }
+            connectionExist = true;
+            document.dispatchEvent(new Event('BlockServiceConnected'));
         })  
     }
 
