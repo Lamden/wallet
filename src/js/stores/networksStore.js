@@ -100,6 +100,7 @@ export const createNetworksStore = () => {
                     return networksStore;
                 })
                 updateAllBalances(netKey)
+                chrome.runtime.sendMessage({type: 'updateNodes'})
             }
         },
         setNetworkByKey: (netKey) => {
