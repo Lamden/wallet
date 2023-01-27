@@ -23,7 +23,7 @@ export const nodesController = (utils) => {
         let res2 = await fetch(`${network.blockservice.host}/contracts/elect_masternodes`)
         .then(res => res.json())
         .then(data => data.elect_masternodes)
-            if (res2.candidate_state && res2.candidate_state.registered) {
+            if (res2 && res2.candidate_state && res2.candidate_state.registered) {
                 for (const [key, value] of Object.entries(res2.candidate_state.registered)) {
                     if (value) {
                         let index = nodesStore.findIndex(item => key === item.vk && item.netKey === netKey)

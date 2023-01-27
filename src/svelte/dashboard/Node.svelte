@@ -30,6 +30,7 @@
   import PlusIcon from '../../img/menu_icons/icon_plus.svg';
   import arrowIn from "../../img/arrow_in.svg";
   import arrowOut from "../../img/arrow_out.svg";
+    import NodeDetails from "./NodeDetails.svelte";
 
   // Props
   export let data;
@@ -87,14 +88,14 @@
 </script>
 
 <div class="wrap">
-  <div class="wrap-second" on:click={handleCollapse}>
+  <div class="wrap-second">
     <div
       bind:this={divElm}
       class="row-box flex-column text-body1"
     >
       <div class="coin-main-row flex-row flex-align-center">
         <div class="name">
-          <div class="collapse-btn">
+          <div class="collapse-btn" on:click={handleCollapse}>
             <DirectionalChevronIcon
               strokeWidth={2.75}
               {direction}
@@ -109,7 +110,7 @@
               </div>
             </div>
           {/if}
-          <div class="text weight-400 text-body1 text-primary text-link" on:click={() => switchPage("NodeDetails", {vk: data.vk})}>
+          <div class="text weight-400 text-body1 text-primary">
                 {formatAccountAddress(data.vk, 6, 4)}
           </div>
         </div>
@@ -121,6 +122,7 @@
         </div>
       </div>
       {#if collapseStatus}
+        <NodeDetails vk={data.vk} />
         <div class="flex-row coinmenus">
           <div class="coin-btns">
             <button
@@ -271,9 +273,9 @@
   }
 
   .coinmenus {
-    padding-left: 82px;
+    padding-left: 12px;
     margin-bottom: 1.5rem;
-    margin-top: 0.8rem;
+    margin-top: 0.6rem;
   }
 
   .collapse-btn {

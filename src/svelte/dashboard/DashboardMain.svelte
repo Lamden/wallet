@@ -3,7 +3,7 @@
       getContext,
       onMount
     } from "svelte";
-    import { NodesStore, networkKey, currentNetwork, CoinStore} from "../../js/stores/stores.js";
+    import { NodesStore, networkKey, currentNetwork, CoinStore, PolicyStore, freshPolicy} from "../../js/stores/stores.js";
 
     import Node from "./Node.svelte";
     import Motion from "./Motion.svelte";
@@ -22,14 +22,14 @@
 
     const { Button } = Components;
 
-    let motions = []
     let daoBalance = 0
     let totalRewards = 0
 
-        
-    let cardList = [
+    $: netKey = networkKey($currentNetwork)
+    $: motions = $PolicyStore && $PolicyStore[netKey] ? $PolicyStore[netKey] : [];
+    $: cardList = [
         {
-            name: 'Reawards',
+            name: 'Rewards',
             desc: totalRewards,
             logo: tau
         },
@@ -40,12 +40,11 @@
         },
         {
             name: 'Guide',
-            desc: [{url: "", name: "Node Installation Guide"}, {url: "", name: "How to use admin dashbord"}],
+            desc: [{url: "https://arko.lamden.io", name: "Node Installation Guide"}, {url: "https://docs.lamden.io", name: "How to use admin dashbord"}],
             logo: doco
         },
     ]
 
-    $: netKey = networkKey($currentNetwork)
     $: nodes = $NodesStore.filter(n => n.netKey === netKey && $CoinStore.findIndex(c => c.vk === n.vk) > -1)
     // user's nodes
     $: memberNodes = nodes.filter(k => k.status === "node")
@@ -54,9 +53,8 @@
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
-        getCurrentMasterNodeMotion()
-        getCurrentDaoMotion()
         getStatics()
+        freshPolicy("all")
     })
 
     //Context
@@ -66,100 +64,8 @@
         openModal("AddNewNode");
     }
 
-    const getCurrentMasterNodeMotion = async () => {
-        let name = "masternodes"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name].S)
-        let motion = {
-            policy: "masternodes",
-            yays: data.yays,
-            nays: data.nays,
-            value: data.current_motion,
-            positions: []
-        }
-
-        if (data.motion_start && utils.decodePythonTime(data.motion_opened, "time") + 86400000 < new Date().getTime()) {
-            motion.status = 1
-        } else {
-            motion.status = 0
-        }
-
-        if (!data.positions) data.positions = []
-        for (const m of allMemberNodes) {
-            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-            if (data.positions[m.vk] === null) {
-                motion.positions.push({vk: m.vk, value: 1, isNodeOwner})
-            } else if (data.positions[m.vk] === true) {
-                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-            } else {
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        // process masternode motion
-        switch(motion.value) {
-            case 1:
-                // REMOVE_MEMBER
-                motion.name = "Remove Member"
-                motion.desc = `This is a motion to remove member ${data.member_in_question}`
-                break;
-            case 2:
-                // ADD_SEAT
-                motion.name = "Add Seat"
-                break;
-            case 3:
-                // REMOVE_SEAT
-                motion.name = "Remove Seat"
-                break;
-            default:
-                motion.name = "No Motion"
-                // NO_MOTION
-        }
-        motions.push(motion)
-        motions = motions
-    }
-
-    const getCurrentDaoMotion = async () => {
-        let name = "con_dao"
-        let data = await fetch(`${$currentNetwork.blockservice.host}/contracts/${name}`)
-            .then(res => res.json())
-            .then(data => data[name].S)
-        let amount = data.amount ? data.amount.__fixed__? data.amount.__fixed__ : data.amount : 0
-        let motion = {
-            policy: name,
-            name: data.motion_start? "Dao" : "No Motion",
-            desc: data.motion_start? `${data.recipient_vk} will get ${amount} ${$currentNetwork.currencySymbol}s ` : null,
-            yays: data.yays,
-            nays: data.nays,
-            positions: []
-        }
-
-        if (data.motion_start && utils.decodePythonTime(data.motion_start, "delta") + utils.decodePythonTime(data.motion_period, "delta") < new Date().getTime()) {
-            motion.status = 1
-        } else {
-            motion.status = 0
-        }
-
-        if (!data.positions) data.positions = []
-
-        for (const m of allMemberNodes) {
-            let isNodeOwner = memberNodes.findIndex(n => n.vk === m.vk) > -1
-            if (data.positions[m.vk] === null) {
-                motion.positions.push({vk: m.vk, value: 1, isNodeOwner})
-            } else if (data.positions[m.vk] === true) {
-                motion.positions.push({vk: m.vk, value: 2, isNodeOwner})
-            } else {
-                motion.positions.push({vk: m.vk, value: 0, isNodeOwner})
-            }
-        }
-
-        motions.push(motion)
-        motions = motions
-    }
-
     const getStatics = async () => {
-        let res1 = await $currentNetwork.getVariable("currency", "balances", "con_dao")
+        let res1 = await $currentNetwork.getVariable("currency", "balances", "dao")
         if (res1.value) {
             if (res1.value.__fixed__) {
                 daoBalance = res1.value.__fixed__
@@ -172,7 +78,7 @@
 
         totalRewards = await fetch(`${$currentNetwork.blockservice.host}/rewards/total`)
             .then(res => res.json())
-            .then(data => data.amount)
+            .then(data => utils.displayBalance(data.amount))
 
     }
 
@@ -194,7 +100,7 @@
         font-weight: 800;
     }
     .header-name {
-        flex-basis: 240px;
+        flex-basis: 260px;
         min-width: 160px;
     }
     .node-type {
@@ -234,7 +140,7 @@
 
 <div class="node-list">
     <div class="header header-text text-body1 weight-800">
-        <div class="motion-header-name header-text">Motion List</div>
+        <div class="motion-header-name header-text">Policy List</div>
         <div class="node-type header-text">Policy</div>
         <!-- <div class="node-type header-text">Rewards</div> -->
         <div class="node-type header-text">Motion</div>

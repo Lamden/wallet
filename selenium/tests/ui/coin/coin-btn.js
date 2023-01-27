@@ -70,12 +70,12 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(1000)
         });
         it('Render TX UI modal on token details screen', async function() {
-            await driver.findElement(By.className("wrap-second")).click()
+            await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
             await helpers.sleep(500)
             let token = tokenInfo.token_1_svg
             await tokenHelpers.gotoTokenDetails(driver, token)
             await helpers.sleep(500)
-            await driver.findElement(By.className("wrap-second")).click()
+            await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
             let element = driver.findElement(By.id('send-btn'))
             await driver.executeScript("arguments[0].click();", element)
             //await driver.findElement(By.id('send-btn')).click();
@@ -93,7 +93,7 @@ describe('Testing Coin Button', function () {
         it('Render receive modal', async function() {
             await tokenHelpers.openAccountsScreen(driver)
             await helpers.sleep(500)
-            await driver.findElement(By.className("wrap-second")).click()
+            await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
             await helpers.sleep(1000)
             await tokenHelpers.openCoinReceiveModal(driver)
             await helpers.sleep(500)
@@ -105,7 +105,7 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(1000)
         });
         it('Close receive modal', async function() {
-            await driver.findElement(By.className("wrap-second")).click()
+            await driver.findElement(By.css('.wrap-second .collapse-btn')).click()
             await helpers.sleep(500)
             await tokenHelpers.openCoinReceiveModal(driver)
             await helpers.sleep(500)

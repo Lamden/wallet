@@ -1,11 +1,11 @@
 <script>
     import { getContext, onMount, setContext } from 'svelte';
-    
+    import policy from '../../../policyvote.json'
     //Images
     import spinner from '../../img/menu_icons/icon_spinner.svg';
 
 	//Stores
-    import { currentNetwork, CoinStore, networkKey } from '../../js/stores/stores.js';
+    import { currentNetwork, CoinStore, networkKey, freshPolicy } from '../../js/stores/stores.js';
 
     //Components
 	import { Components, Modals}  from '../Router.svelte'
@@ -14,7 +14,10 @@
 
     //Utils
     import { formatKwargs, formatAccountAddress} from '../../js/utils.js'
-    const { Button, InputBox} = Components;
+    const { Button, InputBox, DropDown, Kwargs} = Components;
+
+    import Lamden from "lamden-js";
+    const { Encoder } = Lamden;
 
     //Context
     const { closeModal, getModalData } = getContext('app_functions');
@@ -23,15 +26,30 @@
 
     $: selectedWallet = CoinStore.getByVk(modelData.account)
 
+    let selectedPolicie = modelData.data.policy, selectedMotion = "Vote";
+
     let txData = {};
     let resultInfo = {};
 
     let buferSize = 0.05;
 
-    let agree = true
     let checkApproving = false
     let needApprove = true
     let showAccountsDropdown = true
+
+    let kwargs  = []
+    let args = []
+    let policies = [{
+        value: modelData.data.policy,
+        name: modelData.data.policy,
+        selected: true
+    }]
+
+    let motions = [{
+            value: "Vote",
+            name: "Vote",
+            selected: true
+    }]
 
     let currentStep = 0
 
@@ -64,6 +82,7 @@
             }
             checkApproving = false
         })
+        getVoteArgs()
     })
 
     const checkApproveAmount = async () => {
@@ -82,7 +101,7 @@
                     senderVk: selectedWallet.vk.trim(),
                     contractName: "currency", 
                     methodName: "approve", 
-                    kwargs: formatKwargs([{name: "to", type: "str", value: "elect_masternodes"}, {name: "amount", type: "float", value: 1000}])
+                    kwargs: formatKwargs([{name: "to", type: "str", value: "elect_masternodes"}, {name: "amount", type: "float", value: 9999999}])
                 }
             }
         } else {
@@ -92,8 +111,12 @@
                     senderVk: selectedWallet.vk.trim(),
                     contractName: "election_house", 
                     methodName: "vote", 
-                    kwargs: formatKwargs([{name: "policy", type: "str", value: modelData.data.policy}, {name: "value", type: "Any", value: ["vote_on_motion", agree]}])
+                    kwargs: formatKwargs(kwargs)
                 }
+            }
+            // handle for upgrade policy
+            if (selectedPolicie === "upgrade") {
+                txData.txInfo.contractName = "upgrade"
             }
         }
         nextPage()
@@ -108,6 +131,7 @@
     }
 
     const resultDetails = (e) => {
+        resultInfo = {}
         resultInfo = e.detail.resultInfo;
         if (needApprove && resultInfo.statusCode === 0) {
             resultInfo.buttons = [
@@ -116,7 +140,11 @@
             ]
         } else {
             resultInfo.buttons = [
-                {name: 'Home', click: () => closeModal(), class: 'button__solid button__primary'}
+                {name: 'Home', click: () => {
+                    closeModal();
+                    freshPolicy(selectedPolicie);
+                    console.log(`fresh ${selectedPolicie}`)
+                }, class: 'button__solid button__primary'}
             ];
         }
         resultInfo.txHash = e.detail.txHash;
@@ -176,6 +204,43 @@
             nextPage()
         }
     }
+
+    const handleNewArgValues = (e) => {
+        kwargs = []
+        if (!selectedPolicie || !selectedMotion) return []
+        if (selectedPolicie !== 'upgrade') {
+            if (policy[selectedPolicie][selectedMotion] instanceof Array) {
+                const obj = [...policy[selectedPolicie][selectedMotion]]
+                for (const k of e.detail.argumentList) {
+                    for (var i=0; i< obj.length; i++) {
+                        if (obj[i].name === k.name) {
+                            obj[i].value = k.value
+                        }
+                    }
+                }
+                kwargs.push({
+                    name: "value",
+                    type: "Any",
+                    value: obj.map(x => x.value && Encoder(x.type, x.value))
+                })
+            } else {
+                kwargs = [...e.detail.argumentList]
+            }
+            kwargs.push({name: "policy", type: "str", value: selectedPolicie})
+        } else {
+            kwargs = [...e.detail.argumentList]
+        }
+        console.log(kwargs)
+    }
+
+
+    const getVoteArgs = () => {
+        if (policy[selectedPolicie][selectedMotion] instanceof Array) {
+            args = [...policy[selectedPolicie][selectedMotion].filter(x => x.show)];  
+        } else {
+            args = [policy[selectedPolicie][selectedMotion]];  
+        }                                               
+    }
 </script>
 
 <style>
@@ -191,10 +256,6 @@
     justify-content: center;
     align-items: center;
 }
-.vote-box{
-    justify-content: space-evenly;
-}
-
 
 .spinner{
 	width: 20px;
@@ -209,16 +270,23 @@
             <InputBox label="Account" value={formatAccountAddress(modelData.account, 8, 8)} disabled={true} margin="0 0 1rem 0" />
         {/if}
         {#if !needApprove}
-            <div class="flex padding text-body2 vote-box">
-                <label>
-                    <input id="trusted" type="radio" bind:group={agree} value={true}>
-                    <strong>Yay</strong>
-                </label>
-                <label >
-                    <input id="not-trusted" type="radio" bind:group={agree} value={false}>
-                    <strong>Nay</strong>
-                </label>
-            </div>
+        <DropDown  
+            items={policies}
+            id={'policies'} 
+            label={'Select Policy'}
+            margin="0 0 1rem 0"
+            required={true}
+            disabled={true}
+        />
+        <DropDown  
+            items={motions}
+            id={'motions'} 
+            label={'Select Motion'}
+            margin="0 0 1rem 0"
+            disabled={true}
+            required={true}
+        />
+        <Kwargs argumentList={args} on:newArgValues={handleNewArgValues}/>
         {/if}
         <div class="buttons flex-column">
             <Button classes={'button__solid button__primary'} 

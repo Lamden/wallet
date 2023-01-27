@@ -32,13 +32,13 @@
             "show": true
         }]
     },
-    "con_dao": {
+    "dao": {
         "Funds": [{
             "type": "str",
             "name": "recipient",
             "show": true
         },{
-            "type": "float",
+            "type": "int",
             "name": "amount",
             "show": true
         }]
@@ -68,5 +68,16 @@
             "name": "value",
             "show": true
         }
+    },
+    "upgrade": {
+        "Upgrade": [{
+            "type": "str",
+            "name": "lamden_tag",
+            "show": true
+        }, {
+            "type": "str",
+            "name": "contracting_tag",
+            "show": true 
+        }]
     }
 }

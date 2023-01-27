@@ -46,6 +46,9 @@
             backgroundColor: "rgba(153, 102, 255, 0.4)",
             data: [],
         }
+
+        arr = arr.sort((a, b) => new Date(a.date) - new Date(b.date))
+
         for (let i=0; i < arr.length; i++) {
             labels.push(arr[i].date)
             dataset.data.push(arr[i].amount)
@@ -68,5 +71,11 @@
       grid: {
         display: false
       }
+    }
+  }, 
+  plugins: {
+    title: {
+        display: true,
+        text: 'Rewards Earned Per Day'
     }
   }}} />

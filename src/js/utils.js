@@ -497,10 +497,11 @@ function randomString(length) {
 
 
 function decodePythonTime(value, format) {
+    if (!value) return 0
     if (format === 'time') {
         let arr = value.__time__
         arr[1] = arr[1] - 1
-        return new Date(...arr).getTime()
+        return new Date(...arr).getTime() + new Date().getTimezoneOffset() * 60 * 1000
     } else if (format === 'delta') {
         let arr = value.__delta__
         let timestamp = 0

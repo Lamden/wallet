@@ -58,7 +58,7 @@ li{
             <div class="text-body2 text-secondary">{cardInfo.name}</div>
             {#if Array.isArray(cardInfo.desc)}
                 {#each cardInfo.desc as t}
-                    <li class="link" on:click={() => openLink(cardInfo.url) }>{t.name}</li>
+                    <li class="link" on:click={() => openLink(t.url) }>{t.name}</li>
                 {/each}
             {:else}
                 <h6 class="no-margin">{cardInfo.desc}</h6>

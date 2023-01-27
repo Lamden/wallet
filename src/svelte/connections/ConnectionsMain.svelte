@@ -8,14 +8,25 @@
   import { Connection, ConnectionEmpty, CoinDivider } from "../Router.svelte";
 
 
+  $: networkName = getNetworkName($currentNetwork)
   $: dappStorage = $DappStore
     ? Object.values($DappStore)
-        .filter((app) => !!app[`V${$currentNetwork.version}|${$currentNetwork.type}`])
+        .filter((app) => !!app[`${networkName}|${$currentNetwork.type}`])
         .map((app, index) => {
           app.id = index;
           return app;
         })
     : [];
+  
+   const getNetworkName = (network) => {
+      let net = whitelabel.networks.find(t => network.name === t.name)
+      if (net) {
+        return net.networkName
+      } else {
+        return "legacy"
+      }
+   }
+
 </script>
 
 <div class="connectionsmain text-primary">
