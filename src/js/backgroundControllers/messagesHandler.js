@@ -218,6 +218,18 @@ export const messagesHandler = (masterController) => {
                         masterController.state.getCurrentStamps(sendResponse)
                         return true
                     }
+
+                    // Update nodes
+                    if (message.type === 'updateNodes') {
+                        masterController.nodes.updateNodes()
+                        return true
+                    }
+
+                    // Add node
+                    if (message.type === 'addUnregisterNode') {
+                        masterController.nodes.addUnregisterNode(message.data, sendResponse)
+                        return true
+                    }
                 }
             }
 

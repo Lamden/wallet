@@ -1,5 +1,5 @@
 <script>
-  import { getContext } from "svelte";
+  import { getContext, onMount } from "svelte";
   import Lamden from "lamden-js";
   //Stores
   import {
@@ -17,28 +17,36 @@
   //Context
   const { switchPage } = getContext("app_functions");
 
-  export let style;
-
   $: dropwonList = createNetworkList($networksDropDownList);
   $: fiatList = $FiatListDown;
+
+
+  onMount(() => {
+    checkStatus()
+  })
+
+  const checkStatus = () => {
+    Promise.all(
+        $networksDropDownList.map(async (item) => {
+            if (item.value === "manage") return;
+            let instance = new Lamden.Network(item.value);
+            let status = await instance.API.pingServer();
+            NetworksStore.setNetworkStatus(instance, status)
+        })
+    );
+  }
 
   const createNetworkList = (networksDropDownList) => {
     if (!networksDropDownList) {
       networksDropDownList = [];
     }
 
-    Promise.all(
-      networksDropDownList.map(async (item) => {
-        let instance = new Lamden.Network(item.value);
-        item.value.status = instance.ping();
-        return item;
-      })
-    );
     networksDropDownList.push({
       name: "Manage Networks",
       value: "manage",
       selected: false,
     });
+
     return networksDropDownList;
   };
 

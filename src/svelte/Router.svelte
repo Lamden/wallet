@@ -88,6 +88,16 @@ import DevToolsMain from './devtools/DevToolsMain.svelte';
 import DevToolsDocumentation from './devtools/DevToolsDocumentation.svelte';
 import DevToolsNetworks from './devtools/DevToolsNetworks.svelte';
 import DevToolsDeleteNetwork from './devtools/DevToolsDeleteNetwork.svelte';
+
+//Dashboard
+import DashboardMain from './dashboard/DashboardMain.svelte';
+import DashboardNodeList from './dashboard/DashboardNodeList.svelte';
+import AddNewNode from './dashboard/AddNewNode.svelte';
+import AddNewMotion from './dashboard/AddNewMotion.svelte';
+import Vote from './dashboard/Vote.svelte';
+import MethodTx from './dashboard/MethodTx.svelte';
+import NodeTx from './dashboard/NodeTx.svelte';
+import NodeDetails from './dashboard/NodeDetails.svelte'; 
  
 //Components
 import Button from './components/Button.svelte';
@@ -179,6 +189,7 @@ export const RestorePages = {
     RestorePassword, 
     RestoreAddWallets,
     RestoreSaveWallets,
+
     RestoreComplete,  
     RestoreOptions,
     RestoreIntro,
@@ -238,6 +249,9 @@ export const Pages = {
     About, 
     IdeMain,
     ConnectionsMain, ConnectionDetails,
+    DashboardMain,
+    DashboardNodeList,
+    NodeDetails,
     ...FirstRun 
 };
 
@@ -284,7 +298,12 @@ export const Modals = {
     BackupNotificationModal,
     Settings,
     WhatsnewModal,
-    CoinWatchedModal
+    CoinWatchedModal,
+    AddNewNode,
+    AddNewMotion,
+    Vote,
+    MethodTx,
+    NodeTx
 }
 
 export const Layouts = {
@@ -310,6 +329,8 @@ export {
     ChangePasswordSlot, ChangePasswordFinish,
     ManageNetwork,
     ManageNetworkMain,
-    ManageNetwokFinish
+    ManageNetwokFinish,
+    DashboardMain,
+    DashboardNodeList
 };
 </script>

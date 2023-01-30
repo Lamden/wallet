@@ -15,8 +15,6 @@
     const { changeStep, setSelectedType} = getContext('functions');
     const { appHome } = getContext('app_functions');
 
-    export let vaultExist = false;
-
 </script>
 
 <style>

@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "2.3.7",
+  "version": "2.4.0",
   "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -34,6 +34,7 @@
     "test-dapps-get-info-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletGetInfo_v2.js",
     "test-dapps-sendtx-v2": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletSendTx_v2.js",
     "test-dapps-sendx-backtoback-v2": "mocha --timeout 60000 selenium/tests/dapp/content_landenWalletSendTxBacktoBack_v2.js",
+    "test-dashboard-mainpage": "mocha --timeout 60000 selenium/tests/ui/dashboard/dashboardMainPage.js",
     "dev": "node utils/webserver.js"
   },
   "repository": {
@@ -42,7 +43,7 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.12.0",
-    "chromedriver": "^107.0.3",
+    "chromedriver": "^109.0.0",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "2.1.0",
@@ -63,6 +64,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
+    "chart.js": "^4.1.1",
     "easyqrcodejs": "^4.4.6",
     "faunadb": "^4.5.2",
     "lamden-js": "^3.8.0",
@@ -70,6 +72,7 @@
     "monaco-editor-webpack-plugin": "^1.8.1",
     "node-cryptojs-aes": "^0.4.0",
     "socket.io-client": "^4.2.0",
+    "svelte-chartjs": "^3.1.0",
     "svelte-flatpickr": "^2.4.0",
     "types-validate-assert": "^1.0.1",
     "url-parse": "^1.5.10"

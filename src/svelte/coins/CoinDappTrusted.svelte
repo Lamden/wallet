@@ -86,9 +86,6 @@
         margin: 0.25rem 0;
         line-height: 1.4;
     }
-    p.text{
-        font-size: 1.2em;
-    }
 
     label{
         display: flex;

@@ -13,6 +13,7 @@
 
   //Stores
   import {
+    NodesStore,
     currentNetwork,
     BalancesStore,
     balanceTotal,
@@ -23,7 +24,8 @@
     PriceStore,
     TauPrice,
     SettingsStore,
-    currentNetworkName
+    currentNetworkName,
+    NetworksStore
   } from "../../js/stores/stores.js";
 
   //Images
@@ -61,6 +63,7 @@
   import DirectionalChevronIcon from "../icons/DirectionalChevronIcon.svelte";
 
   import Lamden from "lamden-js";
+    import CoinDelete from "./CoinDelete.svelte";
   const { Encoder } = Lamden;
 
   const dispatch = createEventDispatcher();
@@ -146,6 +149,7 @@
   $: tokenList = getTokens(netKey, coin.vk, $TokenStore, $TokenBalancesStore);
   $: tokensNum = tokenList.length;
   $: isVaultAccount = coin.type === "vault";
+  $: isNodeAccount = $NodesStore.findIndex(x => x.vk === coin.vk && x.netKey === netKey) > -1
 
   afterUpdate(() => {
     balance = BalancesStore.getBalance($currentNetwork, coin.vk);
@@ -226,7 +230,29 @@
     dispatch("reorderAccount", { id: coin.id, direction: "down" });
   };
 
-  const handleSend = () => {
+  const handleSend = () => {  
+    if (!$currentNetwork.online && $currentNetworkName === 'legacy' && new Date().getTime() < 1675116000000) {
+        openModal("MessageBox", {
+            title: "Arko Update in Progress",
+            text: `The Lamden Network is down pending an upgrade to the Arko Network. All your balances will be transferred to the new network.  Please be patient as we being up the new network.  Visit <a class="text-link text-decoration" href="https://t.me/lamdenchat" target="__blank">Lamden Telegram Room</a> for updates`,
+            buttons: [{name: 'Cancel', click: () => closeModal(), class: 'button__solid button__primary'}],
+      })
+      return
+    }
+
+    if ($currentNetwork.online && $currentNetworkName === 'legacy' && new Date().getTime() > 1675116000000) {
+        openModal("MessageBox", {
+            title: "Network Decommissioned",
+            text: `The Legacy Lamden network has been upgraded to the new Arko Network.  Please switch wallet to “Arko Mainnet”.`,
+            buttons: [{name: 'Switch To Arko', click: () => {
+                let arkomainnet = $NetworksStore.lamden.find(t => t.networkName === "arko" && t.type === "mainnet")
+                NetworksStore.setCurrentNetwork(arkomainnet);
+                closeModal()
+            }, class: 'button__solid button__primary'}, {name: 'Cancel', click: () => closeModal(), class: 'button__solid button__primary'}],
+        })
+        return
+    }
+
     if (balance.isGreaterThan(0)) {
       if (token) {
         openModal("TokenLamdenSend", {
@@ -283,11 +309,15 @@
   const handleOptionClick = () => {
     openModal("CoinModify", coin);
   };
+
+  const handleManageClick = () => {
+    switchPage("DashboardNodeList");
+  }
 </script>
 
 {#if !token || (token && hasVisibleBalance)}
   <div class="wrap" class:wrap-leagyc={!isVaultAccount}>
-    <div class="wrap-second" on:click={handleCollapse}>
+    <div class="wrap-second">
       <div
         id={`coin-row-${coin.id}`}
         bind:this={divElm}
@@ -298,7 +328,7 @@
       >
         <div class="coin-main-row flex-row flex-align-center">
           <div class="name">
-            <div class="collapse-btn">
+            <div class="collapse-btn" on:click={handleCollapse}>
               <DirectionalChevronIcon
                 strokeWidth={2.75}
                 {direction}
@@ -316,12 +346,15 @@
             {#if whitelabel.mainPage.account_info.show}
               <div class="text weight-400">
                 <div class="name-box">
-                  <div
+                  <span
                     id={`coin-nickname-${coin.id}`}
                     class="nickname text-body1 text-primary"
                   >
                     {`${coin.nickname}`}
-                  </div>
+                    {#if isNodeAccount}
+                      <span class="badge weight-400">Node</span>
+                    {/if}
+                  </span>
                 </div>
               </div>
             {/if}
@@ -444,6 +477,18 @@
                   <SettingsIcon width="12px" color="var(--color-white)" />
                 </div>
               </button>
+              {#if isNodeAccount} 
+                  <button
+                  id="options"
+                  class="button__small button__primary coin-btn flex-row"
+                  on:click|stopPropagation={handleManageClick}
+                >
+                  Manage
+                  <div class="icon">
+                    <SettingsIcon width="12px" color="var(--color-white)" />
+                  </div>
+                </button>
+              {/if}
               {#if coin.sk !== "watchOnly"}
                 <div class="dapps">
                   {#each dapps as dapp (dapp.appName)}
@@ -480,6 +525,14 @@
 {/if}
 
 <style>
+  .badge {
+    background-color: var(--accent-color);
+    color: var(--font-black);
+    border-radius: 10px;
+    padding: 0 8px;
+    font-weight: 800;
+    margin: 10px;
+  }
   .reorder-btns {
     margin-top: 22px;
     align-self: start;
@@ -678,5 +731,8 @@
   .fiatvalue {
     flex-basis: 200px;
     min-width: 100px;
+  }
+  .nickname {
+    white-space: nowrap;
   }
 </style>

@@ -22,7 +22,6 @@
   //Props
   export let lintErrors = undefined;
   export let monaco;
-  export let parentWidth;
 
   let container;
   let editor;

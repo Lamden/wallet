@@ -30,7 +30,18 @@
             "version": 1
         },
         {
-            "name": "Arko", 
+            "name": "Arko Mainnet", 
+            "hosts": ["https://arko-mn-1.lamden.io", "https://arko-mn-2.lamden.io", "https://arko-mn-3.lamden.io"], 
+            "type": "mainnet", 
+            "lamden": true, 
+            "networkName": "arko",
+            "currencySymbol": "TAU",
+            "blockExplorer": "https://arko.tauhq.com",
+            "blockservice_hosts": ["https://arko-bs-1.lamden.io", "https://arko-bs-2.lamden.io", "https://arko-bs-3.lamden.io"],
+            "version": 2
+        },
+        {
+            "name": "Arko Testnet", 
             "hosts": ["https://testnet-v2-master-lon.lamden.io", "https://testnet-v2-master-sf.lamden.io", "https://testnet-v2-master-bang.lamden.io"], 
             "type": "testnet", 
             "lamden": true, 
@@ -134,6 +145,30 @@
                     "name": "Sign out & Lock", 
                     "page": {
                         "name": "LockScreen"
+                    }   
+                }
+            ]
+        },
+        {
+            "heading": "Node Dashbord",
+            "show": true,
+            "items":[
+                {
+                    "id": "dashboard", 
+                    "show": true,
+                    "logo": "setting", 
+                    "name": "Network Dashboard", 
+                    "page": {
+                        "name": "DashboardMain"
+                    }
+                },
+                {
+                    "id": "node-lists", 
+                    "show": true,
+                    "logo": "signout", 
+                    "name": "My Nodes", 
+                    "page": {
+                        "name": "DashboardNodeList"
                     }   
                 }
             ]

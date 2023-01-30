@@ -100,6 +100,7 @@ export const createNetworksStore = () => {
                     return networksStore;
                 })
                 updateAllBalances(netKey)
+                chrome.runtime.sendMessage({type: 'updateNodes'})
             }
         },
         setNetworkByKey: (netKey) => {
@@ -169,7 +170,6 @@ export const createNetworksStore = () => {
             //Reject undefined or missing info
             if (!isNetworkObj(networkInfo)) return;
             if (!validateTypes.isBoolean(status)) return;
-
             let netKey = networkKey(networkInfo)
             NetworksStore.update(networksStore => {
                 makeList(networksStore).map(network => {
@@ -225,6 +225,10 @@ export const networksDropDownList = derived(
             return networkKey(network) === $NetworksStore.current
         }
         function pushItem(item){
+            console.log(item)
+            if (new Date().getTime() < 1675116000000 && item.networkName === "arko" && item.type === "mainnet") {
+                return
+            }
             item.status = false
             networks.push({
                 name: item.name,
@@ -254,9 +258,16 @@ export function networkTypesDropDownList(){
 export const currentNetwork = derived(
 	NetworksStore,
 	$NetworksStore => {
+        let current;
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
-        if (found) return new Lamden.Network(found);
-        return new Lamden.Network($NetworksStore.lamden[0])
+        if (found) {
+            current =  new Lamden.Network(found);
+            current.online = found.online ? found.online : false
+        } else {
+            current = new Lamden.Network($NetworksStore.lamden[0])
+            current.online = $NetworksStore.lamden[0].online ? $NetworksStore.lamden[0].online : false
+        }
+        return current
     }
 );
 
@@ -269,7 +280,7 @@ export const currentNetworkOnline = derived(
         let currentNetwork
         if (found) currentNetwork = new Lamden.Network(found);
         else currentNetwork = new Lamden.Network($NetworksStore.lamden[0])
-        currentNetwork.ping().then(set)
+        currentNetwork.API.pingServer().then(set).catch(e => set(false))
     }
 );
 

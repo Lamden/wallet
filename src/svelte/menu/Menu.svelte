@@ -4,6 +4,11 @@
   import { fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
 
+  //Stores
+  import {
+    currentNetwork  
+  } from "../../js/stores/stores.js";
+
   //Components
   import { MenuBox } from "../Router.svelte";
 
@@ -52,7 +57,13 @@
 >
   {#each menus as menu}
     {#if menu.show}
-      <MenuBox heading={menu.heading} menuItems={menu.items} {icons} />
+      {#if menu.heading === "Node Dashbord"}
+        {#if $currentNetwork.version === 2}
+          <MenuBox heading={menu.heading} menuItems={menu.items} {icons} />
+        {/if}
+      {:else}
+        <MenuBox heading={menu.heading} menuItems={menu.items} {icons} />
+      {/if}
     {/if}
   {/each}
 </div>

@@ -21,7 +21,6 @@
   export let innerHeight = "unset";
   export let classes = "";
   export let required = false;
-  export let sideBox = false;
   export let boxHeight = "242px";
   export let bgStyle = "primary";
   export let logoWidth = "20px";
@@ -39,13 +38,21 @@
   $: displayItems = [...items];
 
   onMount(() => {
-    if (selectElm.options) {
+    if (selectElm && selectElm.options) {
       items.forEach((item, index) => {
         selectElm.options[index].selected = item.selected;
       });
       dispatchSelected();
     }
   });
+
+  afterUpdate(() => {
+    if (network && selectElm) {
+        items.forEach((item, index) => {
+            selectElm.options[index].selected = item.selected;
+        });
+    }
+  })
 
   const dispatchSelected = () => {
     if (selectElm.selectedIndex >= 0)
@@ -77,6 +84,7 @@
   style={`width:${width}; margin:${margin}; max-width: ${maxWidth}; background: var(--bg-${bgStyle})`}
 >
   {#if label}
+    <!-- svelte-ignore a11y-label-has-associated-control -->
     <label style={labelcolor ? `color: ${labelcolor}` : ""}>{label}</label>
   {/if}
   <select {id} {required} bind:this={selectElm} {disabled}>
@@ -114,10 +122,10 @@
           </div>
         {/if}
         <div>
-          {#if network && typeof displayItems[selectElm.selectedIndex].value.status != "undefined"}
+          {#if network && typeof displayItems[selectElm.selectedIndex].value.online != "undefined"}
             <span
               class="mark"
-              class:online={displayItems[selectElm.selectedIndex].value.status}
+              class:online={displayItems[selectElm.selectedIndex].value.online}
             />
           {/if}
           {displayItems[selectElm.selectedIndex].name}
@@ -154,8 +162,8 @@
             </div>
           {/if}
           <div>
-            {#if network && typeof item.value.status != "undefined"}
-              <span class="mark" class:online={item.value.status} />
+            {#if network && typeof item.value.online != "undefined"}
+              <span class="mark" class:online={item.value.online} />
             {/if}
             {item.name}
           </div>

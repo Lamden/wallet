@@ -16,7 +16,6 @@
   import arrow_right from "../../img/menu_icons/icon_arrow-right-2color.svg";
 
   import BN from "bignumber.js";
-  import { debug } from "console";
 
   //Context
   const { approveTx, close, openNewTab } = getContext("confirm_functions");

@@ -1,5 +1,4 @@
 <script>
-    export let percent = true;
 </script>
 
 <style>

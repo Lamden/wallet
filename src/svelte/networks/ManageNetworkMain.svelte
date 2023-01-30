@@ -16,7 +16,7 @@
     const { setMessage, changeStep, setNetwork} = getContext('networks_functions');
 
     //DOM Nodes
-    let formField, hostField, nameField, blockServiceField, currencySymbolField, explorerField, typeFiled
+    let formField, hostField, nameField, blockServiceField, currencySymbolField, explorerField, typeFiled, nameServiceField
 
     let name = ''
     let type ='mainnet'
@@ -27,13 +27,14 @@
     let added = false;
     let blockService = []
     let explorer;
+    let nameService;
     
     let showForm = false;
     let showAdd = false;
     
     let currentNet;
 
-    $: network = {name, hosts, currencySymbol,blockservice_hosts: blockService, type, blockExplorer: explorer, lamden: false, selected: false}
+    $: network = {name, hosts, currencySymbol,blockservice_hosts: blockService, type, blockExplorer: explorer, nameService, lamden: false, selected: false}
     $: isCustomNetwork = currentNet && !currentNet.lamden;
     $: isEdit = isCustomNetwork;
     $: networkList = createNetworkList($networksDropDownList);
@@ -157,6 +158,7 @@
         hosts = [...e.detail.selected.value.hosts]
         blockService = e.detail.selected.value.blockservice_hosts? [...e.detail.selected.value.blockservice_hosts] : []
         explorer = e.detail.selected.value.blockExplorer
+        nameService = e.detail.selected.value.nameService
         checking = false;
         added = false;
         let index = types.findIndex(item => item.value === type);
@@ -349,6 +351,21 @@ h6{
                     bind:thisInput={explorerField}
                     on:changed={(e) => {
                         explorer = e.detail.target.value.trim();
+                    }}
+                    width="347px"
+                    margin="0 0 1.5rem 0"
+                    required={false}
+                    disabled={disabledForm}
+                    spellcheck={false}
+                />
+                <InputBox 
+                    id="nameService"
+                    label="Name Service (optional)"
+                    placeholder={"http://<your name resolve rservice>"}
+                    bind:value={nameService}
+                    bind:thisInput={nameServiceField}
+                    on:changed={(e) => {
+                        nameService = e.detail.target.value.trim();
                     }}
                     on:keyup={() => clearIPValidation()}
                     width="347px"

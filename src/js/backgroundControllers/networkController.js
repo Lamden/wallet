@@ -47,7 +47,6 @@ export const networkController = (utils) => {
         if (networkObj.blockExplorer){
             networkObj.blockExplorer_API = new LamdenBlockexplorer_API(`${networkObj.blockExplorer}/api`)
         }
-        
     }
 
     const addExtras = (networkObj) => {
@@ -57,6 +56,7 @@ export const networkController = (utils) => {
     }
 
     const getAll = () => {
+        if (!Array.isArray(networksStore.user)) networksStore.user = []
         return [...networksStore.user, ...networksStore.lamden]
     }
 

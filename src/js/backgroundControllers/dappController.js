@@ -24,7 +24,7 @@ export const dappController = (utils, funa, actions) => {
             if (prevVer <= "1.8.0" && currVer > prevVer){
                 // purgeDappConnections()
             }
-            if (currVer > prevVer){
+            if (prevVer <= "2.3.1" && currVer > prevVer){
                 purgeDappNetworkKeys()
             }
             funa.fetchUpdates()
@@ -259,6 +259,7 @@ export const dappController = (utils, funa, actions) => {
         let allnetworks = utils.networks.getAll()
 
         Object.keys(dappsStore).forEach(dappURL => {
+
             allnetworks.forEach(network => {
                 let ver = network.networkName === "arko" ? 2 : 1
                 if (dappsStore[dappURL][network.type]) {

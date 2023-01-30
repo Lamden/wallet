@@ -7,8 +7,6 @@
   //Components
   import { Connection, ConnectionEmpty, CoinDivider } from "../Router.svelte";
 
-  //Props
-  export let name;
 
   $: networkName = getNetworkName($currentNetwork)
   $: dappStorage = $DappStore
