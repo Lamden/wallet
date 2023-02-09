@@ -130,6 +130,12 @@ export const createNetworksStore = () => {
             //Set Defaults if they weren't passed
             if (!networkInfo.online) networkInfo.online = false;
 
+            //Set Defaults if they weren't passed
+            if (!networkInfo.networkName) networkInfo.networkName = "arko";
+
+            //Set Defaults if they weren't passed
+            if (!networkInfo.version) networkInfo.version = 2;
+            
 
             //Don't add network if a similar one exits
             let netKey = networkKey(networkInfo);
@@ -151,6 +157,12 @@ export const createNetworksStore = () => {
 
             //Set Defaults if they weren't passed
             if (!newNetworkInfo.online) newNetworkInfo.online = false;
+
+            //Set Defaults if they weren't passed
+            if (!newNetworkInfo.networkName) newNetworkInfo.networkName = "arko";
+
+            //Set Defaults if they weren't passed
+            if (!newNetworkInfo.version) newNetworkInfo.version = 2;
 
 
             //Don't add network if a similar one exits
@@ -225,7 +237,6 @@ export const networksDropDownList = derived(
             return networkKey(network) === $NetworksStore.current
         }
         function pushItem(item){
-            console.log(item)
             if (new Date().getTime() < 1675116000000 && item.networkName === "arko" && item.type === "mainnet") {
                 return
             }
@@ -289,9 +300,8 @@ export const currentNetworkName = derived(
 	NetworksStore,
 	$NetworksStore => {
         let found = foundNetwork($NetworksStore, $NetworksStore.current);
-        let net = whitelabel.networks.find(t => found.name === t.name)
-        if (net) {
-            return net.networkName
+        if (found && found.networkName) {
+            return found.networkName
         } else {
             return "legacy"
         }
