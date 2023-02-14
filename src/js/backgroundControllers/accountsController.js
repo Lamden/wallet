@@ -348,9 +348,14 @@ export const accountsController = (utils, services) => {
     const signTx = (txBuilder) => {
         let account = getAccountByVK(txBuilder.sender)
         if (!account) throw new Error(`Error: Account address ${xBuilder.sender} not in Lamden Vault.`)
-        // let sk = decryptString(account.sk)
-        // console.log(sk)
         txBuilder.sign(decryptString(account.sk))
+    }
+
+    const signString = (vk, challenge) => {
+        const account = getAccountByVK(vk)
+        if (!account) throw new Error(`Error: Account address '${vk}' not in Lamden Vault.`)
+        const wallet = utils.Lamden.wallet.new_wallet({sk: decryptString(account.sk)})
+        return wallet.sign(challenge)
     }
 
     const firstRun = () => {
@@ -450,6 +455,7 @@ export const accountsController = (utils, services) => {
         walletIsLocked,
         decryptKeys,
         signTx,
+        signString,
         reorderUp, reorderDown,
         isWatchOnly,
         setMnemonic,

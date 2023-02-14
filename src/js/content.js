@@ -68,6 +68,15 @@ const returnTxStatusToPage = (txResult) => {
     document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: txResult}));
 }
 
+const dappVerify = () => {  
+    chrome.runtime.sendMessage({type: 'dappVerify'}, (response) => {
+        if(!chrome.runtime.lastError || response !== 'ok'){
+            document.dispatchEvent(new CustomEvent('dappVerified', {detail: response}));
+        }
+    });
+}
+document.addEventListener('dappVerify', () => getWalletInfo());
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //Accept only messages from extention background script
     if(sender.id === chrome.runtime.id && sender.origin === "null"){
@@ -79,7 +88,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === "sendWalletInfo"){
             getWalletInfo();
         }
-
+        
         if (message.type === 'sendErrorsToTab'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: message.data}));
             sendResponse('ok')

@@ -15,6 +15,7 @@ import { nodesController } from "./nodesController.js";
 import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
 import fauna from "../services/fauna.js";
+import { validateTypes } from "types-validate-assert";
 
 const makeTx = (data) => {
   return {
@@ -444,6 +445,29 @@ export const masterController = () => {
     }
   };
 
+  const dAppVerifyAccountHolder = (data, callback = undefined) => {
+    const { challenge, vk } = data
+    const errors = []
+
+    if (vk){
+      if (challenge && validateTypes.isString(challenge) && challenge.length <= 64){
+        try{
+          const signature = accountsController.signString(vk, challenge)
+          callback({signature, vk, challenge})
+        }catch(e){
+          errors.push(`Unable to complete challenge: ${e.message}`)
+        }
+      }else{
+        errors.push('Malformed challenge request: Must be a string with a max length of 64.')
+      }
+    }else{
+      errors.push("'vk' property missing in data:")
+    }
+
+    callback({errors, vk, challenge})
+
+  }
+
   const promptApproveDapp = async (
     sender,
     messageData,
@@ -639,6 +663,7 @@ export const masterController = () => {
     unlock,
     lock,
     getWalletInfo,
+    dAppVerifyAccountHolder,
     initiateAppTxSend,
     initiateDAppTxSend,
     promptApproveDapp,
