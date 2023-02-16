@@ -162,8 +162,16 @@ describe('Content Script - Testing Dapp Verify API', function () {
         assert.equal(response.vk, keys.vk)
         assert.equal(response.errors[0].includes(`Malformed challenge request: Must be a string with a max length of 64.`), true)
         assert.equal(response.signature, undefined)
-
     });
 
+    it('Returns ERROR if challenge is JSON string', async function() {
+        const response = await helpers.sendDappVerifyRequest_special( driver)
 
+        assert.notEqual(response, undefined)
+        
+        assert.equal(response.challenge, '{\"test\":\"test\"}')
+        assert.equal(response.vk, keys.vk)
+        assert.equal(response.errors[0].includes(`Error: Malformed challenge request: Cannot sign JSON string.`), true)
+        assert.equal(response.signature, undefined)
+    });
 })

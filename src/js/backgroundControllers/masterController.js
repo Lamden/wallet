@@ -446,6 +446,7 @@ export const masterController = () => {
   };
 
   const dAppVerifyAccountHolder = (data, callback = undefined) => {
+    if (!callback) return
 
     let { challenge, vk } = data
     const errors = []
@@ -453,8 +454,16 @@ export const masterController = () => {
     if (vk && validateTypes.isStringWithValue(vk) && vk.length === 64){
       if (challenge && validateTypes.isString(challenge) && challenge.length <= 64){
         try{
+          JSON.parse(challenge)
+          errors.push(`Error: Malformed challenge request: Cannot sign JSON string.`)
+          callback({errors, vk, challenge})
+          return
+        }catch(e){}
+
+        try{
           const signature = accounts.signString(vk, challenge)
           callback({signature, vk, challenge})
+          return
         }catch(e){
           errors.push(`Unable to complete challenge: ${e.message}`)
         }
@@ -464,9 +473,7 @@ export const masterController = () => {
     }else{
       errors.push("Error: Malformed vk: Must be a string with a length of 64.")
     }
-
     callback({errors, vk, challenge})
-
   }
 
   const promptApproveDapp = async (
