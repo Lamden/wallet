@@ -1,3 +1,5 @@
+
+
 //For security only messages in JSON string messages will be passed to the application
 const isJSON = (json) => {
 	if (Object.prototype.toString.call(json) !== "[object String]") return false
@@ -7,6 +9,8 @@ const isJSON = (json) => {
 }
 
 const getWalletInfo = () => {  
+    console.log("GET INFO")
+
     chrome.runtime.sendMessage({type: 'getWalletInfo'}, (response) => {
         if(!chrome.runtime.lastError || response !== 'ok'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
@@ -68,14 +72,18 @@ const returnTxStatusToPage = (txResult) => {
     document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: txResult}));
 }
 
-const dappVerify = () => {  
-    chrome.runtime.sendMessage({type: 'dappVerify'}, (response) => {
-        if(!chrome.runtime.lastError || response !== 'ok'){
-            document.dispatchEvent(new CustomEvent('dappVerified', {detail: response}));
-        }
-    });
+const dappVerify = (event) => {  
+    const { detail } = event
+
+    if (isJSON(detail)){
+        chrome.runtime.sendMessage({type: 'dappVerify', data: JSON.parse(detail) || {}}, (response) => {
+            if(!chrome.runtime.lastError || response !== 'ok'){
+                document.dispatchEvent(new CustomEvent('dappVerified', {detail: response}));
+            }
+        });
+    }
 }
-document.addEventListener('dappVerify', () => getWalletInfo());
+document.addEventListener('dappVerify', dappVerify);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //Accept only messages from extention background script

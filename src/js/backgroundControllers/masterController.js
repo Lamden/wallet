@@ -446,22 +446,23 @@ export const masterController = () => {
   };
 
   const dAppVerifyAccountHolder = (data, callback = undefined) => {
-    const { challenge, vk } = data
+
+    let { challenge, vk } = data
     const errors = []
 
-    if (vk){
+    if (vk && validateTypes.isStringWithValue(vk) && vk.length === 64){
       if (challenge && validateTypes.isString(challenge) && challenge.length <= 64){
         try{
-          const signature = accountsController.signString(vk, challenge)
+          const signature = accounts.signString(vk, challenge)
           callback({signature, vk, challenge})
         }catch(e){
           errors.push(`Unable to complete challenge: ${e.message}`)
         }
       }else{
-        errors.push('Malformed challenge request: Must be a string with a max length of 64.')
+        errors.push('Error: Malformed challenge request: Must be a string with a max length of 64.')
       }
     }else{
-      errors.push("'vk' property missing in data:")
+      errors.push("Error: Malformed vk: Must be a string with a length of 64.")
     }
 
     callback({errors, vk, challenge})

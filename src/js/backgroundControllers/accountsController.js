@@ -354,8 +354,13 @@ export const accountsController = (utils, services) => {
     const signString = (vk, challenge) => {
         const account = getAccountByVK(vk)
         if (!account) throw new Error(`Error: Account address '${vk}' not in Lamden Vault.`)
-        const wallet = utils.Lamden.wallet.new_wallet({sk: decryptString(account.sk)})
-        return wallet.sign(challenge)
+
+        const wallet = utils.Lamden.wallet.create_wallet({sk: decryptString(account.sk)})
+
+        const stringBuffer = Buffer.from(challenge);
+        const stringArray = new Uint8Array(stringBuffer);
+
+        return wallet.sign(stringArray)
     }
 
     const firstRun = () => {
