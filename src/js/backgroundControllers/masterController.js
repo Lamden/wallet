@@ -14,7 +14,6 @@ import { nodesController } from "./nodesController.js";
 // Services
 import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
-import fauna from "../services/fauna.js";
 import { validateTypes } from "types-validate-assert";
 
 const makeTx = (data) => {
@@ -74,7 +73,6 @@ export const masterController = () => {
   const dapps = Object.freeze(
     dappController(
       utils,
-      fauna,
       (() => {
         return {
           walletIsLocked: accounts.walletIsLocked,
@@ -98,7 +96,7 @@ export const masterController = () => {
       })()
     )
   );
-  const events = Object.freeze(eventController(fauna));
+  const events = Object.freeze(eventController());
 
   const state = Object.freeze(queryStateController(utils));
 
@@ -145,7 +143,6 @@ export const masterController = () => {
       updateAllBalances();
       updateAllTokenBalances();
       joinSockets();
-      fauna.fetchUpdates();
     }
     return unlocked;
   };
@@ -596,7 +593,6 @@ export const masterController = () => {
       }
     });
     let ok = accounts.setMnemonic(str);
-    fauna.fetchUpdates();
     return ok;
   };
 

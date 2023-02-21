@@ -1,4 +1,4 @@
-export const dappController = (utils, funa, actions) => {
+export const dappController = (utils, actions) => {
     let dappsStore = {};
     let txToConfirm = {};
     const validateTypes = utils.validateTypes
@@ -13,7 +13,7 @@ export const dappController = (utils, funa, actions) => {
 
     chrome.runtime.onInstalled.addListener(function(details) {
         if (details.reason === "install") {
-            funa.fetchUpdates()
+            // some intall tasks
         }
         if (details.reason === "update"){
             let currVer = chrome.runtime.getManifest().version;
@@ -27,7 +27,6 @@ export const dappController = (utils, funa, actions) => {
             if (prevVer <= "2.3.1" && currVer > prevVer){
                 purgeDappNetworkKeys()
             }
-            funa.fetchUpdates()
         }
     });
 
