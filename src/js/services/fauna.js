@@ -9,6 +9,7 @@ const faunadbClient = new faunadb.Client({
 const q = faunadb.query;
 
 const fetchUpdates = async () => {
+    return
     let currVer = chrome.runtime.getManifest().version;
     try {
         const res = await faunadbClient.query( 

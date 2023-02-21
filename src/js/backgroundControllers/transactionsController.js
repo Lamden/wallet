@@ -24,7 +24,6 @@ export const transactionsController = (utils, services, actions) => {
     })
 
     function processTxData (data) {
-        console.log(data)
         let info = {}
         let txInfo = data.message.txInfo
         let index = pendingTxStore.findIndex(tx => tx.txHash === txInfo.hash)

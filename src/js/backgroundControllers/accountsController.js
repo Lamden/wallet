@@ -348,9 +348,19 @@ export const accountsController = (utils, services) => {
     const signTx = (txBuilder) => {
         let account = getAccountByVK(txBuilder.sender)
         if (!account) throw new Error(`Error: Account address ${xBuilder.sender} not in Lamden Vault.`)
-        // let sk = decryptString(account.sk)
-        // console.log(sk)
         txBuilder.sign(decryptString(account.sk))
+    }
+
+    const signString = (vk, challenge) => {
+        const account = getAccountByVK(vk)
+        if (!account) throw new Error(`Error: Account address '${vk}' not in Lamden Vault.`)
+
+        const wallet = utils.Lamden.wallet.create_wallet({sk: decryptString(account.sk)})
+
+        const stringBuffer = Buffer.from(challenge);
+        const stringArray = new Uint8Array(stringBuffer);
+
+        return wallet.sign(stringArray)
     }
 
     const firstRun = () => {
@@ -427,6 +437,39 @@ export const accountsController = (utils, services) => {
         return mnemonic
     }
 
+    const auth = (data, dappInfo, callback = undefined) => {
+        if (!callback) return
+    
+        let { dapp_challenge } = data
+        let { vk } = dappInfo
+
+        const errors = []
+
+        if (dapp_challenge && utils.validateTypes.isString(dapp_challenge) && dapp_challenge.length <= 64){
+            try{
+                JSON.parse(dapp_challenge)
+                errors.push(`Error: Malformed 'dapp_challenge': Cannot sign JSON string.`)
+                callback({errors, dapp_challenge})
+                return
+            }catch(e){}
+
+            try{
+                const vault_challenge = new Date().toISOString()
+                const challenge_message = `[VAULT_AUTH]__DAPP__${dapp_challenge}__VAULT__${vault_challenge}`
+                const signature = signString(vk, challenge_message)
+
+                callback({signature, vault_challenge})
+                return
+            }catch(e){
+                errors.push(`Unable to complete auth: ${e.message}`)
+            }
+        }else{
+            errors.push("Error: Malformed 'dapp_challenge': Must be a string with a max length of 64.")
+        }
+
+        callback({errors, dapp_challenge})
+    }
+
     return {
         changePassword,
         createPassword,
@@ -450,11 +493,13 @@ export const accountsController = (utils, services) => {
         walletIsLocked,
         decryptKeys,
         signTx,
+        signString,
         reorderUp, reorderDown,
         isWatchOnly,
         setMnemonic,
         getMnemonic,
         isVaultCreated,
-        addVaultAccount
+        addVaultAccount,
+        auth
     }
 }

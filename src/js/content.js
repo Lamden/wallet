@@ -1,3 +1,5 @@
+
+
 //For security only messages in JSON string messages will be passed to the application
 const isJSON = (json) => {
 	if (Object.prototype.toString.call(json) !== "[object String]") return false
@@ -68,6 +70,19 @@ const returnTxStatusToPage = (txResult) => {
     document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: txResult}));
 }
 
+const auth = (event) => {  
+    const { detail } = event
+
+    if (isJSON(detail)){
+        chrome.runtime.sendMessage({type: 'auth', data: JSON.parse(detail) || {}}, (response) => {
+            if(!chrome.runtime.lastError || response !== 'ok'){
+                document.dispatchEvent(new CustomEvent('authReturn', {detail: response}));
+            }
+        });
+    }
+}
+document.addEventListener('auth', auth);
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //Accept only messages from extention background script
     if(sender.id === chrome.runtime.id && sender.origin === "null"){
@@ -79,7 +94,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === "sendWalletInfo"){
             getWalletInfo();
         }
-
+        
         if (message.type === 'sendErrorsToTab'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: message.data}));
             sendResponse('ok')

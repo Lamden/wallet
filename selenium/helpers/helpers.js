@@ -92,7 +92,7 @@ const ignoreBackupModal = async (driver) => {
     await sleep(1000, true)
 }
 
-const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true, testnet=true) => {
+const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock = true, testnet=true, ignoreBackup=true) => {
     await switchWindow(driver, 0)
     await driver.wait(until.elementLocated(By.id("restore-wallet")), 10000).click();
     await driver.executeScript(`document.getElementById('pwd1').value='${walletInfo.walletPassword}'`);
@@ -115,7 +115,7 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await driver.findElement(By.id('home-btn')).click()
     await sleep(3000)
     // await driver.findElement(By.id('ignore-btn')).click()
-    await ignoreBackupModal(driver)
+    if (ignoreBackup) await ignoreBackupModal(driver)
     if (testnet) {
         await changeToTestnet(driver)
         await sleep(2000)
@@ -289,6 +289,49 @@ const getWalletResponse = async (driver) => {
     return driver.executeScript(`
         console.log(await window.walletInfoResponse);
         return await window.walletInfoResponse
+    `);
+}
+
+const sendDappVerifyRequest = async (data, driver, awaitResponse = true) => {
+    return driver.executeScript(`
+        window.dappVerifiedResponse = new Promise((resolve, reject) => {window.dappVerifyResolver = resolve})
+
+        const resolveDetail = (response) => {
+            console.log(response)
+            window.dappVerifyResolver(response.detail)
+            document.removeEventListener('dappVerified', resolveDetail)
+        }
+
+        document.addEventListener('authReturn', resolveDetail);
+        document.dispatchEvent( new CustomEvent('auth', {detail: '${JSON.stringify(data)}'} ));
+
+        ${awaitResponse ? "console.log(await window.dappVerifiedResponse); return await window.dappVerifiedResponse" : ""}
+    `);
+}
+
+const sendDappVerifyRequest_special = async (driver, awaitResponse = true) => {
+    return driver.executeScript(`
+        window.dappVerifiedResponse = new Promise((resolve, reject) => {window.dappVerifyResolver = resolve})
+
+        const resolveDetail = (response) => {
+            console.log(response)
+            window.dappVerifyResolver(response.detail)
+            document.removeEventListener('dappVerified', resolveDetail)
+        }
+
+        document.addEventListener('authReturn', resolveDetail);
+        const detail = JSON.stringify({"dapp_challenge": JSON.stringify({test: "test"}),"vk":"37d05a43874dd70f56a03625df1680a358b4728510228d5e5f280de51554a12b"})
+        const evt = new CustomEvent('auth', {detail})
+        document.dispatchEvent( evt );
+
+        ${awaitResponse ? "console.log(await window.dappVerifiedResponse); return await window.dappVerifiedResponse" : ""}
+    `);
+}
+
+const getDappVerifiedResponse = async (driver) => {
+    return driver.executeScript(`
+        console.log(await window.dappVerifiedResponse);
+        return await window.dappVerifiedResponse
     `);
 }
 
@@ -555,5 +598,6 @@ module.exports = {
     fillNetworkForm,
     gotoBackup,
     createUID,
-    changeToTestnetV2
+    changeToTestnetV2,
+    sendDappVerifyRequest, getDappVerifiedResponse, sendDappVerifyRequest_special
 }

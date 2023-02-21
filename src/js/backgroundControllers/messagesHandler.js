@@ -14,6 +14,7 @@ export const messagesHandler = (masterController) => {
     * from outside webpages.  This isolates the sensitive information stored in the background page to the App and autorized Dapps.
     *****************************************************************************/
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        // console.log({message, sender, sendResponse})
         const sendErrors = (errors) => sendResponse({errors})
 
         if (chrome.runtime.lastError) return;
@@ -262,6 +263,10 @@ export const messagesHandler = (masterController) => {
                 //Process a transaction request sent from the dApp; same as from the Lamden Wallet App with two differences
                 if (message.type === 'dAppSendLamdenTransaction') {
                     masterController.initiateDAppTxSend(sender, message.data, dappInfo, sendResponse)
+                }
+                //Process a transaction request sent from the dApp; same as from the Lamden Wallet App with two differences
+                if (message.type === 'auth') {
+                    masterController.accounts.auth(message.data, dappInfo, sendResponse)
                 }
             }
         }
