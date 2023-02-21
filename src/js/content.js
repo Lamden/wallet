@@ -9,8 +9,6 @@ const isJSON = (json) => {
 }
 
 const getWalletInfo = () => {  
-    console.log("GET INFO")
-
     chrome.runtime.sendMessage({type: 'getWalletInfo'}, (response) => {
         if(!chrome.runtime.lastError || response !== 'ok'){
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
