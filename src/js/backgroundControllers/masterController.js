@@ -15,7 +15,6 @@ import { nodesController } from "./nodesController.js";
 import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
 import fauna from "../services/fauna.js";
-import { validateTypes } from "types-validate-assert";
 
 const makeTx = (data) => {
   return {
@@ -445,37 +444,6 @@ export const masterController = () => {
     }
   };
 
-  const dAppVerifyAccountHolder = (data, callback = undefined) => {
-    if (!callback) return
-
-    let { challenge, vk } = data
-    const errors = []
-
-    if (vk && validateTypes.isStringWithValue(vk) && vk.length === 64){
-      if (challenge && validateTypes.isString(challenge) && challenge.length <= 64){
-        try{
-          JSON.parse(challenge)
-          errors.push(`Error: Malformed challenge request: Cannot sign JSON string.`)
-          callback({errors, vk, challenge})
-          return
-        }catch(e){}
-
-        try{
-          const signature = accounts.signString(vk, challenge)
-          callback({signature, vk, challenge})
-          return
-        }catch(e){
-          errors.push(`Unable to complete challenge: ${e.message}`)
-        }
-      }else{
-        errors.push('Error: Malformed challenge request: Must be a string with a max length of 64.')
-      }
-    }else{
-      errors.push("Error: Malformed vk: Must be a string with a length of 64.")
-    }
-    callback({errors, vk, challenge})
-  }
-
   const promptApproveDapp = async (
     sender,
     messageData,
@@ -616,6 +584,7 @@ export const masterController = () => {
       isVaultCreated: accounts.isVaultCreated,
       getMnemonic: accounts.getMnemonic,
       addVaultAccount: accounts.addVaultAccount,
+      auth: accounts.auth
     },
     dapps: {
       setTrusted: dapps.setTrusted,
@@ -671,7 +640,6 @@ export const masterController = () => {
     unlock,
     lock,
     getWalletInfo,
-    dAppVerifyAccountHolder,
     initiateAppTxSend,
     initiateDAppTxSend,
     promptApproveDapp,

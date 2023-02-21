@@ -437,6 +437,39 @@ export const accountsController = (utils, services) => {
         return mnemonic
     }
 
+    const auth = (data, dappInfo, callback = undefined) => {
+        if (!callback) return
+    
+        let { dapp_challenge } = data
+        let { vk } = dappInfo
+
+        const errors = []
+
+        if (dapp_challenge && utils.validateTypes.isString(dapp_challenge) && dapp_challenge.length <= 64){
+            try{
+                JSON.parse(dapp_challenge)
+                errors.push(`Error: Malformed 'dapp_challenge': Cannot sign JSON string.`)
+                callback({errors, dapp_challenge})
+                return
+            }catch(e){}
+
+            try{
+                const vault_challenge = new Date().toISOString()
+                const challenge_message = `[VAULT_AUTH]__DAPP__${dapp_challenge}__VAULT__${vault_challenge}`
+                const signature = signString(vk, challenge_message)
+
+                callback({signature, vault_challenge})
+                return
+            }catch(e){
+                errors.push(`Unable to complete auth: ${e.message}`)
+            }
+        }else{
+            errors.push("Error: Malformed 'dapp_challenge': Must be a string with a max length of 64.")
+        }
+
+        callback({errors, dapp_challenge})
+    }
+
     return {
         changePassword,
         createPassword,
@@ -466,6 +499,7 @@ export const accountsController = (utils, services) => {
         setMnemonic,
         getMnemonic,
         isVaultCreated,
-        addVaultAccount
+        addVaultAccount,
+        auth
     }
 }

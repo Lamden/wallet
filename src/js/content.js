@@ -72,18 +72,18 @@ const returnTxStatusToPage = (txResult) => {
     document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: txResult}));
 }
 
-const dappVerify = (event) => {  
+const auth = (event) => {  
     const { detail } = event
 
     if (isJSON(detail)){
-        chrome.runtime.sendMessage({type: 'dappVerify', data: JSON.parse(detail) || {}}, (response) => {
+        chrome.runtime.sendMessage({type: 'auth', data: JSON.parse(detail) || {}}, (response) => {
             if(!chrome.runtime.lastError || response !== 'ok'){
-                document.dispatchEvent(new CustomEvent('dappVerified', {detail: response}));
+                document.dispatchEvent(new CustomEvent('authReturn', {detail: response}));
             }
         });
     }
 }
-document.addEventListener('dappVerify', dappVerify);
+document.addEventListener('auth', auth);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //Accept only messages from extention background script

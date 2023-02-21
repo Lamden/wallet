@@ -293,7 +293,6 @@ const getWalletResponse = async (driver) => {
 }
 
 const sendDappVerifyRequest = async (data, driver, awaitResponse = true) => {
-    console.log("sendDappVerifyRequest")
     return driver.executeScript(`
         window.dappVerifiedResponse = new Promise((resolve, reject) => {window.dappVerifyResolver = resolve})
 
@@ -303,16 +302,14 @@ const sendDappVerifyRequest = async (data, driver, awaitResponse = true) => {
             document.removeEventListener('dappVerified', resolveDetail)
         }
 
-        document.addEventListener('dappVerified', resolveDetail);
-        document.dispatchEvent( new CustomEvent('dappVerify', {detail: '${JSON.stringify(data)}'} ));
+        document.addEventListener('authReturn', resolveDetail);
+        document.dispatchEvent( new CustomEvent('auth', {detail: '${JSON.stringify(data)}'} ));
 
         ${awaitResponse ? "console.log(await window.dappVerifiedResponse); return await window.dappVerifiedResponse" : ""}
     `);
 }
 
 const sendDappVerifyRequest_special = async (driver, awaitResponse = true) => {
-    console.log("sendDappVerifyRequest_SPECIAL")
-
     return driver.executeScript(`
         window.dappVerifiedResponse = new Promise((resolve, reject) => {window.dappVerifyResolver = resolve})
 
@@ -322,11 +319,9 @@ const sendDappVerifyRequest_special = async (driver, awaitResponse = true) => {
             document.removeEventListener('dappVerified', resolveDetail)
         }
 
-        document.addEventListener('dappVerified', resolveDetail);
-        const detail = JSON.stringify({"challenge": JSON.stringify({test: "test"}),"vk":"37d05a43874dd70f56a03625df1680a358b4728510228d5e5f280de51554a12b"})
-        console.log({detail})
-        const evt = new CustomEvent('dappVerify', {detail})
-        console.log(evt)
+        document.addEventListener('authReturn', resolveDetail);
+        const detail = JSON.stringify({"dapp_challenge": JSON.stringify({test: "test"}),"vk":"37d05a43874dd70f56a03625df1680a358b4728510228d5e5f280de51554a12b"})
+        const evt = new CustomEvent('auth', {detail})
         document.dispatchEvent( evt );
 
         ${awaitResponse ? "console.log(await window.dappVerifiedResponse); return await window.dappVerifiedResponse" : ""}
