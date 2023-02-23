@@ -454,7 +454,7 @@ export const accountsController = (utils, services) => {
             }catch(e){}
 
             try{
-                const vault_challenge = new Date().toISOString()
+                const vault_challenge = utils.hashStringValue(new Date().toISOString())
                 const challenge_message = `[VAULT_AUTH]__DAPP__${dapp_challenge}__VAULT__${vault_challenge}`
                 const signature = signString(vk, challenge_message)
 
