@@ -1,0 +1,25 @@
+{
+	"title": "Vault Auth Endpoint",
+	"type": "feature",
+	"version": "2.4.5",
+	"body": [
+		"This is an update for Dapp developers to allow the Lamden Vault to be used for logins.",
+		"Check out the documentation for find out how!"
+	],
+	"buttons": [
+		{
+			"class": "primary",
+			"link": "https://github.com/Lamden/wallet/releases/tag/v2.4.5",
+			"name": "Release Info"
+		},
+		{
+			"class": "secondary",
+			"link": "https://docs.lamden.io/develop/wallet_api/auth/",
+			"name": "Documentation"
+		}
+	],
+	"date_added": 1677172284325,
+	"new_features": [
+		"Added a new event called 'auth' to the Lamden Vault API."
+	]
+}

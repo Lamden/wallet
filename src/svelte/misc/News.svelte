@@ -21,7 +21,7 @@
 
     onMount(() => {
         if (Array.isArray($EventsStore)) {
-            $EventsStore.forEach(e => EventsStore.setEventStatus(e.id, true))
+            $EventsStore.forEach(e => EventsStore.setEventStatus(e.version, true))
         }
     })
 
