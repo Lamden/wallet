@@ -270,7 +270,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
         dappsInfo.approvalTransaction.kwargs.to,
         2
       );
-      console.log({ currentApprovalAmount });
+
       let transaction = helpers.getInstance(dappsInfo.approvalTransaction);
       transaction.uid = helpers.createUID()
       await helpers.sendTx(driver, transaction, false);
@@ -281,7 +281,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
         dappsInfo.approvalTransaction.kwargs.to,
         2
       );
-      console.log({ afterApprovalAmount });
+
       assert.equal(
         afterApprovalAmount,
         currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount

@@ -4,7 +4,7 @@ let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
 let walletInfo = require("../../fixtures/walletInfo")
-let dappsInfo = require("../../fixtures/dappsInfo.json")
+let dappsInfo = require("../../fixtures/dappsInfo_v2.json")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -63,7 +63,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
         it('Rejects connection request if wallet is locked', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             let response = await helpers.sendConnectRequest(driver, connection)
-            console.log({response})
+
             assert.equal(response.errors.includes("Lamden Vault is Locked"), true);
             //Unlock the wallet for rest of test cases
             await helpers.unlockWallet(driver, walletInfo.walletPassword, 1)

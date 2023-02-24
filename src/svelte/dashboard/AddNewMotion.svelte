@@ -139,7 +139,6 @@
         } else {
             kwargs = [...e.detail.argumentList]
         }
-        console.log(kwargs)
     }
 
     const nextPage = () => {
@@ -210,7 +209,6 @@
             {name: 'Home', click: () => {
                 closeModal();
                 freshPolicy(selectedPolicie);
-                console.log(`fresh ${selectedPolicie}`)
             }, class: 'button__solid button__primary'}
         ]
         nextPage();

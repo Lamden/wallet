@@ -6,7 +6,7 @@ let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config");
 const helpers = require("../../helpers/helpers");
 let walletInfo = require("../../fixtures/walletInfo");
-let dappsInfo = require("../../fixtures/dappsInfo.json");
+let dappsInfo = require("../../fixtures/dappsInfo_v2.json");
 var validators = require("types-validate-assert");
 const { validateTypes } = validators;
 
@@ -268,7 +268,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
         connectionInfo.wallets[0],
         dappsInfo.approvalTransaction.kwargs.to
       );
-      console.log({ currentApprovalAmount });
+
       let transaction = helpers.getInstance(dappsInfo.approvalTransaction);
       transaction.uid = helpers.createUID()
       await helpers.sendTx(driver, transaction, false);
@@ -278,7 +278,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
         connectionInfo.wallets[0],
         dappsInfo.approvalTransaction.kwargs.to
       );
-      console.log({ afterApprovalAmount });
+
       assert.equal(
         afterApprovalAmount,
         currentApprovalAmount + dappsInfo.approvalTransaction.kwargs.amount

@@ -78,7 +78,7 @@ const completeFirstRunSetup = async (driver, walletPassword, lock = true, testne
     await sleep(3000)
 
     // await ignoreBackupModal(driver)
-    if (testnet) await changeToTestnet(driver)
+    if (testnet) await changeToTestnetV2(driver)
     await driver.findElement(By.id('refresh-icon')).click()
     await sleep(3000, true)
     if (lock){
@@ -117,7 +117,7 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     // await driver.findElement(By.id('ignore-btn')).click()
     if (ignoreBackup) await ignoreBackupModal(driver)
     if (testnet) {
-        await changeToTestnet(driver)
+        await changeToTestnetV2(driver)
         await sleep(2000)
     }
     await driver.findElement(By.id('refresh-icon')).click()
@@ -146,7 +146,7 @@ const lockWallet = async (driver, switchback) => {
 }
 const changeToTestnet = async (driver) => {
     await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
-    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-1")), 5000);
+    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-3")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
@@ -423,7 +423,7 @@ const getApprovalAmount = (sender, to, version = 1) => {
             else return resolver(parseInt(data.value))  
         }
         let api = version === 2 ? testnetBlockService_v2 : testnetBlockService
-        console.log(`${api}/current/one/currency/balances/${sender}:${to}`)
+
         makeHttpRequest(`${api}/current/one/currency/balances/${sender}:${to}`, resolveRequest)
     })
 }

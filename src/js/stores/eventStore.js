@@ -34,9 +34,9 @@ export const createEventStore = () => {
         subscribe,
         set,
         update,
-        setEventStatus: (id, status) => {
+        setEventStatus: (version, status) => {
             EventStore.update(eventStore => {
-                let index = eventStore.findIndex(x => x.id === id );
+                let index = eventStore.findIndex(x => x.version === version );
                 if (index === -1) return;
                 eventStore[index].viewed = status;
                 chrome.storage.local.set({"events": eventStore});

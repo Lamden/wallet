@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -14,10 +14,6 @@
     "test-firstrun-restore-mnemonic": "mocha --recursive --timeout 60000 selenium/tests/ui/firstrun/FirstRun_RestoreWalletByMnemonic.js",
     "test-firstrun-restore-privatekey": "mocha --recursive --timeout 60000 selenium/tests/ui/firstrun/FirstRun_RestoreWalletByPrivatekey.js",
     "test-dapps": "mocha --recursive --timeout 60000 selenium/tests/dapp/*.js",
-    "test-dapps-wallet-connect": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletConnect.js",
-    "test-dapps-get-info": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletGetInfo.js",
-    "test-dapps-sendtx": "mocha --timeout 60000 selenium/tests/dapp/content_lamdenWalletSendTx.js",
-    "test-dapps-sendx-backtoback": "mocha --timeout 60000 selenium/tests/dapp/content_landenWalletSendTxBacktoBack.js",
     "test-tokens": "mocha --recursive --timeout 50000 selenium/tests/ui/tokens/*.js",
     "test-tokens-add": "mocha --timeout 50000 selenium/tests/ui/tokens/tokens-add.js",
     "test-tokens-upload": "mocha --timeout 60000 selenium/tests/ui/tokens/tokens-upload-images.js",
@@ -68,7 +64,6 @@
   "dependencies": {
     "chart.js": "^4.1.1",
     "easyqrcodejs": "^4.4.6",
-    "faunadb": "^4.5.2",
     "lamden-js": "^3.8.1",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",

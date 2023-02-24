@@ -58,7 +58,6 @@
     fetch(`${blockserviceUrl}/current/one/currency/balances/${wallet.vk}`)
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
         if (res.value.__fixed__) {
           balances = new BN(res.value.__fixed__);
         } else {
