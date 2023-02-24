@@ -202,7 +202,6 @@
         if (receiver.endsWith('.tau')) {
             loading = true
             let success = false
-            console.log()
             await fetch(`${$currentNetwork.nameService}/${receiver}`)
             .then(res => res.json())
             .then(data => {

@@ -65,7 +65,6 @@
     }
 
     const formValidation = async () => {
-        console.log({hostField})
         hostField.setCustomValidity('');
         blockServiceField.setCustomValidity('');
         if (hosts.length === 0){
@@ -82,7 +81,6 @@
             checking = true;
             
             const networkActive = await pingWithTimeout(network)
-            console.log({networkActive})
 
             checking = false;
             if (networkActive){
@@ -183,7 +181,6 @@
     }
 
     const reportValidityMessage = (node, message) => {
-        console.log({node, message})
         node.setCustomValidity(message);
         node.reportValidity();
     }

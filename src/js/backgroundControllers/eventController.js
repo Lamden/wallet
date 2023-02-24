@@ -6,7 +6,6 @@ export const eventController = () => {
 
     const autoFetchUpdates = () => {
         chrome.storage.local.get("events", function(r){
-            console.log(r)
             const updates = [];
             let event_storage = r.events || [];
 
@@ -17,8 +16,6 @@ export const eventController = () => {
 
                 chrome.storage.local.set({"events": event_storage.slice(-5)});
             }
-
-            console.log(JSON.parse(JSON.stringify({"events": event_storage.slice(-5)})))
         });
     }
 

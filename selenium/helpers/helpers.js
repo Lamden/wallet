@@ -428,7 +428,7 @@ const getApprovalAmount = (sender, to, version = 1) => {
             else return resolver(parseInt(data.value))  
         }
         let api = version === 2 ? testnetBlockService_v2 : testnetBlockService
-        console.log(`${api}/current/one/currency/balances/${sender}:${to}`)
+
         makeHttpRequest(`${api}/current/one/currency/balances/${sender}:${to}`, resolveRequest)
     })
 }

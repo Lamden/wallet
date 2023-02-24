@@ -90,7 +90,6 @@
     }
 
     const handleNext = () => {
-        console.log(kwargs);
         dispatch('contractDetails', {
             sender: selectedWallet,
             txInfo: {

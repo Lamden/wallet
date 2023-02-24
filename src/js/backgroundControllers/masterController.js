@@ -248,7 +248,6 @@ export const masterController = () => {
   };
 
   const initiateAppTxSend = (txInfo, sender) => {
-    console.log({ txInfo, sender });
     //Validate that a physical person is sending this transaction
     let response = { status: "" };
     try {
@@ -257,7 +256,6 @@ export const masterController = () => {
         utils.networks.getCurrent(),
         txInfo
       );
-      console.log(txBuilder.getAllInfo());
       transactions.sendLamdenTx(txBuilder, sender.origin);
       response.status = "Transaction Sent, Awaiting Response";
     } catch (err) {
