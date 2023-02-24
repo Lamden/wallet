@@ -54,7 +54,7 @@ describe('Testing Manage Network', function () {
         await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
     });
 
-    //after(() => driver && driver.quit());
+    after(() => driver && driver.quit());
 
     context('Manage Network', function() {
         it('Renders ManageNetworkMain.svelte', async function() {
