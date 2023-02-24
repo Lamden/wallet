@@ -1,9 +1,9 @@
 const assert = require('assert');
 const {Builder, By, until} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
-let config = require("../../../config/config")
-const helpers = require('../../../helpers/helpers')
-let walletInfo = require("../../../fixtures/walletInfo")
+let config = require("../../../../config/config")
+const helpers = require('../../../../helpers/helpers')
+let walletInfo = require("../../../../fixtures/walletInfo")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments("lang=en-us");

@@ -6,7 +6,7 @@ let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config");
 const helpers = require("../../helpers/helpers");
 let walletInfo = require("../../fixtures/walletInfo");
-let dappsInfo = require("../../fixtures/dappsInfo.json");
+let dappsInfo = require("../../fixtures/dappsInfo_v2.json");
 var validators = require("types-validate-assert");
 const { validateTypes } = validators;
 

@@ -25,7 +25,7 @@ describe('Testing Token Integration - Add Tokens to Wallet', function () {
                 .build();
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
-        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, false)
+        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
     });
 
     after(() => driver && driver.quit());

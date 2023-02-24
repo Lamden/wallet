@@ -29,7 +29,7 @@ const goodNetwork = {
     name: 'Good Network',
     currencySymbol: "goodsymbol",
     type: 'devnet',
-    host: 'https://masternode-01.lamden.io',
+    host: 'https://arko-mn-1.lamden.io',
     blockservice: 'http://165.22.47.195:3535'
 }
 
@@ -37,7 +37,7 @@ const editNetwork = {
     name: 'Edit Network',
     currencySymbol: "editgoodsymbol",
     type: 'devnet',
-    host: 'https://masternode-01.lamden.io',
+    host: 'https://arko-mn-1.lamden.io',
     blockservice: 'http://165.22.47.195:3535'
 }
 
@@ -51,10 +51,10 @@ describe('Testing Manage Network', function () {
                 .build();
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
-        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, false)
+        await helpers.completeFirstRunSetupRestore(driver, config.workingDir, walletInfo, false, true)
     });
 
-    after(() => driver && driver.quit());
+    //after(() => driver && driver.quit());
 
     context('Manage Network', function() {
         it('Renders ManageNetworkMain.svelte', async function() {
@@ -66,6 +66,7 @@ describe('Testing Manage Network', function () {
             await helpers.sleep(500)
             await driver.findElement(By.id("select-option-5")).click()
         });
+        
         it('Form Valid - Rejects empyty network name', async function() {
             await helpers.sleep(500)
             let element = await driver.findElement(By.id("save"))
@@ -114,15 +115,17 @@ describe('Testing Manage Network', function () {
             let msg2 = await driver.findElement(By.id("blockServiceList")).getAttribute('validationMessage')
             //assert.equal(msg2, 'Required at least one block service')
         })
+
         it('Add A Bad Network - negative', async function() {
             await helpers.clearNetwork(driver);
             await helpers.fillNetworkForm(driver, badNetwork);
             await helpers.sleep(1000);
             await driver.findElement(By.id("save")).click()
-            await helpers.sleep(30000);
+            await helpers.sleep(3000);
             let msg = await driver.findElement(By.id("hostlist")).getAttribute('validationMessage')
             assert.equal(msg, 'Cannot contact network')
         })
+        
         it('Add A Good Network', async function() {
             this.timeout(50000)
             await helpers.clearNetwork(driver);
@@ -158,5 +161,6 @@ describe('Testing Manage Network', function () {
             let networkname = await driver.findElement(By.css("#nav-network option:nth-child(5)")).getAttribute('innerText')
             assert.equal(networkname, editNetwork.name)
         })
+        
     })
 })

@@ -8,7 +8,7 @@ const helpers = require('../../../helpers/helpers')
 const tokenHelpers = require('../../../helpers/helpers-token')
 let walletInfo = require("../../../fixtures/walletInfo")
 var validators = require('types-validate-assert');
-let dappsInfo = require("../../../fixtures/dappsInfo.json")
+let dappsInfo = require("../../../fixtures/dappsInfo_v2.json")
 let tokenInfo = require("../../../fixtures/tokenInfo.json")
 const mnemonicWords = require("../../../fixtures/mnemonic.json")
 
@@ -63,7 +63,7 @@ describe('Testing Coin Button', function () {
             await helpers.sleep(500)
             await tokenHelpers.openCoinSendModal(driver)
             await helpers.sleep(500)
-            let name = "dTAU"
+            let name = "dTAU2"
             await tokenHelpers.validateCoinTokenName(driver, name)
             await tokenHelpers.validateCoinFromAddress(driver, mnemonicWords.vk)
             await tokenHelpers.cancelTransferModal(driver)

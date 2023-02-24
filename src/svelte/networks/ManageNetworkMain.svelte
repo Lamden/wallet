@@ -65,6 +65,7 @@
     }
 
     const formValidation = async () => {
+        console.log({hostField})
         hostField.setCustomValidity('');
         blockServiceField.setCustomValidity('');
         if (hosts.length === 0){
@@ -79,8 +80,10 @@
         }
         if (formField.checkValidity()){
             checking = true;
-            let curNet = new Lamden.Network(network)
-            let networkActive = await curNet.ping()
+            
+            const networkActive = await pingWithTimeout(network)
+            console.log({networkActive})
+
             checking = false;
             if (networkActive){
                 if (!isEdit){
@@ -120,7 +123,12 @@
                 reportValidityMessage(hostField, "Cannot contact network")
             }
         }
-        
+    }
+
+    const pingWithTimeout = (network) => {
+        const curNet = new Lamden.Network(network)
+        const timeout = new Promise(resolve => setTimeout(() => resolve(false), 2000))
+        return Promise.race([curNet.ping(), timeout])
     }
 
     const clearFields = () => {
@@ -175,6 +183,7 @@
     }
 
     const reportValidityMessage = (node, message) => {
+        console.log({node, message})
         node.setCustomValidity(message);
         node.reportValidity();
     }
@@ -375,14 +384,15 @@ h6{
                     spellcheck={false}
                 />
                 {#if isCustomNetwork || showAdd}
-                <input  
-                    id="save"
-                    on:click={() => formValidation()}
-                    form="network_from"
-                    class="button__solid button__primary submit submit-button submit-button-text"
-                    type="submit" 
-                    style="width: 347px;margin: 0 0 .625rem 0"
-                    value={showAdd? "Add Network" : "Save"} /> 
+                    <input  
+                        id="save"
+                        on:click={() => formValidation()}
+                        form="network_from"
+                        class="button__solid button__primary submit submit-button submit-button-text"
+                        type="submit" 
+                        style="width: 347px;margin: 0 0 .625rem 0"
+                        value={checking ? "Checking Hosts" : showAdd? "Add Network" : "Save"} 
+                        disabled={checking}/> 
                 {/if}
                 {#if isCustomNetwork}
                 <Button id="remove"
