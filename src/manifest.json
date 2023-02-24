@@ -3,12 +3,12 @@
   "description": "A Lamden Vault made by Lamden.io",
   "options_page": "options.html",
   "background": {
-    "page": "background.html"
+    "service_worker": "background.bundle.js"
   },
   "permissions":[
     "storage", "tabs", "unlimitedStorage"
   ],
-  "browser_action": {
+  "action": {
     "default_title": "Lamden Vault",
     "default_popup": "popup.html",
     "default_icon": "icon-34.png"
@@ -24,6 +24,8 @@
       "js": ["content.bundle.js"]
     }
   ],
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  }
 }
