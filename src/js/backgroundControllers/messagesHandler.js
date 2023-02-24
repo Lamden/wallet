@@ -265,8 +265,8 @@ export const messagesHandler = (masterController) => {
                     masterController.initiateDAppTxSend(sender, message.data, dappInfo, sendResponse)
                 }
                 //Process a transaction request sent from the dApp; same as from the Lamden Wallet App with two differences
-                if (message.type === 'dappVerify') {
-                    masterController.dAppVerifyAccountHolder(message.data, sendResponse)
+                if (message.type === 'auth') {
+                    masterController.accounts.auth(message.data, dappInfo, sendResponse)
                 }
             }
         }
