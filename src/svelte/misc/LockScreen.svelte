@@ -96,7 +96,6 @@ form{
                         <InputBox
                             id="pwd-input"
                             bind:thisInput={pwdObj}
-                            value="Testing0!2"
                             on:changed={() => setValidity(pwdObj, '')}
                             on:keyup={refreshValidityKeyup}
                             width="100%"

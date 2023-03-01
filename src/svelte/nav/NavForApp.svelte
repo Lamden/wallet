@@ -131,8 +131,8 @@
 		/>
 	
 		<div class="flex-column details">
-			<div class="balance-words text-body1">
-				{`Total ${$currentNetwork.currencySymbol} in Accounts`}
+			<div class="balance-words">
+				{`Total ${$currentNetwork.currencySymbol}`}
 			</div>
 
 			<div class="balance-total">
@@ -140,8 +140,8 @@
 			</div>
 
 			{#if onMainnet}
-				<div class="total-fiat text-body1">
-					Total Wallet {currentFiat}
+				<div class="total-fiat">
+					Total {currentFiat}
 					{whitelabel.fiat[currentFiat]}
 					{totalValue}
 				</div>
@@ -213,14 +213,16 @@
 	}
 	.balance-words {
 		color: var(--font-overlay);
+		font-size: var(--text-h2);
 	}
 	p {
-		margin: 5px 0 0 0;
+		margin: 0;
 	}
 	.total-fiat{
 		color: var(--color-white);
 		font-weight: 200;
 		margin-bottom: 5px;
+		font-size: var(--text-h2);
 	}
 	.details {
 		align-items: center;
@@ -233,9 +235,6 @@
 		height: 100%;
 		position: absolute;
 		z-index: -1;
-	}
-	.text-huge {
-		font-size: 40px;
 	}
 	.refresh-icon:disabled{
 		filter: grayscale(100%);
@@ -254,9 +253,6 @@
 		}
 		.mobile-menu{
 			display: block;
-		}
-		.text-huge {
-			font-size: 3em;
 		}
 		.details{
 			align-items: center;
