@@ -248,14 +248,6 @@
     <div class="text-overlay text-body1">{token.tokenSymbol}</div>
     <div class="flex-row balance-total">
       <p class="text-huge">{balance}</p>
-      <div
-        on:click={handleRefresh}
-        id="refresh-icon"
-        class="flex-column refresh-icon"
-        class:spinner={refreshing}
-      >
-        <RefreshIcon />
-      </div>
     </div>
     {#if $currentNetwork.type === "mainnet"}
       <div class="text-body1">
@@ -411,10 +403,6 @@
 
   .buttons > * {
     margin: 10px 0px;
-  }
-
-  .refresh-icon {
-    width: 40px;
   }
 
   .text-huge:first-child {

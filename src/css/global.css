@@ -1281,7 +1281,7 @@ input.submit-button:disabled{
         --text-body1: 14px;
         --text-body2: 12px;
         --text-body3: 10px;
-        --text-huge: 35px;
+        --text-huge: 32px;
         --text-button: 8px;
     }
     .layout{
