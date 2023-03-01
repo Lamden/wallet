@@ -23,50 +23,73 @@
 </script>
 
 <style>
-.message-box{
-    align-items: center;
-    min-width: 500px;
-    background: inherit;
-}
+    .message-box{
+        align-items: center;
+        min-width: 500px;
+        background: inherit;
+    }
 
-.message{
-    align-items: flex-start;
-    /*padding-top: 65px;*/
-    /*margin: 1rem 0 2rem;*/
-    margin: 2rem 0 0.5rem;
-    width: 100%;
-    justify-content: center;
-}
+    .message{
+        margin: 2rem 0 0.5rem;
+        width: 100%;
+        justify-content: center;
+    }
 
-.icon{
-    margin-right: 14px;
-    min-width: 30px;
-}
+    .icon{
+        margin-right: 14px;
+        min-width: var(--text-huge);
+    }
 
-.checkmark{
-    min-width: 30px;;
-}
+    .checkmark{
+        min-width: var(--text-huge);
+    }
 
-.buttons{
-    padding: 42px 0;
-    align-items: center;
-}
-h2{
-    margin: 0;
-}
+    .message-box-buttons{
+        padding: 42px 0;
+        align-items: center;
+    }
+    h2{
+        margin: 0;
+    }
+
+    @media screen and (max-width: 528px){
+        .message-box{
+            min-width: unset;
+            width: 100%;
+
+        }
+    }
+    @media screen and (max-width: 830px) {
+        .message-box-buttons{
+            flex-wrap: wrap;
+            width: 100%;
+            
+        }
+        :global(.message-box-buttons > button){
+            width: 100%!important;
+            margin-bottom: 1rem!important;
+        }
+    }
+
+    @media screen and (max-width: 550px) {
+        .message-box{
+            width: 100%;
+            min-width: unset;
+        }
+    }
 </style>
 
 <div class="message-box flex-column">
     {#if title}
         <h2 id={'message-title'}>{title}</h2>
     {/if}
-    <div class="message flex-row">
+    <div class="message flex-row flex-align-center">
         {#if type === 'error'}<div id={"error"} class="icon">{@html errorCircle}</div>{/if}  
         {#if type === 'caution'}<div id={"caution"} class="icon">{@html caution}</div>{/if}
         {#if type === 'success'}<div id={"success"} class="icon checkmark">{@html successCircle}</div>{/if}
         <div id={'message-text'} class="text-body1">{@html text}</div>
     </div>
-    <div class="buttons flex-row">
+    <div class="message-box-buttons flex-row">
         {#each buttons as button, index}
             <Button 
                 id={button.id} 

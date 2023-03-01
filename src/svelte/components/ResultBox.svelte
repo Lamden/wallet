@@ -28,39 +28,56 @@
 </script>
 
 <style>
-h2{
-    margin: 1rem 0 0rem;
-}
-.results-box{
-    align-items: center;
-    min-width: 550px; 
-    background: inherit;
-}
+    h2{
+        margin: 1rem 0 0rem;
+    }
+    .results-box{
+        align-items: center;
+        min-width: 550px; 
+        background: inherit;
+    }
 
-.icon{
-    margin-right: 10px;
-    min-width: 31px;
-    position: relative;
-    top: -1px;
-}
+    .icon{
+        margin-right: 10px;
+        min-width: var(--text-huge);
+        position: relative;
+    }
 
-.buttons{
-    padding: 2rem 0 10px;
-}
+    .results-box-buttons{
+        padding: 2rem 0 10px;
+    }
 
-.message{
-    margin: 2rem 0 1rem;
-}
-p{
-    margin: 0;
-}
-p#results-message{
-    font-size: 24px;
-    font-weight: 300;
-}
-h3#results-subtitle{
-    color: var(--font-primary-dim);
-}
+    .message{
+        margin: 2rem 0 1rem;
+    }
+    p{
+        margin: 0;
+    }
+    p#results-message{
+        font-size: var(--text-h3);
+        font-weight: 300;
+    }
+    h3#results-subtitle{
+        color: var(--font-primary-dim);
+    }
+    @media screen and (max-width: 830px) {
+        .results-box-buttons{
+            flex-wrap: wrap;
+            width: 100%;
+            
+        }
+        :global(.results-box-buttons > button){
+            width: 100%!important;
+            margin-bottom: 1rem!important;
+        }
+    }
+
+    @media screen and (max-width: 550px) {
+        .results-box{
+            width: 100%;
+            min-width: unset;
+        }
+    }
 
 </style>
 
@@ -69,7 +86,7 @@ h3#results-subtitle{
 
     <h3 id={'results-subtitle'} >{result.subtitle}</h3>
 
-    <div class="message flex-row">
+    <div class="message flex-row flex-align-center">
         <div class="icon">{@html icon}</div>
         <p id={'results-message'} class="text-body1">{resultMessage}</p>
     </div>
@@ -89,7 +106,7 @@ h3#results-subtitle{
             </div>
         </div>
     {/if}
-    <div class="buttons flex-row">
+    <div class="results-box-buttons flex-row">
         {#each result.buttons as button, index}
             <Button
                 id={button.id} 

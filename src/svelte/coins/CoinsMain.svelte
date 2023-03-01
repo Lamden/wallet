@@ -237,7 +237,7 @@
 			>
 			Add Account
 			<div class="icon">
-				<PlusIcon width="18px" color="var(--color-white)" />
+				<PlusIcon color="var(--color-white)" />
 			</div>
 		</button>
 
@@ -248,7 +248,7 @@
 			>
 			Add Token
 			<div class="icon">
-				<PlusIcon width="18px" color="var(--color-white)" />
+				<PlusIcon color="var(--color-white)" />
 			</div>
 		</button>
 
@@ -259,7 +259,7 @@
 			>
 			Expand All
 			<div class="icon">
-				<ExpandIcon width="18px" color="var(--color-white)" />
+				<ExpandIcon color="var(--color-white)" />
 			</div>
 		</button>
 
@@ -270,7 +270,7 @@
 			>
 			Collapse All
 			<div class="icon">
-				<CollapseIcon width="18px" color="var(--color-white)" />
+				<CollapseIcon color="var(--color-white)" />
 			</div>
 		</button>
 	</div>

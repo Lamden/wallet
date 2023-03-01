@@ -388,17 +388,20 @@
 						{#if !token}
 							<div class="flex-row flex-align-center reorder-btns">
 								<button
-									class="button__small button__primary reorder-button"
+									class="button__small round button__primary"
 									on:click|stopPropagation={handleReorderUp}
 								>
-									<DirectionalChevronIcon width="8px" color="white" />
+
+								<DirectionalChevronIcon width={"100%"} margin="0 0 0 3px" color="white" />
+
 								</button>
+
 								<button
-									class="button__small button__primary reorder-button"
+									class="button__small round button__primary"
 									on:click|stopPropagation={handleReorderDown}
 								>
 									<DirectionalChevronIcon
-										width="8px"
+										width={"100%"}
 										direction="down"
 										color="white"
 									/>
@@ -440,11 +443,11 @@
 								title="copy account address"
 							>
 								{formatAccountAddress(coin.vk, 7, 0)}
-								<div class="icon-copy">
+								<div class="icon icon-copy">
 									{#if !copied}
-										<CopyIcon width="9px" color="var(--color-white)" />
+										<CopyIcon color="var(--color-white)" />
 									{:else}
-										<CheckmarkIcon width="10px" color="var(--success-color)" />
+										<CheckmarkIcon color="var(--success-color)" />
 									{/if}
 								</div>
 							</button>
@@ -465,7 +468,7 @@
 							>
 								Options
 								<div class="icon">
-									<SettingsIcon width="12px" color="var(--color-white)" />
+									<SettingsIcon color="var(--color-white)" />
 								</div>
 							</button>
 							{#if isNodeAccount} 
@@ -476,7 +479,7 @@
 								>
 									Manage
 									<div class="icon">
-										<SettingsIcon width="12px" color="var(--color-white)" />
+										<SettingsIcon color="var(--color-white)" />
 									</div>
 								</button>
 							{/if}
@@ -531,7 +534,7 @@
 		margin: 10px;
 	}
 	.reorder-btns {
-		margin-top: 22px;
+		margin-top: 1rem;
 		align-self: start;
 	}
 	.coin-btns {
@@ -650,7 +653,7 @@
 		margin-left: 14px;
 		font-size: 0.8em;
 		align-items: center;
-		margin-top: 14px;
+		margin-top: 1rem;
 	}
 
 	.coin-btn > .icon {
@@ -771,6 +774,9 @@
 		.num-of-tokens{
 			margin-left: 0px;
 			margin-right: 11px;
+		}
+		.coinmenus {
+			padding-left: 0px;
 		}
 	}
 </style>

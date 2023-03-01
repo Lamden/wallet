@@ -65,66 +65,6 @@
     }
 </script>
 
-<style>
-    h4{
-        margin-bottom: 0;
-    }
-    .wrap{
-        padding-left: 35px;
-    }
-    .divider{
-		border-bottom: 1px solid var(--divider-light);
-    }
-    .body-items{
-        margin-bottom: 2em;
-    }
-    .news{
-        margin-top: 2em;
-        padding-top: 0;
-    }
-    .news-logo{
-        margin-right: 9px;
-        margin-left: 9px;
-        padding-top: 5px;
-    }
-    .news-title{
-        height: 40px;
-        line-height: 40px;
-        font-size: 2em;
-        font-weight: 300;
-    }
-    .news-desc{
-        margin-bottom: 2em;
-        line-height: 20px;
-        width: 85%;
-        
-    }
-    .news-content{
-        flex: 1;
-        padding: 0 0 0 37px;
-        border-bottom: 2px dashed var(--divider-dark);
-    }
-    .news-info{
-        margin-bottom: 2em;
-        color: var(--font-secondary);
-    }
-    .header{
-        line-height: 24px;
-    }
-    .header-name{
-        margin-left: 77px;
-        margin-bottom: 1rem;
-        margin-top: 1rem;
-        font-size: 22px;
-    }
-    .news-buttons{
-        display: flex;
-    }
-    ul{
-        margin-top: 0;
-        color: var(--font-secondary);
-    }
-</style>
 <div class="wrap">
     <div class="header text-body1 divider">
         <div class="header-name text-primary weight-800">What's New</div>
@@ -196,3 +136,71 @@
         </div>
     {/each}
 </div>
+
+<style>
+    h4{
+        margin-bottom: 0;
+    }
+    .wrap{
+        padding-left: 35px;
+    }
+    .divider{
+		border-bottom: 1px solid var(--divider-light);
+    }
+    .body-items{
+        margin-bottom: 2em;
+    }
+    .news{
+        margin-top: 2em;
+        padding-top: 0;
+    }
+    .news-logo{
+        margin-right: 9px;
+        margin-left: 9px;
+        padding-top: 5px;
+    }
+    .news-title{
+        height: 40px;
+        line-height: 40px;
+        font-size: var(--text-body1);
+        font-weight: 300;
+    }
+    .news-desc{
+        margin-bottom: 2em;
+        line-height: 20px;
+        width: 85%;
+        
+    }
+    .news-content{
+        flex: 1;
+        padding: 0 0 0 37px;
+        border-bottom: 2px dashed var(--divider-dark);
+    }
+    .news-info{
+        margin-bottom: 2em;
+        color: var(--font-secondary);
+    }
+    .header{
+        line-height: 24px;
+    }
+    .header-name{
+        margin-left: 77px;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        font-size: var(--text-body1);
+    }
+    .news-buttons{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    ul{
+        margin-top: 0;
+        color: var(--font-secondary);
+    }
+
+    @media screen and (max-width: 830px) {
+        .wrap{
+            padding-left: 0;
+        }
+    }
+</style>

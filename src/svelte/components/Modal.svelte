@@ -61,6 +61,20 @@
 	}
 }
 
+@media screen and (max-width: 528px) {
+	.modal {
+		box-sizing: border-box;
+		position: fixed;
+		top: 0px;
+		right: 0px;
+		left: 0px;
+		transform: unset;
+		width: 100%;
+		height: 100vh;
+		padding: 0;
+	}
+}
+
 </style>
 
 <div in:fade="{{ duration: 200 }}" out:fade="{{ duration: 200 }}" class='modal-background' on:click={() => closeModal()}></div>

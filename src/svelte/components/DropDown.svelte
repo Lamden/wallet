@@ -189,7 +189,7 @@
     left: 9px;
     font-style: normal;
     font-weight: normal;
-    font-size: 11px;
+    font-size: var(--text-body3);
     line-height: 16px;
     padding: 0 4px;
     color: var(--font-primary);
@@ -246,7 +246,7 @@
     transition: border 0.5s;
     padding: 12px 32px 12px 13px;
     font-style: normal;
-    font-size: 1.1em;
+    font-size: var(--text-body2);
     line-height: 1;
     letter-spacing: 0.44px;
 

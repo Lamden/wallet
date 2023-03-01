@@ -241,7 +241,7 @@
 
 <style>
     .send-lamden{
-        width: 525px;
+        /*width: 525px;*/
         background: inherit;
     }
     .receiver{
