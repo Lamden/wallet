@@ -1,42 +1,52 @@
 <script>
-  import { getContext } from "svelte";
+	import { getContext } from "svelte";
 
-  //Images
-  import logo_full from "../../img/logo_full.svg";
+	//Images
+	import logo_full from "../../img/logo_full.svg";
 
-  //Context
-  const { switchPage, firstRun } = getContext("app_functions");
+	//Context
+	const { switchPage, firstRun } = getContext("app_functions");
 
-  export let style = "fill: var(--font-primary)";
+	export let style = "fill: var(--font-primary)";
 
-  $: clickable = !firstRun();
+	$: clickable = !firstRun();
 
-  const goHome = () => {
-    if (clickable) switchPage("CoinsMain");
-  };
+	const goHome = () => {
+		if (clickable) switchPage("CoinsMain");
+	};
 </script>
 
-<div class="box flex-column" {style}>
-  <div class="brand" class:clickable on:click={() => goHome()}>
-    <div class="logo">{@html logo_full}</div>
-  </div>
+<div class="box" {style}>
+	<div class="brand" class:clickable on:click={() => goHome()}>
+		<div class="logo">{@html logo_full}</div>
+	</div>
 </div>
 
 <style>
-  .box {
-    width: 354px;
-    min-width: 200px;
-    height: 100%;
-    justify-content: center;
-  }
+	.box {
+		position: relative;
+		width: max-content;
+	}
 
-  .brand {
-    margin-bottom: 6px;
-    align-items: center;
-  }
+	.brand {
+		position: absolute;
+		top: 15px;
+		left: 15px;
+		align-items: center;
+		width: max-content;
+	}
 
-  .logo {
-    width: 240px;
-    margin: 0 auto;
-  }
+	.logo {
+		width: 240px;
+		margin: 0 auto;
+	}
+
+	@media (max-width: 830px) {
+		.box {
+			width: 100%;
+		}
+		.logo {
+			margin: 0;
+		}
+	}
 </style>

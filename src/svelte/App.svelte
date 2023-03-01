@@ -19,7 +19,7 @@
     currentPage,
     clicked,
     currentThemeName,
-    EventsStore,
+    EventsStore
   } from "../js/stores/stores.js";
 
   //Components
@@ -31,7 +31,7 @@
     Menu,
     Components,
     Modals,
-    LeftSideFullPage,
+    LeftSideFullPage
   } from "./Router.svelte";
   const { Modal, Loading, LightDarkToggle } = Components;
 
@@ -144,6 +144,7 @@
     switchPage: (name, data) => switchPage(name, data),
     openModal: (modal, data) => openModal(modal, data),
     getModalData: () => {
+      console.log({modalData})
       return modalData;
     },
     closeModal: () => (showModal = false),
@@ -310,8 +311,8 @@
   }
 
   .menu-pane {
-    width: 83px;
-    min-width: 83px;
+    width: 280px;
+    min-width: 280px;
     z-index: 28;
   }
 
@@ -342,10 +343,9 @@
     top: 1px;
   }
 
-  @media (min-width: 1100px) {
+  @media screen and (max-width: 830px) {
     .menu-pane {
-      width: 280px;
-      min-width: 280px;
+      display: none;
     }
   }
 

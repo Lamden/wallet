@@ -8,6 +8,7 @@ import NavStatus from './nav/NavStatus.svelte';
 import Menu from './menu/Menu.svelte';
 import MenuBox from './menu/MenuBox.svelte';
 import MenuItem from './menu/MenuItem.svelte';
+import MobileMenu from './menu/MobileMenu.svelte'
 
 //FirstRun
 import FirstRunMain from './firstrun/FirstRunMain.svelte';
@@ -311,8 +312,8 @@ export const Layouts = {
 }
 
 export {
-    Nav, NavLogo, NavControls, NavStatus, NavForApp,
-    Menu, MenuBox, MenuItem,
+    Nav, NavLogo, NavControls, NavStatus, NavForApp, 
+    Menu, MenuBox, MenuItem, MobileMenu,
     CoinsMain, 
     Coin, Token, CoinDivider, CoinDetails, CoinEmpty, CoinAddToken, CoinAddAccount,
     TokenDetails,

@@ -32,6 +32,13 @@
   .spacer {
     flex-grow: 1;
   }
+
+  @media (min-width: 528px) {
+    .nav {
+      flex-direction: column;
+    }
+  }
+  
   @media (min-width: 1920px) {
     .nav {
       margin: 0 auto;

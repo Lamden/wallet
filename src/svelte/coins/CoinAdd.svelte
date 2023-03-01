@@ -6,7 +6,7 @@
     const { Button } = Components;
 
 	//Context
-    const { closeModal, setAccountAdded } = getContext('app_functions');
+    const { closeModal, setAccountAdded, getModalData } = getContext('app_functions');
 
 	setContext('coinadd_functions', {
         detailsPage: () => currentStep = 1,

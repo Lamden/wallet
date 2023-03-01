@@ -84,6 +84,12 @@ body{
     --box-shadow-4: 0px 1px 48px rgba(0, 0, 0, 0.12), 0px 16px 32px rgba(0, 0, 0, 0.12), 0px 12px 24px rgba(0, 0, 0, 0.12);
 
     --input-outline: var(--color-grey-3);
+
+    --text-body1: 16px;
+    --text-body2: 14px;
+    --text-body3: 12px;
+    --text-huge: 55px;
+    --text-button: 10px;
 }
 
 body{
@@ -131,7 +137,6 @@ body{
     --success-color: #31ce31;
 
     --componet-disabled: brightness(150%);
-
 }
 
 a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visited, a:-webkit-any-link:hover{
@@ -157,6 +162,10 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 .flex-row{
     display: flex;
     flex-direction: row;
+}
+
+.flex-wrap{
+    flex-wrap: wrap;
 }
 
 .flex-align-start{
@@ -400,24 +409,24 @@ h3{
 
 .text-body1{
     font-style: normal;
-    font-size: 16px;
+    font-size: var(--text-body1);
     letter-spacing: 0.44px;
 }
 
 .text-body2, h4{
     font-style: normal;
-    font-size: 14px;
+    font-size: var(--text-body2);
     letter-spacing: 0.25px;
 }
 .text-body3, h5{
     font-style: normal;
-    font-size: 12px;
+    font-size: var(--text-body3);
     letter-spacing: 0.44px;
 }
 
 .text-huge{
     font-style: normal;
-    font-size: 55px;
+    font-size: var(--text-huge);
     letter-spacing: 0.25px;    
 }
 
@@ -465,7 +474,7 @@ h6{
 .text-button{
     font-style: normal;
     font-weight: 500;
-    font-size: 14px;
+    font-size: var(--text-body2);
     letter-spacing: 0.75px;
     text-transform: uppercase;
     background: transparent;
@@ -477,7 +486,7 @@ h6{
 
 button {
     position: relative;
-    font-size: 10px;
+    font-size: var(--text-button);
     margin: 2px;
     padding: 3px;
     cursor: pointer;
@@ -485,7 +494,7 @@ button {
     box-shadow: var(--box-shadow-1);
 }
 
-button:active{
+button:not(:disabled):active{
     top: 1px;
 }
 
@@ -734,13 +743,13 @@ input.submit-button:disabled{
     padding: 0;
 }
 
-.button__small:hover{
+.button__small:not(:disabled):hover{
     border: 1px solid var(--accent-color);
     background: var(--bg-secondary-hover);
     color: var(--accent-color);
 }
 
-.button__small:hover path{
+.button__small:not(:disabled):hover path{
     fill: var(--accent-color);
 }
 
@@ -1198,3 +1207,49 @@ input.submit-button:disabled{
     font-size: 20px;
     font-weight: 500;
 }
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    background-color: var(--primary-color);
+    font-size: var(--text-body3);
+    color: var(--color-white);
+    border-radius: 6px;
+    padding: 0 12px;
+    font-weight: 200;
+
+    /* Position the tooltip */
+    position: absolute;
+    transform: translateX(-50%);
+    top: -1px;
+    left: 0;
+
+    width: max-content;
+
+    cursor: default;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+.ellipsis{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 830px) {
+    body{
+        --text-body1: 14px;
+        --text-body2: 12px;
+        --text-body3: 10px;
+        --text-huge: 35px;
+        --text-button: 8px;
+    }
+}
+

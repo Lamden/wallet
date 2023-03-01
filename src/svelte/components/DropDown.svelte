@@ -39,8 +39,14 @@
 
   onMount(() => {
     if (selectElm && selectElm.options) {
+
+      console.log({items})
+
       items.forEach((item, index) => {
-        selectElm.options[index].selected = item.selected;
+        console.log({item})
+        if (selectElm.options[index] && item.selected){
+          selectElm.options[index].selected = item.selected;
+        }
       });
       dispatchSelected();
     }
@@ -49,7 +55,9 @@
   afterUpdate(() => {
     if (network && selectElm) {
         items.forEach((item, index) => {
+          if (selectElm.options[index] && item.selected){
             selectElm.options[index].selected = item.selected;
+          }
         });
     }
   })
@@ -60,6 +68,7 @@
   };
 
   export const handleClick = (option, index) => {
+    console.log({selectElm, option, index})
     selectElm.options[index].selected = true;
     dispatchSelected();
     toggleBox();

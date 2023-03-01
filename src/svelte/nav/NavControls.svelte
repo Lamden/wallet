@@ -8,6 +8,7 @@
     networksDropDownList,
     SettingsStore,
     FiatListDown,
+    menu_open
   } from "../../js/stores/stores.js";
 
   //Components
@@ -17,9 +18,8 @@
   //Context
   const { switchPage } = getContext("app_functions");
 
-  $: dropwonList = createNetworkList($networksDropDownList);
+  $: dropdownList = createNetworkList($networksDropDownList);
   $: fiatList = $FiatListDown;
-
 
   onMount(() => {
     checkStatus()
@@ -41,11 +41,14 @@
       networksDropDownList = [];
     }
 
-    networksDropDownList.push({
-      name: "Manage Networks",
-      value: "manage",
-      selected: false,
-    });
+    if (!networksDropDownList.find(f => f.name === "Manage Networks")){
+      networksDropDownList.push({
+        name: "Manage Networks",
+        value: "manage",
+        selected: false,
+      });
+    }
+
 
     return networksDropDownList;
   };
@@ -65,17 +68,17 @@
   };
 </script>
 
-<div class="box">
-  <div class="wrap">
+<div class="box" class:show={$menu_open}>
     <DropDown
       id="nav-network"
       network={true}
-      items={dropwonList}
+      items={dropdownList}
       label="Network"
       bgStyle={"transparent"}
       innerHeight={"40px"}
       labelcolor={"white"}
-      styles={"color: white"}
+      margin={$menu_open ? "0 0 0 30px" : "unset"}
+      styles={"color: white;"}
       on:selected={(e) => handleSelected(e)}
     />
     <DropDown
@@ -87,27 +90,30 @@
       bgStyle={"transparent"}
       innerHeight={"40px"}
       labelcolor={"white"}
-      styles={"color: white"}
+      margin={$menu_open ? "0 0 0 30px" : "unset"}
+      styles={"color: white;"}
       on:selected={(e) => handleFiatSelected(e)}
     />
-  </div>
 </div>
 
 <style>
   .box {
-    position: relative;
-    flex-basis: 300px;
-  }
-  .wrap {
+    box-sizing: border-box;
     position: absolute;
-    top: 50%;
-    width: 222px;
-    transform: translateY(-65%);
+    top: 15px;
+    right: 15px;
+    width: 100%;
+    max-width: 200px;
   }
 
-  @media (max-width: 960px) {
-    .wrap {
-      width: 190px;
+  @media (max-width: 830px) {
+    .box{
+      display: none;
+    }
+    .box.show {
+      display: flex;
+      flex-direction: row;
+      right: unset;
     }
   }
 </style>

@@ -313,16 +313,6 @@
         My Vault Accounts
         <div class="warning-icon">{@html vaultLogo}</div>
       </div>
-      {#if vaultExist && vaults.length > 0}
-        <div class="header-amount header-text">Amount</div>
-        {#if $currentNetwork.type === "mainnet"}
-          <div class="header-amount-value header-text">Value</div>
-        {/if}
-        <div class="tokensnum header-text">Tokens</div>
-        {#if $currentNetwork.type === "mainnet"}
-          <div class="header-amount-total-value header-text">Total Value</div>
-        {/if}
-      {/if}
     </div>
     {#each vaults as coin (coin.vk)}
       <Coin
@@ -457,19 +447,6 @@
   .header-amount {
     flex-basis: 240px;
     min-width: 160px;
-  }
-  .header-amount-value {
-    flex-basis: 200px;
-    min-width: 63px;
-  }
-  .tokensnum {
-    flex-basis: 200px;
-    min-width: 76px;
-  }
-
-  .header-amount-total-value {
-    flex-basis: 200px;
-    min-width: 100px;
   }
 
   .header-msg {

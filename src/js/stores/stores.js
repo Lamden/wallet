@@ -23,6 +23,7 @@ export const breadcrumbs = writable([]);
 export const steps = writable({current:0, stepList:[]});
 export const clicked = writable({id:''});
 export const currentThemeName = writable()
+export const menu_open = writable(false)
 
 //Store Utils
 export function networkKey(networkObj){

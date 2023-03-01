@@ -202,13 +202,16 @@ export const masterController = () => {
   };
 
   const updateAllBalances = () => {
+    console.log("updateAllBalances")
     let accountsList = accounts.getSanatizedAccounts();
+    console.log({accountsList})
     if (typeof accountsList === "undefined") return false;
     balances.updateAll(accountsList, utils.networks.getCurrent());
     return true;
   };
 
   const updateAccountAndTokenBalances = () => {
+    console.log("updateAccountAndTokenBalances")
     updateAllBalances();
     updateAllTokenBalances();
   };
@@ -232,6 +235,7 @@ export const masterController = () => {
   };
 
   const updateAllTokenBalances = (networkInfo) => {
+    console.log("updateAllTokenBalances")
     tokens.refreshTokenBalances(networkInfo);
   };
 

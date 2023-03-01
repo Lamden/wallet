@@ -49,6 +49,7 @@ export const tokenController = (utils, services, actions) => {
 
     const validateTokenContract = async (contractName, callback = undefined) => {
         let contractInfo = await getContractInfo(contractName)
+        console.log({contractInfo})
         if (!contractInfo) {
             if (callback) callback(false)
             return false

@@ -14,7 +14,6 @@ export const messagesHandler = (masterController) => {
     * from outside webpages.  This isolates the sensitive information stored in the background page to the App and autorized Dapps.
     *****************************************************************************/
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        // console.log({message, sender, sendResponse})
         const sendErrors = (errors) => sendResponse({errors})
 
         if (chrome.runtime.lastError) return;

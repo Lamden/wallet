@@ -91,7 +91,9 @@ export const balancesController = (utils, services, actions) => {
                 res.key = item.key
                 return res
             }))
+            console.log(res)
             Promise.all(res).then(balances => {
+                console.log({balances})
                 if (balances.length > 0){
                     let newBalances = processBalances(balances, accountsList)
                     let netKey = network.networkKey
