@@ -561,6 +561,11 @@
 	.row-box {
 		padding: 10px 20px;
 		box-sizing: border-box;
+		background: linear-gradient(
+			95.08deg,
+			var(--row-box-bg-1) 2.49%,
+			var(--row-box-bg-2) 97.19%
+		);
 	}
 
 	.logowrap {
@@ -717,9 +722,9 @@
 	}
 	.active-bg {
 		background: linear-gradient(
-		95.08deg,
-		rgba(162, 107, 250, 0.1) 2.49%,
-		rgba(79, 6, 198, 0.1) 97.19%
+			95.08deg,
+			var(--active-bg-1) 2.49%,
+			var(--active-bg-2) 97.19%
 		);
 	}
 	.collapse-btn {

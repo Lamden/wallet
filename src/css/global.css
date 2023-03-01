@@ -34,6 +34,12 @@ body{
     --bg-semi-transparent: #0000007a;
     --bg-transparent: transparent;
 
+    --active-bg-1: rgba(162, 107, 250, 0.1);
+    --active-bg-2: rgba(79, 6, 198, 0.1);
+
+    --row-box-bg-1: transparent;
+    --row-box-bg-2: transparent;
+
     --font-primary: #E0E0E0;
     --font-primary-dim: #ffffff8a;
     --font-primary-inverse: #E0E0E0;
@@ -117,6 +123,12 @@ body{
     --bg-primary: #fff; 
     --bg-secondary: var(--color-grey-1);   
     --bg-secondary-hover: var(--color-grey-2); 
+
+    --active-bg-1: #f6f6f66d;
+    --active-bg-2: var(--color-grey-2);
+
+    --row-box-bg-1: #f6f6f66d;
+    --row-box-bg-2: var(--color-grey-2);
 
     --font-primary: #373737;
     --font-primary-dim: #606060;
