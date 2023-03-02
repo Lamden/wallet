@@ -256,8 +256,8 @@
 		}
 		.details{
 			align-items: center;
-			justify-content: flex-end;
-			margin-top: 0px;
+			justify-content: center;
+    		margin-top: 1.5rem;
 		}
 		.balance-words {
 			align-items: center;

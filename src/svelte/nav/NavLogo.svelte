@@ -48,5 +48,18 @@
 		.logo {
 			margin: 0;
 		}
+		.brand{
+			left: -5px;
+    		transform: scale(0.8);
+		}
 	}
+
+	@media (max-width: 250px) {
+		.brand{
+			transform: scale(0.7);
+    		left: -2px;
+		}
+	}
+
+
 </style>

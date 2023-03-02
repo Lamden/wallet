@@ -80,7 +80,7 @@
               <DirectionalChevronIcon
                 strokeWidth={2.75}
                 {direction}
-                width="16px"
+                width={"100%"}
                 color="var(--font-primary)"
               />
             </div>
@@ -90,10 +90,20 @@
               </div>
             </div>
           </div>
-          <div class="policy">{data.policy}</div>
-          <div class="motion">{data.name}</div>
-          <div class="result">{data.yays} yays / {data.nays} nays</div>
-          <div class="status">{data.status === 1 ? "Open" : "Closed"}</div>
+          <div class="details-mobile flex-row flex-align-center flex-grow-1 mobile-show flex-wrap">
+              <div class="detail-item flex-grow-1">{data.policy}</div>
+              <div class="policy-details flex-row flex-grow-1 flex-just-space-between">
+                <div class="detail-item">{data.name}</div>
+                <div class="detail-item">{data.yays} yays / {data.nays} nays</div>
+                <div class="detail-item">{data.status === 1 ? "Open" : "Closed"}</div>
+              </div>
+
+          </div>
+
+          <div class="policy mobile-hide">{data.policy}</div>
+          <div class="motion mobile-hide">{data.name}</div>
+          <div class="result mobile-hide">{data.yays} yays / {data.nays} nays</div>
+          <div class="status mobile-hide">{data.status === 1 ? "Open" : "Closed"}</div>
         </div>
         {#if collapseStatus}
           {#if data.desc}
@@ -230,8 +240,7 @@
       justify-content: center;
     }
     .coin-btn {
-      padding: 8px 14px;
-      font-size: 0.8em;
+      padding: 4px 11px;
       margin-left: 12px;
       align-items: center;
     }
@@ -261,10 +270,67 @@
       flex-basis: 44px;
       justify-content: end;
       display: flex;
+      width: var(--text-body1);
+		  height: var(--text-body1);
     }
     .votelist {
       padding-left: 80px;
       margin-bottom: 2rem;
+    }
+    .mobile-show{
+        display: none;
+    }
+    .details-mobile{
+      width: 100%;
+    }
+
+    @media screen and (max-width: 830px) {
+      .mobile-hide{
+        display: none;
+      }
+      .mobile-show{
+        display: flex;
+      }
+      .row-box {
+        padding: 0.625rem 20px;
+      }
+      .policy-details{
+        color: var(--font-primary-dim);
+      }
+      .collapse-btn{
+        flex-basis: unset;
+        min-width: unset;
+        margin: unset;
+      }
+      .logo{
+        margin-left: 20px;
+      }
+      .name {
+        flex-basis: unset;
+        min-width: unset;
+      }
+      .detail-item {
+        margin-left: 20px;
+      }
+      .logowrap {
+        flex-basis: unset;
+      }
+      .header{
+        padding: 0.5rem 5%;
+      }
+      .votelist {
+        padding-left: 5%;
+      }
+      .logo2{
+        margin-right: 5%;
+      }
+      .vote-name {
+        width: unset;
+      }
+      .vote-res {
+        width: unset;
+        margin-left: 10%;
+      }
     }
   </style>
   

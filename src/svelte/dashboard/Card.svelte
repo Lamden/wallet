@@ -1,7 +1,6 @@
 
 <script>
     export let cardInfo;
-    export let width = 'unset';
     export let logo;
 
     const openLink = (url) => {
@@ -43,15 +42,25 @@
 }
 
 li{
-    font-size: 14px;
+    font-size: var(--text-body2);
     letter-spacing: 0.25px;
     font-weight: 500;
     line-height: 20px;
 }
+span{
+    font-size: var(--text-h1);
+}
+
+@media screen and (max-width: 528px) {
+    .card{
+        width: 100%;
+        min-width: unset;
+    }
+}
 
 </style>
 
-<div class="card" style={`width: ${width};`}>
+<div class="card">
     <div class="content">
         <div class="logo" >{@html logo}</div>
         <div>
@@ -61,7 +70,7 @@ li{
                     <li class="link" on:click={() => openLink(t.url) }>{t.name}</li>
                 {/each}
             {:else}
-                <h6 class="no-margin">{cardInfo.desc}</h6>
+                <span class="no-margin">{cardInfo.desc}</span>
             {/if}
         </div>
     </div>

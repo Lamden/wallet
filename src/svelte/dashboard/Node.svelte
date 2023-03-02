@@ -99,7 +99,7 @@
             <DirectionalChevronIcon
               strokeWidth={2.75}
               {direction}
-              width="16px"
+              width={"100%"}
               color="var(--font-primary)"
             />
           </div>
@@ -110,36 +110,21 @@
               </div>
             </div>
           {/if}
-          <div class="text weight-400 text-body1 text-primary">
-                {formatAccountAddress(data.vk, 6, 4)}
+        </div>
+        <div class="details flex-row flex-just-space-between flex-grow-1">
+          <div class="weight-400 text-body1 text-primary">
+                {data.nickname}
+          </div>
+          <div class="weight-400">
+            <span>{data.status === "node" ? "Node Member" : data.status}<span>
           </div>
         </div>
-        <div class="text weight-400 type">
-          <span>{data.type}<span>
-        </div>
-        <div class="text weight-400 status">
-          <span>{data.status === "node" ? "Node Member" : data.status}<span>
-        </div>
+
       </div>
       {#if collapseStatus}
         <NodeDetails vk={data.vk} />
         <div class="flex-row coinmenus">
           <div class="coin-btns">
-            <button
-              class="button__small address coin-btn flex-row button__primary"
-              class:success={copied}
-              on:click|stopPropagation={handleAddressCopy}
-              title="copy account address"
-            >
-              {formatAccountAddress(data.vk, 7, 0)}
-              <div class="icon-copy">
-                {#if !copied}
-                  <CopyIcon width="9px" color="var(--color-white)" />
-                {:else}
-                  <CheckmarkIcon width="10px" color="var(--success-color)" />
-                {/if}
-              </div>
-            </button>
             {#if data.status === "unregister"}
               <button
                 id="history-btn"
@@ -195,24 +180,18 @@
     border-radius: 6px;
   }
   .row-box {
-    padding: 0.625rem 0 0.625rem 0px;
+    padding: 0.625rem 20px;
     box-sizing: border-box;
   }
 
-  .text {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
   .logowrap {
-    flex-basis: 80px;
     justify-content: center;
     display: flex;
   }
 
   .logo {
     width: 43px;
+    margin: 0 20px;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
@@ -223,65 +202,30 @@
   }
 
   .name {
-    flex-basis: 258px;
-    min-width: 160px;
     display: flex;
     align-items: center;
   }
-
-  .type {
-    flex-basis: 240px;
-    min-width: 160px;
-    justify-content: start;
-  }
-
-  .status {
-    flex-basis: 200px;
-    min-width: 63px;
-  }
-
-  .address {
-    background: var(--primary-color);
-    cursor: pointer;
-    border-radius: 16px;
-  }
-  .address:hover {
-    background: var(--bg-secondary-hover);
-  }
-  .address.success {
-    color: var(--success-color);
-    border: 1px solid var(--success-color);
-  }
-  .icon-copy {
-    width: 10px;
-    height: 10px;
-    margin-left: 8px;
-    margin-bottom: 4px;
-  }
   .coin-btn {
-    padding: 8px 14px;
+    padding: 4px 11px;
     margin-left: 14px;
-    font-size: 0.8em;
     align-items: center;
     margin-top: 14px;
   }
 
   .coin-btn > .icon {
-    width: 12px;
-    height: 12px;
+		width: var(--text-body3);
+		height: var(--text-body3);
     margin-left: 8px;
   }
 
   .coinmenus {
-    padding-left: 12px;
-    margin-bottom: 1.5rem;
-    margin-top: 0.6rem;
+    margin-bottom: 1rem;
   }
 
   .collapse-btn {
     cursor: pointer;
-    flex-basis: 44px;
-    justify-content: end;
-    display: flex;
+    width: var(--text-body1);
+		height: var(--text-body1);
   }
+
 </style>

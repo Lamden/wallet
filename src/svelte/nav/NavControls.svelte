@@ -77,7 +77,6 @@
       bgStyle={"transparent"}
       innerHeight={"40px"}
       labelcolor={"white"}
-      margin={$menu_open ? "0 0 0 30px" : "unset"}
       styles={"color: white;"}
       on:selected={(e) => handleSelected(e)}
     />
@@ -90,7 +89,6 @@
       bgStyle={"transparent"}
       innerHeight={"40px"}
       labelcolor={"white"}
-      margin={$menu_open ? "0 0 0 30px" : "unset"}
       styles={"color: white;"}
       on:selected={(e) => handleFiatSelected(e)}
     />
@@ -109,11 +107,25 @@
   @media (max-width: 830px) {
     .box{
       display: none;
+      position: relative;
+      flex-direction: row;
+      right: unset;
+
+      margin-top: 3px;
+      margin-left: 30px;
+      width: 100%;
     }
     .box.show {
       display: flex;
-      flex-direction: row;
-      right: unset;
+    }
+  }
+
+  @media (max-width: 350px) {
+    .box{
+      justify-content: space-between;
+      margin-top: 2.5rem;
+      margin-left: 0px;
+      max-width: unset;
     }
   }
 </style>

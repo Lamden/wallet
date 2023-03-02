@@ -88,63 +88,59 @@
     };
 
 </script>
-<div class="wrap">
-  <div class="card">
-        <div class="card-header text-body2">
-            <div class="item">
-                <div class="text-subtitle title">Balances</div>
-                <div class="text-bold">{balanceStr} {currencySymbol}</div>
-            </div>
-            <div class="item">
-                <div class="text-subtitle title">Total Rewards</div>
-                <div class="text-bold">{displayBalance(stringToFixed(totalRewards, 8))} {currencySymbol}</div>
-            </div>
-            <div class="item">
-                <div class="text-subtitle title">Rewards 24H</div>
-                <div class="text-bold">{displayBalance(stringToFixed(totalRewards24hr, 8))} {currencySymbol}</div>
-            </div>
-        </div>
-        <div class="divider" />
-        <div class="card-body text-body2">
-            <div class="item flex space-between">
-                <div class="text-subtitle title no-margin">Status</div>
-                <div class:badger={true} class={node.status === "node"? "badger-node" : node.status === "candidate" ? "badger-register" : "badger-unregister"}>{node.status === "node" ? "Node Member" : node.status}</div>
-            </div>
-            <div class="item flex space-between">
-                <div class="text-subtitle title no-margin">Register Time</div>
-                <div class="text-bold">{registerTime}</div>
-            </div>
-            <div class="item">
-                <div class="text-subtitle title">Address</div>
-                <div>
-                    {formatAccountAddress(vk, 16, 10)}
-                    <span class="icon-copy" on:click={handleAddressCopy}>
-                        {#if !copied}
-                          <CopyIcon width="12px" color="var(--color-white)" />
-                        {:else}
-                          <CheckmarkIcon width="12px" color="var(--success-color)" />
-                        {/if}
-                    </span>
+<div class="node-details flex-row flex-wrap">
+    <div class="card flex-col">
+            <div class="card-header text-body2">
+                <div class="item">
+                    <div class="text-subtitle title">Balances</div>
+                    <div class="text-bold">{balanceStr} {currencySymbol}</div>
+                </div>
+                <div class="item">
+                    <div class="text-subtitle title">Total Rewards</div>
+                    <div class="text-bold">{displayBalance(stringToFixed(totalRewards, 8))} {currencySymbol}</div>
+                </div>
+                <div class="item">
+                    <div class="text-subtitle title">Rewards 24H</div>
+                    <div class="text-bold">{displayBalance(stringToFixed(totalRewards24hr, 8))} {currencySymbol}</div>
                 </div>
             </div>
-        </div>
-  </div>
-  <div class="chart">
-    <LineChart data = {rewards7Days} />
-  </div>
+            <div class="divider" />
+            <div class="card-body text-body2">
+                <div class="item flex space-between">
+                    <div class="text-subtitle title no-margin">Status</div>
+                    <div class:badger={true} class={node.status === "node"? "badger-node" : node.status === "candidate" ? "badger-register" : "badger-unregister"}>{node.status === "node" ? "Node Member" : node.status}</div>
+                </div>
+                <div class="item flex space-between">
+                    <div class="text-subtitle title no-margin">Register Time</div>
+                    <div class="text-bold">{registerTime}</div>
+                </div>
+                <div class="item address-item">
+                    <div class="text-subtitle title">Address</div>
+                    <div class="address ellipsis" on:click={handleAddressCopy}>
+                        {#if !copied}
+                            <CopyIcon width="12px" color="var(--color-white)" margin="0 10px 0 0" />
+                        {:else}
+                            <CheckmarkIcon width="12px" color="var(--success-color)" margin="0 10px 0 0" />
+                        {/if}
+                        {vk}
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="chart flex-grow-1">
+        <LineChart data = {rewards7Days} />
+    </div>
  </div>
   
   <style>
+    .node-details{
+        margin-top: 1rem;
+    }
     .chart {
         background-color: var(--secondary-color);
         border-radius: 8px;
         padding: 16px;
-        min-width: 320px;
         margin-bottom: 36px;
-        flex-grow: 1;
-    }
-    .icon-copy {
-        margin-left: 8px;
     }
     .space-between {
         justify-content: space-between;
@@ -168,18 +164,11 @@
         background-color: var(--error-color);
     }
 
-    .wrap {
-        display: flex;
-        justify-content: start;
-        padding: 36px 24px 0 24px;
-    }
-
     .card {
+        width: 250px;
         background: var(--secondary-color);
         box-shadow: var(--box-shadow-2);
         border-radius: 8px;
-        display: flex;
-        flex-direction: column;
         margin-right: 36px;
         margin-bottom: 36px;
     }
@@ -201,6 +190,15 @@
         color: var(--font-primary-inverse);
     }
 
+    .item > .address:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .address-item{
+        width: 100%;
+    }
+
     .title {
         margin-bottom: 6px;
         color: var(--font-primary-dim);
@@ -209,6 +207,16 @@
     .divider {
         background: var(--overlay-color);
         height: 1px;
+    }
+    @media screen and (max-width: 830px) {
+        .card {
+            width: unset;
+            flex-grow: 1;
+            margin-right: 0;
+        }
+        .address-item{
+            width: 250px;
+        }
     }
   </style>
   

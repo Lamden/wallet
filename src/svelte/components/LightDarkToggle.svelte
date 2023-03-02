@@ -71,6 +71,13 @@
         opacity: 0;
     }
 
+    @media screen and (max-width: 830px) {
+		.container {
+            left: unset;
+            right: 20px;
+		}
+	}
+
 </style>
 <div class="container">
     <div class="wrapper">

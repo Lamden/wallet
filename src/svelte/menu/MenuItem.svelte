@@ -121,7 +121,7 @@
 
 	.name {
 		display: block;
-		font-size: 14px;
+		font-size: var(--text-body1);
 		width: 180px;
 		line-height: 20px;
 	}

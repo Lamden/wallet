@@ -381,13 +381,12 @@
 		padding: 4px 11px;
 		letter-spacing: 0.5px;
 		align-items: center;
-		font-weight: bold;
 	}
 
 	.expand-btn > .icon,
 	.collapse-btn > .icon {
-		width: 18px;
-		height: 18px;
+		width: var(--text-body3);
+		height: var(--text-body3);
 		margin-left: 8px;
 	}
 	.coinsmain {

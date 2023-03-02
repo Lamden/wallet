@@ -49,7 +49,11 @@
     // user's nodes
     $: memberNodes = nodes.filter(k => k.status === "node")
     // all nodes
-    $: allMemberNodes = $NodesStore.filter(n => n.netKey === netKey && n.status === "node")
+    $: memberNodesWithAccount = nodes.map(n => {
+        const account = $CoinStore.find(c => c.vk === n.vk)
+        n.nickname = account.nickname
+        return n
+    })
 
     onMount(() => {
         chrome.runtime.sendMessage({type: 'updateNodes'})
@@ -95,17 +99,12 @@
     .header {
         display: flex;
         flex-direction: row;
-        width: 100%;
         margin-bottom: 0.5rem;
         font-weight: 800;
+        padding-right: 20px;
     }
     .header-name {
-        flex-basis: 260px;
-        min-width: 160px;
-    }
-    .node-type {
-        flex-basis: 240px;
-        min-width: 100px;
+        min-width: 120px;
     }
     .buttons{
         display: flex;
@@ -131,36 +130,69 @@
         margin-top: 1rem;
         flex-wrap: wrap;
     }
+    .mobile-show{
+        display: none;
+    }
+
+    @media screen and (max-width: 830px) {
+        .mobile-hide{
+            display: none;
+        }
+        .mobile-show{
+            display: flex;
+            flex-direction: row;
+        }
+        .motion-header-name{
+            flex-basis: unset;
+            min-width: unset;
+        }
+        .policy-mobile{
+            margin-left: 50px;
+        }
+    }
+
+    @media screen and (max-width: 528px) {
+        .card-box{
+            flex-direction: column;
+            flex-wrap: unset;
+        }
+    }
 </style>
+
 <div class="card-box">
-{#each cardList as cardInfo}
-    <Card {cardInfo} logo={cardInfo.logo} width={'300px'}/>
-{/each}
+    {#each cardList as cardInfo}
+        <Card {cardInfo} logo={cardInfo.logo} width={'300px'}/>
+    {/each}
 </div>
 
 <div class="node-list">
-    <div class="header header-text text-body1 weight-800">
-        <div class="motion-header-name header-text">Policy List</div>
-        <div class="node-type header-text">Policy</div>
-        <!-- <div class="node-type header-text">Rewards</div> -->
-        <div class="node-type header-text">Motion</div>
-        <div class="node-type header-text">Result</div>
-        <div class="node-type header-text">Status</div>
+    <div class="header text-body1 weight-800">
+        <div class="motion-header-name">Policy List</div>
+        <div class="mobile-show details-mobile flex-align-center flex-grow-1 ">
+            <div class="policy-mobile flex-grow-1">Name</div>
+            <div class="" >Motion / Result / Status</div>
+        </div>
+        <div class="node-type mobile-hide">Name</div>
+        <div class="node-type mobile-hide">Motion</div>
+        <div class="node-type mobile-hide">Result</div>
+        <div class="node-type mobile-hide">Status</div>
     </div>
     {#each motions as item }
         <Motion data={item} />
     {/each}
 </div>
 <hr>
-{#if memberNodes.length > 0}
+{#if memberNodesWithAccount.length > 0}
     <div class="node-list">
-        <div class="header header-text text-body1 weight-800">
-            <div class="header-name header-text">My Network Nodes</div>
-            <div class="node-type header-text">Type</div>
-            <!-- <div class="node-type header-text">Rewards</div> -->
-            <div class="node-type header-text">Status</div>
+        <div class="header text-body1 weight-800 flex-grow-1">
+            <div class="header-name">My Nodes</div>
+            <div class="flex-row flex-just-space-between flex-grow-1">
+                <div class="header-text">Name</div>
+                <div class="header-text">Status</div>
+            </div>
+            
         </div>
-        {#each memberNodes as item }
+        {#each memberNodesWithAccount as item }
             <Node data={item} />
         {/each}
     </div>

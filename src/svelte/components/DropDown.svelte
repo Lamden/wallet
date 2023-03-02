@@ -39,11 +39,7 @@
 
   onMount(() => {
     if (selectElm && selectElm.options) {
-
-      console.log({items})
-
       items.forEach((item, index) => {
-        console.log({item})
         if (selectElm.options[index] && item.selected){
           selectElm.options[index].selected = item.selected;
         }

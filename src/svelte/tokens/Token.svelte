@@ -167,6 +167,8 @@
 			flex-grow: 1;
 			width: unset;
 			margin-left: 5%;
+			margin-right: 5%;
+			
 		}
 		.amount {
 			padding-left: 0px;

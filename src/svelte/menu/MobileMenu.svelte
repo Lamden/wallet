@@ -73,5 +73,11 @@
         width: 13px;
         top: 1px;
     }
+
+    @media screen and (max-width: 830px) {
+        .hamburger.adjust-width{
+            right: 0;
+        }
+	}
 </style>
 

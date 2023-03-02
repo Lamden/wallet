@@ -91,6 +91,7 @@ body{
 
     --input-outline: var(--color-grey-3);
 
+    --text-h1: 30px;
     --text-h2: 25px;
     --text-h3: 18px;
     --text-body1: 16px;
@@ -196,6 +197,14 @@ a, a:-webkit-any-link:active, a:-webkit-any-link:focus, a:-webkit-any-link:visit
 
 .flex-just-end{
     justify-content: flex-end;
+}
+
+.flex-just-space-around{
+    justify-content: space-around;
+}
+
+.flex-just-space-between{
+    justify-content: space-between;
 }
 
 .flex-center-center{
@@ -801,13 +810,8 @@ input.submit-button:disabled{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px;
-    width: 32px;
-    height: 32px;
-}
-
-.button__small.round > div.wrapper{
-    width: 10px;
+    padding: 5px;
+    margin: 0;
 }
 
 @media (min-width: 550px) {
@@ -1276,6 +1280,7 @@ input.submit-button:disabled{
 
 @media screen and (max-width: 830px) {
     body{
+        --text-h1: 25px;
         --text-h2: 20px;
         --text-h3: 16px;
         --text-body1: 14px;
@@ -1307,3 +1312,29 @@ input.submit-button:disabled{
     }
 }
 
+@media screen and (max-width: 475px){
+    body{
+        --text-h1: 20px;
+        --text-h2: 18px;
+        --text-h3: 14px;
+        --text-body1: 12px;
+        --text-body2: 10px;
+        --text-body3: 8px;
+        --text-huge: 28px;
+        --text-button: 7px;
+    }
+}
+
+
+@media screen and (max-width: 350px){
+    body{
+        --text-h1: 18;
+        --text-h2: 16px;
+        --text-h3: 12px;
+        --text-body1: 11px;
+        --text-body2: 9px;
+        --text-body3: 8px;
+        --text-huge: 24px;
+        --text-button: 7px;
+    }
+}

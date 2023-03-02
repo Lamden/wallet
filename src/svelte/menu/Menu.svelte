@@ -77,8 +77,14 @@
 	@media screen and (max-width: 830px) {
 		.menus {
 			box-sizing: border-box;
-			padding: 103px 30px 0px;
+			padding: 6rem 30px 0px;
 			width: 100%;
+		}
+	}
+
+	@media screen and (max-width: 350px) {
+		.menus {
+			padding: 2rem 0 0;
 		}
 	}
 </style>

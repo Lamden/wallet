@@ -330,7 +330,7 @@
 						<DirectionalChevronIcon
 							strokeWidth={2.75}
 							{direction}
-							width="16px"
+							width={"100%"}
 							color="var(--font-primary)"
 						/>
 					</div>
@@ -389,22 +389,24 @@
 							<div class="flex-row flex-align-center reorder-btns">
 								<button
 									class="button__small round button__primary"
-									on:click|stopPropagation={handleReorderUp}
-								>
+									on:click|stopPropagation={handleReorderUp} >
 
-								<DirectionalChevronIcon width={"100%"} margin="0 0 0 3px" color="white" />
+								<DirectionalChevronIcon 
+									styles={"width: var(--text-body1); height: var(--text-body1);"}
+									width="unset"
+									color="white" />
 
 								</button>
 
 								<button
 									class="button__small round button__primary"
-									on:click|stopPropagation={handleReorderDown}
-								>
+									on:click|stopPropagation={handleReorderDown} >
+
 									<DirectionalChevronIcon
-										width={"100%"}
+										styles={"width: var(--text-body1); height: var(--text-body1);"}
+										width="unset"
 										direction="down"
-										color="white"
-									/>
+										color="white" />
 								</button>
 							</div>
 						{/if}
@@ -537,6 +539,9 @@
 		margin-top: 1rem;
 		align-self: start;
 	}
+	.reorder-btns > button:first-child{
+		margin-right: 2px;
+	}
 	.coin-btns {
 		flex-wrap: wrap;
 		display: flex;
@@ -654,16 +659,15 @@
 		margin-bottom: 4px;
 	}
 	.coin-btn {
-		padding: 8px 14px;
 		margin-left: 14px;
-		font-size: 0.8em;
+		padding: 4px 11px;
 		align-items: center;
 		margin-top: 1rem;
 	}
 
 	.coin-btn > .icon {
-		width: 12px;
-		height: 12px;
+		width: var(--text-body3);
+		height: var(--text-body3);
 		margin-left: 8px;
 	}
 
@@ -731,6 +735,8 @@
 		cursor: pointer;
 		justify-content: end;
 		display: flex;
+		width: var(--text-body1);
+		height: var(--text-body1);
 	}
 	.tokenlist {
 		padding-left: 64px;
