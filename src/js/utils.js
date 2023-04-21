@@ -139,7 +139,7 @@ const defaultTypeValues = {
 }
 
 const formatKwargs = (kwargsList) => {
-    kwargs = {}
+    let kwargs = {}
     kwargsList.forEach(item => {
         if (item.value !== "" && typeof item.value !== 'undefined') {
             if (item.type === "Any" && item.selectedType) {
@@ -157,7 +157,7 @@ const encodeLocaleDateTime = (value) => {
         return value instanceof Date; 
     }
     value = !isDate() ? new Date(value) : value
-    if (!isDate()) throwError()
+    if (!isDate()) throw Error()
     return [
         value.getFullYear(), 
         value.getMonth()+1, 
@@ -189,7 +189,7 @@ const stripTrailingZero = (value) => {
     const removeZeros = (v) => {
         const numParts = v.split(".")
         let formatted = numParts[1]
-        for (i = numParts[1].length - 1; numParts[1][i] === '0' && typeof numParts[1][i] !== "undefined"; i-- ){
+        for (var i = numParts[1].length - 1; numParts[1][i] === '0' && typeof numParts[1][i] !== "undefined"; i-- ){
             formatted = formatted.slice(0, -1)
         }
         if (formatted === '') return numParts[0]
@@ -291,27 +291,28 @@ const isLamdenKey = ( key ) => {
 };
 
 const dataURLToBlob = function(dataURL) {
+    var parts, contentType, raw
     var BASE64_MARKER = ';base64,';
     if (dataURL.indexOf(BASE64_MARKER) == -1) {
-        var parts = dataURL.split(',');
-        var contentType = parts[0].split(':')[1];
-        var raw = parts[1];
+        parts = dataURL.split(',');
+        contentType = parts[0].split(':')[1];
+        raw = parts[1];
 
         return new Blob([raw], {type: contentType});
+    } else {
+        parts = dataURL.split(BASE64_MARKER);
+        contentType = parts[0].split(':')[1];
+        raw = window.atob(parts[1]);
+        var rawLength = raw.length;
+    
+        var uInt8Array = new Uint8Array(rawLength);
+    
+        for (var i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+    
+        return new Blob([uInt8Array], {type: contentType});
     }
-
-    var parts = dataURL.split(BASE64_MARKER);
-    var contentType = parts[0].split(':')[1];
-    var raw = window.atob(parts[1]);
-    var rawLength = raw.length;
-
-    var uInt8Array = new Uint8Array(rawLength);
-
-    for (var i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return new Blob([uInt8Array], {type: contentType});
 }
 
 const readBlobToFile = (blob) => new Promise((resolve, reject) => {
@@ -385,10 +386,11 @@ const stringToFixed = (value, precision) => {
         value = value.toFixed(precision)
     }
 	if (!value || isNaN(value)) return "0.0"
+        var values
 		try {
-			var values = value.split('.')
+			values = value.split('.')
 		} catch {
-			var values = value.toString().split('.')
+			values = value.toString().split('.')
 		}
 		if (!values[1]) return value
 		else {

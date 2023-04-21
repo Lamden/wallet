@@ -1,13 +1,12 @@
 const whitelabel = require("../../../whitelabel.json");
 
 const assert = require("assert");
-const { Builder, By, until } = require("selenium-webdriver");
+const { Builder, By, until, Options} = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config");
 const helpers = require("../../helpers/helpers");
 let walletInfo = require("../../fixtures/walletInfo");
 let dappsInfo = require("../../fixtures/dappsInfo_v2.json");
-
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
@@ -31,7 +30,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       walletInfo,
       false
     );
-    await helpers.changeToTestnetV2(driver)
+    //await helpers.changeToTestnetV2(driver)
   });
 
   after(() => {
@@ -319,7 +318,6 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("ignores Trusted App auto transactions if contract differs from approved", async function () {
       this.timeout(30000);
-      await helpers.sleep(10000);
       let transaction = helpers.getInstance(
         dappsInfo.nonStandardTransactionInfo
       );

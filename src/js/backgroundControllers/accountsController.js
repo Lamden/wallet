@@ -1,58 +1,54 @@
-export const accountsController = (utils, services) => {
-    let vault = "";
-    let hash = "";
-    let accountStore = [];
-    let current = "";
-    let mnemonic = "";
-    let derivationIndex = 0;
+export const accountsController = (utils) => {
 
-    chrome.storage.local.get({
-        "hash": "", //depreciated and replaced with vault storage
-        "coins":[],
-        "vault": "",
-    },
-    function(getValue) {
-        accountStore = getValue.coins;
-        vault = getValue.vault
-        hash = getValue.hash
-        if (vault === "" && utils.validateTypes.isStringWithValue(hash)) accountStore = getValue.coins;
-    })
-    chrome.storage.onChanged.addListener(function(changes) {
-        for (let key in changes) {
-            if (key === 'coins') accountStore = changes[key].newValue;
-            if (key === "vault") vault = changes[key].newValue;
+    const getSessionData  = async () => {
+        return await chrome.storage.session.get({current: "", mnemonic: "", derivationIndex: 0});
+    }
+
+    const getAccountsData = async () => {
+        let { vault, hash, coins } = await chrome.storage.local.get({
+            "hash": "", //depreciated and replaced with vault storage
+            "coins":[],
+            "vault": "",
+        })
+    
+        let accountStore = coins
+        return {
+            vault,
+            hash,
+            accountStore
         }
-    });
+    }
 
-    const createPassword = (string) => {
+    const createPassword = async (string) => {
         try{
-            current = string
-            accountStore = []
-            setVaultStorage()
-            setAccountStorage()
+            await setCurrent(string)
+            await setAccountStorage([])
+            await setVaultStorage()
             return true;
         } catch (e){
             return false
         }
     }
-    const changePassword = (oldpd, newpd) => {
+    const changePassword = async (oldpd, newpd) => {
+        let { accountStore } = await getAccountsData()
+        let { current } = await getSessionData()
         try{
             if (utils.validateTypes.isStringWithValue(oldpd) && utils.validateTypes.isStringWithValue(newpd)){
-                current = oldpd
+                await setCurrent(oldpd)
                 let accounts = utils.stripRef(accountStore).map( account => {
                     let decryptedKey;
                     if (account.sk === "watchOnly") return account
-                    decryptedKey = decryptString(account.sk);
+                    decryptedKey = decryptString(account.sk, current);
                     if (decryptedKey) account.sk = decryptedKey
                     else throw("Old password error")
                     return account
                 })
-                current = newpd
+                await setCurrent(newpd)
                 accounts.forEach(account => {
-                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk)
+                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk, current)
                 })
                 accountStore = accounts
-                setVaultStorage()
+                await refreshAccountStore(accountStore)
                 return true;
             }
             return false
@@ -60,29 +56,34 @@ export const accountsController = (utils, services) => {
             return false
         }
     }
-    const checkPassword = (string) => {
+    const checkPassword = async (string) => {
+        let { current } = await getSessionData()
         return string === current
     }
 
-    const createKeystore = (info) => {
+    const createKeystore = async (info) => {
+        let { accountStore } = await getAccountsData()
         return JSON.stringify({
-            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: decryptedKeys().filter(f =>f.type !== "vault" && !f.sk.includes("watchOnly"))}),
+            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: await decryptedKeys(accountStore).filter(f =>f.type !== "vault" && !f.sk.includes("watchOnly"))}),
             w: info.hint === "" ? "" : utils.encryptStrHash(info.obscure, info.hint),
         });
     }
 
-    const decryptKeys = (string) => {
-        if (checkPassword(string)) return decryptedKeys()
+    const decryptKeys = async (string) => {
+        let { accountStore } = await getAccountsData()
+        let isKeyOK = await checkPassword(string)
+        if (isKeyOK) return await decryptedKeys(accountStore)
         return false
     }
 
-    const decryptedKeys = () => {
+    const decryptedKeys = async (accountStore) => {
+        let { current } = await getSessionData()
         return utils.stripRef(accountStore).map( account => {
             let decryptedKey;
             if (account.sk === "watchOnly") return account
             try{
-                decryptedKey = decryptString(account.sk);
-            } catch (e) {}
+                decryptedKey = decryptString(account.sk, current);
+            } catch (e) {return {}}
             if (decryptedKey) account.sk = decryptedKey
             else {
                 account.sk = `Cannot decrypt Secret Key: wrong password or bad data. Encrypted Data: ${account.sk}`
@@ -91,44 +92,27 @@ export const accountsController = (utils, services) => {
         })
     }
 
-    const encryptString = (string) => {
+    const encryptString = (string, pwd) => {
         try{
-            return utils.encryptStrHash(current, string);
+            return utils.encryptStrHash(pwd, string);
         }catch(e){console.log(e)}
         return false;
     }
     
-    const decryptString = (string) => {
+    const decryptString = (string, pwd) => {
         try{
-            return utils.decryptStrHash(current, string);
+            return utils.decryptStrHash(pwd, string);
         }catch(e){console.log(e)} 
         return false;
     }
 
-    const getAccountByVK = (vk) => {
+    const getAccountByVK = async (vk) => {
+        let { accountStore } = await getAccountsData()
         return accountStore.find(account => account.vk === vk)
     }
     
-    // const addNewLamdenAccount = (nickname) => {
-    //     const keyPair = utils.Lamden.wallet.new_wallet()
-    //     const accountInfo = {
-    //         'network': 'lamden',
-    //         'name': "Lamden",
-    //         nickname,
-    //         'symbol': "TAU",
-    //         'vk': keyPair.vk,
-    //         'sk': keyPair.sk
-    //     }
-    //     let result = addAccount(accountInfo)
-    //     result.vk = accountInfo.vk 
-    //     try{
-    //         return result
-    //     }finally{
-    //         refreshAccountStore();
-    //     }
-    // }
-
-    const addNewLamdenAccount = (data) => {
+    const addNewLamdenAccount = async (data) => {
+        let { mnemonic } = await getSessionData()
         if (mnemonic === data.mnemonic) return {
             added:true
         };
@@ -141,43 +125,33 @@ export const accountsController = (utils, services) => {
             'sk': data.sk
         }
         if (data.type) accountInfo['type'] = data.type;
-        let result = addAccount(accountInfo)
+        let result = await addAccount(accountInfo)
         result.vk = accountInfo.vk
-        setMnemonic(data.mnemonic) 
-        try{
-            return result
-        }finally{
-            refreshAccountStore();
-        }
+        await setMnemonic(data.mnemonic) 
+        return result
     }
 
-    const addOne = (account) => {
-        let result = addAccount(account)
-        try{
-            return result
-        }finally{
-            if (result.added) refreshAccountStore();
-        }
+    const addOne = async (account) => {
+        let result = await addAccount(account)
+        return result
     }
 
-    const addMany = (accounts, callback = undefined) => {
+    const addMany = async (accounts, callback = undefined) => {
         if (!utils.validateTypes.isArray(accounts)) return {error: `Error processing keyStore. Expected Array of accounts but got <${typeof accounts}> instead.`}
-        let accountAdded = false
-        accounts.forEach(account => {
-            let res = addAccount(account)
+        let resAccounts = []
+        for (var i=0;i<accounts.length;i++) {
+            let account = accounts[i]
+            let res = await addAccount(account)
             account.result = res
-            if (account.result.added) {
-                accountAdded = true
-                services.socketService.joinCurrencyBalanceFeed(account.vk)
-            }
-            return account
-        })
-        if (accountAdded) refreshAccountStore();
-        if (callback) callback(accounts)
-        return accounts
+            resAccounts.push(account)
+        }
+
+        if (callback) callback(resAccounts)
+        return resAccounts
     }
     
-    const addVaultAccount = (nickname) => {
+    const addVaultAccount = async (nickname) => {
+        let { mnemonic, derivationIndex } = await getSessionData()
         derivationIndex = derivationIndex + 1
         const seed = utils.bip39.mnemonicToSeedSync(mnemonic).toString('hex');
         let lamdenWallet = utils.Lamden.wallet.new_wallet_bip39(seed, derivationIndex)
@@ -190,31 +164,35 @@ export const accountsController = (utils, services) => {
             'sk': lamdenWallet.sk,
             'type': 'vault'
         }
-        let res = addOne(accountInfo);
+        let res = await addOne(accountInfo);
         if (res.added) {
+            await setMnemonic(mnemonic, derivationIndex)
             res.vk = lamdenWallet.vk;
         }
         return res;
     }
 
-    const updateWatchedAccount = (foundAccount, accountInfo) => {
+    const updateWatchedAccount = (foundAccount, accountInfo, pwd) => {
         if (accountInfo.sk === 'watchOnly') return false
         if (foundAccount.sk === 'watchOnly'){
-            foundAccount.sk = encryptString(accountInfo.sk)
+            foundAccount.sk = encryptString(accountInfo.sk, pwd)
             return true
         }
         return false
     }   
     
-    const addAccount = (account) => {
-        let foundAccount = getAccountByVK(account.vk)
+    const addAccount = async (account) => {
+        let { accountStore } = await getAccountsData()
+        let { current } = await getSessionData()
+        let foundAccount = await getAccountByVK(account.vk)
         if (foundAccount){
-            if(updateWatchedAccount(foundAccount, account)) return {added: true, reason: `Updated the private key for '${foundAccount.nickname}'`}
+            if(updateWatchedAccount(foundAccount, account, current)) return {added: true, reason: `Updated the private key for '${foundAccount.nickname}'`}
             else return {added: false, reason: `Keypair already exists as '${foundAccount.nickname}'`}
         }else{
             try{
-                if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk)
+                if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk, current)
                 accountStore.push(utils.stripRef(account))
+                await refreshAccountStore(accountStore)
                 return {added: true, reason: `Added ${account.nickname} to your Lamden Vault`}
             }catch (e){
                 return {added: false, reason: e.message}
@@ -222,8 +200,9 @@ export const accountsController = (utils, services) => {
         }
     }
 
-    const changeAccountNickname = (data) => {
+    const changeAccountNickname = async (data) => {
         let { accountInfo, newNickname } = data;
+        let { accountStore } = await getAccountsData()
         let changed = false
         accountStore.forEach((account) => {
             if (account.vk === accountInfo.vk) {
@@ -233,32 +212,36 @@ export const accountsController = (utils, services) => {
                 }
             }
         })
-        if (changed) refreshAccountStore();
+        if (changed) refreshAccountStore(accountStore);
         return true
     }
     
-    const deleteOne = (accountInfo) => {
+    const deleteOne = async (accountInfo) => {
+        let { accountStore } = await getAccountsData()
         const before = accountStore.length
         accountStore.forEach((account, index) => {
             if (account.vk === accountInfo.vk) accountStore.splice(index, 1);
         })
         if (accountStore.length < before){  
-            refreshAccountStore();
+            await refreshAccountStore(accountStore);
             return true
         }else{
             return false
         }
     }
-    const vaultCreated = () => {
+    const vaultCreated = async () => {
+        let { vault } = await getAccountsData()
         return utils.validateTypes.isStringWithValue(vault)
     }
     
-    const createIntialVault = () => {
-        setVaultStorage();
-        chrome.storage.local.remove("hash") 
+    const createIntialVault = async () => {
+        await setVaultStorage();
+        await chrome.storage.local.remove("hash") 
     }
     
-    const setVaultStorage = () => {
+    const setVaultStorage = async () => {
+        let { accountStore } = await getAccountsData()
+        let { current, mnemonic, derivationIndex }  = await getSessionData()
         //account object cleanup - TBD fix these attachments
         accountStore.forEach(account => {
             delete account.result
@@ -266,36 +249,34 @@ export const accountsController = (utils, services) => {
         })
         //Only save the vault if there is a current password
         if (utils.validateTypes.isStringWithValue(current)){
-            chrome.storage.local.set({"vault": utils.encryptObject(current, {data: accountStore, mnemonic, derivationIndex})})  
+            await chrome.storage.local.set({"vault": utils.encryptObject(current, {data: accountStore, mnemonic, derivationIndex})})  
         }
     }
     
-    const decryptVaultStorage = () => {
+    const decryptVaultStorage = async () => {
         try {
+            let { vault } = await getAccountsData()
+            let { current }  = await getSessionData()
             let decryptedStore = utils.decryptObject(current, vault)
             if (typeof decryptedStore.data === "undefined") throw new Error('Could not get vault data')
-            accountStore = decryptedStore.data
-            setMnemonic(decryptedStore.mnemonic, decryptedStore.derivationIndex || 0)
+            await setAccountStorage(decryptedStore.data)
+            await setMnemonic(decryptedStore.mnemonic, decryptedStore.derivationIndex || 0)
         }catch (e){
             console.log(e.message)
         }
     }
     
-    const setAccountStorage = () => {
-        chrome.storage.local.set({"coins": accountStore});
+    const setAccountStorage = async (data) => {
+        await chrome.storage.local.set({"coins": data});
     }
     
-    const wipeAccountStorage = () => {
-        chrome.storage.local.set({"coins": []});
-        current = "";
-    }
-    
-    const refreshAccountStore = () => {
-        setVaultStorage();
-        setAccountStorage();
+    const refreshAccountStore = async (data) => {
+        await setAccountStorage(data);
+        await setVaultStorage();
     }
 
-    const getSanatizedAccounts = (accounts = undefined) => {
+    const getSanatizedAccounts = async (accounts = undefined) => {
+        let { accountStore } = await getAccountsData()
         if (!accounts) accounts = accountStore;
         return utils.stripRef(accounts).map(account => {
             if (account.sk !== "watchOnly") account.sk = "encrypted"
@@ -303,59 +284,59 @@ export const accountsController = (utils, services) => {
         })
     }
 
-    const unlock = (string) => {
+    const unlock = async (string) => {
         //Validate the password is correct first
         if (vaultCreated()){
             if (validatePasswordFromVault(string)){
-                current = string
+                await setCurrent(string)
             }
         }else{
             if(validatePasswordFromHash(string)){
-                current = string
-                createIntialVault()
+                await setCurrent(string)
+                await createIntialVault()
             }
         }
-        if (utils.validateTypes.isStringWithValue(current)){
-            decryptVaultStorage()
-            setAccountStorage()
-            return true;
-        }
-        return false;
+        await decryptVaultStorage()
+        await setAccountStorage()
+        return true;
     }
-    const lock = () => {
-        wipeAccountStorage()
-        current = ""
+    const lock = async () => {
+        await setCurrent("")
     }
 
-    const walletIsLocked = () => {
+    const walletIsLocked = async () => {
+        let { current }  = await getSessionData()
         return !utils.validateTypes.isStringWithValue(current)
     }
 
-    const validatePasswordFromHash = (string) => {
+    const validatePasswordFromHash = async (string) => {
+        let { hash } = await getAccountsData()
         try{
             return utils.decryptObject(string, hash).valid
-        } catch (e) {}
-        return false
+        } catch (e) {return false }
     }
     
-    const validatePasswordFromVault = (string) => {
+    const validatePasswordFromVault = async (string) => {
+        let { vault } = await getAccountsData()
         try{
             return  utils.validateTypes.isObject(utils.decryptObject(string, vault))
         } catch (e) {console.log(e)}
         return false
     }
 
-    const signTx = (txBuilder) => {
-        let account = getAccountByVK(txBuilder.sender)
-        if (!account) throw new Error(`Error: Account address ${xBuilder.sender} not in Lamden Vault.`)
-        txBuilder.sign(decryptString(account.sk))
+    const signTx = async (txBuilder) => {
+        let { current } = await getSessionData()
+        let account = await getAccountByVK(txBuilder.sender)
+        if (!account) throw new Error(`Error: Account address ${txBuilder.sender} not in Lamden Vault.`)
+        txBuilder.sign(decryptString(account.sk, current))
     }
 
-    const signString = (vk, challenge) => {
-        const account = getAccountByVK(vk)
+    const signString = async (vk, challenge) => {
+        let { current } = await getSessionData()
+        const account = await getAccountByVK(vk)
         if (!account) throw new Error(`Error: Account address '${vk}' not in Lamden Vault.`)
 
-        const wallet = utils.Lamden.wallet.create_wallet({sk: decryptString(account.sk)})
+        const wallet = utils.Lamden.wallet.create_wallet({sk: decryptString(account.sk, current)})
 
         const stringBuffer = Buffer.from(challenge);
         const stringArray = new Uint8Array(stringBuffer);
@@ -363,11 +344,13 @@ export const accountsController = (utils, services) => {
         return wallet.sign(stringArray)
     }
 
-    const firstRun = () => {
+    const firstRun = async () => {
+        let { hash, vault } = await getAccountsData()
         return hash === "" && vault === "" ? true : false
     }
 
-    const reorderUp = (index, callback = undefined) => {
+    const reorderUp = async (index, callback = undefined) => {
+        let { accountStore } = await getAccountsData()
         if (index <= 0) {
             if (callback) callback(true)
             return true
@@ -378,14 +361,15 @@ export const accountsController = (utils, services) => {
         for (let i=1; i < accountStore.length; i++){
             let nextAccountType = accountStore[index].type === "vault"? "vault" : accountStore[index].sk === "watchOnly" ? "watchOnly" : "legacy";
             if (accountType === nextAccountType) {
-                moveArrayItemToNewIndex(index, index - i)
+                await moveArrayItemToNewIndex(index, index - i)
                 if (callback) callback(true)
                 return true
             } 
         }
     }
 
-    const reorderDown = (index, callback = undefined) => {
+    const reorderDown = async (index, callback = undefined) => {
+        let { accountStore } = await getAccountsData()
         if (index >= (accountStore.length - 1)) {
             if (callback) callback(true)
             return true
@@ -396,14 +380,15 @@ export const accountsController = (utils, services) => {
         for (let i=1; i <= accountStore.length - 1 - index; i++){
             let nextAccountType = accountStore[index].type === "vault"? "vault" : accountStore[index].sk === "watchOnly" ? "watchOnly" : "legacy";
             if (accountType === nextAccountType) {
-                moveArrayItemToNewIndex(index, index + i)
+                await moveArrayItemToNewIndex(index, index + i)
                 if (callback) callback(true)
                 return true
             } 
         }
     }
 
-    const moveArrayItemToNewIndex = (old_index, new_index) => {
+    const moveArrayItemToNewIndex = async (old_index, new_index) => {
+        let { accountStore } = await getAccountsData()
         if (new_index >= accountStore.length) {
             var k = new_index - accountStore.length + 1;
             while (k--) {
@@ -411,33 +396,34 @@ export const accountsController = (utils, services) => {
             }
         }
         accountStore.splice(new_index, 0, accountStore.splice(old_index, 1)[0]);
-        refreshAccountStore()
+        await refreshAccountStore(accountStore)
     };
 
-    const isWatchOnly = (vk) => {
-        let account = getAccountByVK(vk)
+    const isWatchOnly = async (vk) => {
+        let account = await getAccountByVK(vk)
         return account.sk === "watchOnly"
     }
 
-    const setMnemonic = (s, index=0) => {
-        mnemonic = s;
-        derivationIndex = index;
-        refreshAccountStore();
+    const setMnemonic = async (s, index=0) => {
+        await chrome.storage.session.set({mnemonic: s, derivationIndex: index});
+        await setVaultStorage();
         return true
     }
 
-    const isVaultCreated = () => {
+    const isVaultCreated = async () => {
+        let { mnemonic }  = await getSessionData()
         if (mnemonic && mnemonic !== "") {
             return true
         } 
         return false
     }
 
-    const getMnemonic = () => {
+    const getMnemonic = async () => {
+        let { mnemonic }  = await getSessionData()
         return mnemonic
     }
 
-    const auth = (data, dappInfo, callback = undefined) => {
+    const auth = async (data, dappInfo, callback = undefined) => {
         if (!callback) return
     
         let { dapp_challenge } = data
@@ -451,12 +437,12 @@ export const accountsController = (utils, services) => {
                 errors.push(`Error: Malformed 'dapp_challenge': Cannot sign JSON string.`)
                 callback({errors, dapp_challenge})
                 return
-            }catch(e){}
+            }catch(e){console.log(e)}
 
             try{
                 const vault_challenge = utils.hashStringValue(new Date().toISOString())
                 const challenge_message = `[VAULT_AUTH]__DAPP__${dapp_challenge}__VAULT__${vault_challenge}`
-                const signature = signString(vk, challenge_message)
+                const signature = await signString(vk, challenge_message)
 
                 callback({signature, vault_challenge})
                 return
@@ -468,6 +454,10 @@ export const accountsController = (utils, services) => {
         }
 
         callback({errors, dapp_challenge})
+    }
+
+    const setCurrent = async (string) => {
+        await chrome.storage.session.set({current: string});
     }
 
     return {
@@ -489,7 +479,7 @@ export const accountsController = (utils, services) => {
         createIntialVault,
         unlock,
         lock,
-        validatePassword: (string) => validatePasswordFromVault(string),
+        validatePassword: validatePasswordFromVault,
         walletIsLocked,
         decryptKeys,
         signTx,

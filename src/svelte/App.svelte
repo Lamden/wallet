@@ -97,6 +97,7 @@
   onMount(() => {
     themeSet();
     chrome.runtime.sendMessage({ type: "walletIsLocked" }, (locked) => {
+      console.log("locked:", locked)
       walletIsLocked = locked;
     });
     checkFirstRun();

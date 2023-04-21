@@ -57,6 +57,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from mnemonic words'
     })
 
     it('Renders RestoreOptions.svelte', async function() {
+        await helpers.sleep(1000)
         let title = await driver.findElement(By.css('.flow-page h6'));
         let text = await title.getAttribute('innerText');
         assert.equal(text, 'Restore Accounts');
@@ -81,6 +82,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from mnemonic words'
         assert.equal(label, 'Private Key');
     })
     it('RestoreOptions.svelte - Rejects unvalid Private Key', async function() {
+        await helpers.sleep(1000)
         let input = await driver.findElement(By.id('private-key'));
         await input.sendKeys(`testing!\n`);
         await input.getAttribute('validationMessage').then(message => {
@@ -89,13 +91,14 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from mnemonic words'
         await input.clear();
     }); 
     it('RestoreOptions.svelte - Can Restore from Private Key', async function() {
-
+        await helpers.sleep(1000)
         await driver.findElement(By.id('private-key')).sendKeys(`${privatekeyInfo.sk}\n`);
 
         await driver.findElement(By.id('next')).click();
         await helpers.sleep(2000)
     }); 
     it('Renders RestoreAddWallets.svelte', async function() {
+        await helpers.sleep(1000)
         let restoreWallets_Button =  await driver.findElement(By.id('restore-btn'))
         await restoreWallets_Button.getAttribute('innerText').then(text => {
             assert.equal(text, 'RESTORE ACCOUNTS');

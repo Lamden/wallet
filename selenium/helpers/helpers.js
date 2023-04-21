@@ -116,6 +116,7 @@ const completeFirstRunSetupRestore = async (driver, workingDir, walletInfo, lock
     await sleep(3000)
     // await driver.findElement(By.id('ignore-btn')).click()
     if (ignoreBackup) await ignoreBackupModal(driver)
+    await sleep(3000)
     if (testnet) {
         await changeToTestnetV2(driver)
         await sleep(2000)
@@ -173,7 +174,7 @@ const setAsTrustedDapp = async (driver) => {
     await driver.findElement(By.id("back-btn")).click() 
     await sleep(500, true)
     await driver.findElement(By.id("dapp-options-save-btn")).click()
-    await sleep(500, true)
+    await sleep(2000, true)
     await driver.findElement(By.id("accounts")).click()
     await sleep(1000, true)
 }
@@ -261,7 +262,7 @@ const denyPopup = async (driver, popupWindow, switchback) => {
 }
 
 const sendConnectRequest = async (driver, connectionInfo, awaitResponse = true) => {
-    return driver.executeScript(`
+    return await driver.executeScript(`
         window.walletInfoResponse = new Promise((resolve, reject) => {window.resolver = resolve})
         document.addEventListener('lamdenWalletInfo', (response) => {
             window.resolver(response.detail)
@@ -373,7 +374,6 @@ const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
 
 const getTxResult = async (driver, uid) => {
     return driver.executeScript(`
-        console.log(await window.walletTxResult['${uid}'])
         return await window.walletTxResult['${uid}']
     `);
 }

@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {Builder, By, until} = require('selenium-webdriver');
+const {Builder, By } = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
@@ -34,7 +34,7 @@ describe('Content Script - Testing Dapp Verify API', function () {
             walletInfo,
             false,
             false,
-            false
+            true
           );
           await helpers.changeToTestnetV2(driver)
     });

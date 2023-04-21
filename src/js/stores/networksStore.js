@@ -291,7 +291,7 @@ export const currentNetworkOnline = derived(
         let currentNetwork
         if (found) currentNetwork = new Lamden.Network(found);
         else currentNetwork = new Lamden.Network($NetworksStore.lamden[0])
-        currentNetwork.API.pingServer().then(set).catch(e => set(false))
+        await currentNetwork.API.pingServer().then(set).catch(() => set(false))
     }
 );
 

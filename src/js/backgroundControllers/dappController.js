@@ -1,34 +1,19 @@
 export const dappController = (utils, actions) => {
-    let dappsStore = {};
-    let txToConfirm = {};
     const validateTypes = utils.validateTypes
     
-    chrome.storage.local.get({"dapps":{}},function(getValue) {dappsStore = getValue.dapps;})
-    chrome.storage.onChanged.addListener(function(changes) {
-        for (let key in changes) {
-            if (key === 'dapps') dappsStore = changes[key].newValue;
-            if (key === 'networks') purgeDappNetworkKeys();
-        }
-    });
+    const getTxToConfirm = async () => {
+        let res = await chrome.storage.session.get({"txToConfirm":{}})
+        return res.txToConfirm
+    }
 
-    chrome.runtime.onInstalled.addListener(function(details) {
-        if (details.reason === "install") {
-            // some intall tasks
-        }
-        if (details.reason === "update"){
-            let currVer = chrome.runtime.getManifest().version;
-            let prevVer = details.previousVersion
-            if (prevVer <= "0.12.0" && currVer > prevVer){
-                initiateTrustedApp()
-            }
-            if (prevVer <= "1.8.0" && currVer > prevVer){
-                // purgeDappConnections()
-            }
-            if (prevVer <= "2.3.1" && currVer > prevVer){
-                purgeDappNetworkKeys()
-            }
-        }
-    });
+    const updateTxToConfirm = async (data) => {
+       await chrome.storage.session.set({"txToConfirm": data})
+    }
+
+    const getDappStore = async () => {
+        let res = await chrome.storage.local.get({"dapps":{}})
+        return res.dapps
+    }
 
     const getSenderHash = (sender) => {
         return sender.url.split('#')[1]
@@ -100,16 +85,18 @@ export const dappController = (utils, actions) => {
         return messageData
     }
     
-    const approveDapp = (sender, approveInfo) => {
+    const approveDapp = async (sender, approveInfo) => {
+        let txToConfirm = await getTxToConfirm()
         const confirmData = txToConfirm[getSenderHash(sender)]
         if (confirmData.messageData.reapprove) {
-            reapproveDapp(confirmData.messageData)
+            await reapproveDapp(confirmData.messageData)
             utils.sendMessageToTab(confirmData.url, 'sendWalletInfo')
             delete txToConfirm[getSenderHash(sender)]
+            await updateTxToConfirm(txToConfirm)
             return
         }
 
-        if (!actions.walletIsLocked()){
+        if (! await actions.walletIsLocked()){
             const dappInfo = getDappInfoByURL(confirmData.url)
             const messageData = confirmData.messageData
             let accountVk;
@@ -118,20 +105,21 @@ export const dappController = (utils, actions) => {
                 accountVk = approveInfo.accountInfo.vk
             } else {
                 if (!dappInfo){
-                    accountVk = actions.addNewLamdenAccount(messageData.appName).vk
+                    accountVk = await actions.addNewLamdenAccount(messageData.appName).vk
                 }else{
                     accountVk = dappInfo.vk
                 }
             }
             if (accountVk){
-                addNew(confirmData.url, accountVk, messageData, approveInfo.trustedApp)
+                await addNew(confirmData.url, accountVk, messageData, approveInfo.trustedApp)
                 let network = utils.networks.getNetwork(confirmData.messageData.network)
                 if (approveInfo.fundingInfo){
-                    actions.sendCurrencyTransaction( approveInfo.fundingInfo.account.vk, accountVk, approveInfo.fundingInfo.amount, network)
+                    await actions.sendCurrencyTransaction( approveInfo.fundingInfo.account.vk, accountVk, approveInfo.fundingInfo.amount, network)
                 }
                 utils.sendMessageToTab(confirmData.url, 'sendWalletInfo')
             }else{
                 delete txToConfirm[getSenderHash(sender)]
+                await updateTxToConfirm(txToConfirm)
                 throw new Error('Unable to encrypt private key while approving dapp')
             }
         }else{
@@ -139,40 +127,49 @@ export const dappController = (utils, actions) => {
             utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
         }
         delete txToConfirm[getSenderHash(sender)]
+        await updateTxToConfirm(txToConfirm)
     }
 
-    const reapproveDapp = (messageData) => {
-        updateDapp(messageData.oldConnection, messageData)
-        updateSmartContract(messageData.oldConnection, messageData)
+    const reapproveDapp = async (messageData) => {
+        await updateDapp(messageData.oldConnection, messageData)
+        await updateSmartContract(messageData.oldConnection, messageData)
     }
     
-    const rejectDapp = (sender) => {
+    const rejectDapp = async (sender) => {
+        let txToConfirm = await getTxToConfirm()
         const confirmData = txToConfirm[getSenderHash(sender)]
         utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors: ['User rejected connection request']})
         delete txToConfirm[getSenderHash(sender)]
+        await updateTxToConfirm(txToConfirm)
     }
     
-    const rejectTx = (sender) => {
+    const rejectTx = async (sender) => {
+        let txToConfirm = await getTxToConfirm()
         const confirmData = txToConfirm[getSenderHash(sender)]
         const { txData }  = confirmData.messageData
         utils.sendMessageToTab(confirmData.url, 'txStatus', {status: 'Transaction Cancelled', errors: ['User closed Popup window'], rejected: JSON.stringify(txData) })
         delete txToConfirm[getSenderHash(sender)]
+        await updateTxToConfirm(txToConfirm)
     }
     
-    const approveTransaction = (sender) => {
+    const approveTransaction = async (sender) => {
+        let txToConfirm = await getTxToConfirm()
         const confirmData = txToConfirm[getSenderHash(sender)]
-        if (!actions.walletIsLocked()){
+        if (! await actions.walletIsLocked()){
             const txData = confirmData.messageData.txData;
             const txBuilder = new utils.Lamden.TransactionBuilder(txData.networkInfo, txData.txInfo, txData)
-            actions.sendLamdenTx(txBuilder, confirmData.url)    
+            await actions.sendLamdenTx(txBuilder, confirmData.url)    
         }else{
             const errors = ['Tried to send transaction app but Lamden Vault was locked']
             utils.sendMessageToTab(confirmData.url, 'sendErrorsToTab', {errors})
         }
         delete txToConfirm[getSenderHash(sender)]
+        await updateTxToConfirm(txToConfirm)
     }
     
-    const addNew = (appUrl, vk, messageData, trustedApp) => {
+    const addNew = async (appUrl, vk, messageData, trustedApp) => {
+        let dappsStore = await getDappStore()
+
         let symbol = `${messageData.networkName}|${messageData.networkType}`
         //remvove trailing slash from url
         if (!dappsStore[appUrl]) dappsStore[appUrl] = {}
@@ -196,11 +193,11 @@ export const dappController = (utils, actions) => {
         }
         dappsStore[appUrl].url = appUrl
         dappsStore[appUrl].vk = vk
-        chrome.storage.local.set({"dapps": dappsStore});
+        await chrome.storage.local.set({"dapps": dappsStore});
     }
 
-    const updateDapp = (dappInfo, connectionInfo, reapprove = false) => {
-
+    const updateDapp = async (dappInfo, connectionInfo) => {
+        let dappsStore = await getDappStore()
         let symbol = `${connectionInfo.networkName}|${connectionInfo.networkType}`
 
         dappsStore[dappInfo.url].appName = connectionInfo.appName
@@ -218,92 +215,69 @@ export const dappController = (utils, actions) => {
             delete dappsStore[dappInfo.url][symbol
             ].charms
         }
-        if (!reapprove) chrome.storage.local.set({"dapps": dappsStore});
+        await chrome.storage.local.set({"dapps": dappsStore});
     }
 
-    const updateSmartContract = (dappInfo, connectionInfo) => {
+    const updateSmartContract = async (dappInfo, connectionInfo) => {
+        let dappsStore = await getDappStore()
         let symbol = `${connectionInfo.networkName}|${connectionInfo.networkType}`
         dappsStore[dappInfo.url][symbol].contractName = connectionInfo.contractName
-        chrome.storage.local.set({"dapps": dappsStore});
+        await chrome.storage.local.set({"dapps": dappsStore});
     }
     
-    const deleteDapp = (vk) => {
-        let dappInfo = getDappInfoByVK(vk)
+    const deleteDapp = async (vk) => {
+        let dappsStore = await getDappStore()
+        let dappInfo = await getDappInfoByVK(vk)
         if (dappInfo) {
             delete dappsStore[dappInfo.url]
-            chrome.storage.local.set({"dapps": dappsStore});
+            await chrome.storage.local.set({"dapps": dappsStore});
         }
     }
     
-    const revokeAccess = (data) => {
+    const revokeAccess = async (data) => {
+        let dappsStore = await getDappStore()
         try{
             data.networks.forEach(networkType => {
                 delete dappsStore[data.dappInfo.url][networkType]
             })
-            let allnetworks = utils.networks.getAll()
+            let allnetworks = await utils.networks.getAll()
             let hasConnection = false
             allnetworks.forEach(network => {
                 if (dappsStore[data.dappInfo.url][network.type]) hasConnection = true
             })
             if (!hasConnection) delete dappsStore[data.dappInfo.url]
-            chrome.storage.local.set({"dapps": dappsStore});
+            await chrome.storage.local.set({"dapps": dappsStore});
         }catch(e){
             return false
         }
         return true
     }
 
-    const purgeDappNetworkKeys = () => {
-        let changed = false
-        let allnetworks = utils.networks.getAll()
+    // const purgeDappConnections = async () => {
+    //     let changed = false
+    //     let allnetworks = await utils.networks.getAll()
 
-        Object.keys(dappsStore).forEach(dappURL => {
+    //     Object.keys(dappsStore).forEach(dappURL => {
 
-            allnetworks.forEach(network => {
-                let ver = network.networkName === "arko" ? 2 : 1
-                if (dappsStore[dappURL][network.type]) {
-                    dappsStore[dappURL][`legacy|${network.type}`] = dappsStore[dappURL][network.type]
-                    delete dappsStore[dappURL][network.type]
-                    changed = true
-                } else if(dappsStore[dappURL][`V${ver}|${network.type}`]) {
-                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`V${ver}|${network.type}`]
-                    delete dappsStore[dappURL][`V${ver}|${network.type}`]
-                    changed = true
-                } else if(dappsStore[dappURL][`undefined|${network.type}`]) {
-                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`undefined|${network.type}`]
-                    delete dappsStore[dappURL][`undefined|${network.type}`]
-                    changed = true
-                }
-            })
-        })
+    //         let hasConnection = false
+    //         allnetworks.forEach(network => {
+    //             if (dappsStore[dappURL][network.type]) hasConnection = true
+    //         })
+    //         if (!hasConnection) {
+    //             delete dappsStore[dappURL]
+    //             changed = true
+    //         }
+    //     })
 
-        if (changed) chrome.storage.local.set({"dapps": dappsStore});
-    }
-
-    const purgeDappConnections = () => {
-        let changed = false
-        let allnetworks = utils.networks.getAll()
-
-        Object.keys(dappsStore).forEach(dappURL => {
-
-            let hasConnection = false
-            allnetworks.forEach(network => {
-                if (dappsStore[dappURL][network.type]) hasConnection = true
-            })
-            if (!hasConnection) {
-                delete dappsStore[dappURL]
-                changed = true
-            }
-        })
-
-        if (changed) chrome.storage.local.set({"dapps": dappsStore});
-    }
+    //     if (changed) chrome.storage.local.set({"dapps": dappsStore});
+    // }
     
-    const reassignLink = (data) => {
+    const reassignLink = async (data) => {
+        let dappsStore = await getDappStore()
         const { dappInfo, newVk } = data;
         try{
             dappsStore[dappInfo.url].vk = newVk
-            chrome.storage.local.set({"dapps": dappsStore});
+            await chrome.storage.local.set({"dapps": dappsStore});
             sendMessageToDapp(dappInfo.url, 'sendWalletInfo')
         }catch(e){
             return false
@@ -311,48 +285,32 @@ export const dappController = (utils, actions) => {
         return true
     }
 
-    const getDappInfoByURL = (url) => {
+    const getDappInfoByURL = async (url) => {
+        let dappsStore = await getDappStore()
         if (!dappsStore[url]) return false
         return dappsStore[url]
     }
 
-    const dappExists = (url) => {
-        if (!getDappInfoByURL(url)) return false
+    const dappExists = async (url) => {
+        if (! await getDappInfoByURL(url)) return false
         return true
     }
 
-    const getDappInfoByVK = (vk) => {
+    const getDappInfoByVK = async (vk) => {
+        let dappsStore = await getDappStore()
         let dapp = Object.keys(dappsStore).find(f => dappsStore[f].vk === vk )
         if (dapp) return dappsStore[dapp]
         return false
     }
 
-    const initiateTrustedApp = () => {
-        const networksList = ['mainnet', 'testnet']
-        Object.keys(dappsStore).forEach(url => {
-            networksList.forEach(network => {
-                if (dappsStore[url][network]){
-                    if (typeof dappsStore[url][network].stampPreApproval !== "undefined"){
-                        if (parseFloat(dappsStore[url][network].stampPreApproval) > 0) dappsStore[url][network].trustedApp = true;
-                        else dappsStore[url][network].trustedApp = false;
-                    }else{
-                        if (typeof dappsStore[url][network].trustedApp === "undefined") dappsStore[url][network].trustedApp = false;
-                    }
-                    delete dappsStore[url][network].stampPreApproval
-                    delete dappsStore[url][network].stampsUsed
-                }
-            })
-        })
-        chrome.storage.local.set({"dapps": dappsStore});
-    }
-
-    const setTrusted = (data) => {
+    const setTrusted = async (data) => {
+        let dappsStore = await getDappStore()
         let symbol = `${data.networkName}|${data.networkType}`
         try{
             delete dappsStore[data.dappUrl][symbol].stampPreApproval
             delete dappsStore[data.dappUrl][symbol].stampsUsed
             dappsStore[data.dappUrl][symbol].trustedApp = data.trusted
-            chrome.storage.local.set({"dapps": dappsStore});
+            await chrome.storage.local.set({"dapps": dappsStore});
             return true
         }catch (e){
             return false
@@ -372,7 +330,8 @@ export const dappController = (utils, actions) => {
         });
     }
 
-    const sendMessageToAllDapps = (type, data) => {
+    const sendMessageToAllDapps = async (type, data) => {
+        let dappsStore = await getDappStore()
         chrome.windows.getAll({populate:true},function(windows){
             windows.forEach((window) => {
                 window.tabs.forEach((tab) => {
@@ -387,14 +346,19 @@ export const dappController = (utils, actions) => {
         });
     }
 
-    const getConfirmInfo = (confirmHash) => {
+    const getConfirmInfo = async (confirmHash) => {
+        let txToConfirm = await getTxToConfirm()
         try {
             return txToConfirm[confirmHash]
-        } catch (e){}
+        } catch (e){console.log(e)}
         return false
     }
 
-    const setTxToConfirm = (windowID, data) => txToConfirm[windowID] = data
+    const setTxToConfirm = async (windowID, data) => {
+        let txToConfirm = await getTxToConfirm()
+        txToConfirm[windowID] = data
+        await updateTxToConfirm(txToConfirm)
+    }
 
 
     return {

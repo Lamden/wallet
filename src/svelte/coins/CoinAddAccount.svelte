@@ -13,7 +13,7 @@
     import { encryptStrHash, decryptStrHash } from '../../js/utils.js';
 
 	//Context
-    const { closeModal } = getContext('app_functions');
+    const { closeModal, switchPage } = getContext('app_functions');
     const { nextPage, setMessage, detailsPage } = getContext('coinadd_functions');
 
     //Props
