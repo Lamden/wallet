@@ -12,6 +12,12 @@
   //Utils
   import { keysFromNew, pubFromPriv } from "../js/crypto/wallets.js";
 
+  import { sendMessageToTab } from "../js/utils.js"
+
+  import { createSocketService } from "../js/services/sockets.js"
+
+  import Lamden from "lamden-js"
+
   //Stores
   import {
     needsBackup,
@@ -20,6 +26,12 @@
     clicked,
     currentThemeName,
     EventsStore,
+    currentNetwork,
+    BalancesStore,
+    networkKey,
+    CoinStore,
+    TokenBalancesStore,
+    TokenStore
   } from "../js/stores/stores.js";
 
   //Components
@@ -60,6 +72,9 @@
     FirstRunRestoreMain: "FirstRunMain",
   };
 
+  const service = createSocketService()
+  let currentNetworkKey = networkKey($currentNetwork);
+
   $: walletIsLocked = true;
   $: firstRun = undefined;
   $: newEvent = getNewEvent($EventsStore);
@@ -75,7 +90,7 @@
     }
   };
 
-  const walletIsLockedListener = (message, sender, sendResponse) => {
+  const listenerHandle = (message, sender, sendResponse) => {
     if (message.type === "walletIsLocked") {
       //Make sure the wallet was actually unlocked by the user
       chrome.runtime.sendMessage({ type: "walletIsLocked" }, (locked) => {
@@ -89,10 +104,29 @@
         if (walletIsLocked && $currentPage.name === "ChangePassword")
           SettingsStore.changePage({ name: "CoinsMain" });
       });
+    } else if (message.type === "txSent") {
+        let tx = message.data
+        if (tx) {
+            let txBuilder = new Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
+            txBuilder.checkBlockserviceForTransactionResult().then(res => {
+                let info = txBuilder.getAllInfo()
+                info.sentFrom = tx.sentFrom
+                document.dispatchEvent(new CustomEvent('txStatus', {detail: info}));
+            }).catch(err => {
+                console.log(err)
+            })
+        }
     }
   };
 
-  chrome.runtime.onMessage.addListener(walletIsLockedListener);
+  chrome.runtime.onMessage.addListener(listenerHandle);
+
+  if ($currentNetwork.version === 2) {
+    service.start($currentNetwork.blockservice.host, () => {
+        let accounts = $CoinStore
+        accounts.forEach((i) => service.joinCurrencyBalanceFeed(i.vk))
+    });
+  }
 
   onMount(() => {
     themeSet();
@@ -101,6 +135,27 @@
       walletIsLocked = locked;
     });
     checkFirstRun();
+  });
+
+  let listenerInit = false
+  // change websocket connection when network change
+  currentNetwork.subscribe((newNetwork) => {
+    if (networkKey(newNetwork) !== currentNetworkKey) {
+      currentNetworkKey = networkKey(newNetwork);
+      service.start(newNetwork.blockservice.host, () => {
+        let accounts = $CoinStore ? $CoinStore : []
+        let tokenList = $TokenStore[currentNetworkKey] ? $TokenStore[currentNetworkKey] : []
+        accounts.forEach((i) => {
+            service.joinCurrencyBalanceFeed(i.vk) 
+            tokenList.forEach((j) => service.joinTokenBalanceFeed(j.contractName, i.vk))
+        })
+      });
+      if (!listenerInit) {
+        service.socket_on('new-state-changes-one', (update) => BalancesStore.processBalanceSocketUpdate(update)) 
+        service.socket_on('new-state-changes-one', (update) => TokenBalancesStore.processTokenBalanceSocketUpdate(update)) 
+        listenerInit = true
+      }
+    }
   });
 
   beforeUpdate(() => {
@@ -153,6 +208,8 @@
     checkFirstRun: () => checkFirstRun(),
     themeToggle: themeToggle,
     setAccountAdded: () => (accountAdded = true),
+    joinCoinService: (vk) => service.joinCurrencyBalanceFeed(vk),
+    joinTokenService: (contractName, vk) => service.joinTokenBalanceFeed(contractName, vk)
   });
 
   const checkFirstRun = () => {

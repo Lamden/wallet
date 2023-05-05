@@ -13,7 +13,7 @@
     import { encryptStrHash, decryptStrHash } from '../../js/utils.js';
 
 	//Context
-    const { closeModal, switchPage } = getContext('app_functions');
+    const { closeModal, switchPage, joinCoinService } = getContext('app_functions');
     const { nextPage, setMessage, detailsPage } = getContext('coinadd_functions');
 
     //Props
@@ -103,7 +103,7 @@
                 if (coinInfo.sk !== 'watchOnly') SettingsStore.setLastCoinAddedDate();
                 let type = coinInfo.type === 'vault'? 'vault' : coinInfo.sk === 'watchOnly'? 'watchOnly' : 'normal';
                 SettingsStore.setLastCoinAddedType(type)
-                chrome.runtime.sendMessage({type: 'joinSocket', data: coinInfo.vk})
+                joinCoinService(coinInfo.vk) 
                 chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coinInfo.vk})
             }
 
@@ -132,7 +132,7 @@
                 returnMessage = {type:'success', text: result.reason}
                 let type = 'vault'; 
                 SettingsStore.setLastCoinAddedType(type)
-                chrome.runtime.sendMessage({type: 'joinSocket', data: result.vk})
+                joinCoinService(result.vk) 
                 chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: result.vk})
             }
 

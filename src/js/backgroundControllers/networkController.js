@@ -1,4 +1,7 @@
 import { LamdenBlockexplorer_API } from '../blockExplorer_API.js'
+import whitelabel from '../../../whitelabel.json'
+
+let lamdenNetworks = whitelabel.networks
 
 export const networkController = (utils) => {
     const LamdenNetworkTypes = ['mainnet','testnet', 'devnet']
@@ -66,7 +69,14 @@ export const networkController = (utils) => {
         return res
     }
 
+    const purgeNetworksStorage = async () => {
+        let networksStore = await getNetworksStore();
+        networksStore.lamden = lamdenNetworks;
+        await chrome.storage.local.set({"networks": networksStore});
+    }
+
     return {
+        purgeNetworksStorage,
         getAll,
         getCurrent,
         getNetwork,

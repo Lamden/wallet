@@ -8,6 +8,9 @@ runPriceService()
 const handle = messagesHandler()
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    handle(message, sender, sendResponse)
+    handle.msgHandle(message, sender, sendResponse)
     return true
 })
+
+
+chrome.runtime.onInstalled.addListener(handle.onInstalledHandle);

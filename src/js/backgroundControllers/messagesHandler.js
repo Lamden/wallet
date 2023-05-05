@@ -11,13 +11,13 @@ const fromConfirm = (url) => {
 
 
 export const messagesHandler = () => {
+    let masterController = controller()
     /*****************************************************************************
     * In App/Dapp message handling
     * This routine is a 'sender' filter for chrome extention message API to seperate messages from the App itself
     * from outside webpages.  This isolates the sensitive information stored in the background page to the App and autorized Dapps.
     *****************************************************************************/
-    const handle = async (message, sender, sendResponse) => {
-        let masterController = controller()
+    const msgHandle = async (message, sender, sendResponse) => {
         // console.log({message, sender, sendResponse})
         const sendErrors = (errors) => sendResponse({errors})
 
@@ -37,13 +37,13 @@ export const messagesHandler = () => {
             //Reject if wallet is locked as we won't have the user's password stored to encrypt the new keypair
             if (walletIsLocked){
                 sendErrors(["Lamden Vault is Locked"])
-                return
+                return true
             }
             //Make sure the connection request is valid before processing; return erros to dApp
             const connectionMessage = masterController.dapps.validateConnectionMessage(message.data)
             if (validateTypes.hasKeys(connectionMessage, ['errors'])){
                 sendErrors(connectionMessage.errors)
-                return
+                return true
             }else if(dappInfo){
                 try{
                     let symbol = `${connectionMessage.networkName}|${connectionMessage.networkType}`
@@ -57,26 +57,26 @@ export const messagesHandler = () => {
                             }
                             let dinfo = await masterController.dapps.getDappInfoByURL(sender.origin)
                             sendResponse(await masterController.getWalletInfo(dinfo));
-                            return
+                            return true
                         }else{
                             let version = dappInfo[symbol].version || "0.0.1"
                             if (connectionMessage.version > version){
                                 await masterController.promptApproveDapp(sender, connectionMessage, true, dappInfo)
                             }
-                            return
+                            return true
                         }
                     } else {
                         await masterController.promptApproveDapp(sender, connectionMessage)
-                        return
+                        return true
                     }
                 }catch (e){
                     console.log(e)
                 }
                 await masterController.promptApproveDapp(sender, connectionMessage)
-                return
+                return true
             } else {
                 await masterController.promptApproveDapp(sender, connectionMessage)
-                return
+                return true
             }
         }
 
@@ -91,84 +91,176 @@ export const messagesHandler = () => {
             **************************************************/
             if (isFromApp){
                 //Create password on initial "firstRun" setup
-                if(message.type === 'createPassword') sendResponse(await masterController.createPassword(message.data))
+                if(message.type === 'createPassword') {
+                    sendResponse(await masterController.createPassword(message.data))
+                    return true;
+                }
                 //Change password
-                if(message.type === 'changePassword') sendResponse(await masterController.changePassword(message.data))
+                if(message.type === 'changePassword') {
+                    sendResponse(await masterController.changePassword(message.data))
+                    return true;
+                }
                 //Check if the wallet has been setup yet
-                if(message.type === 'isFirstRun')sendResponse(await masterController.accounts.firstRun())
+                if(message.type === 'isFirstRun') {
+                    sendResponse(await masterController.accounts.firstRun())
+                    return true;
+                }
                 //Unlock the wallet
-                if (message.type === 'unlockWallet') sendResponse(await masterController.unlock(message.data))
+                if (message.type === 'unlockWallet') {
+                    sendResponse(await masterController.unlock(message.data))
+                    return true;
+                }
                 //Check the password is correct
-                if (message.type === 'validatePassword') sendResponse(await masterController.accounts.validatePassword(message.data))
+                if (message.type === 'validatePassword') {
+                    sendResponse(await masterController.accounts.validatePassword(message.data))
+                    return true;
+                }
                 //Respond to request checking if the wallet is locked
-                if (message.type === 'walletIsLocked') sendResponse(await masterController.accounts.walletIsLocked())
+                if (message.type === 'walletIsLocked') {
+                    sendResponse(await masterController.accounts.walletIsLocked())
+                    return true;
+                }
                 //Lock the wallet
-                if (message.type === 'lockWallet') sendResponse(await masterController.lock())
+                if (message.type === 'lockWallet') {
+                    sendResponse(await masterController.lock())
+                    return true;
+                }
                 //Only Allow access to these messages processors if the wallet is Unlocked
                 if (!walletIsLocked){
                     // Add a vault account
-                    if (message.type === 'addVaultAccount') sendResponse(await masterController.accounts.addVaultAccount(message.data))
+                    if (message.type === 'addVaultAccount') {
+                        sendResponse(await masterController.accounts.addVaultAccount(message.data))
+                        return true;
+                    }
                     // Set mnemonic phrase and remove the all previous accounts and related dapp
-                    if (message.type === 'setMnemonic') sendResponse(await masterController.setMnemonic(message.data))
+                    if (message.type === 'setMnemonic') {
+                        sendResponse(await masterController.setMnemonic(message.data))
+                        return true;
+                    }
                     // Get   mnemonic phrase
-                    if (message.type === 'getMnemonic') sendResponse(await masterController.accounts.getMnemonic())
+                    if (message.type === 'getMnemonic') {
+                        sendResponse(await masterController.accounts.getMnemonic())
+                        return true;
+                    }
                     // Check if the vault is created
-                    if (message.type === 'isVaultCreated') sendResponse(await masterController.accounts.isVaultCreated())
+                    if (message.type === 'isVaultCreated') {
+                        sendResponse(await masterController.accounts.isVaultCreated())
+                        return true;
+                    }
                     // vertify the password and view private key
-                    if (message.type === 'viewPrivateKey') sendResponse(await masterController.viewPrivateKey(message.data))
+                    if (message.type === 'viewPrivateKey') {
+                        sendResponse(await masterController.viewPrivateKey(message.data))
+                        return true;
+                    }
                     //Create a keystore file that is encrypted with a new password, decrypting all sk's first
-                    if (message.type === 'backupCoinstore') sendResponse(await masterController.accounts.createKeystore(message.data))
+                    if (message.type === 'backupCoinstore') {
+                        sendResponse(await masterController.accounts.createKeystore(message.data))
+                        return true;
+                    }
                     //Decrypt all keys, for use when user wants to view their secret keys in the UI
-                    if (message.type === 'decryptStore') sendResponse(await masterController.accounts.decryptKeys(message.data))
+                    if (message.type === 'decryptStore') {
+                        sendResponse(await masterController.accounts.decryptKeys(message.data))
+                        return true;
+                    }
                     //Add a Lamnden Coin to the coinStore
-                    if (message.type === 'accountsAddNewLamden') sendResponse(await masterController.accounts.addNewLamdenAccount(message.data))
+                    if (message.type === 'accountsAddNewLamden') {
+                        sendResponse(await masterController.accounts.addNewLamdenAccount(message.data))
+                        return true;
+                    }
                     //Add a coin just for watching
-                    if (message.type === 'accountsAddOne') sendResponse(await masterController.accounts.addOne(message.data))
+                    if (message.type === 'accountsAddOne') {
+                        sendResponse(await masterController.accounts.addOne(message.data))
+                        return true;
+                    }
                     //Updated the sk of a previously only watched coin
-                    if (message.type === 'updateWatchedCoin') sendResponse(await masterController.accounts.addOne(message.data))
+                    if (message.type === 'updateWatchedCoin') {
+                        sendResponse(await masterController.accounts.addOne(message.data))
+                        return true;
+                    }
                     //Process a keystore file
                     if (message.type === "accountsAddMany") {
                         await masterController.accounts.addMany(message.data, sendResponse)
                         return true
                     }
                     //Delete a coin/wallet from the coinStore
-                    if (message.type === 'coinStoreDelete') sendResponse(await masterController.deleteAccount(message.data))
+                    if (message.type === 'coinStoreDelete') {
+                        sendResponse(await masterController.deleteAccount(message.data))
+                        return true;
+                    }
                     //Change the name of a Coin
-                    if (message.type === 'changeCoinNickname') sendResponse(await masterController.accounts.changeAccountNickname(message.data))
+                    if (message.type === 'changeCoinNickname') {
+                        sendResponse(await masterController.accounts.changeAccountNickname(message.data))
+                        return true;
+                    }
                     //Call the currentNetwork API to refresh all balances in the coinStore
-                    if (message.type === 'balancesStoreUpdateAll') sendResponse(await masterController.updateAllBalances())
+                    if (message.type === 'balancesStoreUpdateAll') {
+                        sendResponse(await masterController.updateAllBalances())
+                        return true;
+                    }
                     // Call to update both the token and account balances
-                    if (message.type === 'updateAccountAndTokenBalances') sendResponse(await masterController.updateAccountAndTokenBalances())
+                    if (message.type === 'updateAccountAndTokenBalances') {
+                        sendResponse(await masterController.updateAccountAndTokenBalances())
+                        return true;
+                    }
                     // Call update balances and handle sockets when network switches
-                    if (message.type === 'handleSwitchNetwork') sendResponse(await masterController.handleSwitchNetwork(message.data))
-                    // Call join all the balance/token update sockets and refresh balances
-                    //if (message.type === 'joinSocket') sendResponse(await masterController.balances.joinSocket(message.data))
-                    // Call join all the balance/token update sockets and refresh balances
-                    //if (message.type === 'joinSockets') sendResponse(await masterController.joinSockets())
+                    if (message.type === 'handleSwitchNetwork') {
+                        sendResponse(await masterController.handleSwitchNetwork(message.data))
+                        return true;
+                    }
+                    
                     //Call the currentNetwork API to refresh the balance of 1 coin/wallet in the coinStore
-                    if (message.type === 'balancesStoreUpdateOne') sendResponse(await masterController.updateOneBalance(message.data))
+                    if (message.type === 'balancesStoreUpdateOne') {
+                        sendResponse(await masterController.updateOneBalance(message.data))
+                        return true;
+                    }
                     //Call the currentNetwork API to refresh the balance of 1 coin/wallet in the coinStore
-                    if (message.type === 'deleteOneBalance') sendResponse(await masterController.balances.deleteOneBalance(message.data))
+                    if (message.type === 'deleteOneBalance') {
+                        sendResponse(await masterController.balances.deleteOneBalance(message.data))
+                        return true;
+                    }
                     //Delele all balances cache for a given network
-                    if (message.type === 'balancesStoreClearNetwork') sendResponse(await masterController.clearNetworkBalances())
+                    if (message.type === 'balancesStoreClearNetwork') {
+                        sendResponse(await masterController.clearNetworkBalances())
+                        return true;
+                    }
                     //Delele balances cache for all networks
-                    if (message.type === 'balancesStoreClearAllNetworks') sendResponse(await masterController.balances.clearAllNetworks())
+                    if (message.type === 'balancesStoreClearAllNetworks') {
+                        sendResponse(await masterController.balances.clearAllNetworks())
+                        return true;
+                    }
                     //Create and Send a transaction to the currentNetwork Masternode
-                    if (message.type === 'sendLamdenTransaction') sendResponse(await masterController.initiateAppTxSend(message.data, sender))
+                    if (message.type === 'sendLamdenTransaction') {
+                        sendResponse(await masterController.initiateAppTxSend(message.data, sender))
+                        return true;
+                    }
                     //Retry to fetch tx result
-                    if (message.type === 'retryFetchTransactionResult') sendResponse(masterController.retryFetchSendResult(message.data))
+                    if (message.type === 'retryFetchTransactionResult') {
+                        sendResponse(masterController.retryFetchSendResult(message.data))
+                        return true;
+                    }
                     //Set a dApp as Trusted to enable auto transactions
-                    if (message.type === 'setTrusted') sendResponse(await masterController.dapps.setTrusted(message.data))
+                    if (message.type === 'setTrusted') {
+                        sendResponse(await masterController.dapps.setTrusted(message.data))
+                        return true;
+                    }
                     //Remove a connection approval from a dApp, the dApp will have to reapprove
-                    if (message.type === 'revokeDappAccess') sendResponse(await masterController.dapps.revokeAccess(message.data))
+                    if (message.type === 'revokeDappAccess') {
+                        sendResponse(await masterController.dapps.revokeAccess(message.data))
+                        return true;
+                    }
                     //Link a dapp to a new account
-                    if (message.type === 'reassignDappAccess') sendResponse(await masterController.dapps.reassignLink(message.data))
+                    if (message.type === 'reassignDappAccess') {
+                        sendResponse(await masterController.dapps.reassignLink(message.data))
+                        return true;
+                    }
                     //Reorder Account List
                     if (message.type === 'accountsReorderUp') {
                         await masterController.accounts.reorderUp(message.data, sendResponse)
+                        return true;
                     }
                     if (message.type === 'accountsReorderDown') {
                         await masterController.accounts.reorderDown(message.data, sendResponse)
+                        return true;
                     }
                     //Token Messages
                     if (message.type === 'tokensReorderUp') {
@@ -213,11 +305,7 @@ export const messagesHandler = () => {
                         await masterController.tokens.refreshOneTokenBalances(message.data)
                         return true;
                     }
-                    // Call join all token sockets for a network
-                    if (message.type === 'joinTokenSocket') {
-                        sendResponse(await masterController.joinTokenSocket(message.data))
-                    }
-
+                    
                     // State Queries
                     if (message.type === 'state_currentStamps') {
                         await masterController.state.getCurrentStamps(sendResponse)
@@ -256,6 +344,7 @@ export const messagesHandler = () => {
 
                 if (message.type === 'approveTransaction') await masterController.dapps.approveTransaction(sender)
                 if (message.type === 'updateStampLimit') sendResponse(await masterController.dapps.updateStampLimit(confirmHash, message.data))
+                return true
             }
 
             /*************************************************
@@ -272,8 +361,28 @@ export const messagesHandler = () => {
                 if (message.type === 'auth') {
                     await masterController.accounts.auth(message.data, dappInfo, sendResponse)
                 }
+                return true
             }
         }
     }
-    return handle
+
+    const onInstalledHandle = async (details) => {
+        if (details.reason === "install") {
+            await masterController.utils.networks.purgeNetworksStorage()
+        }
+        if (details.reason === "update"){
+            let currVer = chrome.runtime.getManifest().version;
+            let prevVer = details.previousVersion
+            if (currVer > prevVer){
+                await masterController.utils.networks.purgeNetworksStorage()
+
+                await  masterController.dapps.purgeDappNetworkKeys()
+                if (prevVer <= "0.12.0"){
+                    await masterController.dapps.initiateTrustedApp()
+                }
+            }
+        }
+    } 
+
+    return {msgHandle, onInstalledHandle}
 }

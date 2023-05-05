@@ -97,7 +97,7 @@ export const dappController = (utils, actions) => {
         }
 
         if (! await actions.walletIsLocked()){
-            const dappInfo = getDappInfoByURL(confirmData.url)
+            const dappInfo = await getDappInfoByURL(confirmData.url)
             const messageData = confirmData.messageData
             let accountVk;
             if (approveInfo.accountInfo){
@@ -360,8 +360,59 @@ export const dappController = (utils, actions) => {
         await updateTxToConfirm(txToConfirm)
     }
 
+    const initiateTrustedApp =  async () => {
+        let dappsStore = await getDappStore()
+
+        const networksList = ['mainnet', 'testnet']
+        Object.keys(dappsStore).forEach(url => {
+            networksList.forEach(network => {
+                if (dappsStore[url][network]){
+                    if (typeof dappsStore[url][network].stampPreApproval !== "undefined"){
+                        if (parseFloat(dappsStore[url][network].stampPreApproval) > 0) dappsStore[url][network].trustedApp = true;
+                        else dappsStore[url][network].trustedApp = false;
+                    }else{
+                        if (typeof dappsStore[url][network].trustedApp === "undefined") dappsStore[url][network].trustedApp = false;
+                    }
+                    delete dappsStore[url][network].stampPreApproval
+                    delete dappsStore[url][network].stampsUsed
+                }
+            })
+        })
+        await chrome.storage.local.set({"dapps": dappsStore});
+    }
+
+    const purgeDappNetworkKeys = async () => {
+        let changed = false
+        let allnetworks = await utils.networks.getAll()
+        let dappsStore = await getDappStore()
+
+        Object.keys(dappsStore).forEach(dappURL => {
+
+            allnetworks.forEach(network => {
+                let ver = network.networkName === "arko" ? 2 : 1
+                if (dappsStore[dappURL][network.type]) {
+                    dappsStore[dappURL][`legacy|${network.type}`] = dappsStore[dappURL][network.type]
+                    delete dappsStore[dappURL][network.type]
+                    changed = true
+                } else if(dappsStore[dappURL][`V${ver}|${network.type}`]) {
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`V${ver}|${network.type}`]
+                    delete dappsStore[dappURL][`V${ver}|${network.type}`]
+                    changed = true
+                } else if(dappsStore[dappURL][`undefined|${network.type}`]) {
+                    dappsStore[dappURL][`${network.networkName}|${network.type}`] = dappsStore[dappURL][`undefined|${network.type}`]
+                    delete dappsStore[dappURL][`undefined|${network.type}`]
+                    changed = true
+                }
+            })
+        })
+
+        if (changed) await chrome.storage.local.set({"dapps": dappsStore});
+    }
+
 
     return {
+        initiateTrustedApp,
+        purgeDappNetworkKeys,
         validateConnectionMessage,
         approveDapp, reapproveDapp,
         rejectDapp,

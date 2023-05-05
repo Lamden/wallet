@@ -1,7 +1,7 @@
 const whitelabel = require("../../../whitelabel.json");
 
 const assert = require("assert");
-const { Builder, By, until, Options} = require("selenium-webdriver");
+const { Builder, By, until } = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config");
 const helpers = require("../../helpers/helpers");
@@ -24,6 +24,9 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       .build();
     //open tab to wallet
     await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
+    await driver.manage().setTimeouts({
+        script: 50000
+    })
     await helpers.completeFirstRunSetupRestore(
       driver,
       config.workingDir,
@@ -202,7 +205,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       transaction.uid = "changeStampLimit"
       let change_Button = await driver.wait(
         until.elementLocated(By.id("change-btn")),
-        5000
+        6000
       );
       await change_Button.click();
       let input = await driver.wait(

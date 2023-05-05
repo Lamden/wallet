@@ -256,6 +256,12 @@ const formatValue = (value, format = undefined) => {
     else return value
 }
 
+const getValueFromReturn = (value) => {
+    if (!value) return null;
+    if (value.__fixed__) return value.__fixed__
+    return value
+}
+
 const getKeyValue = async (networkObj, contractName, variableName, key, format = 'string') => {
     const defaults = {
         'number': 0,
@@ -545,6 +551,19 @@ function decodePythonTime(value, format) {
     }
 }
 
+const sendMessageToTab = (url, type, data) => {
+    chrome.windows.getAll({populate:true},function(windows){
+        windows.forEach((window) => {
+            window.tabs.forEach((tab) => {
+                var urlObj = new URL(tab.url)
+                if (url === urlObj.origin){
+                    chrome.tabs.sendMessage(tab.id, {type, data});  
+                }
+            });
+        });
+    });
+}
+
 module.exports = {
     copyToClipboard,
     encryptStrHash, decryptStrHash,
@@ -566,5 +585,7 @@ module.exports = {
     calcValue,
     getFiatPrice,
     randomString,
-    decodePythonTime
+    decodePythonTime,
+    getValueFromReturn,
+    sendMessageToTab
   }

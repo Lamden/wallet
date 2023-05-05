@@ -4,39 +4,6 @@ export const transactionsController = (utils, services, actions) => {
     let nonceRetryTimes = 5;
     // const validateTypes = utils.validateTypes
 
-
-    // document.addEventListener('BlockServiceConnected', (e) => {
-    //     services.socketService.socket_on('new-state-changes-by-transaction', processTxData)
-    // })
-
-    // document.addEventListener('BlockServiceNotProvided', (e) => {
-    //     // check pending transacations
-    //     isBlockserviceProvided = false
-    //     timerTask()
-    // })
-
-    // document.addEventListener('BlockServiceProvided', (e) => {
-    //     isBlockserviceProvided = true
-    // })
-
-    // function processTxData (data) {
-    //     let info = {}
-    //     let txInfo = data.message.txInfo
-    //     let index = pendingTxStore.findIndex(tx => tx.txHash === txInfo.hash)
-    //     if (index === -1) return;
-    //     let tx = pendingTxStore[index]
-    //     info.resultInfo = formatResult(txInfo)
-    //     info.txHash = txInfo.hash
-    //     info.txInfo = txInfo
-    //     info.sentFrom = tx.sentFrom
-    //     utils.sendMessageToTab(tx.sentFrom, 'txStatus', info)
-    //     // delete from pendingTxStore
-    //     pendingTxStore.splice(index, 1)
-
-    //     // leave tx room
-    //     services.socketService.leave(txInfo.hash)
-    // }
-
     const sendLamdenTx = async (txBuilder, sentFrom = false) => {
         //Get current nonce from the masternode
         await txBuilder.getNonce()
@@ -119,47 +86,13 @@ export const transactionsController = (utils, services, actions) => {
         if (result.hash){
             let txData = txBuilder.getAllInfo();
             txData.sentFrom = txBuilder.sentFrom;
-            //pendingTxStore.push(txData);
-
-            // Join tx room for listen to tx state
-            //services.socketService.join(result.hash);
+            utils.sendMessageToTab(txData.sentFrom, 'txSent', txData)
         }
     }
     
     const processRetry = () => {
         //pendingTxStore.push(txData);
     }
-
-//     const formatResult = (result) => {
-//         let erroredTx = false;
-//         let errorText = `returned an error and `;
-//         let statusCode = validateTypes.isNumber(result.status) ? result.status : undefined;
-//         let stamps = result.stampsUsed || result.stamps_used || 0;
-//         let message = "";
-//         result.errors = result.errors? result.errors : result.result && result.result.includes("Error")? [result.result] : undefined;
-//         if (validateTypes.isArrayWithValues(result.errors)) {
-//             erroredTx = true;
-//             result.errors.forEach((v, i) => {
-//                 let group = v.match(/Error\(['"].*['"],\)/)
-//                 if (group.length > 0) {
-//                     result.errors[i] = group[0].slice(7, -3)
-//                 }
-//             });
-//             message = `This transaction returned ${result.errors.length} errors.`;
-//         }
-//         if (statusCode && erroredTx) errorText = `returned status code ${statusCode} and `;
-
-//         return {
-//             title: `Transaction ${erroredTx ? "Failed" : "Successful"}`,
-//             subtitle: `Your transaction ${erroredTx ? `${errorText} ` : ""}used ${stamps} stamps`,
-//             message,
-//             type: `${erroredTx ? "error" : "success"}`,
-//             errorInfo: erroredTx ? result.errors : undefined,
-//             returnResult: result.result || "",
-//             stampsUsed: stamps,
-//             statusCode,
-//         };
-// }
 
     // const checkPendingTransactions = async () => {
     //     if (!checkingTransactions){

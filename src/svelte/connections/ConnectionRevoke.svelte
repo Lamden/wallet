@@ -24,7 +24,7 @@
     let formObj, passwordObj;
 
     //Props
-    export let dappInfo
+    export let dappInfo = {}
 
     let passwordOkay = false;
     let revokeAllAccess = false;

@@ -287,13 +287,17 @@ export const accountsController = (utils) => {
     const unlock = async (string) => {
         //Validate the password is correct first
         if (vaultCreated()){
-            if (validatePasswordFromVault(string)){
+            if (await validatePasswordFromVault(string)){
                 await setCurrent(string)
+            } else {
+                return false
             }
         }else{
-            if(validatePasswordFromHash(string)){
+            if(await validatePasswordFromHash(string)){
                 await setCurrent(string)
                 await createIntialVault()
+            } else {
+                return false
             }
         }
         await decryptVaultStorage()

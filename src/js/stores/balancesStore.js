@@ -3,8 +3,8 @@ import { writable, get, derived } from 'svelte/store';
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
-import { networkKey } from './stores.js'
-import { Encoder } from '../utils.js'
+import { networkKey, currentNetwork, CoinStore } from './stores.js'
+import { Encoder, isLamdenKey, getValueFromReturn} from '../utils.js'
 
 export const createBalancesStore = () => {
     const getStore = () => {
@@ -72,8 +72,46 @@ export const createBalancesStore = () => {
             if (!validateTypes.isSpecificClass(networkObj, "Network")) return;
             chrome.runtime.sendMessage({type: 'balancesStoreClearNetwork', data: networkObj.getNetworkInfo()})
         },
+        
         refreshAllCache: () => {
             chrome.runtime.sendMessage({type: 'balancesStoreClearAllNetworks'})
+        },
+
+        processBalanceSocketUpdate: (update) => {
+            const balanceStore = get(BalancesStore)
+    
+            if (!update) return
+    
+            update = JSON.parse(update)
+    
+            const { message, room } = update
+            if (!message) return
+    
+            const { key, value, keys } = message
+            if (key && value && room ){
+                if (!isLamdenKey(key)) return
+                if (keys.length !== 1) return
+                if (room !== `currency.balances:${key}`) return
+    
+                try{
+                    const netKey = networkKey(get(currentNetwork))
+    
+                    let newValue = getValueFromReturn(value)
+                    if (!newValue) newValue = "0"
+    
+                    if (!balanceStore[netKey]) balanceStore[netKey] = {}
+                    
+                    let account = CoinStore.getByVk(key)
+                    balanceStore[netKey][key] = {
+                        'balance': newValue,
+                        watchOnly: account.sk === "watchOnly"
+                    }
+                    BalancesStore.set(balanceStore)
+                    chrome.storage.local.set({"balances": balanceStore});
+                }catch(e){
+                    console.log(e)
+                }
+            }
         }
     };
 }

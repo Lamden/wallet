@@ -1,4 +1,4 @@
-
+import Lamden from "lamden-js"
 
 //For security only messages in JSON string messages will be passed to the application
 const isJSON = (json) => {
@@ -47,7 +47,7 @@ document.addEventListener('lamdenWalletSendTx', (event) => {
     }
 });
 
-const lamdenWalletSendTx = (detail) => {  
+const lamdenWalletSendTx = (detail) => { 
     chrome.runtime.sendMessage({type: 'dAppSendLamdenTransaction', data: detail}, (response) => {
         if (chrome.runtime.lastError) return
         if(response !== 'ok'){
@@ -91,6 +91,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             returnTxStatusToPage(message)
         }
 
+        if (message.type === "txSent") {
+            let tx = message.data
+            if (tx) {
+                let txBuilder = new Lamden.TransactionBuilder(tx.networkInfo, tx.txInfo, tx)
+                txBuilder.checkBlockserviceForTransactionResult().then(() => {
+                    let info = txBuilder.getAllInfo()
+                    info.sentFrom = tx.sentFrom
+                    document.dispatchEvent(new CustomEvent('lamdenWalletTxStatus', {detail: {data: info, status: info.resultInfo.type}}));
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+        }
+
         if (message.type === "sendWalletInfo"){
             getWalletInfo();
         }
@@ -99,5 +113,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: message.data}));
             sendResponse('ok')
         }
+
     }
 });

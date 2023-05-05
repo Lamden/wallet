@@ -11,8 +11,6 @@ import { queryStateController } from "./queryStateController.js";
 import { eventController } from "./eventController.js";
 import { nodesController } from "./nodesController.js";
 
-// Services
-import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
 
 const makeTx = (data) => {
@@ -30,7 +28,6 @@ export const masterController = () => {
   const utils = controllerUtils;
 
   const services = {
-    socketService: SocketService.createSocketService(),
     blockservice: BlockService,
   };
 
@@ -92,43 +89,17 @@ export const masterController = () => {
     if (created) broadcastLockStatus(created);
     return created;
   };
-
-  const joinSockets = async () => {
-    //let accountsList = await accounts.getSanatizedAccounts();
-    //balances.joinAllSockets(accountsList);
-    //tokens.joinAllTokenSockets(accountsList);
-    //return true
-  };
-
-  const leaveSockets = async () => {
-    //let accountsList = await accounts.getSanatizedAccounts();
-    //balances.leaveAllSockets(accountsList);
-    //tokens.leaveAllTokenSockets(accountsList);
-  };
-
-  const joinTokenSocket = async (tokenContractName) => {
-    let accountsList = await accounts.getSanatizedAccounts();
-    tokens.joinTokenSocket(accountsList, tokenContractName);
-  };
-
-  const joinTokenSockets = async (networkInfo) => {
-    let accountsList = await accounts.getSanatizedAccounts();
-    tokens.joinAllTokenSockets(accountsList, networkInfo);
-  };
-
   const unlock = async (pwd) => {
     let unlocked = await accounts.unlock(pwd);
     broadcastLockStatus(unlocked);
     if (unlocked) {
       updateAllBalances();
       updateAllTokenBalances();
-      //joinSockets();
     }
     return unlocked;
   };
 
   const lock = async () => {
-    //leaveSockets();
     await accounts.lock();
     broadcastLockStatus(true);
     return true;
@@ -566,6 +537,8 @@ export const masterController = () => {
       auth: accounts.auth
     },
     dapps: {
+      initiateTrustedApp: dapps.initiateTrustedApp,
+      purgeDappNetworkKeys: dapps.purgeDappNetworkKeys,
       setTrusted: dapps.setTrusted,
       revokeAccess: dapps.revokeAccess,
       reassignLink: dapps.reassignLink,
@@ -622,10 +595,6 @@ export const masterController = () => {
     initiateAppTxSend,
     initiateDAppTxSend,
     promptApproveDapp,
-    joinSockets,
-    leaveSockets,
-    joinTokenSockets,
-    joinTokenSocket,
     updateAccountAndTokenBalances,
     viewPrivateKey,
     setMnemonic,

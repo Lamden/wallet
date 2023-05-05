@@ -12,7 +12,7 @@
     const { Button, DropDown, InputBox } = Components;
 
     //Context
-    const { closeModal } = getContext('app_functions');
+    const { closeModal, joinCoinService } = getContext('app_functions');
 
     const handleSelectedWallet = (e) => {
         if (!e.detail.selected.value) return;
@@ -107,7 +107,7 @@
                         if (result.added){
                             resultMsg = {type:'success', text: result.reason}
                             SettingsStore.setLastCoinAddedType('normal')
-                            chrome.runtime.sendMessage({type: 'joinSocket', data: account.vk})
+                            joinCoinService(account.vk) 
                             chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: account.vk})
                         }
 
@@ -168,7 +168,7 @@
                 let type = 'normal';
                 SettingsStore.setLastCoinAddedDate();
                 SettingsStore.setLastCoinAddedType(type)
-                chrome.runtime.sendMessage({type: 'joinSocket', data: coinInfo.vk})
+                joinCoinService(coinInfo.vk) 
                 chrome.runtime.sendMessage({type: 'balancesStoreUpdateOne', data: coinInfo.vk})
 
                 chrome.runtime.sendMessage({type: 'addUnregisterNode', data: coinInfo.vk}, (response) => {

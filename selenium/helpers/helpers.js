@@ -138,7 +138,6 @@ const unlockWallet = async (driver, walletPassword, switchback) => {
 
 const lockWallet = async (driver, switchback) => {
     await switchWindow(driver, 0) 
-    await sleep(1000)
     let element = await driver.findElement(By.css("div.brand.clickable"))
     driver.executeScript("arguments[0].click();", element)
     await driver.findElement(By.id('lock')).click()
@@ -194,10 +193,10 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true) => 
     await infoNext_Button.click()
     await sleep(500, true)
 
-    accountCard = await driver.wait(until.elementLocated(By.id("account-0")), 5000);
+    let accountCard = await driver.wait(until.elementLocated(By.id("account-0")), 5000);
     await accountCard.click()
 
-    accountLink_Button = await driver.wait(until.elementLocated(By.id("account-link-btn")), 5000);
+    let accountLink_Button = await driver.wait(until.elementLocated(By.id("account-link-btn")), 5000);
     await accountLink_Button.click()
 
     if (!trusted){
@@ -206,6 +205,7 @@ const approvePopup = async (driver, popupWindow, switchback, trusted = true) => 
         await trusted_Radio.click()
     }
     let trustedNext_Button = await driver.wait(until.elementLocated(By.id("trusted-next-btn")), 5000);
+    await sleep(2000, true)
     await trustedNext_Button.click()
     await sleep(500, true)
     await switchWindow(driver, switchback)
@@ -365,7 +365,7 @@ const createUID = () => hashStringValue(new Date().toISOString())
 const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
     let uid = transactionInfo.uid
     if (!uid) uid = 'emptyuid'
-    return driver.executeScript(`
+    return await driver.executeScript(`
         window.walletTxResult['${uid}'] = new Promise((resolve, reject) => {window.txResolver['${uid}'] = resolve})
         document.dispatchEvent( new CustomEvent('lamdenWalletSendTx', {detail: '${JSON.stringify(transactionInfo)}'} ));
         ${awaitResponse ? `console.log(await window.walletTxResult['${uid}']); return await window.walletTxResult['${uid}']` : ""}
@@ -373,7 +373,7 @@ const sendTx = async (driver, transactionInfo, awaitResponse = true) => {
 }
 
 const getTxResult = async (driver, uid) => {
-    return driver.executeScript(`
+    return await driver.executeScript(`
         return await window.walletTxResult['${uid}']
     `);
 }
