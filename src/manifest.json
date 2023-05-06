@@ -6,7 +6,7 @@
     "service_worker": "background.bundle.js"
   },
   "permissions":[
-    "storage", "tabs", "unlimitedStorage"
+    "storage", "tabs", "unlimitedStorage", "alarms"
   ],
   "action": {
     "default_title": "Lamden Vault",

@@ -21,7 +21,7 @@ export const messagesHandler = () => {
         // console.log({message, sender, sendResponse})
         const sendErrors = (errors) => sendResponse({errors})
 
-        if (chrome.runtime.lastError) return;
+        if (chrome.runtime.lastError) return true;
 
         const isFromAuthorizedDapp = await masterController.fromAuthorizedDapp(sender.origin); 
         const dappInfo = isFromAuthorizedDapp ? await masterController.dapps.getDappInfoByURL(sender.origin) : undefined;
@@ -265,9 +265,11 @@ export const messagesHandler = () => {
                     //Token Messages
                     if (message.type === 'tokensReorderUp') {
                         await masterController.tokens.reorderUp(message.data, sendResponse)
+                        return true
                     }
                     if (message.type === 'tokensReorderDown') {
                         await masterController.tokens.reorderDown(message.data, sendResponse)
+                        return true
                     }
                     if (message.type === 'addToken') {
                         await masterController.tokens.addToken(message.data, sendResponse)

@@ -5,6 +5,8 @@ import { messagesHandler  } from './backgroundControllers/messagesHandler.js'
 import runPriceService from './services/priceService'
 
 runPriceService()
+
+
 const handle = messagesHandler()
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
