@@ -124,7 +124,11 @@
   if ($currentNetwork.version === 2) {
     service.start($currentNetwork.blockservice.host, () => {
         let accounts = $CoinStore
-        accounts.forEach((i) => service.joinCurrencyBalanceFeed(i.vk))
+        let tokenList = $TokenStore[currentNetworkKey] ? $TokenStore[currentNetworkKey] : []
+        accounts.forEach((i) => {
+            service.joinCurrencyBalanceFeed(i.vk)
+            tokenList.forEach((j) => service.joinTokenBalanceFeed(j.contractName, i.vk))
+        })
     });
   }
 
