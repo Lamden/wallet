@@ -90,8 +90,8 @@ export const transactionsController = (utils, services, actions) => {
         }
     }
     
-    const processRetry = () => {
-        //pendingTxStore.push(txData);
+    const processRetry = (txData) => {
+        utils.sendMessageToTab(txData.sentFrom, 'txSent', txData)
     }
 
     // const checkPendingTransactions = async () => {
