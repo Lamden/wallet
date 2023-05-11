@@ -1,7 +1,6 @@
 const {By, until} = require('selenium-webdriver');
 const nodeCryptoJs = require("node-cryptojs-aes")
 const server = require('./server')
-const path = require('path')
 const config = require('../config/config')
 const http = require('http')
 const https = require('https')
@@ -9,7 +8,7 @@ const assert = require('assert');
 const { CryptoJS } = nodeCryptoJs;
 const mnemonicWords = require("../fixtures/mnemonic.json")
 
-const { testnetMasternode, testnetBlockService, testnetBlockService_v2} = config;
+const { testnetBlockService, testnetBlockService_v2} = config;
 
 const wait_sync = (seconds) => {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, seconds);
@@ -153,7 +152,7 @@ const changeToTestnet = async (driver) => {
 
 const changeToTestnetV2 = async (driver) => {
     await driver.wait(until.elementLocated(By.id('nav-network-currently-selected')), 5000).click();
-    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-3")), 5000);
+    let navNetwork = await driver.wait(until.elementLocated(By.id("select-option-1")), 5000);
     navNetwork.click()
     await sleep(2000, true)
 }
