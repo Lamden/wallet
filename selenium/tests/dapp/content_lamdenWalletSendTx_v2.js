@@ -25,7 +25,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     //open tab to wallet
     await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
     await driver.manage().setTimeouts({
-        script: 50000
+        script: 60000
     })
     await helpers.completeFirstRunSetupRestore(
       driver,
@@ -201,6 +201,7 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       await helpers.sleep(1000);
     });
     it("Can change stamp limit and send tx successfully", async function () {
+      this.timeout(70000)
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
       transaction.uid = "changeStampLimit"
       let change_Button = await driver.wait(

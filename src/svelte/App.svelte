@@ -74,6 +74,7 @@
 
   const service = createSocketService()
   let currentNetworkKey = networkKey($currentNetwork);
+  let listenerInit = false
 
   $: walletIsLocked = true;
   $: firstRun = undefined;
@@ -129,6 +130,12 @@
             service.joinCurrencyBalanceFeed(i.vk)
             tokenList.forEach((j) => service.joinTokenBalanceFeed(j.contractName, i.vk))
         })
+
+        if (!listenerInit) {
+          service.socket_on('new-state-changes-one', (update) => BalancesStore.processBalanceSocketUpdate(update)) 
+          service.socket_on('new-state-changes-one', (update) => TokenBalancesStore.processTokenBalanceSocketUpdate(update)) 
+          listenerInit = true
+        }
     });
   }
 
@@ -141,7 +148,6 @@
     checkFirstRun();
   });
 
-  let listenerInit = false
   // change websocket connection when network change
   currentNetwork.subscribe((newNetwork) => {
     if (networkKey(newNetwork) !== currentNetworkKey) {
