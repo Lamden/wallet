@@ -1,25 +1,26 @@
 {
-	"title": "Vault Auth Endpoint",
+	"title": "Manifest V3 Update",
 	"type": "feature",
-	"version": "2.4.5",
+	"version": "2.5.0",
 	"body": [
-		"This is an update for Dapp developers to allow the Lamden Vault to be used for logins.",
-		"Check out the documentation for find out how!"
+		"Updated the Lamden Wallet to use the new Manifest V3 standard.",
+		"Also enabled the auth endpoint in the Lamden Vault API."
 	],
 	"buttons": [
 		{
 			"class": "primary",
-			"link": "https://github.com/Lamden/wallet/releases/tag/v2.4.5",
+			"link": "https://github.com/Lamden/wallet/releases/tag/v2.5.0",
 			"name": "Release Info"
 		},
 		{
 			"class": "secondary",
 			"link": "https://docs.lamden.io/develop/wallet_api/auth/",
-			"name": "Documentation"
+			"name": "Auth Documentation"
 		}
 	],
-	"date_added": 1677172284325,
+	"date_added": 1684243931195,
 	"new_features": [
-		"Added a new event called 'auth' to the Lamden Vault API."
+		"Added a new event called 'auth' to the Lamden Vault API. This allows dapps to call the wallet for user login. See documentation for more info.",
+		"Updated the Lamden Wallet to use the new Manifest V3 standard."
 	]
 }
