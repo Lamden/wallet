@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {Builder, By, until} = require('selenium-webdriver');
+const {Builder, By } = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
@@ -34,7 +34,7 @@ describe('Content Script - Testing Dapp Verify API', function () {
             walletInfo,
             false,
             false,
-            false
+            true
           );
           await helpers.changeToTestnetV2(driver)
     });
@@ -63,7 +63,6 @@ describe('Content Script - Testing Dapp Verify API', function () {
         await helpers.approvePopup(driver, 2, 1, false);
         let response = await helpers.getWalletResponse(driver);
   
-        connectionInfo = response;
         assert.equal(response.errors, null);
         await helpers.sleep(2000, false);
     });
@@ -105,7 +104,7 @@ describe('Content Script - Testing Dapp Verify API', function () {
 
         assert.notEqual(response, undefined)
         
-        assert.equal(response.dapp_challenge, '{\"test\":\"test\"}')
+        assert.equal(response.dapp_challenge, '{"test":"test"}')
         assert.equal(response.errors[0].includes(`Error: Malformed 'dapp_challenge': Cannot sign JSON string.`), true)
         assert.equal(response.signature, undefined)
     });

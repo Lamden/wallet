@@ -3,8 +3,8 @@ import { writable, get, derived } from 'svelte/store';
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 
 
-import { networkKey } from './stores.js'
-import { Encoder } from '../utils.js'
+import { networkKey, currentNetwork } from './stores.js'
+import { Encoder, isLamdenKey, getValueFromReturn } from '../utils.js'
 
 export const createTokenBalancesStore = () => {
     const getStore = () => {
@@ -47,6 +47,40 @@ export const createTokenBalancesStore = () => {
             let tokenBalancesStore = get(TokenBalancesStore)
             if (!tokenBalancesStore[netkey]) return {}
             return tokenBalancesStore[netkey]
+        },
+        processTokenBalanceSocketUpdate: (update) => {
+            const tokenBalanceStore = get(TokenBalancesStore)
+
+            if (!update) return
+    
+            update = JSON.parse(update)
+    
+            const { message, room } = update
+            if (!message) return
+    
+            const { key, value, keys, contractName } = message
+    
+            if (key && value && room ){
+                if (!isLamdenKey(key)) return
+                if (keys.length !== 1) return
+                if (room !== `${contractName}.balances:${key}`) return
+    
+                try{
+                    const netKey = networkKey(get(currentNetwork))
+            
+                    let newValue = getValueFromReturn(value)
+                    if (!newValue) newValue = "0"
+
+                    if (!tokenBalanceStore[netKey]) tokenBalanceStore[netKey] = {}
+                    if (!tokenBalanceStore[netKey][key]) tokenBalanceStore[netKey][key] = {}
+                    tokenBalanceStore[netKey][key][contractName] = newValue
+
+                    TokenBalancesStore.set(tokenBalanceStore)
+                    chrome.storage.local.set({"token_balances": tokenBalanceStore})
+                }catch(e){
+                    console.log(e)
+                }
+            }
         }
     };
 }

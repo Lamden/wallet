@@ -26,8 +26,8 @@
         {page: 'MessageBox', cancelButton: false},
     ];
 
-    $: data = getModalData();
-    $: dappInfo = $DappStore[data.url];
+    let data = getModalData();
+    let dappInfo = $DappStore[data.url];
 
 </script>
 
@@ -43,7 +43,7 @@
 </style>
 
 <div id="dapp-options" class="text-primary">
-    <svelte:component this={ Modals[pages[page - 1].page] } {message} {dappInfo} />
+    <svelte:component this={ Modals[pages[page - 1].page] } {message} dappInfo={dappInfo} />
     {#if pages[page - 1].cancelButton}
     <div class="cancel-button">
         <Button id="cancel-modal-btn"

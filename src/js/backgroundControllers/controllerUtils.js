@@ -36,7 +36,7 @@ export const controllerUtils = (() => {
 
     //Send a message to the tab that the App currently open in
     const sendMessageToApp = (type, data) => {
-        const appTab = `${window.location.origin}/app.html`
+        const appTab = chrome.runtime.getURL('app.html')
         chrome.windows.getAll({populate:true},function(windows){
             windows.forEach((window) => {
                 window.tabs.forEach((tab) => {

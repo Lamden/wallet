@@ -1,10 +1,9 @@
 const assert = require('assert');
-const {Builder, By, until, WebElementCondition} = require('selenium-webdriver');
+const {Builder, By, until } = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 const helpers = require('../../../helpers/helpers')
 let config = require("../../../config/config")
 let walletInfo = require("../../../fixtures/walletInfo");
-const { element_is, element } = require('svelte/internal');
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments("lang=en-us");
@@ -116,6 +115,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     })
 
     it('Renders FirstRunGenMnemonic.svelte', async function() {
+        await helpers.sleep(1000)
         let title = await driver.findElement(By.css('.wrap > h6'));
         await title.getAttribute('innerText').then(text => {
             assert.equal(text, 'Copy Your Seed Recovery Phrase')
@@ -152,6 +152,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     })
 
     it('Renders FirstRunRemember.svelte', async function() {
+        await helpers.sleep(1000)
         await driver.findElement(By.css('.chk-checkmark')).click();
         let iUnderstand_Button =  await driver.findElement(By.id('i-understand'))
         await iUnderstand_Button.getAttribute('innerText').then(text => {
@@ -163,6 +164,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     });
 
     it('Renders Lockscreen.svelte', async function() {
+        await helpers.sleep(1000)
         await driver.findElement(By.id('login-btn')).getAttribute('value').then(value => {
             assert.equal(value, 'Login');
         })
@@ -174,6 +176,7 @@ describe('FirstRun_CreateWallet - Complete First Run Setup', function () {
     it('Lockscreen.svelte Can Login', async function() {
         await driver.executeScript(`document.getElementById('pwd-input').value='${walletInfo.walletPassword}'`);
         await driver.findElement(By.id('login-btn')).click()
+        await helpers.sleep(500)
         await driver.findElement(By.className('coinsmain')).then(element => {
             assert.equal(element.constructor.name, 'WebElement');
         })

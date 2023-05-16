@@ -1,13 +1,11 @@
 import { writable, derived } from 'svelte/store';
 
 export const createDappStore = () => {
-    let initialized = false;
     let startValue = {};
 
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"dapps": startValue}, function(getValue) {
-            initialized = true;
             DappStore.set(getValue.dapps)
         });
     }

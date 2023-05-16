@@ -57,6 +57,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from mnemonic words'
     })
 
     it('Renders RestoreOptions.svelte', async function() {
+        await helpers.sleep(1000)
         let title = await driver.findElement(By.css('.flow-page h6'));
         let text = await title.getAttribute('innerText');
         assert.equal(text, 'Restore Accounts');

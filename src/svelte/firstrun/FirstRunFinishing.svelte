@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
 
     //Stores
-    import { SettingsStore, steps } from '../../js/stores/stores.js';
+    import { SettingsStore, steps, CoinStore } from '../../js/stores/stores.js';
 
     //Components
 	import { Components }  from '../Router.svelte'
@@ -12,6 +12,7 @@
     const { done } = getContext('functions');
 
     //Props
+    const { joinCoinService } = getContext('app_functions');
     export let restore = false;
 
     $: message = 'Finishing Up';
@@ -34,7 +35,12 @@
         })
         .then(() => {
             chrome.runtime.sendMessage({type: 'refreshTokenBalances'})
-            chrome.runtime.sendMessage({type: 'joinSockets'})
+
+            let accounts = $CoinStore ? $CoinStore : []
+            accounts.forEach((i) => {
+                joinCoinService(i.vk) 
+            })
+
             setTimeout(() => {
                 done()
             }, 1000);            

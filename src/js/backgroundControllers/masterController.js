@@ -11,8 +11,6 @@ import { queryStateController } from "./queryStateController.js";
 import { eventController } from "./eventController.js";
 import { nodesController } from "./nodesController.js";
 
-// Services
-import * as SocketService from "../services/sockets.js";
 import * as BlockService from "../services/blockservice.js";
 
 const makeTx = (data) => {
@@ -30,32 +28,13 @@ export const masterController = () => {
   const utils = controllerUtils;
 
   const services = {
-    socketService: SocketService.createSocketService(),
     blockservice: BlockService,
   };
 
-  document.addEventListener('BlockServiceConnected', (e) => {
-    // join all sockets when a new blockservice is connected
-    let accountsList = accounts.getSanatizedAccounts();
-    balances.joinAllSockets(accountsList);
-    tokens.joinAllTokenSockets(accountsList);
-  })
-
   utils.networks = Object.freeze(networkController(utils, services));
-  const accounts = Object.freeze(accountsController(utils, services));
+  const accounts = Object.freeze(accountsController(utils));
   const nodes = Object.freeze(nodesController(utils));
-  const balances = Object.freeze(
-    balancesController(
-      utils,
-      services,
-      (() => {
-        return {
-          isWatchOnly: accounts.isWatchOnly,
-          walletIsLocked: accounts.walletIsLocked,
-        };
-      })()
-    )
-  );
+  const balances = Object.freeze(balancesController(utils));
   const transactions = Object.freeze(
     transactionsController(
       utils,
@@ -86,7 +65,6 @@ export const masterController = () => {
   const tokens = Object.freeze(
     tokenController(
       utils,
-      services,
       (() => {
         return {
           getSanatizedAccounts: accounts.getSanatizedAccounts,
@@ -99,56 +77,30 @@ export const masterController = () => {
 
   const state = Object.freeze(queryStateController(utils));
 
-  const createPassword = (string) => {
-    let created = accounts.createPassword(string);
+  const createPassword = async (string) => {
+    let created = await accounts.createPassword(string);
     if (created) broadcastLockStatus(created);
     return created;
   };
 
-  const changePassword = (obj) => {
+  const changePassword = async (obj) => {
     let { oldpd, newpd } = obj;
-    let created = accounts.changePassword(oldpd, newpd);
+    let created = await accounts.changePassword(oldpd, newpd);
     if (created) broadcastLockStatus(created);
     return created;
   };
-
-  const joinSockets = () => {
-    let accountsList = accounts.getSanatizedAccounts();
-    balances.joinAllSockets(accountsList);
-    tokens.joinAllTokenSockets(accountsList);
-    return true
-  };
-
-  const leaveSockets = () => {
-    let accountsList = accounts.getSanatizedAccounts();
-    balances.leaveAllSockets(accountsList);
-    tokens.leaveAllTokenSockets(accountsList);
-  };
-
-  const joinTokenSocket = (tokenContractName) => {
-    let accountsList = accounts.getSanatizedAccounts();
-    tokens.joinTokenSocket(accountsList, tokenContractName);
-  };
-
-  const joinTokenSockets = (networkInfo) => {
-    let accountsList = accounts.getSanatizedAccounts();
-    tokens.joinAllTokenSockets(accountsList, networkInfo);
-  };
-
-  const unlock = (pwd) => {
-    let unlocked = accounts.unlock(pwd);
+  const unlock = async (pwd) => {
+    let unlocked = await accounts.unlock(pwd);
     broadcastLockStatus(unlocked);
     if (unlocked) {
       updateAllBalances();
       updateAllTokenBalances();
-      joinSockets();
     }
     return unlocked;
   };
 
-  const lock = () => {
-    leaveSockets();
-    accounts.lock();
+  const lock = async () => {
+    await accounts.lock();
     broadcastLockStatus(true);
     return true;
   };
@@ -156,12 +108,12 @@ export const masterController = () => {
     utils.sendMessageToApp("walletIsLocked", status);
     dapps.sendMessageToAllDapps("sendWalletInfo");
   };
-  const getWalletInfo = (dappInfo = undefined) => {
+  const getWalletInfo = async (dappInfo = undefined) => {
     let walletInfo = {
       walletVersion: chrome.runtime.getManifest().version,
       installed: true,
-      setup: !accounts.firstRun(),
-      locked: accounts.walletIsLocked(),
+      setup: ! await accounts.firstRun(),
+      locked: await accounts.walletIsLocked(),
       wallets: [],
     };
     if (walletInfo.locked === false) {
@@ -189,7 +141,7 @@ export const masterController = () => {
 
       walletInfo.approvals = approvals;
 
-      let account = accounts.getAccountByVK(dappInfo.vk);
+      let account = await accounts.getAccountByVK(dappInfo.vk);
       if (!account) return walletInfo;
       if (account.sk !== "watchOnly") {
         if (Object.keys(approvals).length > 0)
@@ -201,61 +153,62 @@ export const masterController = () => {
     return walletInfo;
   };
 
-  const updateAllBalances = () => {
-    let accountsList = accounts.getSanatizedAccounts();
+  const updateAllBalances = async () => {
+    let accountsList = await accounts.getSanatizedAccounts();
     if (typeof accountsList === "undefined") return false;
-    balances.updateAll(accountsList, utils.networks.getCurrent());
+    await balances.updateAll(accountsList, await utils.networks.getCurrent());
     return true;
   };
 
-  const updateAccountAndTokenBalances = () => {
-    updateAllBalances();
-    updateAllTokenBalances();
+  const updateAccountAndTokenBalances = async () => {
+    await updateAllBalances();
+    await updateAllTokenBalances();
   };
 
-  const handleSwitchNetwork = (networkInfo) => {
-    let accountsList = accounts.getSanatizedAccounts();
-    balances.updateAll(accountsList, utils.networks.getNetwork(networkInfo));
-    updateAllTokenBalances(networkInfo);
+  const handleSwitchNetwork = async (networkInfo) => {
+    let accountsList = await accounts.getSanatizedAccounts();
+    await balances.updateAll(accountsList, utils.networks.getNetwork(networkInfo));
+    await updateAllTokenBalances(networkInfo);
 
-    let blockservice = networkInfo.blockservice_hosts[0];
+    //let blockservice = networkInfo.blockservice_hosts[0];
     // start socket server
-    if (blockservice) {
-        services.socketService.start(blockservice);
-        document.dispatchEvent(new Event('BlockServiceProvided'));
-    } else {
-        document.dispatchEvent(new Event('BlockServiceNotProvided'));
-        services.socketService.close();
-    }
+    //if (blockservice) {
+        //services.socketService.start(blockservice);
+        //document.dispatchEvent(new Event('BlockServiceProvided'));
+    //} else {
+        //document.dispatchEvent(new Event('BlockServiceNotProvided'));
+    //    services.socketService.close();
+    //}
 
     return true;
   };
 
-  const updateAllTokenBalances = (networkInfo) => {
-    tokens.refreshTokenBalances(networkInfo);
+  const updateAllTokenBalances = async (networkInfo) => {
+    await tokens.refreshTokenBalances(networkInfo);
   };
 
-  const updateOneBalance = (vk) => {
-    let account = accounts.getAccountByVK(vk);
+  const updateOneBalance = async (vk) => {
+    let account = await accounts.getAccountByVK(vk);
     if (!account) return true;
-    balances.updateOne(account, utils.networks.getCurrent());
+    balances.updateOne(account, await utils.networks.getCurrent());
     return true;
   };
 
-  const clearNetworkBalances = () => {
-    balances.clearNetwork(utils.networks.getCurrent());
+  const clearNetworkBalances = async () => {
+    await balances.clearNetwork(await utils.networks.getCurrent());
   };
 
-  const initiateAppTxSend = (txInfo, sender) => {
+  const initiateAppTxSend = async (txInfo, sender) => {
+    let net = await utils.networks.getCurrent()
     //Validate that a physical person is sending this transaction
     let response = { status: "" };
     try {
       txInfo.uid = utils.hashStringValue(new Date().toISOString());
       let txBuilder = new utils.Lamden.TransactionBuilder(
-        utils.networks.getCurrent(),
+        net,
         txInfo
       );
-      transactions.sendLamdenTx(txBuilder, sender.origin);
+      await transactions.sendLamdenTx(txBuilder, sender.origin);
       response.status = "Transaction Sent, Awaiting Response";
     } catch (err) {
       console.log(err);
@@ -275,7 +228,7 @@ export const masterController = () => {
   // 2) If no contract name is provided then the approved contract name will be provided
   // 3) The Wallet sets/overwrites the "senderVK" in txInfo to the one created for the dApp upon authorization.
   // This means that a dApp can only send transactions that were approved by the user in the original connection request
-  const initiateDAppTxSend = (sender, data, dappInfo, callback = undefined) => {
+  const initiateDAppTxSend = async (sender, data, dappInfo, callback = undefined) => {
     const makeTxStatus = (
       status = `Unable to process transaction`,
       errors = undefined,
@@ -286,6 +239,7 @@ export const masterController = () => {
       if (callback) callback({ data: { status, errors, data, uid} });
       return txStatus;
     };
+
     let txInfo = {};
     let errors = [];
     try {
@@ -305,7 +259,7 @@ export const masterController = () => {
     //Create a unique ID for this transaction for reference later if needed
     if (!txInfo.uid) txInfo.uid = utils.hashStringValue(new Date().toISOString());
 
-    if (accounts.walletIsLocked()) {
+    if (await accounts.walletIsLocked()) {
       return makeTxStatus(undefined, ["Lamden Vault is Locked"], txInfo.uid);
     } else {
       let approvalRequest = false;
@@ -320,7 +274,7 @@ export const masterController = () => {
       }
 
       //Get the Lamden Network Object for the network types specified in the txInfo request
-      const network = utils.networks.getLamdenNetwork(
+      const network = await utils.networks.getLamdenNetwork(
         txInfo.networkType.toLowerCase(),
         txInfo.networkName
       );
@@ -342,7 +296,7 @@ export const masterController = () => {
       try {
         let symbol = `${txInfo.networkName}|${txInfo.networkType}`
         //Find the wallet in the coinStore that is assocated with this dapp (was created specifically for this dApp during authorization)
-        const wallet = accounts.getAccountByVK(dappInfo.vk);
+        const wallet = await accounts.getAccountByVK(dappInfo.vk);
         //Set senderVk to the one assocated with this dapp
         txInfo.senderVk = wallet.vk;
         //Check if contractName was supplied
@@ -380,7 +334,7 @@ export const masterController = () => {
             promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
           } else {
             if (dappInfo[symbol].trustedApp && !forceTxApproval) {
-              transactions.sendLamdenTx(txBuilder, dappInfo.url);
+              await transactions.sendLamdenTx(txBuilder, dappInfo.url);
             } else {
               promptApproveTransaction(sender, {
                 txData,
@@ -396,7 +350,7 @@ export const masterController = () => {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(makeTx(txInfo)),
-          }).then(r => r.json()).then(d => {
+          }).then(r => r.json()).then(async d => {
               txInfo.stampLimit = Math.ceil(d['stamps_used'] * 1.05)
 
               //Create a Lamden Transaction
@@ -417,7 +371,7 @@ export const masterController = () => {
                 promptCurrencyApproval(sender, { txData, wallet, dappInfo: info });
               } else {
                 if (dappInfo[symbol].trustedApp && !forceTxApproval) {
-                  transactions.sendLamdenTx(txBuilder, dappInfo.url);
+                  await transactions.sendLamdenTx(txBuilder, dappInfo.url);
                 } else {
                   promptApproveTransaction(sender, {
                     txData,
@@ -457,17 +411,17 @@ export const masterController = () => {
       utils.sendMessageToTab(sender.origin, "sendErrorsToTab", { errors });
     } else {
       const windowId = utils.createUID();
-      messageData.network = utils.networks.getLamdenNetwork(
+      messageData.network = await utils.networks.getLamdenNetwork(
         messageData.networkType,
         messageData.networkName
       );
-      messageData.accounts = accounts.getSanatizedAccounts();
+      messageData.accounts = await accounts.getSanatizedAccounts();
       if (reapprove) {
         messageData.reapprove = reapprove;
         messageData.oldConnection = dappInfo;
       }
 
-      dapps.setTxToConfirm(windowId, {
+      await dapps.setTxToConfirm(windowId, {
         type: "ApproveConnection",
         messageData,
         url: sender.origin,
@@ -478,7 +432,7 @@ export const masterController = () => {
 
   const promptApproveTransaction = async (sender, messageData) => {
     const windowId = utils.createUID();
-    dapps.setTxToConfirm(windowId, {
+    await dapps.setTxToConfirm(windowId, {
       type: "ApproveTransaction",
       messageData,
       url: sender.origin,
@@ -487,7 +441,7 @@ export const masterController = () => {
   };
   const promptCurrencyApproval = async (sender, messageData) => {
     const windowId = utils.createUID();
-    dapps.setTxToConfirm(windowId, {
+    await dapps.setTxToConfirm(windowId, {
       type: "CurrencyApproval",
       messageData,
       url: sender.origin,
@@ -504,29 +458,29 @@ export const masterController = () => {
     });
   };
 
-  const deleteAccount = (data) => {
+  const deleteAccount = async (data) => {
     const { account, string } = data;
-    if (dapps.getDappInfoByVK(account.vk)) {
+    if (await dapps.getDappInfoByVK(account.vk)) {
       return "used";
     } else {
-      if (accounts.checkPassword(string)) {
-        accounts.deleteOne(account);
-        return true;
+      if (await accounts.checkPassword(string)) {
+        let ok = await accounts.deleteOne(account);
+        return ok;
       }
       return false;
     }
   };
 
   // vertify the password and view private key
-  const viewPrivateKey = (data) => {
+  const viewPrivateKey = async (data) => {
     if (!data.vk || !data.password) {
       return {
         success: false,
       };
     }
 
-    if (accounts.validatePassword(data.password)) {
-      let account = accounts.getAccountByVK(data.vk);
+    if (await accounts.validatePassword(data.password)) {
+      let account = await accounts.getAccountByVK(data.vk);
 
       if (account.sk === "watchOnly")
         return {
@@ -546,19 +500,21 @@ export const masterController = () => {
   };
 
   // Set the mnemonic phrase in vault
-  const setMnemonic = (str) => {
-    let origin = accounts.getMnemonic();
+  const setMnemonic = async (str) => {
+    let origin = await accounts.getMnemonic();
 
     if (origin === str) return true;
 
-    let coins = accounts.getSanatizedAccounts();
-    coins.forEach((c) => {
-      if (c.type === "vault") {
-        accounts.deleteOne(c);
-        dapps.deleteDapp(c.vk);
-      }
-    });
-    let ok = accounts.setMnemonic(str);
+    let coins = await accounts.getSanatizedAccounts();
+
+    for (var i=0;i<coins.length;i++) {
+        let c = coins[i]
+        if (c.type === "vault") {
+            await accounts.deleteOne(c);
+            await dapps.deleteDapp(c.vk);
+        }
+    }
+    let ok = await accounts.setMnemonic(str);
     return ok;
   };
 
@@ -581,6 +537,8 @@ export const masterController = () => {
       auth: accounts.auth
     },
     dapps: {
+      initiateTrustedApp: dapps.initiateTrustedApp,
+      purgeDappNetworkKeys: dapps.purgeDappNetworkKeys,
       setTrusted: dapps.setTrusted,
       revokeAccess: dapps.revokeAccess,
       reassignLink: dapps.reassignLink,
@@ -593,11 +551,11 @@ export const masterController = () => {
       approveTransaction: dapps.approveTransaction,
       getDappInfoByURL: dapps.getDappInfoByURL,
       validateConnectionMessage: dapps.validateConnectionMessage,
-      updateStampLimit: (confirmHash, limit) => {
-        let data = dapps.getConfirmInfo(confirmHash);
+      updateStampLimit: async (confirmHash, limit) => {
+        let data = await dapps.getConfirmInfo(confirmHash);
         if (!data) return { success: false };
         data.messageData.txData.txInfo.stampLimit = limit;
-        dapps.setTxToConfirm(confirmHash, data);
+        await dapps.setTxToConfirm(confirmHash, data);
         return {
           success: true,
         };
@@ -637,10 +595,6 @@ export const masterController = () => {
     initiateAppTxSend,
     initiateDAppTxSend,
     promptApproveDapp,
-    joinSockets,
-    leaveSockets,
-    joinTokenSockets,
-    joinTokenSocket,
     updateAccountAndTokenBalances,
     viewPrivateKey,
     setMnemonic,

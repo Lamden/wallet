@@ -1,9 +1,9 @@
 const assert = require('assert');
-const {Builder, By, until} = require('selenium-webdriver');
+const {Builder, By, Key} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
-let config = require("../../../../config/config")
-const helpers = require('../../../../helpers/helpers')
-let walletInfo = require("../../../../fixtures/walletInfo")
+let config = require("../../../config/config")
+const helpers = require('../../../helpers/helpers')
+let walletInfo = require("../../../fixtures/walletInfo")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments("lang=en-us");
@@ -60,8 +60,13 @@ describe('Testing Dashboard', function () {
             // switch to My Nodes page
             await driver.findElement(By.id('node-lists')).click()
             await helpers.sleep(500)
+
+            // scroll to the top
+            await driver.findElement(By.css('#empty-add-btn')).sendKeys(Key.HOME)
+
+            await helpers.sleep(500)
             // open add node modal
-            await driver.findElement(By.css('#empty-add-btn')).click()
+            await driver.findElement(By.id('empty-add-btn')).click()
             await helpers.sleep(500)
             await driver.findElement(By.css('#add-brand-new-btn')).click()
             await helpers.sleep(500)
@@ -74,7 +79,7 @@ describe('Testing Dashboard', function () {
             await helpers.sleep(1000)
             let text = await driver.findElement(By.id("message-text")).getText()
             assert.equal(`${walletName} Success Created. Please backup the account in time.`, text)
-            await helpers.sleep(1000)
+            await helpers.sleep(500)
             let text1 = await driver.findElement(By.css(".node-list .header-name")).getText()
             assert.equal(`My Unregister Nodes`, text1)
             // back to home
@@ -87,8 +92,13 @@ describe('Testing Dashboard', function () {
             await helpers.sleep(500)
             await driver.findElement(By.id('node-lists')).click()
             await helpers.sleep(500)
+
+            // scroll to the top
+            await driver.findElement(By.css('#add-node-btn')).sendKeys(Key.HOME)
+
             // open add node modal
-            await driver.findElement(By.css('#add-node-btn')).click()
+            await helpers.sleep(500)
+            await driver.findElement(By.id('add-node-btn')).click()
             await helpers.sleep(500)
             await driver.findElement(By.css('#add-brand-new-btn')).click()
             await helpers.sleep(500)

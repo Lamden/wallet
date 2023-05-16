@@ -8,7 +8,6 @@ const helpers = require("../../helpers/helpers");
 let walletInfo = require("../../fixtures/walletInfo");
 let dappsInfo = require("../../fixtures/dappsInfo_v2.json");
 
-
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
@@ -25,13 +24,16 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       .build();
     //open tab to wallet
     await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
+    await driver.manage().setTimeouts({
+        script: 60000
+    })
     await helpers.completeFirstRunSetupRestore(
       driver,
       config.workingDir,
       walletInfo,
       false
     );
-    await helpers.changeToTestnetV2(driver)
+    //await helpers.changeToTestnetV2(driver)
   });
 
   after(() => {
@@ -199,11 +201,12 @@ describe("Content Script - Testing Dapp SendTx API", function () {
       await helpers.sleep(1000);
     });
     it("Can change stamp limit and send tx successfully", async function () {
+      this.timeout(70000)
       let transaction = helpers.getInstance(dappsInfo.basicTransactionInfo);
       transaction.uid = "changeStampLimit"
       let change_Button = await driver.wait(
         until.elementLocated(By.id("change-btn")),
-        5000
+        6000
       );
       await change_Button.click();
       let input = await driver.wait(
@@ -319,7 +322,6 @@ describe("Content Script - Testing Dapp SendTx API", function () {
     });
     it("ignores Trusted App auto transactions if contract differs from approved", async function () {
       this.timeout(30000);
-      await helpers.sleep(10000);
       let transaction = helpers.getInstance(
         dappsInfo.nonStandardTransactionInfo
       );

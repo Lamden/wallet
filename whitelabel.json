@@ -6,30 +6,6 @@
     },
     "networks": [
         {
-            "name": "Lamden Mainnet", 
-            "hosts": ["https://masternode-01.lamden.io"],
-            "type": "mainnet", 
-            "lamden": true, 
-            "networkName": "legacy",
-            "currencySymbol": "TAU",
-            "blockExplorer": "https://www.tauhq.com",
-            "blockservice_hosts": ["http://165.22.47.195:3535"],
-            "nameService": "",
-            "version": 1
-        },
-        {
-            "name": "Lamden Testnet", 
-            "hosts": ["https://testnet-master-1.lamden.io"], 
-            "type": "testnet", 
-            "lamden": true, 
-            "networkName": "legacy",
-            "currencySymbol": "dTAU",
-            "blockExplorer": "https://testnet.lamden.io",
-            "blockservice_hosts": ["http://165.227.181.34:3535"],
-            "nameService": "",
-            "version": 1
-        },
-        {
             "name": "Arko Mainnet", 
             "hosts": ["https://arko-mn-1.lamden.io", "https://arko-mn-2.lamden.io", "https://arko-mn-3.lamden.io"], 
             "type": "mainnet", 

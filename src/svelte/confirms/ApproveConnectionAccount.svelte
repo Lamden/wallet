@@ -20,7 +20,6 @@
     const { setAccount, close } = getContext('confirm_functions');
 
     export let confirmData
-    
     let selectedAccountVk = null; // selected account Id
 
     $: accountList = confirmData.messageData.accounts? confirmData.messageData.accounts.filter(f => f.sk !== "watchOnly") : []

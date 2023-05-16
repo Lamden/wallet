@@ -1,16 +1,14 @@
-import { writable, get, derived} from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import policy from '../../../policy.json';
 import { currentNetwork, NodesStore, networkKey, CoinStore } from './stores.js';
 import utils from "../../js/utils"
 
 export const createPolicyStore = () => {
-    let initialized = false;
     let startValue = {};
 
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"policy": startValue}, function(getValue) {
-            initialized = true;
             PolicyStore.set(getValue.events)
         });
     }

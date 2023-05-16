@@ -1,14 +1,14 @@
 const assert = require('assert');
 const path = require('path');
-const {Builder, By} = require('selenium-webdriver');
+const {Builder, By } = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 const helpers = require('../../../helpers/helpers')
 const config = require("../../../config/config")
 const walletInfo = require("../../../fixtures/walletInfo")
-const mnemonicWords = require("../../../fixtures/mnemonic.json")
 
 let chromeOptions = new chrome.Options();
 chromeOptions.addArguments("lang=en-us");
+chromeOptions.setUserPreferences({"intl.accept_languages":"en-us"});
 chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file', function () {
@@ -113,6 +113,7 @@ describe('FirstRun_RestoreWallet - Complete First Run Setup from keystore file',
         await driver.findElement(By.id('save-pwd')).click()
     })
     it('Renders RestoreOptions.svelte', async function() {
+        await helpers.sleep(1000)
         let title = await driver.findElement(By.css('.flow-page h6'));
         let text = await title.getAttribute('innerText');
         assert.equal(text, 'Restore Accounts');

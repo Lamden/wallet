@@ -7,7 +7,7 @@ import '../css/global.css'
 import 'flatpickr/dist/flatpickr.css'
 import 'flatpickr/dist/themes/light.css'
 
-window.addEventListener('load', (event) => {
+window.addEventListener('load', () => {
 	try{
 		loaded.set(true)
 	} catch (e) {

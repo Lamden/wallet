@@ -1,13 +1,11 @@
 import { writable, derived } from 'svelte/store';
 
 export const createEventStore = () => {
-    let initialized = false;
     let startValue = {};
 
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"events": startValue}, function(getValue) {
-            initialized = true;
             EventStore.set(getValue.events)
         });
     }
