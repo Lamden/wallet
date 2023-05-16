@@ -4,34 +4,11 @@ import whitelabel from '../../../whitelabel.json'
 let lamdenNetworks = whitelabel.networks
 
 export const networkController = (utils) => {
-    let networksStore = {};
     const LamdenNetworkTypes = ['mainnet','testnet', 'devnet']
 
-    chrome.storage.local.get({"networks":{}}, function(getValue) {
-        networksStore = getValue.networks;
-    })
-    chrome.storage.onChanged.addListener(function(changes) {
-        for (let key in changes) {
-            if (key === 'networks') networksStore = changes[key].newValue;
-        }
-    });
-
-    chrome.runtime.onInstalled.addListener(function(details) {
-        if (details.reason === "install") {
-            purgeNetworksStorage()
-        }
-        if (details.reason === "update"){
-            let currVer = chrome.runtime.getManifest().version;
-            let prevVer = details.previousVersion
-            if (currVer > prevVer){
-                purgeNetworksStorage()
-            }
-        }
-    });
-
-    const purgeNetworksStorage = () => {
-        networksStore.lamden = lamdenNetworks;
-        chrome.storage.local.set({"networks": networksStore});
+    const getNetworksStore = async () => {
+        let res = await chrome.storage.local.get({"networks":{}})
+        return res.networks
     }
 
     const networkKey = (networkObj) => {
@@ -55,12 +32,14 @@ export const networkController = (utils) => {
         return networkObj
     }
 
-    const getAll = () => {
+    const getAll = async () => {
+        let networksStore = await getNetworksStore()
         if (!Array.isArray(networksStore.user)) networksStore.user = []
         return [...networksStore.user, ...networksStore.lamden]
     }
 
-    const getCurrent = () => {
+    const getCurrent = async () => {
+        let networksStore = await getNetworksStore()
         const networks = [...networksStore.lamden, ...networksStore.user]
         const foundNetwork = networks.find(network => networksStore.current === networkKey(network))
         return addExtras(new utils.Lamden.Network(foundNetwork))
@@ -71,7 +50,8 @@ export const networkController = (utils) => {
         return addExtras(network)
     } 
 
-    const getLamdenNetwork = (networkType, networkName="legacy") => {
+    const getLamdenNetwork = async (networkType, networkName="legacy") => {
+        let networksStore = await getNetworksStore()
         const foundNetwork = networksStore.lamden.find(network => network.type === networkType.toLowerCase() && networkName === network.networkName)
         if (!foundNetwork) return false;
         return addExtras(new utils.Lamden.Network(foundNetwork))
@@ -81,24 +61,28 @@ export const networkController = (utils) => {
         return LamdenNetworkTypes.includes(networkType)
     }
 
-    const contractExists = (networkType, contractName, networkName = "legacy") => {
-        const networkInfo = getLamdenNetwork(networkType, networkName)
+    const contractExists = async (networkType, contractName, networkName = "legacy") => {
+        const networkInfo = await getLamdenNetwork(networkType, networkName)
         if (!networkInfo) return false;
         const network = new utils.Lamden.Network(networkInfo)
-        return network.contractExists(contractName)
+        let res = await network.contractExists(contractName)
+        return res
     }
 
-    const getLastetBlock = () => {
-        return network.getLastetBlock()
+    const purgeNetworksStorage = async () => {
+        let networksStore = await getNetworksStore();
+        networksStore.lamden = lamdenNetworks;
+        await chrome.storage.local.set({"networks": networksStore});
     }
+
     return {
+        purgeNetworksStorage,
         getAll,
         getCurrent,
         getNetwork,
         getLamdenNetwork,
         isAcceptedNetwork,
         contractExists: (networkType, contractName, version = 1) => contractExists(networkType, contractName, version),
-        getLastetBlock,
         LamdenNetworkTypes
     }
 }

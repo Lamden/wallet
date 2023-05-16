@@ -1,6 +1,6 @@
 {
   "name": "lamden-wallet",
-  "version": "2.4.3",
+  "version": "2.5.0",
   "description": "A secure wallet for making transactions on the Lamden blockchain.",
   "author": "Jeff Scott <jeff@lamden.io>",
   "license": "",
@@ -40,10 +40,12 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.12.0",
-    "chromedriver": "^109.0.0",
+    "chromedriver": "^111.0.0",
     "clean-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "2.1.0",
+    "eslint": "^8.38.0",
+    "eslint-plugin-no-floating-promise": "^1.0.2",
     "file-loader": "3.0.1",
     "fs-extra": "7.0.1",
     "html-loader": "0.5.5",
@@ -64,7 +66,7 @@
   "dependencies": {
     "chart.js": "^4.1.1",
     "easyqrcodejs": "^4.4.6",
-    "lamden-js": "^3.8.1",
+    "lamden-js": "^3.8.7",
     "monaco-editor": "^0.19.0",
     "monaco-editor-webpack-plugin": "^1.8.1",
     "node-cryptojs-aes": "^0.4.0",

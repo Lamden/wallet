@@ -11,12 +11,10 @@ const sanatizedAccounts = (accounts) => {
 }
 
 export const createCoinStore = () => {
-    let initialized = false;
 
     const getStore = () => {
         //Set the Coinstore to the value of the chome.storage.local
         chrome.storage.local.get({"coins": []}, function(getValue) {
-            initialized = true;
             CoinStore.set(sanatizedAccounts(getValue.coins))
         });
     }

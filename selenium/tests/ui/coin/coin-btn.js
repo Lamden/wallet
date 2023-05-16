@@ -1,5 +1,3 @@
-const whitelabel = require('../../../../whitelabel.json')
-
 const assert = require('assert');
 const {Builder, By, until} = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
@@ -7,7 +5,6 @@ let config = require("../../../config/config")
 const helpers = require('../../../helpers/helpers')
 const tokenHelpers = require('../../../helpers/helpers-token')
 let walletInfo = require("../../../fixtures/walletInfo")
-var validators = require('types-validate-assert');
 let dappsInfo = require("../../../fixtures/dappsInfo_v2.json")
 let tokenInfo = require("../../../fixtures/tokenInfo.json")
 const mnemonicWords = require("../../../fixtures/mnemonic.json")
@@ -17,6 +14,7 @@ chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('Testing Coin Button', function () {
     var driver;
+    let httpServer;
 
     before(async function() {
         httpServer = await helpers.startServer(config.port)

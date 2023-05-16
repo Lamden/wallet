@@ -25,12 +25,10 @@ import { validateTypes } from 'types-validate-assert';
 import { networkKey } from './stores.js'
 
 export const createTokenStore = () => {
-    let initialized = false;
 
     const getStore = () => {
         //Set the TokenStore to the value of the chome.storage.local
         chrome.storage.local.get({"tokens": {}}, function(getValue) {
-            initialized = true;
             TokenStore.set(getValue.tokens)
         });
     }
@@ -76,7 +74,7 @@ export const createTokenStore = () => {
 export const TokenStore = createTokenStore();
 
 //Create a derived store to total all wallets
-export const tokensDropDown = derived(TokenStore, ($TokenStore) => {
+export const tokensDropDown = derived(TokenStore, () => {
     null
     /*
     let returnList = [{

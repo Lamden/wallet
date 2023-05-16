@@ -2,7 +2,7 @@
     import { getContext} from 'svelte';
 
     //Stores
-    import { SettingsStore, currentNetwork } from '../../js/stores/stores.js';
+    import { SettingsStore, currentNetwork, CoinStore } from '../../js/stores/stores.js';
 
     //Components
     import { Components } from '../Router.svelte';
@@ -12,7 +12,7 @@
     import { getLogoFromURL } from '../../js/utils.js'
 
     //Context
-    const { closeModal } = getContext('app_functions');
+    const { closeModal, joinTokenService } = getContext('app_functions');
     const { nextPage, setMessage, tokenPage } = getContext('coinadd_functions');
     
     //DOM NODES
@@ -156,7 +156,10 @@
 
     const finish = (returnMessage, tokenInfo) => {
         chrome.runtime.sendMessage({type: 'refreshOneTokenBalances', data: tokenInfo.contractName})
-        chrome.runtime.sendMessage({type: 'joinTokenSocket', data: tokenInfo.contractName})
+        let accounts = $CoinStore || []
+        accounts.forEach((i) => {
+            joinTokenService(tokenInfo.contractName, i.vk)
+        })
         sendMessage(returnMessage);
         nextPage();
     }

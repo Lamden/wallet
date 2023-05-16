@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {Builder, By, until} = require('selenium-webdriver');
+const {Builder, By } = require('selenium-webdriver');
 let chrome = require("selenium-webdriver/chrome");
 let config = require("../../config/config")
 const helpers = require('../../helpers/helpers')
@@ -19,6 +19,7 @@ con_wallet_testing_2
 
 describe('Content Script - Testing Dapp Connection API', function () {
     let driver;
+    // eslint-disable-next-line no-unused-vars
     let connectionInfo;
     let httpServer;
 

@@ -10,7 +10,6 @@
     currentNetwork,
     BalancesStore,
     networkKey,
-    PendingTxStore,
   } from "../../js/stores/stores.js";
 
   //Components

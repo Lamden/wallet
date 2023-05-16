@@ -32,20 +32,18 @@
     })
 
     onDestroy(() => {
-        chrome.runtime.onMessage.removeListener(txStatus)
+        document.removeEventListener('txStatus', txStatus)
     })
 
-    const txStatus = (message, sender, sendResponse) => {
-        if (message.type === "txStatus"){
-            if (typeof message.data.resultInfo !== 'undefined'){
-                if (message.data.resultInfo.title !== "Transaction Pending"){
-                    dispatch('txResult', message.data)
-                }                
-            }
-            sendResponse('ok');      
-        }
+    const txStatus = (e) => {
+        let data = e.detail
+        if (typeof data.resultInfo !== 'undefined'){
+            if (data.resultInfo.title !== "Transaction Pending"){
+                dispatch('txResult', data)
+            }                
+        }   
     }
-    chrome.runtime.onMessage.addListener(txStatus)
+    document.addEventListener('txStatus', txStatus);
 
 </script>
 

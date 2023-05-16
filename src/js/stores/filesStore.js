@@ -1,4 +1,4 @@
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 import * as validators from 'types-validate-assert'
 const { validateTypes } = validators; 

@@ -11,6 +11,8 @@ chromeOptions.addArguments(`load-extension=${config.walletPath}`);
 
 describe('Content Script - Testing Dapp Connection API', function () {
     let driver;
+    // eslint-disable-next-line no-unused-vars
+    let connectionInfo;
     let httpServer;
 
     before(async function() {
@@ -21,6 +23,9 @@ describe('Content Script - Testing Dapp Connection API', function () {
                 .build();
         //open tab to wallet
         await driver.get(`chrome-extension://${config.walletExtentionID}/app.html`);
+        await driver.manage().setTimeouts({
+            script: 50000
+        })
         await helpers.completeFirstRunSetup(driver, walletInfo.walletPassword)
     });
 
@@ -281,6 +286,7 @@ describe('Content Script - Testing Dapp Connection API', function () {
         it('POPUP: Returns message when connection denied', async function() {
             let connection = helpers.getInstance(dappsInfo.basicConnectionInfo)
             await helpers.sendConnectRequest(driver, connection, false)
+            await helpers.sleep(2000)
             await helpers.denyPopup(driver, 2, 1)
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors.length, 1);
@@ -292,7 +298,6 @@ describe('Content Script - Testing Dapp Connection API', function () {
             await helpers.switchWindow(driver, 0) 
             //await helpers.ignoreBackupModal(driver)
             await helpers.lockWallet(driver, 1)
-            await helpers.sleep(2000, true)
             await helpers.approvePopup(driver, 2, 1, true, {show: false})
             let response = await helpers.getWalletResponse(driver)
             assert.equal(response.errors.length, 1);

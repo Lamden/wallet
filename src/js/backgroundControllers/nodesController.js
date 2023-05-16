@@ -1,20 +1,13 @@
-export const nodesController = (utils) => {
-    let nodesStore = [];
+export const nodesController =  (utils) => {
 
-    chrome.storage.local.get({
-        "nodes": [],
-    },
-    function(getValue) {
-        nodesStore = getValue.nodes;
-    })
-    chrome.storage.onChanged.addListener(function(changes) {
-        for (let key in changes) {
-            if (key === 'nodes') nodesStore = changes[key].newValue;
-        }
-    });
+    const getNodesStore = async () => {
+       let res = await chrome.storage.local.get({"nodes": []})
+       return res && Array.isArray(res.nodes) ? res.nodes : [] 
+    }
 
     const updateNodes = async () => {
-        let network = utils.networks.getCurrent()
+        let nodesStore = await getNodesStore()
+        let network = await utils.networks.getCurrent()
         let netKey = network.networkKey
         // clear old data 
         nodesStore = nodesStore.filter(t => t.netKey !== netKey || t.status === 'unregister')
@@ -57,11 +50,12 @@ export const nodesController = (utils) => {
                 nodesStore[index].status = "node"
             }
         })
-        chrome.storage.local.set({"nodes": nodesStore});
+        await chrome.storage.local.set({"nodes": nodesStore});
     }
 
-    const addUnregisterNode = (vk, callback = undefined) => {
-        let network = utils.networks.getCurrent()
+    const addUnregisterNode = async (vk, callback = undefined) => {
+        let nodesStore = await getNodesStore()
+        let network = await utils.networks.getCurrent()
         let netKey = network.networkKey
 
         let index = nodesStore.findIndex(item => vk === item.vk && item.netKey === netKey)
@@ -75,7 +69,7 @@ export const nodesController = (utils) => {
             type: 'masternode',
             netKey: netKey
         })
-        chrome.storage.local.set({"nodes": nodesStore});
+        await chrome.storage.local.set({"nodes": nodesStore});
         if (callback) callback({success: true, msg: "Success Added"})
     }
 

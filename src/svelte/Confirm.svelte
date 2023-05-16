@@ -67,7 +67,9 @@
   const sendApprovetx = () => {
     confirm();
     chrome.runtime.sendMessage({ type: "approveTransaction" });
-    closePopup();
+    setTimeout(() => {
+      closePopup();
+    }, 500);
   };
 
   const closePopup = () => {
