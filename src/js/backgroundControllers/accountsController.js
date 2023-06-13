@@ -32,20 +32,21 @@ export const accountsController = (utils) => {
     const changePassword = async (oldpd, newpd) => {
         let { accountStore } = await getAccountsData()
         let { current } = await getSessionData()
+
+        if (oldpd != current) return false
         try{
             if (utils.validateTypes.isStringWithValue(oldpd) && utils.validateTypes.isStringWithValue(newpd)){
-                await setCurrent(oldpd)
                 let accounts = utils.stripRef(accountStore).map( account => {
                     let decryptedKey;
                     if (account.sk === "watchOnly") return account
-                    decryptedKey = decryptString(account.sk, current);
+                    decryptedKey = decryptString(account.sk, oldpd);
                     if (decryptedKey) account.sk = decryptedKey
                     else throw("Old password error")
                     return account
                 })
                 await setCurrent(newpd)
                 accounts.forEach(account => {
-                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk, current)
+                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk, newpd)
                 })
                 accountStore = accounts
                 await refreshAccountStore(accountStore)
