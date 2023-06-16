@@ -140,6 +140,7 @@ import IdeMethodTx from './IDE/IdeMethodTx.svelte';
 //Misc
 import LockScreen from './misc/LockScreen.svelte';
 import About from './misc/About.svelte';
+import RepairVault from './misc/RepairVault.svelte';
 
 //Token
 import TokenDetails from './tokens/TokenDetails.svelte';
@@ -252,6 +253,7 @@ export const Pages = {
     DashboardMain,
     DashboardNodeList,
     NodeDetails,
+    RepairVault,
     ...FirstRun 
 };
 

@@ -534,7 +534,8 @@ export const masterController = () => {
       isVaultCreated: accounts.isVaultCreated,
       getMnemonic: accounts.getMnemonic,
       addVaultAccount: accounts.addVaultAccount,
-      auth: accounts.auth
+      auth: accounts.auth,
+      repairVault: accounts.repairVault
     },
     dapps: {
       initiateTrustedApp: dapps.initiateTrustedApp,

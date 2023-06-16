@@ -465,7 +465,36 @@ export const accountsController = (utils) => {
         await chrome.storage.session.set({current: string});
     }
 
+    // for version 2.5.0
+    const repairVault = async (oldpd) => {
+        let { accountStore } = await getAccountsData()
+        let { current } = await getSessionData()
+
+        try{
+            if (utils.validateTypes.isStringWithValue(oldpd) && utils.validateTypes.isStringWithValue(current)){
+                let accounts = utils.stripRef(accountStore).map( account => {
+                    let decryptedKey;
+                    if (account.sk === "watchOnly") return account
+                    decryptedKey = decryptString(account.sk, oldpd);
+                    if (decryptedKey) account.sk = decryptedKey
+                    else throw("Old password error")
+                    return account
+                })
+                accounts.forEach(account => {
+                    if (account.sk !== 'watchOnly') account.sk = encryptString(account.sk, current)
+                })
+                accountStore = accounts
+                await refreshAccountStore(accountStore)
+                return true;
+            }
+            return false
+        } catch (e){
+            return false
+        }
+    }
+
     return {
+        repairVault,
         changePassword,
         createPassword,
         checkPassword,
