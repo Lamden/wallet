@@ -59,6 +59,13 @@
         desc: "Keep your wallet safe by locking it after you’re done using it.",
         btnName: "Sign Out & Lock",
         page: "LockScreen"
+    },{
+        id: "fix-vaulte-btn",
+        logo: "signout",
+        title: "Fix Vault",
+        desc: "If you have changed your password in version 2.5, you can use this feature to repair your vault.",
+        btnName: "Fix Vault",
+        page: "RepairVault"
     }]
 
     const settingIcons = {

@@ -100,6 +100,12 @@ export const messagesHandler = () => {
                     sendResponse(await masterController.changePassword(message.data))
                     return true;
                 }
+
+                // Reapir vault
+                if (message.type === 'repairVault') {
+                    sendResponse(await masterController.accounts.repairVault(message.data)) 
+                    return true;
+                }
                 //Check if the wallet has been setup yet
                 if(message.type === 'isFirstRun') {
                     sendResponse(await masterController.accounts.firstRun())
