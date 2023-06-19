@@ -82,6 +82,12 @@
 
     }
 
+    const refresh = () => {
+        chrome.runtime.sendMessage({type: 'updateNodes'})
+        getStatics()
+        freshPolicy("all")
+    }
+
 </script>
 <style>
     .motion-header-name {
@@ -137,6 +143,13 @@
     <Card {cardInfo} logo={cardInfo.logo} width={'300px'}/>
 {/each}
 </div>
+
+<Button id="refresh-dashboard"
+    margin={'0 0 .625rem 0'}
+    classes={'button__solid button__primary'}
+    name="Refresh" 
+    width={'200px'}
+    click={refresh} />  
 
 <div class="node-list">
     <div class="header header-text text-body1 weight-800">
