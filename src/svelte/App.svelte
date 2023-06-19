@@ -67,6 +67,7 @@
     "ContinueSwap",
     "ChangePassword",
     "ManageNetwork",
+    "RepairVault"
   ];
   const redirect = {
     FirstRunRestoreMain: "FirstRunMain",

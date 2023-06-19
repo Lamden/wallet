@@ -1,26 +1,19 @@
 {
-	"title": "Manifest V3 Update",
-	"type": "feature",
-	"version": "2.5.0",
+	"title": "Change Password Hotfix",
+	"type": "hotfix",
+	"version": "2.5.1",
 	"body": [
-		"Updated the Lamden Wallet to use the new Manifest V3 standard.",
-		"Also enabled the auth endpoint in the Lamden Vault API."
+		"Hotfix for the change password bug."
 	],
 	"buttons": [
 		{
 			"class": "primary",
-			"link": "https://github.com/Lamden/wallet/releases/tag/v2.5.0",
+			"link": "https://github.com/Lamden/wallet/releases/tag/v2.5.1",
 			"name": "Release Info"
-		},
-		{
-			"class": "secondary",
-			"link": "https://docs.lamden.io/develop/wallet_api/auth/",
-			"name": "Auth Documentation"
 		}
 	],
-	"date_added": 1684243931195,
-	"new_features": [
-		"Added a new event called 'auth' to the Lamden Vault API. This allows dapps to call the wallet for user login. See documentation for more info.",
-		"Updated the Lamden Wallet to use the new Manifest V3 standard."
+	"date_added": 1686843863024,
+	"fixes": [
+		"The change password feature would change the loging password but fail to re-encrypt the keys in the legacy vault storage."
 	]
 }
