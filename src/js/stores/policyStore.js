@@ -227,7 +227,7 @@ const getCurrentMasterNodeMotion = async () => {
         positions: []
     }
     let stamp = utils.decodePythonTime(data.motion_opened, "time") + 86400000
-    if (data.motion_opened && stamp > new Date().getTime()) {
+    if (data.current_motion !== 0 && data.motion_opened && stamp > new Date().getTime()) {
         // starting
         motion.status = 1
     } else {
