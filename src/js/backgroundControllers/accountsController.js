@@ -64,8 +64,9 @@ export const accountsController = (utils) => {
 
     const createKeystore = async (info) => {
         let { accountStore } = await getAccountsData()
+        let list = await decryptedKeys(accountStore)
         return JSON.stringify({
-            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: await decryptedKeys(accountStore).filter(f =>f.type !== "vault" && !f.sk.includes("watchOnly"))}),
+            data: utils.encryptObject(info.pwd, {'version' : info.version, keyList: list.filter(f =>f.type !== "vault" && !f.sk.includes("watchOnly"))}),
             w: info.hint === "" ? "" : utils.encryptStrHash(info.obscure, info.hint),
         });
     }

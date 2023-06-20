@@ -487,7 +487,7 @@ export const masterController = () => {
           success: false,
         };
 
-      let sk = accounts.decryptString(account.sk);
+      let sk = accounts.decryptString(account.sk, data.password);
       return {
         success: true,
         data: { ...account, sk },
