@@ -1,19 +1,28 @@
 {
-	"title": "Change Password Hotfix",
+	"title": "Misc Hotfixes",
 	"type": "hotfix",
-	"version": "2.5.1",
+	"version": "2.5.2",
+	"date_added": 1687289535452,
 	"body": [
-		"Hotfix for the change password bug."
+		"Hotfix 2.5.1 for the change password bug.",
+		"Hotfix 2.5.2 for viewing the private key of a wallet via options.",
+		"Hotfix 2.5.2 fixes Node Dashboard bug in masternode policy UI."
 	],
 	"buttons": [
 		{
 			"class": "primary",
 			"link": "https://github.com/Lamden/wallet/releases/tag/v2.5.1",
-			"name": "Release Info"
+			"name": "Release Info v2.5.1"
+		},
+		{
+			"class": "primary",
+			"link": "https://github.com/Lamden/wallet/releases/tag/v2.5.2",
+			"name": "Release Info v2.5.2"
 		}
 	],
-	"date_added": 1686843863024,
 	"fixes": [
-		"The change password feature would change the loging password but fail to re-encrypt the keys in the legacy vault storage."
+		"The change password feature would change the loging password but fail to re-encrypt the keys in the legacy vault storage.",
+		"The view private key button in the account options didn't work and now does.",
+		"The masternode policy was always OPEN and never closed after completed motion."
 	]
 }
