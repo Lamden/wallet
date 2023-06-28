@@ -6,7 +6,7 @@
 	"body": [
 		"Hotfix 2.5.1 for the change password bug.",
 		"Hotfix 2.5.2 for viewing the private key of a wallet via options.",
-		"Hotfix 2.5.2 fixes Node Dashboard bug in masternode policy UI"
+		"Hotfix 2.5.2 fixes Node Dashboard bug in masternode policy UI."
 	],
 	"buttons": [
 		{
